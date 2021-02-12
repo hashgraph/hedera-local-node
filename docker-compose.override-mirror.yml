@@ -6,12 +6,6 @@ services:
       - ../data:/var/lib/hedera-mirror-importer
       - ../application.yml:/usr/etc/hedera-mirror-importer/application.yml
       - ../local-dev-1-node.addressbook.f102.json.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
-  db:
-    volumes:
-      - ../db:/var/lib/postgresql/data
-      - ./hedera-mirror-importer/src/main/resources/db/scripts/init_v1.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - 5432:5432
   minio:
     image: minio/minio
     container_name: minio
