@@ -12,8 +12,7 @@ services:
       - 50211:50211
   node_1:
     deploy:
-        replicas: 0
+      replicas: 0
   node_2:
     deploy:
-        replicas: 0
-
+      replicas: 0
