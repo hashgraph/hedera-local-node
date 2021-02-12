@@ -1,0 +1,6 @@
+[submodule "mirror"]
+	path = mirror
+	url = git@github.com:hashgraph/hedera-mirror-node.git
+[submodule "services"]
+	path = services
+	url = git@github.com:hashgraph/hedera-services.git
