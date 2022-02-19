@@ -1,0 +1,31 @@
+hedera:
+  mirror:
+    monitor:
+      network: OTHER
+      nodes: !!set
+        ? accountId: [0.0.3]
+          host: 127.0.0.1
+      operator:
+        accountId: 0.0.2
+        privateKey: 302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137
+    importer:
+      db:
+        host: 127.0.0.1
+        loadBalance: true
+        name: mirror_node
+        owner: ${hedera.mirror.importer.db.username}
+        ownerPassword: ${hedera.mirror.importer.db.password}
+        password: mirror_node_pass
+        port: 5432
+        restPassword: mirror_api_pass
+        restUsername: mirror_api
+        schema: public
+        username: mirror_node
+      downloader:
+        accessKey: minioadmin
+        cloudProvider: "S3"
+        secretKey: minioadmin
+        bucketName: hedera-streams
+        endpointOverride: http://minio:9000
+      initialAddressBook: "/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin"
+      network: OTHER

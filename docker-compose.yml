@@ -1,42 +1,95 @@
-version: "3.3"
+version: "2.4"
 services:
-  hedera_node:
-    container_name: hedera_node
-    image: ${HEDERA_REGISTRY_PREFIX}services-node:${HEDERA_TAG}
+  haveged:
+    image: "${HAVEGED_IMAGE_PREFIX}network-node-haveged:${HAVEGED_IMAGE_TAG}"
+    container_name: haveged
+    restart: always
+    mem_swappiness: 0
+    privileged: true
+    network_mode: none
+
+  network-node-postgres:
+    image: "postgres@sha256:${POSTGRES_IMAGE_SHA256}"
+    container_name: network-node-postgres
+    restart: always
+    mem_swappiness: 0
     environment:
-      - NODE_ID=0
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    depends_on:
+      haveged:
+        condition: service_started
+    networks:
+      - network-node-bridge
+    expose:
+      - "5432"
+    healthcheck:
+      test: "pg_isready --username=${POSTGRES_USER} -d ${POSTGRES_DB} && psql --username=${POSTGRES_USER} -d ${POSTGRES_DB} --list >/dev/null"
+      interval: 10s
+      timeout: 5s
+      retries: 20
     volumes:
-      - "./config/compose:/opt/hedera/services/config-mount"
-      - "./compose-network/node0/saved:/opt/hedera/services/data/saved"
-      - "./compose-network/node0/output:/opt/hedera/services/output"
-      - "./compose-network/node0/streams/hedera-streams:/opt/hgcapp"
-      - "./config/compose/keys:/opt/hedera/services/data/keys"
+      - type: volume
+        source: network-node-postgres
+        target: /var/lib/postgresql/data
+  network-node:
+    image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
+    container_name: network-node
+    user: "${NETWORK_NODE_UID}"
+    mem_swappiness: 0
+    mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    environment:
+      JAVA_HEAP_MIN: "${JAVA_HEAP_MIN}"
+      JAVA_HEAP_MAX: "${JAVA_HEAP_MAX}"
+      JAVA_OPTS: "${JAVA_OPTS}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_HOST: "network-node-postgres"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    depends_on:
+      haveged:
+        condition: service_started
+      network-node-postgres:
+        condition: service_healthy
+    networks:
+      - network-node-bridge
     ports:
       - "50211:50211"
-
-  postgres:
-    container_name: hedera-postgres
-    image: "${POSTGRES_IMAGE}"
-    environment:
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_USER: "${POSTGRES_USER}"
-      PGDATA: "${PG_DATA}"
+      - "50212:50212"
     volumes:
-      - "./compose-network/pgdata:/var/lib/postgresql/data/pgdata"
-      - "./config/compose/init.db:/docker-entrypoint-initdb.d"
-
+      - "network-node-account-balances:/opt/hgcapp/accountBalances"
+      - "network-node-event-streams:/opt/hgcapp/eventsStreams"
+      - "network-node-record-streams:/opt/hgcapp/recordStreams"
+      - "${APPLICATION_ROOT_PATH}/data/config:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stdout.log:/opt/hgcapp/services-hedera/HapiApp2.0/stdout.log"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/gc.log:/opt/hgcapp/services-hedera/HapiApp2.0/gc.log"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
+      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
+      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
+      - "network-node-stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
+      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
+      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
+      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
   minio:
     image: minio/minio
     container_name: minio
-    command: server /data
-    volumes:
-      - ./compose-network/node0/streams:/data
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+    networks:
+      - mirror-node-bridge
     ports:
       - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
   db:
-    image: "${POSTGRES_IMAGE}"
+    image: "${MIRROR_POSTGRES_IMAGE}"
     environment:
-      PGDATA: /var/lib/postgresql/data
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
       GRPC_PASSWORD: mirror_grpc_pass
@@ -45,56 +98,84 @@ services:
       POSTGRES_PASSWORD: postgres_password
       REST_PASSWORD: mirror_api_pass
       ROSETTA_PASSWORD: mirror_rosetta_pass
-    ports:
-      - "5432:5432"
+    networks:
+      - mirror-node-bridge
+    expose:
+      - "5432"
     restart: unless-stopped
     stop_grace_period: 2m
     stop_signal: SIGTERM
     tty: true
     volumes:
-      - ../data:/var/lib/hedera-mirror-importer
-      - ../application.yml:/usr/etc/hedera-mirror-importer/application.yml
-      - ../local-dev-1-node.addressbook.f102.json.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
-      - ./db:/var/lib/postgresql/data
-      - ./hedera-mirror-importer/src/main/resources/db/scripts/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./compose-network/mirror-node/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
+      - ./compose-network/mirror-node/local-dev-1-node.addressbook.f102.json.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
   grpc:
     image: gcr.io/mirrornode/hedera-mirror-grpc:main
-    pull_policy: always
     restart: unless-stopped
+    depends_on:
+      network-node:
+        condition: service_started
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
     environment:
       HEDERA_MIRROR_GRPC_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-grpc/
       SPRING_REDIS_HOST: redis
+    networks:
+      - mirror-node-bridge
     ports:
       - "5600:5600"
     volumes:
-      - ./application.yml:/usr/etc/hedera-mirror-grpc/application.yml
+      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-grpc/application.yml
 
   importer:
     image: gcr.io/mirrornode/hedera-mirror-importer:main
-    pull_policy: always
     restart: unless-stopped
+    depends_on:
+      network-node:
+        condition: service_started
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
     environment:
       HEDERA_MIRROR_IMPORTER_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-importer/
       SPRING_REDIS_HOST: redis
+    networks:
+      - mirror-node-bridge
     volumes:
-      - ./application.yml:/usr/etc/hedera-mirror-importer/application.yml
+      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
 
   monitor:
-    deploy:
-      replicas: 0
     image: gcr.io/mirrornode/hedera-mirror-monitor:main
-    pull_policy: always
     restart: unless-stopped
+    depends_on:
+      network-node:
+        condition: service_started
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+      grpc:
+        condition: service_started
+      rest:
+        condition: service_started
     environment:
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-monitor/
+    networks:
+      - mirror-node-bridge
     volumes:
-      - ./application.yml:/usr/etc/hedera-mirror-monitor/application.yml
+      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml
 
   redis:
     image: redis:6.2.6-alpine
+    networks:
+      - mirror-node-bridge
     ports:
       - "6379:6379"
     restart: unless-stopped
@@ -104,9 +185,17 @@ services:
 
   rest:
     image: gcr.io/mirrornode/hedera-mirror-rest:main
-    pull_policy: always
+    depends_on:
+      network-node:
+        condition: service_started
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
     environment:
       HEDERA_MIRROR_REST_DB_HOST: db
+    networks:
+      - mirror-node-bridge
     ports:
       - "5551:5551"
     restart: unless-stopped
@@ -114,19 +203,35 @@ services:
 
   rosetta:
     image: gcr.io/mirrornode/hedera-mirror-rosetta:main
-    pull_policy: always
+    depends_on:
+      network-node:
+        condition: service_started
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
     environment:
       HEDERA_MIRROR_ROSETTA_DB_HOST: db
+    networks:
+      - mirror-node-bridge
     ports:
       - "5700:5700"
     restart: unless-stopped
     tty: true
     volumes:
-      - ./application.yml:/src/hedera-mirror-rosetta/application.yml
+      - ./compose-network/mirror-node/application.yml:/src/hedera-mirror-rosetta/application.yml
 
   web3:
     image: gcr.io/mirrornode/hedera-mirror-web3:main
-    pull_policy: always
+    depends_on:
+      network-node:
+        condition: service_started
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - mirror-node-bridge
     environment:
       HEDERA_MIRROR_WEB3_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-web3/
@@ -135,4 +240,24 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./application.yml:/usr/etc/hedera-mirror-web3/application.yml
+      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-web3/application.yml
+networks:
+    network-node-bridge:
+      name: network-node-bridge
+      driver: bridge
+    mirror-node-bridge:
+      name: mirror-node-bridge
+      driver: bridge
+volumes:
+    network-node-postgres:
+      name: network-node-postgres
+    network-node-event-streams:
+      name: network-node-event-streams
+    network-node-record-streams:
+      name: network-node-record-streams
+    network-node-account-balances:
+      name: network-node-account-balances
+    network-node-stats:
+      name: network-node-stats
+    minio-data:
+      name: minio-data
