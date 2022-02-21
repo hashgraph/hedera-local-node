@@ -153,26 +153,26 @@ services:
     volumes:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
 
-  monitor:
-    image: gcr.io/mirrornode/hedera-mirror-monitor:main
-    restart: unless-stopped
-    depends_on:
-      network-node:
-        condition: service_started
-      db:
-        condition: service_started
-      redis:
-        condition: service_started
-      grpc:
-        condition: service_started
-      rest:
-        condition: service_started
-    environment:
-      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-monitor/
-    networks:
-      - mirror-node-bridge
-    volumes:
-      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml
+#  monitor:
+#    image: gcr.io/mirrornode/hedera-mirror-monitor:main
+#    restart: unless-stopped
+#    depends_on:
+#      network-node:
+#        condition: service_started
+#      db:
+#        condition: service_started
+#      redis:
+#        condition: service_started
+#      grpc:
+#        condition: service_started
+#      rest:
+#        condition: service_started
+#    environment:
+#      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-monitor/
+#    networks:
+#      - mirror-node-bridge
+#    volumes:
+#      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml
 
   redis:
     image: redis:6.2.6-alpine
