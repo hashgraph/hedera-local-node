@@ -111,10 +111,10 @@ services:
     volumes:
       - ./compose-network/mirror-node/init.sh:/docker-entrypoint-initdb.d/init.sh
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
-      - ./compose-network/mirror-node/local-dev-1-node.addressbook.f102.json.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
+      - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
   grpc:
-    image: gcr.io/mirrornode/hedera-mirror-grpc:main
+    image: gcr.io/mirrornode/hedera-mirror-grpc:0.49.0
     restart: unless-stopped
     depends_on:
       network-node:
@@ -135,7 +135,7 @@ services:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-grpc/application.yml
 
   importer:
-    image: gcr.io/mirrornode/hedera-mirror-importer:main
+    image: gcr.io/mirrornode/hedera-mirror-importer:0.49.0
     restart: unless-stopped
     depends_on:
       network-node:
@@ -152,6 +152,7 @@ services:
       - mirror-node-bridge
     volumes:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
+      - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
 #  monitor:
 #    image: gcr.io/mirrornode/hedera-mirror-monitor:main
@@ -186,7 +187,7 @@ services:
     tty: true
 
   rest:
-    image: gcr.io/mirrornode/hedera-mirror-rest:main
+    image: gcr.io/mirrornode/hedera-mirror-rest:0.49.0
     depends_on:
       network-node:
         condition: service_started
@@ -204,7 +205,7 @@ services:
     tty: true
 
   rosetta:
-    image: gcr.io/mirrornode/hedera-mirror-rosetta:main
+    image: gcr.io/mirrornode/hedera-mirror-rosetta:0.49.0
     depends_on:
       network-node:
         condition: service_started
@@ -224,7 +225,7 @@ services:
       - ./compose-network/mirror-node/application.yml:/src/hedera-mirror-rosetta/application.yml
 
   web3:
-    image: gcr.io/mirrornode/hedera-mirror-web3:main
+    image: gcr.io/mirrornode/hedera-mirror-web3:0.49.0
     depends_on:
       network-node:
         condition: service_started

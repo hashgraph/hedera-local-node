@@ -1,1 +1,2 @@
 network-logs/node/logs/*.log
+network-logs/node/*.log
