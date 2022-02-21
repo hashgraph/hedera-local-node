@@ -73,6 +73,8 @@ services:
       - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
       - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
       - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
+      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
+      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
   minio:
     image: minio/minio
     container_name: minio

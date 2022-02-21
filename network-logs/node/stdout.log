@@ -2,8 +2,8 @@ Could not rename log file 'gc.log' to 'gc.log.0' (Device or resource busy).
 Reading the settings from the file:        /opt/hgcapp/services-hedera/HapiApp2.0/settings.txt
 Reading the configuration from the file:   /opt/hgcapp/services-hedera/HapiApp2.0/config.txt
 Reading crypto keys from the files here:   /opt/hgcapp/services-hedera/HapiApp2.0/data/keys*.pfx
-2022-02-18 23:52:37.075 INFO  189  ServicesState - Init called on Services node 0 WITHOUT Merkle saved state
-2022-02-18 23:52:37.414 INFO  119  BootstrapProperties - Resolved bootstrap properties:
+2022-02-21 16:54:58.278 INFO  189  ServicesState - Init called on Services node 0 WITHOUT Merkle saved state
+2022-02-21 16:54:58.421 INFO  119  BootstrapProperties - Resolved bootstrap properties:
   accounts.addressBookAdmin=55
   accounts.exchangeRatesAdmin=57
   accounts.feeSchedulesAdmin=56
@@ -116,7 +116,7 @@ Reading crypto keys from the files here:   /opt/hgcapp/services-hedera/HapiApp2.
   rates.intradayChangeLimitPercent=25
   rates.midnightCheckInterval=1
   scheduling.triggerTxn.windBackNanos=11
-  scheduling.whitelist=[TokenMint, TokenBurn, CryptoTransfer, ConsensusSubmitMessage]
+  scheduling.whitelist=[TokenBurn, ConsensusSubmitMessage, TokenMint, CryptoTransfer]
   sigs.expandFromLastSignedState=true
   stats.executionTimesToTrack=0
   stats.hapiOps.speedometerUpdateIntervalMs=3000
@@ -138,50 +138,50 @@ Reading crypto keys from the files here:   /opt/hgcapp/services-hedera/HapiApp2.
   tokens.nfts.mintThrottleScaleFactor=ThrottleReqOpsScaleFactor{scale=5:2}
   tokens.nfts.useTreasuryWildcards=true
   upgrade.artifacts.path=/opt/hgcapp/services-hedera/HapiApp2.0/data/upgrade/current
-2022-02-18 23:52:38.849 INFO  392  ServicesState - Dual state includes freeze time=null and last frozen=null
-2022-02-18 23:52:38.957 INFO  42   ScreenedNodeFileProps - No overrides present at data/config/node.properties.
-2022-02-18 23:52:38.977 INFO  94   ScreenedNodeFileProps - Node-local properties overridden on disk are:
+2022-02-21 16:54:59.078 INFO  392  ServicesState - Dual state includes freeze time=null and last frozen=null
+2022-02-21 16:54:59.128 INFO  42   ScreenedNodeFileProps - No overrides present at data/config/node.properties.
+2022-02-21 16:54:59.131 INFO  94   ScreenedNodeFileProps - Node-local properties overridden on disk are:
   
-2022-02-18 23:52:39.346 INFO  171  RecordStreamManager - Finish initializing RecordStreamManager with: enableRecordStreaming: true, recordStreamDir: /opt/hgcapp/recordStreams/record0.0.3, recordsLogPeriod: 2 secs, recordStreamQueueCapacity: 5000, initialHash: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-2022-02-18 23:52:39.821 INFO  53   RecordCacheFactory - Constructing the node-local txn id cache with ttl=180s
-2022-02-18 23:52:42.073 INFO  70   StateInitializationFlow - Context updated with working state
-2022-02-18 23:52:42.082 INFO  71   StateInitializationFlow -   (@ 0) # NFTs               = 0
-2022-02-18 23:52:42.085 INFO  74   StateInitializationFlow -   (@ 1) # token associations = 0
-2022-02-18 23:52:42.089 INFO  77   StateInitializationFlow -   (@ 2) # topics             = 0
-2022-02-18 23:52:42.092 INFO  80   StateInitializationFlow -   (@ 3) # blobs              = 0
-2022-02-18 23:52:42.096 INFO  83   StateInitializationFlow -   (@ 4) # accounts/contracts = 0
-2022-02-18 23:52:42.099 INFO  86   StateInitializationFlow -   (@ 5) # tokens             = 0
-2022-02-18 23:52:42.103 INFO  89   StateInitializationFlow -   (@ 8) # scheduled txns     = 0
-2022-02-18 23:52:42.107 INFO  92   StateInitializationFlow -   (@ 11) # contract K/V pairs = 0
-2022-02-18 23:52:42.113 INFO  243  RecordStreamManager - RecordStreamManager::setInitialHash: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-2022-02-18 23:52:42.117 INFO  98   StateInitializationFlow - Record running hash initialized
-2022-02-18 23:52:42.134 INFO  102  StateInitializationFlow - Registered 5 file update interceptors
-2022-02-18 23:52:42.153 INFO  86   StoreInitializationFlow - Backing stores rebuilt
-2022-02-18 23:52:42.173 INFO  90   StoreInitializationFlow - Store internal views rebuilt
-2022-02-18 23:52:42.220 INFO  373  UniqueTokenViewsManager -  - Started rebuilding NFTs by type in ForkJoinPool.commonPool-worker-1
-2022-02-18 23:52:42.227 INFO  380  UniqueTokenViewsManager -  - Started rebuilding treasury NFTs by type in ForkJoinPool.commonPool-worker-2
-2022-02-18 23:52:42.229 INFO  387  UniqueTokenViewsManager -  - Started rebuilding non-treasury NFTs by owner in ForkJoinPool.commonPool-worker-3
-2022-02-18 23:52:42.245 INFO  376  UniqueTokenViewsManager -  - Finished rebuilding NFTs by type in ForkJoinPool.commonPool-worker-1
-2022-02-18 23:52:42.257 INFO  390  UniqueTokenViewsManager -  - Finished rebuilding non-treasury NFTs by owner in ForkJoinPool.commonPool-worker-3
-2022-02-18 23:52:42.254 INFO  383  UniqueTokenViewsManager -  - Finished rebuilding treasury NFTs in ForkJoinPool.commonPool-worker-2
-2022-02-18 23:52:42.276 INFO  93   StoreInitializationFlow - Unique token views rebuilt
-2022-02-18 23:52:42.283 INFO  74   AliasManager - Rebuild complete : No.of accounts with aliases 0 
-2022-02-18 23:52:42.294 INFO  96   StoreInitializationFlow - Account aliases map rebuilt
-2022-02-18 23:52:42.316 INFO  58   EntitiesInitializationFlow - Payer records reviewed
-2022-02-18 23:52:42.357 INFO  61   EntitiesInitializationFlow - Short-lived entities reviewed
-2022-02-18 23:52:42.361 INFO  64   EntitiesInitializationFlow - Signature impact history invalidated
-2022-02-18 23:52:42.365 INFO  73   EntitiesInitializationFlow - Blob store is ready, loading observable system files
-2022-02-18 23:52:42.371 INFO  116  NetworkCtxManager - Observable files not yet loaded, doing now.
-2022-02-18 23:52:42.489 INFO  333  HfsSystemFilesManager - Bootstrapping properties from 'data/config/application.properties':
+2022-02-21 16:54:59.488 INFO  171  RecordStreamManager - Finish initializing RecordStreamManager with: enableRecordStreaming: true, recordStreamDir: /opt/hgcapp/recordStreams/record0.0.3, recordsLogPeriod: 2 secs, recordStreamQueueCapacity: 5000, initialHash: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+2022-02-21 16:54:59.774 INFO  53   RecordCacheFactory - Constructing the node-local txn id cache with ttl=180s
+2022-02-21 16:55:00.822 INFO  70   StateInitializationFlow - Context updated with working state
+2022-02-21 16:55:00.828 INFO  71   StateInitializationFlow -   (@ 0) # NFTs               = 0
+2022-02-21 16:55:00.830 INFO  74   StateInitializationFlow -   (@ 1) # token associations = 0
+2022-02-21 16:55:00.832 INFO  77   StateInitializationFlow -   (@ 2) # topics             = 0
+2022-02-21 16:55:00.834 INFO  80   StateInitializationFlow -   (@ 3) # blobs              = 0
+2022-02-21 16:55:00.836 INFO  83   StateInitializationFlow -   (@ 4) # accounts/contracts = 0
+2022-02-21 16:55:00.837 INFO  86   StateInitializationFlow -   (@ 5) # tokens             = 0
+2022-02-21 16:55:00.839 INFO  89   StateInitializationFlow -   (@ 8) # scheduled txns     = 0
+2022-02-21 16:55:00.841 INFO  92   StateInitializationFlow -   (@ 11) # contract K/V pairs = 0
+2022-02-21 16:55:00.844 INFO  243  RecordStreamManager - RecordStreamManager::setInitialHash: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+2022-02-21 16:55:00.847 INFO  98   StateInitializationFlow - Record running hash initialized
+2022-02-21 16:55:00.849 INFO  102  StateInitializationFlow - Registered 5 file update interceptors
+2022-02-21 16:55:00.853 INFO  86   StoreInitializationFlow - Backing stores rebuilt
+2022-02-21 16:55:00.856 INFO  90   StoreInitializationFlow - Store internal views rebuilt
+2022-02-21 16:55:00.869 INFO  373  UniqueTokenViewsManager -  - Started rebuilding NFTs by type in ForkJoinPool.commonPool-worker-1
+2022-02-21 16:55:00.872 INFO  387  UniqueTokenViewsManager -  - Started rebuilding non-treasury NFTs by owner in ForkJoinPool.commonPool-worker-3
+2022-02-21 16:55:00.871 INFO  380  UniqueTokenViewsManager -  - Started rebuilding treasury NFTs by type in ForkJoinPool.commonPool-worker-2
+2022-02-21 16:55:00.876 INFO  390  UniqueTokenViewsManager -  - Finished rebuilding non-treasury NFTs by owner in ForkJoinPool.commonPool-worker-3
+2022-02-21 16:55:00.876 INFO  383  UniqueTokenViewsManager -  - Finished rebuilding treasury NFTs in ForkJoinPool.commonPool-worker-2
+2022-02-21 16:55:00.904 INFO  376  UniqueTokenViewsManager -  - Finished rebuilding NFTs by type in ForkJoinPool.commonPool-worker-1
+2022-02-21 16:55:00.909 INFO  93   StoreInitializationFlow - Unique token views rebuilt
+2022-02-21 16:55:00.914 INFO  74   AliasManager - Rebuild complete : No.of accounts with aliases 0 
+2022-02-21 16:55:00.916 INFO  96   StoreInitializationFlow - Account aliases map rebuilt
+2022-02-21 16:55:00.923 INFO  58   EntitiesInitializationFlow - Payer records reviewed
+2022-02-21 16:55:00.930 INFO  61   EntitiesInitializationFlow - Short-lived entities reviewed
+2022-02-21 16:55:00.932 INFO  64   EntitiesInitializationFlow - Signature impact history invalidated
+2022-02-21 16:55:00.933 INFO  73   EntitiesInitializationFlow - Blob store is ready, loading observable system files
+2022-02-21 16:55:00.935 INFO  116  NetworkCtxManager - Observable files not yet loaded, doing now.
+2022-02-21 16:55:00.967 INFO  333  HfsSystemFilesManager - Bootstrapping properties from 'data/config/application.properties':
   autorenew.isEnabled=false
-2022-02-18 23:52:42.988 INFO  59   StandardizedPropertySources - Reloading global dynamic properties from 1 candidates
-2022-02-18 23:52:43.064 INFO  127  ScreenedSysFileProps - Global/dynamic properties overridden in system file are:
+2022-02-21 16:55:01.212 INFO  59   StandardizedPropertySources - Reloading global dynamic properties from 1 candidates
+2022-02-21 16:55:01.232 INFO  127  ScreenedSysFileProps - Global/dynamic properties overridden in system file are:
   autorenew.isEnabled=false
-2022-02-18 23:52:43.152 INFO  224  DeterministicThrottling - Resolved frontend gas throttle -
+2022-02-21 16:55:01.265 INFO  224  DeterministicThrottling - Resolved frontend gas throttle -
   5000000 gas/sec (throttling ON)
-2022-02-18 23:52:43.164 INFO  224  DeterministicThrottling - Resolved consensus gas throttle -
+2022-02-21 16:55:01.272 INFO  224  DeterministicThrottling - Resolved consensus gas throttle -
   15000000 gas/sec (throttling ON)
-2022-02-18 23:52:43.221 INFO  333  HfsSystemFilesManager - Bootstrapping API permissions from 'data/config/api-permission.properties':
+2022-02-21 16:55:01.288 INFO  333  HfsSystemFilesManager - Bootstrapping API permissions from 'data/config/api-permission.properties':
   adjustAllowance=0-*
   appendContent=0-*
   approveAllowances=0-*
@@ -240,9 +240,9 @@ Reading crypto keys from the files here:   /opt/hgcapp/services-hedera/HapiApp2.
   updateContract=0-*
   updateFile=0-*
   updateTopic=0-*
-2022-02-18 23:52:43.349 WARN  68   HapiOpPermissions - Ignoring key 'adjustAllowance', which does not correspond to a known Hedera operation!
-2022-02-18 23:52:43.429 WARN  68   HapiOpPermissions - Ignoring key 'approveAllowances', which does not correspond to a known Hedera operation!
-2022-02-18 23:52:46.487 INFO  244  DeterministicThrottling - Resolved throttles (after splitting capacity 1 ways) - 
+2022-02-21 16:55:01.304 WARN  68   HapiOpPermissions - Ignoring key 'adjustAllowance', which does not correspond to a known Hedera operation!
+2022-02-21 16:55:01.320 WARN  68   HapiOpPermissions - Ignoring key 'approveAllowances', which does not correspond to a known Hedera operation!
+2022-02-21 16:55:02.452 INFO  244  DeterministicThrottling - Resolved throttles (after splitting capacity 1 ways) - 
   ConsensusCreateTopic: min{10000.00 tps (ThroughputLimits), 5.00 tps (CreationLimits)}
   ConsensusDeleteTopic: min{10000.00 tps (ThroughputLimits)}
   ConsensusGetTopicInfo: min{10000.00 tps (ThroughputLimits)}
@@ -295,7 +295,7 @@ Reading crypto keys from the files here:   /opt/hgcapp/services-hedera/HapiApp2.
   TokenUpdate: min{3000.00 tps (ThroughputLimits)}
   TransactionGetReceipt: min{1000000.00 tps (FreeQueryLimits)}
   TransactionGetRecord: min{10000.00 tps (ThroughputLimits)}
-2022-02-18 23:52:46.548 INFO  244  DeterministicThrottling - Resolved throttles (after splitting capacity 1 ways) - 
+2022-02-21 16:55:02.479 INFO  244  DeterministicThrottling - Resolved throttles (after splitting capacity 1 ways) - 
   ConsensusCreateTopic: min{10000.00 tps (ThroughputLimits), 5.00 tps (CreationLimits)}
   ConsensusDeleteTopic: min{10000.00 tps (ThroughputLimits)}
   ConsensusGetTopicInfo: min{10000.00 tps (ThroughputLimits)}
@@ -348,21 +348,21 @@ Reading crypto keys from the files here:   /opt/hgcapp/services-hedera/HapiApp2.
   TokenUpdate: min{3000.00 tps (ThroughputLimits)}
   TransactionGetReceipt: min{1000000.00 tps (FreeQueryLimits)}
   TransactionGetRecord: min{10000.00 tps (ThroughputLimits)}
-2022-02-18 23:52:46.567 INFO  232  TxnRateFeeMultiplierSource - The new cutoffs for congestion pricing are:
+2022-02-21 16:55:02.491 INFO  232  TxnRateFeeMultiplierSource - The new cutoffs for congestion pricing are:
   (ThroughputLimits) When logical TPS exceeds:
     2457000.00 TPS, multiplier is 10x
     2593500.00 TPS, multiplier is 25x
     2702700.00 TPS, multiplier is 100x
-2022-02-18 23:52:46.571 INFO  118  NetworkCtxManager - Loaded observable files
-2022-02-18 23:52:46.576 WARN  140  MerkleNetworkContext - There are 5 active throttles, but 0 usage snapshots from saved state. Not performing a reset!
-2022-02-18 23:52:46.581 INFO  232  TxnRateFeeMultiplierSource - The new cutoffs for congestion pricing are:
+2022-02-21 16:55:02.495 INFO  118  NetworkCtxManager - Loaded observable files
+2022-02-21 16:55:02.499 WARN  140  MerkleNetworkContext - There are 5 active throttles, but 0 usage snapshots from saved state. Not performing a reset!
+2022-02-21 16:55:02.503 INFO  232  TxnRateFeeMultiplierSource - The new cutoffs for congestion pricing are:
   (ThroughputLimits) When logical TPS exceeds:
     2457000.00 TPS, multiplier is 10x
     2593500.00 TPS, multiplier is 25x
     2702700.00 TPS, multiplier is 100x
-2022-02-18 23:52:46.586 INFO  75   EntitiesInitializationFlow - Finished loading observable system files
-2022-02-18 23:52:47.172 INFO  418  ServicesState - Created prefetch processor
-2022-02-18 23:52:47.179 INFO  57   HashLogger - [SwirldState Hashes]
+2022-02-21 16:55:02.513 INFO  75   EntitiesInitializationFlow - Finished loading observable system files
+2022-02-21 16:55:02.804 INFO  418  ServicesState - Created prefetch processor
+2022-02-21 16:55:02.812 INFO  57   HashLogger - [SwirldState Hashes]
 Overall                :: null
 Accounts               :: null
 Storage                :: <N/A>
@@ -377,7 +377,7 @@ RecordsRunningHashLeaf :: null
   ↪ Running hash       :: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 UniqueTokens           :: null
 ContractStorage        :: <N/A>
-2022-02-18 23:52:47.280 INFO  302  ServicesState - The network context (state version 15) is,
+2022-02-21 16:55:02.877 INFO  302  ServicesState - The network context (state version 15) is,
   Consensus time of last handled transaction :: <N/A>
   Pending maintenance                        :: <NONE>
     w/ NMT upgrade prepped                   :: <NONE>
@@ -389,27 +389,25 @@ ContractStorage        :: <N/A>
   Entities touched last consensus second     :: 0
   Throttle usage snapshots are               :: <N/A>
   Congestion level start times are           :: <N/A>
-2022-02-18 23:52:47.294 INFO  421  ServicesState -   --> Context initialized accordingly on Services node 0
-2022-02-18 23:52:47.408 INFO  204  ServicesMain - Using context to initialize HederaNode#0...
-2022-02-18 23:52:47.775 INFO  132  ServicesMain - System files rationalized
-2022-02-18 23:52:48.446 INFO  108  BackedSystemAccountsCreator - Ledger float is 5000000000000000000 tinyBars in 201 accounts.
-2022-02-18 23:52:48.450 INFO  135  ServicesMain - System accounts initialized
-2022-02-18 23:52:48.502 INFO  138  ServicesMain - Ledger state ok
-2022-02-18 23:52:48.629 INFO  141  ServicesMain - Platform is configured w/ callbacks and stats registered
-2022-02-18 23:52:48.646 INFO  144  ServicesMain - Accounts exported (if requested)
-2022-02-18 23:52:48.662 INFO  53   ExecutionTimeTracker - Not tracking execution times (stats.executionTimesToTrack=0)
-2022-02-18 23:52:48.954 INFO  67   GrpcStarter - TLS is turned on by default on node 0
-2022-02-18 23:52:48.962 INFO  68   GrpcStarter - Active profile: PROD
-2022-02-18 23:52:48.974 INFO  93   GrpcStarter - Starting Netty on port 50211...
-2022-02-18 23:52:48.979 INFO  70   ConfigDrivenNettyFactory - Configuring a Netty server on port 50211 (TLS OFF) for PROD environment
-2022-02-18 23:52:51.404 INFO  93   GrpcStarter - ...done starting Netty on port 50211.
-2022-02-18 23:52:51.410 INFO  93   GrpcStarter - Starting Netty with TLS support on port 50212...
-2022-02-18 23:52:51.417 INFO  70   ConfigDrivenNettyFactory - Configuring a Netty server on port 50212 (TLS ON) for PROD environment
-2022-02-18 23:52:51.433 WARN  104  ConfigDrivenNettyFactory - Specified TLS cert 'hedera.crt' doesn't exist!
-2022-02-18 23:52:51.451 WARN  80   NettyGrpcServerManager - Could not start Netty with TLS support on port 50212. (hedera.crt).
-2022-02-18 23:52:51.455 INFO  93   GrpcStarter - Could not start Netty with TLS support on port 50212.
-2022-02-18 23:52:51.460 INFO  147  ServicesMain - Netty started (if appropriate)
-This computer has an internal IP address:  192.168.16.3
-2022-02-18 23:52:52.599 INFO  75   ServicesMain - Now current platform status = ACTIVE in HederaNode#0.
-2022-02-18 23:52:52.630 INFO  229  RecordStreamManager - RecordStream inFreeze is set to be false 
+2022-02-21 16:55:02.881 INFO  421  ServicesState -   --> Context initialized accordingly on Services node 0
+2022-02-21 16:55:02.967 INFO  204  ServicesMain - Using context to initialize HederaNode#0...
+2022-02-21 16:55:03.279 INFO  132  ServicesMain - System files rationalized
+2022-02-21 16:55:03.688 INFO  108  BackedSystemAccountsCreator - Ledger float is 5000000000000000000 tinyBars in 201 accounts.
+2022-02-21 16:55:03.707 INFO  135  ServicesMain - System accounts initialized
+2022-02-21 16:55:03.755 INFO  138  ServicesMain - Ledger state ok
+2022-02-21 16:55:03.886 INFO  141  ServicesMain - Platform is configured w/ callbacks and stats registered
+2022-02-21 16:55:03.894 INFO  144  ServicesMain - Accounts exported (if requested)
+2022-02-21 16:55:03.900 INFO  53   ExecutionTimeTracker - Not tracking execution times (stats.executionTimesToTrack=0)
+2022-02-21 16:55:04.154 INFO  67   GrpcStarter - TLS is turned on by default on node 0
+2022-02-21 16:55:04.167 INFO  68   GrpcStarter - Active profile: PROD
+2022-02-21 16:55:04.181 INFO  93   GrpcStarter - Starting Netty on port 50211...
+2022-02-21 16:55:04.198 INFO  70   ConfigDrivenNettyFactory - Configuring a Netty server on port 50211 (TLS OFF) for PROD environment
+2022-02-21 16:55:05.061 INFO  93   GrpcStarter - ...done starting Netty on port 50211.
+2022-02-21 16:55:05.068 INFO  93   GrpcStarter - Starting Netty with TLS support on port 50212...
+2022-02-21 16:55:05.069 INFO  70   ConfigDrivenNettyFactory - Configuring a Netty server on port 50212 (TLS ON) for PROD environment
+2022-02-21 16:55:06.146 INFO  93   GrpcStarter - ...done starting Netty with TLS support on port 50212.
+2022-02-21 16:55:06.149 INFO  147  ServicesMain - Netty started (if appropriate)
+This computer has an internal IP address:  192.168.96.3
+2022-02-21 16:55:06.548 INFO  75   ServicesMain - Now current platform status = ACTIVE in HederaNode#0.
+2022-02-21 16:55:06.550 INFO  229  RecordStreamManager - RecordStream inFreeze is set to be false 
 Storage Path: /opt/hgcapp/services-hedera/HapiApp2.0/data/saved/com.hedera.services.ServicesMain/0/hedera/1
