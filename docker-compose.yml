@@ -33,6 +33,7 @@ services:
       - type: volume
         source: network-node-postgres
         target: /var/lib/postgresql/data
+
   network-node:
     image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
     container_name: network-node
@@ -54,6 +55,8 @@ services:
         condition: service_started
       network-node-postgres:
         condition: service_healthy
+      record-streams-uploader:
+        condition: service_started
     networks:
       - network-node-bridge
     ports:
@@ -75,6 +78,44 @@ services:
       - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
       - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
       - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
+
+  record-streams-uploader:
+    image: gcr.io/hedera-registry/uploader-mirror:0.4.0
+    container_name: record-streams-uploader
+    user: root
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - mirror-node-bridge
+    environment:
+      DEBUG: "true"
+      REAPER_ENABLE: "true"
+      REAPER_MIN_KEEP: "20"
+      REAPER_INTERVAL: "5"
+      S3_ENABLE: "true"
+      GCS_ENABLE: "false"
+      SIG_REQUIRE: "true"
+      SIG_PRIORITIZE: "true"
+      SIG_EXTENSION: "rcd_sig"
+      STREAM_EXTENSION: "rcd"
+      BUCKET_NAME: "hedera-streams"
+      BUCKET_PATH: "recordStreams/node0"
+      S3_ACCESS_KEY: "minioadmin"
+      S3_SECRET_KEY: "minioadmin"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/records"
+    command:
+      - /usr/bin/env
+      - python3.7
+      - /usr/local/bin/mirror.py
+      - --linux
+      - --watch-directory
+      - /records
+      - --s3-endpoint
+      - http://minio:9000
+
   minio:
     image: minio/minio
     container_name: minio
@@ -90,23 +131,11 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio-data:/data
+      - "${MINIO_DATA_PATH}:/data"
 
-  createbuckets:
-    image: minio/mc
-    networks:
-      - mirror-node-bridge
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      until (/usr/bin/mc config host add minio-data http://minio:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
-      /usr/bin/mc mb minio-data/hedera-streams;
-      /usr/bin/mc policy set download minio-data/hedera-streams;
-      exit 0;
-      "
   db:
     image: "${MIRROR_POSTGRES_IMAGE}"
+    container_name: mirror-node-db
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
@@ -131,6 +160,7 @@ services:
 
   grpc:
     image: gcr.io/mirrornode/hedera-mirror-grpc:0.49.0
+    container_name: mirror-node-grpc
     restart: unless-stopped
     depends_on:
       network-node:
@@ -152,6 +182,7 @@ services:
 
   importer:
     image: gcr.io/mirrornode/hedera-mirror-importer:0.49.0
+    container_name: mirror-node-importer
     restart: unless-stopped
     depends_on:
       network-node:
@@ -193,6 +224,7 @@ services:
 
   redis:
     image: redis:6.2.6-alpine
+    container_name: mirror-node-redis
     networks:
       - mirror-node-bridge
     ports:
@@ -204,6 +236,7 @@ services:
 
   rest:
     image: gcr.io/mirrornode/hedera-mirror-rest:0.49.0
+    container_name: mirror-node-rest
     depends_on:
       network-node:
         condition: service_started
@@ -222,6 +255,7 @@ services:
 
   rosetta:
     image: gcr.io/mirrornode/hedera-mirror-rosetta:0.49.0
+    container_name: mirror-node-rosetta
     depends_on:
       network-node:
         condition: service_started
@@ -242,6 +276,7 @@ services:
 
   web3:
     image: gcr.io/mirrornode/hedera-mirror-web3:0.49.0
+    container_name: mirror-node-web3
     depends_on:
       network-node:
         condition: service_started
@@ -261,77 +296,41 @@ services:
     volumes:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-web3/application.yml
 
-  network-node-record-streams-uploader:
-    container_name: network-node-record-streams-uploader
-    image: gcr.io/hedera-registry/uploader-mirror:0.4.0
-    user: root
-    restart: unless-stopped
-    depends_on:
-      - createbuckets
-    networks:
-      - mirror-node-bridge
-    environment:
-      DEBUG: "true"
-      REAPER_ENABLE: "true"
-      REAPER_MIN_KEEP: "20"
-      REAPER_INTERVAL: "5"
-      S3_ENABLE: "true"
-      GCS_ENABLE: "false"
-      SIG_REQUIRE: "true"
-      SIG_PRIORITIZE: "true"
-      SIG_EXTENSION: "rcd_sig"
-      STREAM_EXTENSION: "rcd"
-      BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "recordStreams/node0"
-      S3_ACCESS_KEY: "minioadmin"
-      S3_SECRET_KEY: "minioadmin"
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/records"
-    command:
-      - /usr/bin/env
-      - python3.7
-      - /usr/local/bin/mirror.py
-      - --linux
-      - --watch-directory
-      - /records
-      - --s3-endpoint
-      - http://minio:9000
-
-  network-node-event-streams-uploader:
-    container_name: network-node-event-streams-uploader
-    image: gcr.io/hedera-registry/uploader-mirror:0.4.0
-    user: root
-    restart: unless-stopped
-    depends_on:
-      - createbuckets
-    networks:
-      - mirror-node-bridge
-    environment:
-      DEBUG: "true"
-      REAPER_ENABLE: "true"
-      REAPER_MIN_KEEP: "20"
-      REAPER_INTERVAL: "5"
-      S3_ENABLE: "true"
-      GCS_ENABLE: "false"
-      SIG_REQUIRE: "true"
-      SIG_PRIORITIZE: "true"
-      SIG_EXTENSION: "evts_sig"
-      STREAM_EXTENSION: "evts"
-      BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "eventsStreams/node0"
-      S3_ACCESS_KEY: "minioadmin"
-      S3_SECRET_KEY: "minioadmin"
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/eventsStreams:/events"
-    command:
-      - /usr/bin/env
-      - python3.7
-      - /usr/local/bin/mirror.py
-      - --linux
-      - --watch-directory
-      - /events
-      - --s3-endpoint
-      - http://minio:9000
+#  network-node-event-streams-uploader:
+#    container_name: network-node-event-streams-uploader
+#    image: gcr.io/hedera-registry/uploader-mirror:0.4.0
+#    user: root
+#    restart: unless-stopped
+#    depends_on:
+#      - createbuckets
+#    networks:
+#      - mirror-node-bridge
+#    environment:
+#      DEBUG: "true"
+#      REAPER_ENABLE: "true"
+#      REAPER_MIN_KEEP: "20"
+#      REAPER_INTERVAL: "5"
+#      S3_ENABLE: "true"
+#      GCS_ENABLE: "false"
+#      SIG_REQUIRE: "true"
+#      SIG_PRIORITIZE: "true"
+#      SIG_EXTENSION: "evts_sig"
+#      STREAM_EXTENSION: "evts"
+#      BUCKET_NAME: "hedera-streams"
+#      BUCKET_PATH: "eventsStreams/node0"
+#      S3_ACCESS_KEY: "minioadmin"
+#      S3_SECRET_KEY: "minioadmin"
+#    volumes:
+#      - "${NETWORK_NODE_LOGS_ROOT_PATH}/eventsStreams:/events"
+#    command:
+#      - /usr/bin/env
+#      - python3.7
+#      - /usr/local/bin/mirror.py
+#      - --linux
+#      - --watch-directory
+#      - /events
+#      - --s3-endpoint
+#      - http://minio:9000
 
 #  network-node-account-balances-uploader:
 #    container_name: network-node-account-balances-uploader
@@ -376,6 +375,7 @@ networks:
     mirror-node-bridge:
       name: mirror-node-bridge
       driver: bridge
+
 volumes:
     network-node-postgres:
       name: network-node-postgres
