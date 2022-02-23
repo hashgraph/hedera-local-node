@@ -241,12 +241,9 @@ services:
         condition: service_started
       db:
         condition: service_started
-      redis:
-        condition: service_started
     environment:
       HEDERA_MIRROR_GRPC_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-grpc/
-      SPRING_REDIS_HOST: redis
     networks:
       - mirror-node-bridge
     ports:
@@ -263,29 +260,14 @@ services:
         condition: service_started
       db:
         condition: service_started
-      redis:
-        condition: service_started
     environment:
       HEDERA_MIRROR_IMPORTER_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-importer/
-      SPRING_REDIS_HOST: redis
     networks:
       - mirror-node-bridge
     volumes:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
       - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
-
-  redis:
-    image: redis:6.2.6-alpine
-    container_name: mirror-node-redis
-    networks:
-      - mirror-node-bridge
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    stop_grace_period: 2m
-    stop_signal: SIGTERM
-    tty: true
 
   rest:
     image: gcr.io/mirrornode/hedera-mirror-rest:0.49.0
@@ -294,8 +276,6 @@ services:
       network-node:
         condition: service_started
       db:
-        condition: service_started
-      redis:
         condition: service_started
     environment:
       HEDERA_MIRROR_REST_DB_HOST: db
@@ -313,8 +293,6 @@ services:
       network-node:
         condition: service_started
       db:
-        condition: service_started
-      redis:
         condition: service_started
     networks:
       - mirror-node-bridge
