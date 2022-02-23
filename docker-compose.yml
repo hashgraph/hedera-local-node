@@ -105,14 +105,14 @@ services:
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/records"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3:/records"
     command:
       - /usr/bin/env
       - python3.7
       - /usr/local/bin/mirror.py
       - --linux
       - --watch-directory
-      - /records/record0.0.3
+      - /records
       - --s3-endpoint
       - http://minio:9000
       - --debug
@@ -142,14 +142,14 @@ services:
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/eventsStreams:/events"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/eventsStreams/events_0.0.3:/events"
     command:
       - /usr/bin/env
       - python3.7
       - /usr/local/bin/mirror.py
       - --linux
       - --watch-directory
-      - /events/events_0.0.3
+      - /events
       - --s3-endpoint
       - http://minio:9000
       - --debug
@@ -179,14 +179,14 @@ services:
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/balances"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.3:/balances"
     command:
       - /usr/bin/env
       - python3.7
       - /usr/local/bin/mirror.py
       - --linux
       - --watch-directory
-      - /balances/balance0.0.3
+      - /balances
       - --s3-endpoint
       - http://minio:9000
       - --debug
