@@ -72,7 +72,7 @@ services:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
       - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
       - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
-      - "network-node-stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
       - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
       - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
       - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
@@ -275,27 +275,6 @@ services:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
       - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
-#  monitor:
-#    image: gcr.io/mirrornode/hedera-mirror-monitor:main
-#    restart: unless-stopped
-#    depends_on:
-#      network-node:
-#        condition: service_started
-#      db:
-#        condition: service_started
-#      redis:
-#        condition: service_started
-#      grpc:
-#        condition: service_started
-#      rest:
-#        condition: service_started
-#    environment:
-#      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-monitor/
-#    networks:
-#      - mirror-node-bridge
-#    volumes:
-#      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml
-
   redis:
     image: redis:6.2.6-alpine
     container_name: mirror-node-redis
@@ -326,27 +305,6 @@ services:
       - "5551:5551"
     restart: unless-stopped
     tty: true
-
-  rosetta:
-    image: gcr.io/mirrornode/hedera-mirror-rosetta:0.49.0
-    container_name: mirror-node-rosetta
-    depends_on:
-      network-node:
-        condition: service_started
-      db:
-        condition: service_started
-      redis:
-        condition: service_started
-    environment:
-      HEDERA_MIRROR_ROSETTA_DB_HOST: db
-    networks:
-      - mirror-node-bridge
-    ports:
-      - "5700:5700"
-    restart: unless-stopped
-    tty: true
-    volumes:
-      - ./compose-network/mirror-node/application.yml:/src/hedera-mirror-rosetta/application.yml
 
   web3:
     image: gcr.io/mirrornode/hedera-mirror-web3:0.49.0
