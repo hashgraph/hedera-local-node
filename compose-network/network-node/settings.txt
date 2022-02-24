@@ -8,7 +8,7 @@ dbConnection.host,       					   network-node-postgres
 doUpnp,                                        false
 enableEventStreaming,                          true
 eventsLogDir,                                  /opt/hgcapp/eventsStreams
-eventsLogPeriod,                               5
+eventsLogPeriod,                               60
 maxEventQueueForCons,                          1000
 maxOutgoingSyncs,                              8
 numConnections,                                1000
