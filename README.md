@@ -2,7 +2,7 @@
 
 ### Setup
 
-1. Clone this repository and checkout `test-local-node` branch.
+1. Clone this repository.
 2. Run `docker-compose up -d` from the console.
 3. After the run do `docker-compose down` to stop and remove the containers.
 
