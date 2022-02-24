@@ -59,7 +59,7 @@ services:
         condition: service_started
     networks:
       network-node-bridge:
-        - ipv4_address: 172.27.0.3
+        ipv4_address: 172.27.0.3
     ports:
       - "50211:50211"
       - "50212:50212"
