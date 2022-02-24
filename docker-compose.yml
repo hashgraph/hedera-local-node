@@ -58,7 +58,8 @@ services:
       record-streams-uploader:
         condition: service_started
     networks:
-      - network-node-bridge
+      network-node-bridge:
+        - ipv4_address: 172.27.0.3
     ports:
       - "50211:50211"
       - "50212:50212"
@@ -278,8 +279,6 @@ networks:
           - subnet: 172.27.0.0/16
             ip_range: 172.27.0.0/24
             gateway: 172.27.0.254
-            aux_addresses:
-              network-node: 172.27.0.3
     mirror-node-bridge:
       name: mirror-node-bridge
       driver: bridge

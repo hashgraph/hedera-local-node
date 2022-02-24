@@ -3,6 +3,7 @@ network-logs/node/logs/*.log
 network-logs/node/*.log
 network-logs/node/eventsStreams/**
 network-logs/node/recordStreams/**
+network-logs/node/accountBalances/**
 
 
 ### JetBrains template
