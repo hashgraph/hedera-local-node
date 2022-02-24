@@ -37,7 +37,6 @@ services:
   network-node:
     image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
     container_name: network-node
-    user: "${NETWORK_NODE_UID}"
     mem_swappiness: 0
     mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
     memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
@@ -115,7 +114,8 @@ services:
       - /records
       - --s3-endpoint
       - http://minio:9000
-      - --debug
+      - --
+
   account-balances-uploader:
     image: gcr.io/hedera-registry/uploader-mirror:0.4.0
     container_name: account-balances-uploader
@@ -153,6 +153,7 @@ services:
       - --s3-endpoint
       - http://minio:9000
       - --debug
+
   minio:
     image: minio/minio
     container_name: minio
