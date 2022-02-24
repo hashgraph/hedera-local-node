@@ -1,15 +1,6 @@
-# How to run a a mirror node with a local services code
+# How to run a LocalNode with a mirror node and consensus node
 
 ### Setup
 
-Clone this repository and initialize submodules:
-
-`git submodule update --init --recursive`
-
-### Start hedera-services
-
-`docker-compose -f services/docker-compose.yml -f docker-compose.override-services.yml up -d`
-
-### Start the mirrornode
-
-`docker-compose -f mirror/docker-compose.yml -f docker-compose.override-mirror.yml up -d`
+1. Clone this repository and checkout `test-local-node` branch
+2. Run `docker-compose up -d` from the console
