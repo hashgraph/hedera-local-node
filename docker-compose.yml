@@ -200,6 +200,9 @@ services:
     image: gcr.io/mirrornode/hedera-mirror-grpc:0.49.0
     container_name: mirror-node-grpc
     restart: unless-stopped
+    mem_swappiness: 0
+    mem_limit: 512m
+    memswap_limit: 512m
     depends_on:
       network-node:
         condition: service_started
@@ -219,6 +222,9 @@ services:
     image: gcr.io/mirrornode/hedera-mirror-importer:0.49.0
     container_name: mirror-node-importer
     restart: unless-stopped
+    mem_swappiness: 0
+    mem_limit: 512m
+    memswap_limit: 512m
     depends_on:
       network-node:
         condition: service_started
