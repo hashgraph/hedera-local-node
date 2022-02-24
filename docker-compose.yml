@@ -100,7 +100,7 @@ services:
       SIG_EXTENSION: "rcd_sig"
       STREAM_EXTENSION: "rcd"
       BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "recordStreams/record0.0.3"
+      BUCKET_PATH: "recordstreams/record0.0.3"
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
     volumes:
