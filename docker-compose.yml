@@ -114,7 +114,7 @@ services:
       - /records
       - --s3-endpoint
       - http://minio:9000
-      - --
+      - --debug
 
   account-balances-uploader:
     image: gcr.io/hedera-registry/uploader-mirror:0.4.0
