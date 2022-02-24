@@ -272,6 +272,14 @@ networks:
     network-node-bridge:
       name: network-node-bridge
       driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.27.0.0/16
+            ip_range: 172.27.0.0/24
+            gateway: 172.27.0.254
+            aux_addresses:
+              network-node: 172.27.0.3
     mirror-node-bridge:
       name: mirror-node-bridge
       driver: bridge
