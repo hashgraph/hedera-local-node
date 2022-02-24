@@ -223,8 +223,8 @@ services:
     container_name: mirror-node-importer
     restart: unless-stopped
     mem_swappiness: 0
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 768m
+    memswap_limit: 768m
     depends_on:
       network-node:
         condition: service_started
