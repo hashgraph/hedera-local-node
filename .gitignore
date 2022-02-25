@@ -1,6 +1,5 @@
 ## Temporary node files
-network-logs/node/logs/*.log
-network-logs/node/*.log
+*.log
 network-logs/node/eventsStreams/**
 network-logs/node/recordStreams/**
 network-logs/node/accountBalances/**

@@ -1,4 +1,4 @@
-# How to run a LocalNode with a mirror node and consensus node
+# How to run a local node with a mirror node and consensus node
 
 ### Setup
 

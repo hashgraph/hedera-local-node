@@ -9,18 +9,6 @@ hedera:
           entity:
             redis:
               enabled: false
-      db:
-        host: 127.0.0.1
-        loadBalance: true
-        name: mirror_node
-        owner: ${hedera.mirror.importer.db.username}
-        ownerPassword: ${hedera.mirror.importer.db.password}
-        password: mirror_node_pass
-        port: 5432
-        restPassword: mirror_api_pass
-        restUsername: mirror_api
-        schema: public
-        username: mirror_node
       downloader:
         accessKey: minioadmin
         cloudProvider: "S3"

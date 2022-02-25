@@ -193,8 +193,6 @@ services:
     tty: true
     volumes:
       - ./compose-network/mirror-node/init.sh:/docker-entrypoint-initdb.d/init.sh
-      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
-      - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
   grpc:
     image: gcr.io/mirrornode/hedera-mirror-grpc:0.49.0
@@ -226,7 +224,7 @@ services:
     mem_limit: 768m
     memswap_limit: 768m
     depends_on:
-      network-node:
+      minio:
         condition: service_started
       db:
         condition: service_started
@@ -246,7 +244,7 @@ services:
     mem_limit: 512m
     memswap_limit: 512m
     depends_on:
-      network-node:
+      importer:
         condition: service_started
       db:
         condition: service_started
@@ -266,7 +264,7 @@ services:
     mem_limit: 512m
     memswap_limit: 512m
     depends_on:
-      network-node:
+      importer:
         condition: service_started
       db:
         condition: service_started
@@ -274,13 +272,10 @@ services:
       - mirror-node-bridge
     environment:
       HEDERA_MIRROR_WEB3_DB_HOST: db
-      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-web3/
     ports:
       - "8545:8545"
     restart: unless-stopped
     tty: true
-    volumes:
-      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-web3/application.yml
 
 networks:
     network-node-bridge:
