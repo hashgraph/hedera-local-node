@@ -150,4 +150,7 @@ Temporary Items
 ### GPG template
 secring.*
 
+### MinIO server logs
+network-logs/minio-server/data/**
+
 
