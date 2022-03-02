@@ -1,9 +1,6 @@
 ## Temporary node files
 *.log
-network-logs/node/eventsStreams/**
-network-logs/node/recordStreams/**
-network-logs/node/accountBalances/**
-
+network-logs/**
 
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
