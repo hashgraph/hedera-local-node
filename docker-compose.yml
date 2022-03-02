@@ -87,7 +87,7 @@ services:
       minio:
         condition: service_started
     networks:
-      - mirror-node-bridge
+      - cloud-storage
     environment:
       DEBUG: "true"
       REAPER_ENABLE: "true"
@@ -125,7 +125,7 @@ services:
       minio:
         condition: service_started
     networks:
-      - mirror-node-bridge
+      - cloud-storage
     environment:
       DEBUG: "true"
       REAPER_ENABLE: "true"
@@ -164,7 +164,7 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
     networks:
-      - mirror-node-bridge
+      - cloud-storage
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -184,7 +184,7 @@ services:
       REST_PASSWORD: mirror_api_pass
       ROSETTA_PASSWORD: mirror_rosetta_pass
     networks:
-      - mirror-node-bridge
+      - mirror-node
     expose:
       - "5432"
     restart: unless-stopped
@@ -193,6 +193,9 @@ services:
     tty: true
     volumes:
       - ./compose-network/mirror-node/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - type: volume
+        source: mirror-node-postgres
+        target: /var/lib/postgresql/data
 
   grpc:
     image: gcr.io/mirrornode/hedera-mirror-grpc:0.49.0
@@ -210,7 +213,7 @@ services:
       HEDERA_MIRROR_GRPC_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-grpc/
     networks:
-      - mirror-node-bridge
+      - mirror-node
     ports:
       - "5600:5600"
     volumes:
@@ -232,7 +235,8 @@ services:
       HEDERA_MIRROR_IMPORTER_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-importer/
     networks:
-      - mirror-node-bridge
+      - cloud-storage
+      - mirror-node
     volumes:
       - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
       - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
@@ -251,7 +255,7 @@ services:
     environment:
       HEDERA_MIRROR_REST_DB_HOST: db
     networks:
-      - mirror-node-bridge
+      - mirror-node
     ports:
       - "5551:5551"
     restart: unless-stopped
@@ -269,7 +273,7 @@ services:
       db:
         condition: service_started
     networks:
-      - mirror-node-bridge
+      - mirror-node
     environment:
       HEDERA_MIRROR_WEB3_DB_HOST: db
     ports:
@@ -287,13 +291,18 @@ networks:
           - subnet: 172.27.0.0/16
             ip_range: 172.27.0.0/24
             gateway: 172.27.0.254
-    mirror-node-bridge:
-      name: mirror-node-bridge
+    mirror-node:
+      name: mirror-node
+      driver: bridge
+    cloud-storage:
+      name: cloud-storage
       driver: bridge
 
 volumes:
     network-node-postgres:
       name: network-node-postgres
+    mirror-node-postgres:
+      name: mirror-node-postgres
     network-node-event-streams:
       name: network-node-event-streams
     network-node-record-streams:
