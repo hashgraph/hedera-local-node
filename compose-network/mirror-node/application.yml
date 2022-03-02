@@ -1,6 +1,14 @@
 hedera:
   mirror:
+    grpc:
+      listener:
+        type: SHARED_POLL
     importer:
+      parser:
+        record:
+          entity:
+            redis:
+              enabled: false
       downloader:
         accessKey: minioadmin
         cloudProvider: "S3"
