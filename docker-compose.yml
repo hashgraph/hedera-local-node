@@ -37,6 +37,7 @@ services:
   network-node:
     image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
     container_name: network-node
+    user: root
     mem_swappiness: 0
     mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
     memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
@@ -168,7 +169,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - "${MINIO_DATA_PATH}:/data"
+      - "minio-data:/data"
 
   db:
     image: "${MIRROR_POSTGRES_IMAGE}"
