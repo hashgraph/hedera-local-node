@@ -66,8 +66,6 @@ services:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
       - "${APPLICATION_ROOT_PATH}/data/config:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stdout.log:/opt/hgcapp/services-hedera/HapiApp2.0/stdout.log"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/gc.log:/opt/hgcapp/services-hedera/HapiApp2.0/gc.log"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
       - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
       - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
@@ -157,7 +155,8 @@ services:
   minio:
     image: minio/minio
     container_name: minio
-    command: server /data --console-address ":9001"
+    entrypoint: sh
+    command: -c 'mkdir -p /data/hedera-streams && minio server /data --console-address ":9001"'
     environment:
       MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
