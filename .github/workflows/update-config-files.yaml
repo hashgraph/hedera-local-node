@@ -104,7 +104,7 @@ jobs:
             
             Automated Update of the Hedera Node Configuration Files from the official `${{ env.REMOTE_REPO_OWNER }}/${{ env.REMOTE_REPO_NAME }}` repository.
             
-            #### Update Details
+            ### Update Details
             
             **Detection Date/Time:** `${{ steps.params.outputs.update-time }}`
             **Detection Branch:** `${{ steps.params.outputs.branch-name }}`
