@@ -1,6 +1,8 @@
 name: Update Config Files
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
 
 defaults:
   run:
@@ -8,7 +10,6 @@ defaults:
 
 permissions:
   pull-requests: write
-  issues: write
   contents: write
 
 env:
@@ -18,10 +19,12 @@ env:
   REMOTE_CONFIG_PATH: master/hedera-node/configuration
   REMOTE_CONFIG_PROFILE: previewnet
   REPO_CONFIG_PATH: compose-network/network-node/data/config
+  PR_REVIEWERS: "beeradb,Neeharika-Sompalli,nathanklick"
+  PR_ASSIGNEES: "swirlds-automation"
 
 jobs:
-  update-config:
-    name: Update Configuration Files
+  hedera-node-config:
+    name: Hedera Node Configuration
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Code
@@ -108,3 +111,5 @@ jobs:
 
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ steps.params.outputs.branch-name }}
+          assignees: ${{ env.PR_ASSIGNEES }}
+          reviewers: ${{ env.PR_REVIEWERS }}
