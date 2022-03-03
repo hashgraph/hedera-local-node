@@ -1,0 +1,115 @@
+name: Update Config Files
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  pull-requests: write
+  contents: write
+
+env:
+  REMOTE_RAW_URL_BASE: https://raw.githubusercontent.com
+  REMOTE_REPO_OWNER: hashgraph
+  REMOTE_REPO_NAME: hedera-services
+  REMOTE_CONFIG_PATH: master/hedera-node/configuration
+  REMOTE_CONFIG_PROFILE: previewnet
+  REPO_CONFIG_PATH: compose-network/network-node/data/config
+  PR_REVIEWERS: "beeradb,Neeharika-Sompalli,nathanklick,tannerjfco,steven-sheehy"
+  PR_ASSIGNEES: "swirlds-automation"
+
+jobs:
+  hedera-node-config:
+    name: Hedera Node Configuration
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Initialize Job Parameters
+        id: params
+        run: |
+          EPOCH="$(date -u +%s)"
+          echo "::set-output name=config-url::${REMOTE_RAW_URL_BASE}/${REMOTE_REPO_OWNER}/${REMOTE_REPO_NAME}/${REMOTE_CONFIG_PATH}/${REMOTE_CONFIG_PROFILE}"
+          echo "::set-output name=staging-folder::$(mktemp -dt job-staging.XXXXXXX)"
+          echo "::set-output name=branch-name::update-config-$(date -u -d @${EPOCH} +%Y%m%d-%H%M%S)"
+          echo "::set-output name=update-time::$(date -u -d @${EPOCH})"
+
+      - name: Download Configuration Files
+        run: |
+          FILES=("bootstrap.properties" "application.properties" "api-permission.properties")
+          STAGING_PATH="${{ steps.params.outputs.staging-folder }}"
+          
+          for f in "${FILES[@]}"; do
+            echo "::group::Retrieving File: ${f}"
+            curl -L -o "${STAGING_PATH}/${f}" "${{ steps.params.outputs.config-url }}/${f}"
+          
+            if [[ ! -f "${STAGING_PATH}/${f}" ]]; then
+              echo "::error file=${f}::File Not Found"
+            fi
+          
+            FILE_LEN="$(stat -L --format='%s' "${STAGING_PATH}/${f}")"
+            if [[ "${FILE_LEN}" -le 0 ]]; then
+              echo "::error file=${f},line=1,col=1,endColumn=1::Zero length file found, but file must have content."
+              exit 1
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Check Files for Changes
+        id: changes
+        run: |
+          FILES=("bootstrap.properties" "application.properties" "api-permission.properties")
+          STAGING_PATH="${{ steps.params.outputs.staging-folder }}"
+          REPO_PATH="${{ github.workspace }}/${REPO_CONFIG_PATH}"
+          
+          CHANGES_FOUND="false"
+          
+          for f in "${FILES[@]}"; do
+            echo "::group::Comparing File: ${f}"
+            
+            if [[ ! -f "${REPO_PATH}/${f}" && -f "${STAGING_PATH}/${f}" ]]; then
+              echo "::warning file=${f}::Repository File Missing, Restoring from Staging Copy"
+              cp -f "${STAGING_PATH}/${f}" "${REPO_PATH}/${f}"
+              CHANGES_FOUND="true"
+              continue
+            fi
+          
+            if ! diff "${STAGING_PATH}/${f}" "${REPO_PATH}/${f}" >/dev/null 2>&1; then
+              echo "::notice file=${f}::Update Required, Applying Changes"
+              cp -f "${STAGING_PATH}/${f}" "${REPO_PATH}/${f}"
+              CHANGES_FOUND="true"
+            else
+              echo "::notice file=${f}::No Update Needed, Skipping File"
+            fi
+          
+          done
+          
+          echo "::set-output name=found::${CHANGES_FOUND}"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        if: ${{ steps.changes.outputs.found == 'true' }}
+        with:
+          signoff: true
+          delete-branch: true
+          commit-message: "[Automated Update] Hedera Configuration Files"
+          title: "[Automated Update] Hedera Configuration Files"
+          body: |
+            ### Description
+            
+            Automated Update of the Hedera Node Configuration Files from the official `${{ env.REMOTE_REPO_OWNER }}/${{ env.REMOTE_REPO_NAME }}` repository.
+            
+            ### Update Details
+            
+            **Detection Date/Time:** `${{ steps.params.outputs.update-time }}`
+            **Detection Branch:** `${{ steps.params.outputs.branch-name }}`
+
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.params.outputs.branch-name }}
+          assignees: ${{ env.PR_ASSIGNEES }}
+          reviewers: ${{ env.PR_REVIEWERS }}
