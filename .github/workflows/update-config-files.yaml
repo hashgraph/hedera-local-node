@@ -19,7 +19,7 @@ env:
   REMOTE_CONFIG_PATH: master/hedera-node/configuration
   REMOTE_CONFIG_PROFILE: previewnet
   REPO_CONFIG_PATH: compose-network/network-node/data/config
-  PR_REVIEWERS: "beeradb,Neeharika-Sompalli,nathanklick"
+  PR_REVIEWERS: "beeradb,Neeharika-Sompalli,nathanklick,tannerjfco,steven-sheehy"
   PR_ASSIGNEES: "swirlds-automation"
 
 jobs:
