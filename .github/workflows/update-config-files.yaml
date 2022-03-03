@@ -6,8 +6,6 @@ defaults:
   run:
     shell: bash
 
-Intentionally broken workflow
-
 permissions:
   pull-requests: write
   issues: write
