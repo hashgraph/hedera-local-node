@@ -16,4 +16,4 @@
 
 ![docker-compose-settings.png](docker-compose-settings.png)
 
-&#10008; The keys under `network-node`(`hedera.key`, `hedera.crt` and `keys folder`) are only intended to be used for testing on local network. These keys should not be used against any other networks for testing. 
+&#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks. 
