@@ -15,3 +15,5 @@
 2. Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
 
 ![docker-compose-settings.png](docker-compose-settings.png)
+
+&#10008; The keys under `network-node`(`hedera.key`, `hedera.crt` and the keys in `network-node/keys`) are only intended to be used for testing on local network. These keys should not be used against any other networks for testing. 
