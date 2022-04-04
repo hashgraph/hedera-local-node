@@ -10,6 +10,18 @@
 1. `compose-network` folder has the static files needed for starting Local network.
 2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
+### Steps to change the memory limits and properties
+1. Memory limits for consensus node can be changed with these settings in `.env` file
+   - NETWORK_NODE_MEM_LIMIT 
+2. Memory limits for mirror node containers can be changed by modifying the following settings in `.env` file
+   - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
+   - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
+   - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api 
+   - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
+3. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
+
+**IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
+
 ### NOTE
 1. Ensure to use Docker Compose version 1.29.2 on macOS, due to known bug in Docker Compose V2. 
 2. Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
