@@ -11,14 +11,18 @@
 2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
 ### Steps to change the memory limits and properties
-1. Memory limits for consensus node can be changed with these settings in `.env` file
-   - NETWORK_NODE_MEM_LIMIT 
-2. Memory limits for mirror node containers can be changed by modifying the following settings in `.env` file
+The following environment variables can be changed in the `.env` file for various memory limits 
+1. Platform
+   - PLATFORM_JAVA_HEAP_MIN
+   - PLATFORM_JAVA_HEAP_MAX
+2. Consensus node
+   - NETWORK_NODE_MEM_LIMIT
+3. Mirror node
    - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
    - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
    - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api 
    - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
-3. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
+4. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
 
 **IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
 
