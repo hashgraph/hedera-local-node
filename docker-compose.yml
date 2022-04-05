@@ -42,9 +42,9 @@ services:
     mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
     memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
     environment:
-      JAVA_HEAP_MIN: "${JAVA_HEAP_MIN}"
-      JAVA_HEAP_MAX: "${JAVA_HEAP_MAX}"
-      JAVA_OPTS: "${JAVA_OPTS}"
+      JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
+      JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
+      JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
       POSTGRES_DB: "${POSTGRES_DB}"
       POSTGRES_HOST: "network-node-postgres"
       POSTGRES_PORT: "5432"
@@ -66,7 +66,7 @@ services:
     volumes:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
-      - "${APPLICATION_ROOT_PATH}/data/config:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
+      - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
       - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
       - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
@@ -202,8 +202,8 @@ services:
     container_name: mirror-node-grpc
     restart: unless-stopped
     mem_swappiness: 0
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: "${MIRROR_GRPC_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_GRPC_MEM_LIMIT}"
     depends_on:
       network-node:
         condition: service_started
@@ -224,8 +224,8 @@ services:
     container_name: mirror-node-importer
     restart: unless-stopped
     mem_swappiness: 0
-    mem_limit: 768m
-    memswap_limit: 768m
+    mem_limit: "${MIRROR_IMPORTER_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_IMPORTER_MEM_LIMIT}"
     depends_on:
       minio:
         condition: service_started
@@ -245,8 +245,8 @@ services:
     image: gcr.io/mirrornode/hedera-mirror-rest:0.49.0
     container_name: mirror-node-rest
     mem_swappiness: 0
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: "${MIRROR_REST_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_REST_MEM_LIMIT}"
     depends_on:
       importer:
         condition: service_started
@@ -265,8 +265,8 @@ services:
     image: gcr.io/mirrornode/hedera-mirror-web3:0.49.0
     container_name: mirror-node-web3
     mem_swappiness: 0
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: "${MIRROR_WEB3_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_WEB3_MEM_LIMIT}"
     depends_on:
       importer:
         condition: service_started
