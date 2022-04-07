@@ -236,4 +236,4 @@ The following environment variables can be changed in the `.env` file for variou
 
 ## License
 
-MIT License
+Apache 2.0 License
