@@ -1,6 +1,6 @@
-[![npm](https://img.shields.io/npm/v/hedera-local.svg)](https://www.npmjs.com/package/hedera-local)
+[![npm (tag)](https://img.shields.io/npm/v/@hashgraph/hedera-local)](https://www.npmjs.com/package/@hashgraph/hedera-local)
 
-# hedera-local
+# @hashgraph/hedera-local
 
 Developer tooling for running Local Hedera Network (Consensus + Mirror Nodes)
 
@@ -26,13 +26,13 @@ Mirror Node Url - http://127.0.0.1:5551
 
 - Ensure to use Docker Compose version 1.29.2 on macOS, due to known bug in Docker Compose V2.
 - Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
-  
+
 ![docker-compose-settings.png](docker-compose-settings.png)
 
 ## Installation
 
 ```bash
-npm install --save-dev 'hedera-local'
+npm install --save-dev '@hashgraph/hedera-local'
 ```
 
 ## Using hedera-local
@@ -217,22 +217,22 @@ hedera: {
 2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
 ### Steps to change the memory limits and properties
-The following environment variables can be changed in the `.env` file for various memory limits 
+The following environment variables can be changed in the `.env` file for various memory limits
 1. Platform
-   - PLATFORM_JAVA_HEAP_MIN
-   - PLATFORM_JAVA_HEAP_MAX
+    - PLATFORM_JAVA_HEAP_MIN
+    - PLATFORM_JAVA_HEAP_MAX
 2. Consensus node
-   - NETWORK_NODE_MEM_LIMIT
+    - NETWORK_NODE_MEM_LIMIT
 3. Mirror node
-   - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
-   - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
-   - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api 
-   - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
+    - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
+    - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
+    - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api
+    - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
 4. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
 
 **IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
 
-&#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks. 
+&#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
 
 ## License
 
