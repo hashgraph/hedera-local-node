@@ -2,7 +2,7 @@
 
 # @hashgraph/hedera-local
 
-Developer tooling for running Local Hedera Network (Consensus + Mirror Nodes)
+Developer tooling for running a Local Hedera Network (Consensus + Mirror Nodes)
 
 ## What
 
@@ -32,7 +32,7 @@ Mirror Node Url - http://127.0.0.1:5551
 ## Installation
 
 ```bash
-npm install --save-dev '@hashgraph/hedera-local'
+npm install --save-dev @hashgraph/hedera-local
 ```
 
 ## Using hedera-local
