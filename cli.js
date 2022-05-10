@@ -49,7 +49,17 @@ Available commands:
   async function start(commands) {
     console.log('Starting the docker containers...');
     shell.cd(__dirname);
-    shell.exec('docker-compose up -d 2>/dev/null');
+    const output = shell.exec('docker-compose up -d 2>/dev/null');
+    if (output.code == 1) {
+      const yaml = require('js-yaml');
+      const fs = require('fs');
+      const containersNames = Object.values(yaml.load(fs.readFileSync('docker-compose.yml')).services)
+          .map(e => e.container_name)
+          .join(' ');
+      shell.exec(`docker stop ${containersNames} 2>/dev/null 1>&2`);
+      shell.exec(`docker rm -f -v ${containersNames} 2>/dev/null 1>&2`);
+      shell.exec('docker-compose up -d 2>/dev/null');
+    }
     await CliHelper.waitForFiringUp(5600);
     console.log('Starting the network...');
     PingerHelper.run();

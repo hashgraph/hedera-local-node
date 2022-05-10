@@ -11,7 +11,7 @@
     "hedera-local"
   ],
   "scripts": {
-    "preinstall": "npm install shelljs",
+    "preinstall": "npm install shelljs js-yaml",
     "postinstall": "node postinstall.js"
   },
   "bin": {
@@ -20,6 +20,7 @@
   "dependencies": {
     "@hashgraph/hethers": "^1.0.3",
     "@hashgraph/sdk": "2.7.0-beta.4",
+    "js-yaml": "^4.1.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5"
   }
