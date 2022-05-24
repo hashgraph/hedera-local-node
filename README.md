@@ -1,8 +1,99 @@
 [![npm (tag)](https://img.shields.io/npm/v/@hashgraph/hedera-local)](https://www.npmjs.com/package/@hashgraph/hedera-local)
 
-# @hashgraph/hedera-local
+The Hedera Local Node project allows developers to set up their own local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
 
-Developer tooling for running a Local Hedera Network (Consensus + Mirror Nodes)
+Note: This currently does not map to the latest mirror node version or mainnet consensus node version. An [issue](https://github.com/hashgraph/hedera-local-node/issues/28) has been opened to address this.
+
+ - [Docker](#docker)
+ - [CLI Tool](#cli-tool)
+
+# Docker
+
+## Requirements
+
+- [Node.js](https://nodejs.org/) >= v16.x and npm >= v8.5.x
+     - Node version check: `node -v`
+     - NPM version check: `npm -v`
+
+- [Docker](https://www.docker.com/) >= v20.10.x
+    - Docker version check: `docker -v`
+- [Docker Compose](https://docs.docker.com/compose/) >= v1.29.2
+     - Docker Compose version check: `docker-compose -v`
+
+### Note:
+
+- Ensure to use Docker Compose version 1.29.2 on macOS, due to known bug in Docker Compose V2.
+- Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
+
+![docker-compose-settings.png](docker-compose-settings.png)
+
+- Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
+    - **CPUs:** 6
+    - **Memory:** 5GB
+    - **Swap:** 1 GB
+    - **Disk Image Size:** 59.6 GB
+
+![settings.png](settings.png)
+
+## Setup
+
+1. Clone the `hedera-local-node` repo
+```bash
+git clone https://github.com/hashgraph/hedera-local-node.git
+```
+2. CD to the hedera-local-node directory
+```bash
+    cd hedera-local-node
+```
+3. Run `docker-compose up -d` from the terminal to get the network up and running
+4. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean generated files
+
+### Network Variables
+- Consensus Node Endpoint
+  -  `127.0.0.1:50211`
+  -  The IP address and port of the local consensus node
+- Consensus Node Account ID
+  -  `0.0.3`
+  -  The node account ID to submit transactions and queries to
+- Mirror Node GRPC Endpoint
+  - `127.0.0.1:5600`
+  - The mirror node network to use
+- Mirror Node REST API Endpoint
+  -  `127.0.0.1:5551` 
+  -  The endpoint to submit rest API requests to
+- Account ID
+  - `0.0.2`
+  - The account ID to use to pay for transactions and queries
+- Account Key
+  - `302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137`
+  -  The private key to account 0.0.2 to sign transactions and queries with
+
+### Folder set up
+1. `compose-network` folder has the static files needed for starting Local network.
+2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
+
+### Steps to change the memory limits and properties
+The following environment variables can be changed in the `.env` file for various memory limits
+1. Platform
+    - PLATFORM_JAVA_HEAP_MIN
+    - PLATFORM_JAVA_HEAP_MAX
+2. Consensus node
+    - NETWORK_NODE_MEM_LIMIT
+3. Mirror node
+    - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
+    - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
+    - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api
+    - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
+4. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
+
+**IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
+
+&#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
+
+
+# CLI Tool
+
+# @hashgraph/hedera-local
 
 ## What
 
@@ -15,19 +106,6 @@ Consensus Node Url - 127.0.0.1:50211
 Node Id - 0.0.3
 Mirror Node Url - http://127.0.0.1:5551
 ```
-
-## Requirements
-
-- [Node.js](https://nodejs.org/) >= v16.x and npm >= v8.5.x
-- [Docker](https://www.docker.com/) >= v20.10.x
-- [Docker Compose](https://docs.docker.com/compose/) >= v1.25.x
-
-### Note
-
-- Ensure to use Docker Compose version 1.29.2 on macOS, due to known bug in Docker Compose V2.
-- Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
-
-![docker-compose-settings.png](docker-compose-settings.png)
 
 ## Installation
 
@@ -53,6 +131,8 @@ Available commands:
 ```
 
 ### Commands
+
+Note: There are known issues with this command. Please see issue [#43](https://github.com/hashgraph/hedera-local-node/issues/43) and issue [#33](https://github.com/hashgraph/hedera-local-node/issues/32).
 
 #### `npx hedera-local start <options>`
 
@@ -205,34 +285,8 @@ hedera: {
 
 ---
 
-## How to run a local node with a mirror node and consensus node without the cli wrapper
 
-### Setup
 
-1. Run `docker-compose up -d` from the console.
-2. After the run do `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean generated files.
-
-### Folder set up
-1. `compose-network` folder has the static files needed for starting Local network.
-2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
-
-### Steps to change the memory limits and properties
-The following environment variables can be changed in the `.env` file for various memory limits
-1. Platform
-    - PLATFORM_JAVA_HEAP_MIN
-    - PLATFORM_JAVA_HEAP_MAX
-2. Consensus node
-    - NETWORK_NODE_MEM_LIMIT
-3. Mirror node
-    - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
-    - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
-    - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api
-    - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
-4. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
-
-**IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
-
-&#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
 
 ## License
 
