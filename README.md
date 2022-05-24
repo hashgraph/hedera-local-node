@@ -27,7 +27,7 @@ Note: This currently does not map to the latest mirror node version or mainnet c
 
 ![docker-compose-settings.png](docker-compose-settings.png)
 
-- Ensure the following configurations are set in Docker **Settings** -> **Resources**
+- Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
     - **CPUs:** 6
     - **Memory:** 5GB
     - **Swap:** 1 GB
