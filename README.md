@@ -31,7 +31,7 @@ The Hedera Local Node project allows developers to set up their own local networ
     - **Swap:** 1 GB
     - **Disk Image Size:** 59.6 GB
 
-![docker-compose-settings2.png](docker-compose-settings.png)
+![settings.png](settings.png)
 
 ## Setup
 
