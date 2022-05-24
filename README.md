@@ -17,7 +17,7 @@ Note: This currently does not map to the latest mirror node version or mainnet c
 
 - [Docker](https://www.docker.com/) >= v20.10.x
     - Docker version check: `docker -v`
-- [Docker Compose](https://docs.docker.com/compose/) >= v1.25.x
+- [Docker Compose](https://docs.docker.com/compose/) >= v1.29.2
      - Docker Compose version check: `docker-compose -v`
 
 ### Note:
@@ -132,7 +132,7 @@ Available commands:
 
 ### Commands
 
-Note: There are known issues with this command
+Note: There are known issues with this command. Please see isse [#43](https://github.com/hashgraph/hedera-local-node/issues/43) and [#33](https://github.com/hashgraph/hedera-local-node/issues/32)
 
 #### `npx hedera-local start <options>`
 
