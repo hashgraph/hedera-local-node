@@ -2,6 +2,8 @@
 
 The Hedera Local Node project allows developers to set up their own local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
 
+Note: This currently does not map to the latest mirror node version or mainnet consensus node version. An issue has been opened to address this.
+
  - [Docker](#docker)
  - [CLI Tool](#cli-tool)
 
@@ -46,20 +48,25 @@ git clone https://github.com/hashgraph/hedera-local-node.git
 3. Run `docker-compose up -d` from the terminal to get the network up and running
 4. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean generated files
 
-### Enviornment Variables
-
-**Consensus Node Endpoint:** `127.0.0.1:50211`
-
-**Consensus Node Account ID:** `0.0.3`
-
-**Mirror Node GRPC Endpoint:** `127.0.0.1:5600`
-
-**Mirror Node REST API Endpoint:** `127.0.0.1:5551`
-
-**Account ID:** `0.0.2`
-
-**Account Key:** `302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137`
-
+### Network Variables
+- Consensus Node Endpoint
+  -  `127.0.0.1:50211`
+  -  The IP address and port of the local consensus node
+- Consensus Node Account ID
+  -  `0.0.3`
+  -  The node account ID to submit transactions and queries to
+- Mirror Node GRPC Endpoint
+  - `127.0.0.1:5600`
+  - The mirror node network to use
+- Mirror Node REST API Endpoint
+  -  `127.0.0.1:5551` 
+  -  The endpoint to submit rest API requests to
+- Account ID
+  - `0.0.2`
+  - The account ID to use to pay for transactions and queries
+- Account Key
+  - `302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137`
+  -  The private key to account 0.0.2 to sign transactions and queries with
 
 ### Folder set up
 1. `compose-network` folder has the static files needed for starting Local network.
