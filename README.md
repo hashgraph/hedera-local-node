@@ -132,7 +132,7 @@ Available commands:
 
 ### Commands
 
-Note: There are known issues with this command. Please see isse [#43](https://github.com/hashgraph/hedera-local-node/issues/43) and [#33](https://github.com/hashgraph/hedera-local-node/issues/32)
+Note: There are known issues with this command. Please see issue [#43](https://github.com/hashgraph/hedera-local-node/issues/43) and issue [#33](https://github.com/hashgraph/hedera-local-node/issues/32).
 
 #### `npx hedera-local start <options>`
 
