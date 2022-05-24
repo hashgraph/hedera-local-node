@@ -2,7 +2,7 @@
 
 The Hedera Local Node project allows developers to set up their own local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
 
-Note: This currently does not map to the latest mirror node version or mainnet consensus node version. An issue has been opened to address this.
+Note: This currently does not map to the latest mirror node version or mainnet consensus node version. An [issue](https://github.com/hashgraph/hedera-local-node/issues/28) has been opened to address this.
 
  - [Docker](#docker)
  - [CLI Tool](#cli-tool)
