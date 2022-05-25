@@ -1,10 +1,6 @@
 checkSignedStateFromDisk,                      1
 csvFileName,                                   MainNetStats
 csvOutputFolder,                               data/stats
-dbBackup.active,                               1
-dbConnection.active,                           1
-dbRestore.active,                              1
-dbConnection.host,       					   network-node-postgres
 doUpnp,                                        false
 enableEventStreaming,                          false
 eventsLogDir,                                  /opt/hgcapp/eventsStreams
@@ -15,7 +11,6 @@ numConnections,                                1000
 reconnect.active,                              1
 reconnect.asyncStreamTimeoutMilliseconds,      60000
 reconnect.reconnectWindowSeconds,              -1
-showDbStats,                                   0
 showInternalStats,                             1
 state.roundsExpired,                           500
 state.saveStatePeriod,                         900
