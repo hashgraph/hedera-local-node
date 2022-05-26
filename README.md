@@ -25,6 +25,7 @@ Note: This currently does not map to the latest mirror node version or mainnet c
 - Ensure to use Docker Compose version 1.29.2 on macOS, due to known bug in Docker Compose V2.
 - Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
 
+Note: The image may look different if you are on a different version
 ![docker-compose-settings.png](docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
@@ -33,9 +34,10 @@ Note: This currently does not map to the latest mirror node version or mainnet c
     - **Swap:** 1 GB
     - **Disk Image Size:** 59.6 GB
 
+Note: The image may look different if you are on a different version
 ![settings.png](settings.png)
 
-## Setup
+## Start Your Local Network
 
 1. Clone the `hedera-local-node` repo
 ```bash
@@ -46,9 +48,13 @@ git clone https://github.com/hashgraph/hedera-local-node.git
     cd hedera-local-node
 ```
 3. Run `docker-compose up -d` from the terminal to get the network up and running
-4. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean generated files
+4. Set-up your local network client by following this [tutorial](https://docs.hedera.com/guides/docs/sdks/set-up-your-local-network)
 
-### Network Variables
+## Stop Your Local Network
+1. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean manuelly generated files. If you would like to keep any files created manuelly in the working directory please save them before executing this command.
+
+## Network Variables
+These are the local network variables to interact with the consensus and mirror node. 
 - Consensus Node Endpoint
   -  `127.0.0.1:50211`
   -  The IP address and port of the local consensus node
@@ -68,11 +74,11 @@ git clone https://github.com/hashgraph/hedera-local-node.git
   - `302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137`
   -  The private key to account 0.0.2 to sign transactions and queries with
 
-### Folder set up
+## Folder set up
 1. `compose-network` folder has the static files needed for starting Local network.
 2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
-### Steps to change the memory limits and properties
+## Steps to change the memory limits and properties
 The following environment variables can be changed in the `.env` file for various memory limits
 1. Platform
     - PLATFORM_JAVA_HEAP_MIN
@@ -288,6 +294,14 @@ hedera: {
 
 
 
-## License
+## Support
+If you have a question on how to use the product, please see our [support guide](https://github.com/hashgraph/.github/blob/main/SUPPORT.md).
 
-Apache 2.0 License
+## Contributing
+Contributions are welcome. Please see the [contributing guide](https://github.com/hashgraph/.github/blob/main/CONTRIBUTING.md) to see how you can get involved.
+
+## Code of Conduct
+This project is governed by the [Contributor Covenant Code of Conduct](https://github.com/hashgraph/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code of conduct. Please report unacceptable behavior to oss@hedera.com.
+
+## License
+[Apache License 2.0](https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/LICENSE)
