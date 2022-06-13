@@ -36,7 +36,6 @@ jobs:
           EPOCH="$(date -u +%s)"
           echo "::set-output name=config-url::${REMOTE_RAW_URL_BASE}/${REMOTE_REPO_OWNER}/${REMOTE_REPO_NAME}/${REMOTE_CONFIG_PATH}/${REMOTE_CONFIG_PROFILE}"
           echo "::set-output name=staging-folder::$(mktemp -dt job-staging.XXXXXXX)"
-          echo "::set-output name=branch-name::update-config-$(date -u -d @${EPOCH} +%Y%m%d-%H%M%S)"
           echo "::set-output name=update-time::$(date -u -d @${EPOCH})"
 
       - name: Download Configuration Files
@@ -64,6 +63,7 @@ jobs:
         id: changes
         run: |
           FILES=("bootstrap.properties" "application.properties" "api-permission.properties")
+          FILE_HASHES="$(mktemp --tmpdir -t "file-hashes.XXXXXXXX")"
           STAGING_PATH="${{ steps.params.outputs.staging-folder }}"
           REPO_PATH="${{ github.workspace }}/${REPO_CONFIG_PATH}"
           
@@ -87,12 +87,17 @@ jobs:
               echo "::notice file=${f}::No Update Needed, Skipping File"
             fi
           
+            HASH="$(sha256sum "${STAGING_PATH}/${f}" | awk '{ print $1 }')"
+            echo "${HASH}" >> "${FILE_HASHES}"
           done
           
+          FINAL_HASH_PREFIX="$(sha256sum "${FILE_HASHES}" | awk '{ print $1 }' | cut -c1-8)"
+          
           echo "::set-output name=found::${CHANGES_FOUND}"
+          echo "::set-output name=branch-name::update-config-${FINAL_HASH_PREFIX}"
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         if: ${{ steps.changes.outputs.found == 'true' }}
         with:
           signoff: true
@@ -107,9 +112,9 @@ jobs:
             ### Update Details
             
             **Detection Date/Time:** `${{ steps.params.outputs.update-time }}`
-            **Detection Branch:** `${{ steps.params.outputs.branch-name }}`
+            **Detection Branch:** `${{ steps.changes.outputs.branch-name }}`
 
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.params.outputs.branch-name }}
+          branch: ${{ steps.changes.outputs.branch-name }}
           assignees: ${{ env.PR_ASSIGNEES }}
           reviewers: ${{ env.PR_REVIEWERS }}
