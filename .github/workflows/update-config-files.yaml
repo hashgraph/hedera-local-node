@@ -36,7 +36,6 @@ jobs:
           EPOCH="$(date -u +%s)"
           echo "::set-output name=config-url::${REMOTE_RAW_URL_BASE}/${REMOTE_REPO_OWNER}/${REMOTE_REPO_NAME}/${REMOTE_CONFIG_PATH}/${REMOTE_CONFIG_PROFILE}"
           echo "::set-output name=staging-folder::$(mktemp -dt job-staging.XXXXXXX)"
-          #echo "::set-output name=branch-name::update-config-$(date -u -d @${EPOCH} +%Y%m%d-%H%M%S)"
           echo "::set-output name=update-time::$(date -u -d @${EPOCH})"
 
       - name: Download Configuration Files
