@@ -5,7 +5,7 @@
   "homepage": "https://github.com/hashgraph/hedera-local-node",
   "repository": "github.com:hashgraph/hedera-local-node",
   "author": "hashgraph",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "hedera",
     "hedera-local"
