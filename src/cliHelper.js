@@ -16,6 +16,9 @@ module.exports = class CliHelper {
     while (!isReady) {
       net.createConnection(port).on('data', function () {
         isReady = true;
+      }).on('error', (err) => {
+        console.log(err);
+        console.log('Retrying in 5 seconds...');
       });
 
       await new Promise(r => setTimeout(r, 5000));
