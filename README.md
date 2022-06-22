@@ -133,7 +133,7 @@ this repository.
 This is the recommended method for testing against the latest changes or a point in time version from a branch/tag. 
 
 ```bash
-npm install -g
+npm install && npm install -g
 ```
 
 ## Using hedera-local
