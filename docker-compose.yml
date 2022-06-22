@@ -248,6 +248,33 @@ services:
     restart: unless-stopped
     tty: true
 
+  relay:
+    image: "${RELAY_IMAGE_PREFIX}hedera-json-rpc-relay:${RELAY_IMAGE_TAG}"
+    container_name: json-rpc-relay
+    mem_swappiness: 0
+    mem_limit: "${RELAY_MEM_LIMIT}"
+    memswap_limit: "${RELAY_MEM_LIMIT}"
+    depends_on:
+        rest:
+          condition: service_started
+        network-node:
+          condition: service_started
+    networks:
+      - json-rpc-relay
+    environment:
+      HEDERA_NETWORK: "${RELAY_HEDERA_NETWORK}"
+      OPERATOR_ID_MAIN: "${RELAY_OPERATOR_ID_MAIN}"
+      OPERATOR_KEY_MAIN: "${RELAY_OPERATOR_KEY_MAIN}"
+      CHAIN_ID: "${RELAY_CHAIN_ID}"
+      MIRROR_NODE_URL: "${RELAY_MIRROR_NODE_URL}"
+      LOCAL_NODE: "${RELAY_LOCAL_NODE}"
+      SERVER_PORT: "${RELAY_SERVER_PORT}"
+      E2E_RELAY_HOST: "${RELAY_E2E_HOST}"
+    ports:
+      - "7546:7546"
+    restart: unless-stopped
+    tty: true
+
 networks:
     network-node-bridge:
       name: network-node-bridge
@@ -263,6 +290,9 @@ networks:
       driver: bridge
     cloud-storage:
       name: cloud-storage
+      driver: bridge
+    json-rpc-relay:
+      name: json-rpc-relay
       driver: bridge
 
 volumes:
