@@ -10,10 +10,6 @@
     "hedera",
     "hedera-local"
   ],
-  "scripts": {
-    "preinstall": "npm install shelljs js-yaml",
-    "postinstall": "node postinstall.js"
-  },
   "bin": {
     "hedera-local": "./cli.js"
   },
