@@ -74,9 +74,10 @@ Available commands:
     console.log('Stopping the docker containers...');
     shell.exec('docker-compose down -v 2>/dev/null');
     console.log('Cleaning the volumes and temp files...');
+    shell.exec('rm -rf network-logs/* >/dev/null 2>&1')
     // shell.exec(`git clean -xfd 2>/dev/null`);
-    shell.exec('sed -i \'s/^.*PLATFORM_JAVA_OPTS/PLATFORM_JAVA_OPTS/\' .env');
-    shell.exec('sed -i \'s/PLATFORM_JAVA_OPTS/#PLATFORM_JAVA_OPTS/\' .env');
+    // shell.exec('sed -i \'s/^.*PLATFORM_JAVA_OPTS/PLATFORM_JAVA_OPTS/\' .env');
+    // shell.exec('sed -i \'s/PLATFORM_JAVA_OPTS/#PLATFORM_JAVA_OPTS/\' .env');
   }
 
   process.exit();
