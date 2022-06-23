@@ -115,8 +115,25 @@ Mirror Node Url - http://127.0.0.1:5551
 
 ## Installation
 
+#### Official NPM Release
+The command below can be used to install the official release from the NPM repository. This version may not reflect
+the most recent changes to the `main` branch of this repository. 
+
+This version uses a baked in version of the Docker Compose definitions and will not reflect any local changes made to 
+the repository. 
+
 ```bash
 npm install --save-dev @hashgraph/hedera-local
+```
+
+#### Local Module
+The command below can be used to install the `hedera-local` module as a symlink against your locally checked out copy of 
+this repository.
+
+This is the recommended method for testing against the latest changes or a point in time version from a branch/tag. 
+
+```bash
+npm install && npm install -g
 ```
 
 ## Using hedera-local
