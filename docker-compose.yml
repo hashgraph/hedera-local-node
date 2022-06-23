@@ -19,6 +19,12 @@ services:
       JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
       JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
       JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
+    healthcheck:
+      test: ["CMD", "grep", "ServicesMain - Now current platform status = ACTIVE", "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
     depends_on:
       haveged:
         condition: service_started
@@ -248,6 +254,31 @@ services:
     restart: unless-stopped
     tty: true
 
+  monitor:
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-monitor:${MIRROR_IMAGE_TAG}"
+    container_name: mirror-node-monitor
+    mem_swappiness: 0
+    mem_limit: "${MIRROR_MONITOR_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_MONITOR_MEM_LIMIT}"
+    depends_on:
+      grpc:
+        condition: service_started
+      rest:
+        condition: service_started
+      network-node:
+        condition: service_healthy
+    networks:
+      - mirror-node
+      - network-node-bridge
+    environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: "file:/usr/etc/hedera-mirror-monitor/"
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml
+
   relay:
     image: "${RELAY_IMAGE_PREFIX}hedera-json-rpc-relay:${RELAY_IMAGE_TAG}"
     container_name: json-rpc-relay
@@ -255,10 +286,10 @@ services:
     mem_limit: "${RELAY_MEM_LIMIT}"
     memswap_limit: "${RELAY_MEM_LIMIT}"
     depends_on:
-        rest:
-          condition: service_started
-        network-node:
-          condition: service_started
+      rest:
+        condition: service_started
+      network-node:
+        condition: service_started
     networks:
       - json-rpc-relay
     environment:
@@ -276,37 +307,37 @@ services:
     tty: true
 
 networks:
-    network-node-bridge:
-      name: network-node-bridge
-      driver: bridge
-      ipam:
-        driver: default
-        config:
-          - subnet: 172.27.0.0/16
-            ip_range: 172.27.0.0/24
-            gateway: 172.27.0.254
-    mirror-node:
-      name: mirror-node
-      driver: bridge
-    cloud-storage:
-      name: cloud-storage
-      driver: bridge
-    json-rpc-relay:
-      name: json-rpc-relay
-      driver: bridge
+  network-node-bridge:
+    name: network-node-bridge
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.27.0.0/16
+          ip_range: 172.27.0.0/24
+          gateway: 172.27.0.254
+  mirror-node:
+    name: mirror-node
+    driver: bridge
+  cloud-storage:
+    name: cloud-storage
+    driver: bridge
+  json-rpc-relay:
+    name: json-rpc-relay
+    driver: bridge
 
 volumes:
-    network-node-postgres:
-      name: network-node-postgres
-    mirror-node-postgres:
-      name: mirror-node-postgres
-    network-node-event-streams:
-      name: network-node-event-streams
-    network-node-record-streams:
-      name: network-node-record-streams
-    network-node-account-balances:
-      name: network-node-account-balances
-    network-node-stats:
-      name: network-node-stats
-    minio-data:
-      name: minio-data
+  network-node-postgres:
+    name: network-node-postgres
+  mirror-node-postgres:
+    name: mirror-node-postgres
+  network-node-event-streams:
+    name: network-node-event-streams
+  network-node-record-streams:
+    name: network-node-record-streams
+  network-node-account-balances:
+    name: network-node-account-balances
+  network-node-stats:
+    name: network-node-stats
+  minio-data:
+    name: minio-data
