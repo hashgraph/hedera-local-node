@@ -11,13 +11,13 @@ Note: This currently does not map to the latest mirror node version or mainnet c
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) >= v16.x and npm >= v8.5.x
-     - Node version check: `node -v`
-     - NPM version check: `npm -v`
-
-- [Docker](https://www.docker.com/) >= v20.10.x
+- [Node.js](https://nodejs.org/) `>= v14.x` and `<= v16.x`
+    - Node version check: `node -v`
+- NPM `>= v6.14.17` and `<= v8.5.0`
+    - NPM version check: `npm -v`
+- [Docker](https://www.docker.com/) `>= v20.10.x`
     - Docker version check: `docker -v`
-- [Docker Compose](https://docs.docker.com/compose/) >= v1.29.2
+- [Docker Compose](https://docs.docker.com/compose/) `=> v1.28.0 && <= 1.29.2`
      - Docker Compose version check: `docker-compose -v`
 
 ### Note:
