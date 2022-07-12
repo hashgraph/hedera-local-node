@@ -16,6 +16,7 @@
   "dependencies": {
     "@hashgraph/hethers": "^1.1.2",
     "@hashgraph/sdk": "2.16.0",
+    "ethers": "^5.6.9",
     "js-yaml": "^4.1.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5"
