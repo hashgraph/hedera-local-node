@@ -16,7 +16,7 @@ module.exports = class HederaUtils {
     '0x3e215c3d2a59626a669ed04ec1700f36c05c9b216e592f58bbfd3d8aa6ea25f9',
   ];
 
-  static privateKeysED25519 = [
+  static privateKeysAliasECDSA = [
     '0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524',
     '0x2e1d968b041d84dd120a5860cee60cd83f9374ef527ca86996317ada3d0d03e7',
     '0x45a5a7108a18dd5013cf2d5857a28144beadc9c70b3bdbd914e38df4e804b8d8',
@@ -27,6 +27,19 @@ module.exports = class HederaUtils {
     '0x5072e7aa1b03f531b4731a32a021f6a5d20d5ddc4e55acbb71ae202fc6f3a26d',
     '0x60fe891f13824a2c1da20fb6a14e28fa353421191069ba6b6d09dd6c29b90eff',
     '0xeae4e00ece872dd14fb6dc7a04f390563c7d69d16326f2a703ec8e0934060cc7',
+  ];
+
+  static privateKeysED25519 = [
+    '0xa608e2130a0a3cb34f86e757303c862bee353d9ab77ba4387ec084f881d420d4',
+    '0xbbd0894de0b4ecfa862e963825c5448d2d17f807a16869526bff29185747acdb',
+    '0x8fd50f886a2e7ed499e7686efd1436b50aa9b64b26e4ecc4e58ca26e6257b67d',
+    '0x62c966ebd9dcc0fc16a553b2ef5b72d1dca05cdf5a181027e761171e9e947420',
+    '0x805c9f422fd9a768fdd8c68f4fe0c3d4a93af714ed147ab6aed5f0ee8e9ee165',
+    '0xabfdb8bf0b46c0da5da8d764316f27f185af32357689f7e19cb9ec3e0f590775',
+    '0xec299c9f17bb8bdd5f3a21f1c2bffb3ac86c22e84c325e92139813639c9c3507',
+    '0xcb833706d1df537f59c418a00e36159f67ce3760ce6bf661f11f6da2b11c2c5a',
+    '0x9b6adacefbbecff03e4359098d084a3af8039ce7f29d95ed28c7ebdb83740c83',
+    '0x9a07bbdbb62e24686d2a4259dc88e38438e2c7a1ba167b147ad30ac540b0a3cd',
   ];
 
   static async generateECDSA(client, num, startup) {
@@ -50,15 +63,15 @@ module.exports = class HederaUtils {
     console.log('|------------------------------------------------------------------------------------------|');
   }
 
-  static async generateED25519(client, num, startup) {
+  static async generateAliasECDSA(client, num, startup) {
     console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
-    console.log('|----------------------------------------------------| Accounts list (ED25519 keys) |--------------------------------------------------|');
+    console.log('|--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|');
     console.log('|    id    |                  address                   |                             private key                            | balance |');
     console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
     for (let i = 0; i < num; i++) {
       let wallet = ethers.Wallet.createRandom();
-      if (startup && this.privateKeysED25519[i]) {
-        wallet = new ethers.Wallet(this.privateKeysED25519[i]);
+      if (startup && this.privateKeysAliasECDSA[i]) {
+        wallet = new ethers.Wallet(this.privateKeysAliasECDSA[i]);
       }
 
       let accountId = HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey.replace('0x', '')).toAccountId(0, 0);
@@ -77,6 +90,27 @@ module.exports = class HederaUtils {
     console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
   }
 
+  static async generateED25519(client, num, startup) {
+    console.log('|------------------------------------------------------------------------------------------|');
+    console.log('|-----------------------------| Accounts list (ED25519 keys) |-----------------------------|');
+    console.log('|    id    |                            private key                             |  balance |');
+    console.log('|------------------------------------------------------------------------------------------|');
+    for (let i = 0; i < num; i++) {
+      let wallet = (hethers.Wallet.createRandom({isED25519Type: true}));
+      if (startup && this.privateKeysED25519[i]) {
+        wallet = new hethers.Wallet({privateKey: this.privateKeysED25519[i], isED25519Type: true});
+      }
+      const tx = await new HederaSDK.AccountCreateTransaction()
+          .setKey(HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey))
+          .setInitialBalance(HederaSDK.Hbar.fromTinybars(10000000000000))
+          .execute(client);
+      const getReceipt = await tx.getReceipt(client);
+
+      console.log(`| ${getReceipt.accountId.toString()} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`);
+    }
+    console.log('|------------------------------------------------------------------------------------------|');
+  }
+
   static async generateAccounts(num = 10, startup = false) {
     const client = HederaSDK.Client
         .forNetwork({
@@ -85,6 +119,8 @@ module.exports = class HederaUtils {
         .setOperator('0.0.2', '302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137');
 
     await this.generateECDSA(client, num, startup);
+    console.log('');
+    await this.generateAliasECDSA(client, num, startup);
     console.log('');
     await this.generateED25519(client, num, startup);
   }
