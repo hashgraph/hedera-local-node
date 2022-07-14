@@ -58,6 +58,7 @@ Available commands:
           .join(' ');
       shell.exec(`docker stop ${containersNames} 2>/dev/null 1>&2`);
       shell.exec(`docker rm -f -v ${containersNames} 2>/dev/null 1>&2`);
+      await stop();
       shell.exec('docker-compose up -d 2>/dev/null');
     }
     await CliHelper.waitForFiringUp(5600);
@@ -74,7 +75,8 @@ Available commands:
     console.log('Stopping the docker containers...');
     shell.exec('docker-compose down -v 2>/dev/null');
     console.log('Cleaning the volumes and temp files...');
-    shell.exec('rm -rf network-logs/* >/dev/null 2>&1')
+    shell.exec('rm -rf network-logs/* >/dev/null 2>&1');
+    shell.exec('docker network prune -f 2>/dev/null');
   }
 
   process.exit();
