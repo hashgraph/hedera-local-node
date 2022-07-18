@@ -17,11 +17,10 @@ module.exports = class CliHelper {
       net.createConnection(port).on('data', function () {
         isReady = true;
       }).on('error', (err) => {
-        console.log(err);
-        console.log('Retrying in 5 seconds...');
+        console.log('Waiting the containers, retrying in 20 seconds...');
       });
 
-      await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r => setTimeout(r, 20000));
     }
   }
 }
