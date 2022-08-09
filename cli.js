@@ -3,7 +3,6 @@ const [, , ...commands] = process.argv;
 const shell = require('shelljs');
 const CliHelper = require('./src/cliHelper');
 const HederaUtils = require('./src/hederaUtils');
-const PingerHelper = require('./src/pingerHelper');
 
 (async function () {
   if (!commands.length) {
@@ -63,14 +62,12 @@ Available commands:
     }
     await CliHelper.waitForFiringUp(5600);
     console.log('Starting the network...');
-    PingerHelper.run();
     console.log('Generating accounts...');
     await HederaUtils.generateAccounts(CliHelper.getArgValue(commands, 'accounts', 10), true);
   }
 
   async function stop() {
     console.log('Stopping the network...');
-    PingerHelper.stop();
     shell.cd(__dirname);
     console.log('Stopping the docker containers...');
     shell.exec('docker-compose down -v 2>/dev/null');
