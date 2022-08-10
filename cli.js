@@ -6,19 +6,19 @@ const CliHelper = require('./src/cliHelper');
 const HederaUtils = require('./src/hederaUtils');
 
 yargs(hideBin(process.argv))
-    .command('start [accounts]', 'Starts the local hedera network.', (yargs) => {
-      return yargs.positional('accounts', {
+    .command('start [accounts]', 'Starts the local hedera network.', (_yargs) => {
+      return _yargs.positional('accounts', {
         describe: 'Generated accounts of each type.',
         default: 10
       });
     }, async (argv) => {
       await start(argv.accounts);
     })
-    .command('stop', 'Stops the local hedera network and delete all the existing data.', async (yargs) => {
+    .command('stop', 'Stops the local hedera network and delete all the existing data.', async () => {
       await stop();
     })
-    .command('restart', 'Restart the local hedera network.', (yargs) => {
-      return yargs.positional('accounts', {
+    .command('restart', 'Restart the local hedera network.', (_yargs) => {
+      return _yargs.positional('accounts', {
         describe: 'Generated accounts of each type.',
         default: 10
       });
@@ -26,8 +26,8 @@ yargs(hideBin(process.argv))
       await stop();
       await start(argv.accounts);
     })
-    .command('generate-accounts [n]', 'Generates N accounts, default 10.', (yargs) => {
-      return yargs.positional('n', {
+    .command('generate-accounts [n]', 'Generates N accounts, default 10.', (_yargs) => {
+      return _yargs.positional('n', {
         describe: 'Generated accounts of each type.',
         default: 10
       });
@@ -73,7 +73,8 @@ async function start(n) {
   console.log('\nLocal node has been successfully started. Press Ctrl+C to stop the node.');
   // should be replace with the output of network-node
   // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
-  while (true) await new Promise(resolve => setTimeout(resolve, 10000));
+  let i = 0;
+  while (i++ < Number.MAX_VALUE) await new Promise(resolve => setTimeout(resolve, 10000));
 }
 
 async function stop() {
