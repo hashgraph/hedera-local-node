@@ -123,23 +123,13 @@ This version uses a baked in version of the Docker Compose definitions and will 
 the repository. 
 
 ```bash
-npm install --save-dev @hashgraph/hedera-local
-```
-
-#### Local Module
-The command below can be used to install the `hedera-local` module as a symlink against your locally checked out copy of 
-this repository.
-
-This is the recommended method for testing against the latest changes or a point in time version from a branch/tag. 
-
-```bash
-npm install && npm install -g
+npm install @hashgraph/hedera-local -g
 ```
 
 ## Using hedera-local
 
 ```
-$ npx hedera-local
+$ hedera
 
 Local Hedera Package - Runs consensus and mirror nodes on localhost:
 - consensus node url - 127.0.0.1:50211
@@ -150,7 +140,7 @@ Available commands:
     start - Starts the local hedera network.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
-    generate-accounts <n> - Generates N accounts, default 10. 
+    generate-accounts <n> - Generates N accounts, default 10.
 ```
 
 Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @hashgraph/hethers. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.
@@ -159,10 +149,10 @@ Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @h
 
 Note: There are known issues with this command. Please see issue [#43](https://github.com/hashgraph/hedera-local-node/issues/43) and issue [#33](https://github.com/hashgraph/hedera-local-node/issues/32).
 
-#### `npx hedera-local start <options>`
+#### `hedera start <options>`
 
 ```bash
-$ npx hedera-local start
+$ hedera start
 Starting the docker images...
 Generating accounts...
 |------------------------------------------------------------------------------------------|
@@ -218,7 +208,7 @@ Generating accounts...
   private keys, and the next ones are with random generated private keys.
 
 ```bash
-$ npx hedera-local start --accounts=2
+$ hedera start --accounts=2
 Starting the docker images...
 Generating accounts...
 |------------------------------------------------------------------------------------------|
@@ -248,10 +238,10 @@ Generating accounts...
 
 ---
 
-#### `npx hedera-local stop`
+#### `hedera stop`
 
 ```bash
-$ npx hedera-local stop
+$ hedera stop
 Stopping the docker images...
 Cleaning the volumes and temp files...
 ```
@@ -260,10 +250,10 @@ No available options
 
 ---
 
-#### `npx hedera-local restart <options>`
+#### `hedera restart <options>`
 
 ```bash
-$ npx hedera-local restart
+$ hedera restart
 Stopping the docker images...
 Cleaning the volumes and temp files...
 Starting the docker images...
@@ -321,7 +311,7 @@ Generating accounts...
   private keys, and the next ones are with random generated private keys.
 
 ```bash
-$ npx hedera-local restart --accounts=2
+$ hedera restart --accounts=2
 Stopping the docker images...
 Cleaning the volumes and temp files...
 Starting the docker images...
@@ -353,10 +343,10 @@ Generating accounts...
 
 ---
 
-#### `npx hedera-local generate-accounts <num>`
+#### `hedera generate-accounts <num>`
 
 ```bash
-$ npx hedera-local generate-accounts 2
+$ hedera generate-accounts 2
 |------------------------------------------------------------------------------------------|
 |------------------------------| Accounts list (ECDSA keys) |------------------------------|
 |    id    |                            private key                             |  balance |
