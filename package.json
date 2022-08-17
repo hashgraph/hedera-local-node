@@ -11,7 +11,7 @@
     "hedera-local"
   ],
   "bin": {
-    "hedera-local": "./cli.js"
+    "hedera": "./cli.js"
   },
   "dependencies": {
     "@hashgraph/hethers": "^1.1.2",
@@ -19,6 +19,7 @@
     "ethers": "^5.6.9",
     "js-yaml": "^4.1.0",
     "rimraf": "^3.0.2",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "yargs": "^17.5.1"
   }
 }
