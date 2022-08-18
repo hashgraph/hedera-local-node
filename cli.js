@@ -5,6 +5,11 @@ const shell = require('shelljs');
 const CliHelper = require('./src/cliHelper');
 const HederaUtils = require('./src/hederaUtils');
 
+function getNullOutput() {
+  if (process.platform === 'win32') return 'nul';
+  return '/dev/null';
+}
+
 yargs(hideBin(process.argv))
     .command('start [accounts]', 'Starts the local hedera network.', (_yargs) => {
       return _yargs.positional('accounts', {
@@ -63,19 +68,21 @@ Available commands:
     .parse();
 
 async function start(n, d) {
+  const nullOutput = getNullOutput();
+
   console.log('Starting the docker containers...');
   shell.cd(__dirname);
-  const output = shell.exec('docker-compose up -d 2>/dev/null');
+  const output = shell.exec(`docker-compose up -d 2>${nullOutput}`);
   if (output.code == 1) {
     const yaml = require('js-yaml');
     const fs = require('fs');
     const containersNames = Object.values(yaml.load(fs.readFileSync('docker-compose.yml')).services)
         .map(e => e.container_name)
         .join(' ');
-    shell.exec(`docker stop ${containersNames} 2>/dev/null 1>&2`);
-    shell.exec(`docker rm -f -v ${containersNames} 2>/dev/null 1>&2`);
+    shell.exec(`docker stop ${containersNames} 2>${nullOutput} 1>&2`);
+    shell.exec(`docker rm -f -v ${containersNames} 2>${nullOutput} 1>&2`);
     await stop();
-    shell.exec('docker-compose up -d 2>/dev/null');
+    shell.exec(`docker-compose up -d 2>${nullOutput}`);
   }
   await CliHelper.waitForFiringUp(5600);
   console.log('Starting the network...');
@@ -95,13 +102,15 @@ async function start(n, d) {
 }
 
 async function stop() {
+  const nullOutput = getNullOutput();
+
   console.log('Stopping the network...');
   shell.cd(__dirname);
   console.log('Stopping the docker containers...');
-  shell.exec('docker-compose down -v 2>/dev/null');
+  shell.exec(`docker-compose down -v 2>${nullOutput}`);
   console.log('Cleaning the volumes and temp files...');
-  shell.exec('rm -rf network-logs/* >/dev/null 2>&1');
-  shell.exec('docker network prune -f 2>/dev/null');
+  shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
+  shell.exec(`docker network prune -f 2>${nullOutput}`);
 }
 
 process.on('SIGINT', async () => {
