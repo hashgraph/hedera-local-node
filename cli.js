@@ -12,12 +12,12 @@ yargs(hideBin(process.argv))
         default: 10
       }).options('detached', {
         alias: 'd',
+        type: 'boolean',
         describe: 'Run the local node in detached mode',
-        demandOption: false,
-        type: 'boolean'
+        demandOption: false
       })
     }, async (argv) => {
-      await start(argv.accounts,argv.detached);
+      await start(argv.accounts, argv.detached);
     })
     .command('stop', 'Stops the local hedera network and delete all the existing data.', async () => {
       await stop();
@@ -57,7 +57,7 @@ Available commands:
     })
     .parse();
 
-async function start(n,d) {
+async function start(n, d) {
   console.log('Starting the docker containers...');
   shell.cd(__dirname);
   const output = shell.exec('docker-compose up -d 2>/dev/null');
