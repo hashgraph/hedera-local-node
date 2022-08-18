@@ -26,10 +26,15 @@ yargs(hideBin(process.argv))
       return _yargs.positional('accounts', {
         describe: 'Generated accounts of each type.',
         default: 10
+      }).options('detached', {
+        alias: 'd',
+        type: 'boolean',
+        describe: 'Run the local node in detached mode',
+        demandOption: false
       });
     }, async (argv) => {
       await stop();
-      await start(argv.accounts);
+      await start(argv.accounts, argv.detached);
     })
     .command('generate-accounts [n]', 'Generates N accounts, default 10.', (_yargs) => {
       return _yargs.positional('n', {
@@ -77,7 +82,7 @@ async function start(n, d) {
   console.log('Generating accounts...');
   await HederaUtils.generateAccounts(n, true);
 
-  if(d){
+  if (d) {
     console.log('\nLocal node has been successfully started in detached mode.');
     process.exit();
   }
