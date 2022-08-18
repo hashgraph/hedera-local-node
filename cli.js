@@ -15,9 +15,14 @@ yargs(hideBin(process.argv))
       return _yargs.positional('accounts', {
         describe: 'Generated accounts of each type.',
         default: 10
-      });
+      }).options('detached', {
+        alias: 'd',
+        type: 'boolean',
+        describe: 'Run the local node in detached mode',
+        demandOption: false
+      })
     }, async (argv) => {
-      await start(argv.accounts);
+      await start(argv.accounts, argv.detached);
     })
     .command('stop', 'Stops the local hedera network and delete all the existing data.', async () => {
       await stop();
@@ -26,10 +31,15 @@ yargs(hideBin(process.argv))
       return _yargs.positional('accounts', {
         describe: 'Generated accounts of each type.',
         default: 10
+      }).options('detached', {
+        alias: 'd',
+        type: 'boolean',
+        describe: 'Run the local node in detached mode',
+        demandOption: false
       });
     }, async (argv) => {
       await stop();
-      await start(argv.accounts);
+      await start(argv.accounts, argv.detached);
     })
     .command('generate-accounts [n]', 'Generates N accounts, default 10.', (_yargs) => {
       return _yargs.positional('n', {
@@ -48,6 +58,8 @@ Local Hedera Plugin - Runs consensus and mirror nodes on localhost:
 
 Available commands:
     start - Starts the local hedera network.
+      options:
+        --d or --detached for starting in detached mode.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -55,7 +67,7 @@ Available commands:
     })
     .parse();
 
-async function start(n) {
+async function start(n, d) {
   const nullOutput = getNullOutput();
 
   console.log('Starting the docker containers...');
@@ -76,6 +88,11 @@ async function start(n) {
   console.log('Starting the network...');
   console.log('Generating accounts...');
   await HederaUtils.generateAccounts(n, true);
+
+  if (d) {
+    console.log('\nLocal node has been successfully started in detached mode.');
+    process.exit();
+  }
 
   console.log('\nLocal node has been successfully started. Press Ctrl+C to stop the node.');
   // should be replace with the output of network-node

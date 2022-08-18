@@ -138,6 +138,8 @@ Local Hedera Package - Runs consensus and mirror nodes on localhost:
 
 Available commands:
     start - Starts the local hedera network.
+        options:
+            --d or --detached for starting in detached mode.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -206,6 +208,8 @@ Generating accounts...
 
 - --accounts - Default is 10 per type. Specify the number of accounts to generate at startup. The first 10 are with predefined
   private keys, and the next ones are with random generated private keys.
+
+- --d / --detached - Start the local node in detached mode.
 
 ```bash
 $ hedera start --accounts=2
@@ -309,6 +313,8 @@ Generating accounts...
 
 - --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
   private keys, and the next ones are with random generated private keys.
+
+- --d / --detached - Start the local node in detached mode.
 
 ```bash
 $ hedera restart --accounts=2
