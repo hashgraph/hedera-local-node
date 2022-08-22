@@ -292,6 +292,8 @@ services:
         condition: service_started
     networks:
       - json-rpc-relay
+      - mirror-node
+      - network-node-bridge
     environment:
       HEDERA_NETWORK: "${RELAY_HEDERA_NETWORK}"
       OPERATOR_ID_MAIN: "${RELAY_OPERATOR_ID_MAIN}"
