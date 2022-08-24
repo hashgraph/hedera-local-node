@@ -101,6 +101,8 @@ Available commands:
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
+      options:
+        --h or --host to override the default host.
   `);
   })
   .parse();
