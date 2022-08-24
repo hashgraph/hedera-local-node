@@ -1,6 +1,6 @@
 {
   "name": "@hashgraph/hedera-local",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Developer tooling for running Local Hedera Network (Consensus + Mirror Nodes).",
   "homepage": "https://github.com/hashgraph/hedera-local-node",
   "repository": "github.com:hashgraph/hedera-local-node",
