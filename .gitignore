@@ -154,3 +154,4 @@ secring.*
 network-logs/minio-server/data/**
 
 
+.vscode

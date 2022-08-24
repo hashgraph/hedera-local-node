@@ -111,10 +111,10 @@ module.exports = class HederaUtils {
     console.log('|------------------------------------------------------------------------------------------|');
   }
 
-  static async generateAccounts(num = 10, startup = false) {
+  static async generateAccounts(num = 10, startup = false, host='127.0.0.1') {
     const client = HederaSDK.Client
         .forNetwork({
-          '127.0.0.1:50211': '0.0.3'
+          [`${host}:50211`]: '0.0.3'
         })
         .setOperator('0.0.2', '302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137');
 

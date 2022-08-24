@@ -140,9 +140,12 @@ Available commands:
     start - Starts the local hedera network.
         options:
             --d or --detached for starting in detached mode.
+            --h or --host to override the default host.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
+        options:
+            --h or --host to override the default host.
 ```
 
 Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @hashgraph/hethers. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.
@@ -210,6 +213,7 @@ Generating accounts...
   private keys, and the next ones are with random generated private keys.
 
 - --d / --detached - Start the local node in detached mode.
+- --h / --host - Override the default host.
 
 ```bash
 $ hedera start --accounts=2
@@ -315,6 +319,7 @@ Generating accounts...
   private keys, and the next ones are with random generated private keys.
 
 - --d / --detached - Start the local node in detached mode.
+- --h / --host - Override the default host.
 
 ```bash
 $ hedera restart --accounts=2
@@ -377,8 +382,7 @@ $ hedera generate-accounts 2
 | 0.0.1013 - 0x3fcd5855969a881dcaad4446101a3241ccb5d6e7237f3a55b19268bfcbfdfa91 - 100000 ℏ |
 |------------------------------------------------------------------------------------------|
 ```
-
-No available options
+- --h / --host - Override the default host.
 
 ---
 
