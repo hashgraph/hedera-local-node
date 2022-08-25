@@ -64,7 +64,7 @@ yargs(hideBin(process.argv))
             type: 'string',
             describe: 'Run the local node with host',
             demandOption: false,
-            default: '',
+            default: '127.0.0.1',
           },
         });
     },
@@ -109,7 +109,7 @@ Available commands:
 
 async function start(n, d, h) {
   const nullOutput = getNullOutput();
-
+  
   console.log('Starting the docker containers...');
   shell.cd(__dirname);
   const output = shell.exec(`docker-compose up -d 2>${nullOutput}`);
