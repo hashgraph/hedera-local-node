@@ -9,6 +9,8 @@ hedera:
           entity:
             redis:
               enabled: false
+          sidecar:
+            enabled: true
       downloader:
         accessKey: minioadmin
         cloudProvider: "S3"
