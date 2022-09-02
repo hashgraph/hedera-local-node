@@ -9,9 +9,7 @@ services:
     network_mode: none
 
   network-node:
-    # image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
-    build:
-      context: ./hedera-services/
+    image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
     container_name: network-node
     user: root
     mem_swappiness: 0
@@ -21,10 +19,8 @@ services:
       JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
       JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
       JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
-      JAVA_TOOL_OPTIONS:
-        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     healthcheck:
-      test: ["CMD", "grep", "ServicesMain - Now current platform status = ACTIVE", "/opt/hedera/services/output/hgcaa.log"]
+      test: ["CMD", "grep", "ServicesMain - Now current platform status = ACTIVE", "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -40,20 +36,19 @@ services:
     ports:
       - "50211:50211"
       - "50212:50212"
-      - "5005:5005"
     volumes:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
-      - "${APPLICATION_CONFIG_PATH}:/opt/hedera/services/config-mount"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hedera/services/output"
-      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hedera/services/data/keys"
-      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hedera/services/data/onboard"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hedera/services/data/stats"
-      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hedera/services/config.txt"
-      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hedera/services/settings.txt"
-      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hedera/services/log4j2.xml"
-      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hedera/services/hedera.crt"
-      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hedera/services/hedera.key"
+      - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
+      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
+      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
+      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
+      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
+      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
+      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
+      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
 
   record-streams-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
@@ -163,8 +158,6 @@ services:
       ROSETTA_PASSWORD: mirror_rosetta_pass
     networks:
       - mirror-node
-    ports:
-      - 54322:5432
     expose:
       - "5432"
     restart: unless-stopped

@@ -1,7 +1,0 @@
-coverage:
-  status:
-    project:
-      default:
-        threshold: 1.0
-ignore:
-  - "test-clients"
