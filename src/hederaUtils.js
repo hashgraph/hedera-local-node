@@ -2,6 +2,67 @@ const HederaSDK = require('@hashgraph/sdk');
 const hethers = require('@hashgraph/hethers');
 const ethers = require('ethers');
 
+const repeatUniqueCall = (
+  call,
+  {
+    params = [], // params should be an array of arrays where each nested array with index i represents the params for call i
+    options = [] // options should be an array of objects where each object with index i represents the options for the call i
+  }
+) => {
+
+  const calls = [];
+
+  for (let i = 0; i < params.length; i++) {
+
+    const callOptions = i >= options.length ? {} : options[i];
+
+    calls.push(call(...params[i], callOptions));
+
+  }
+
+  return calls;
+
+}
+
+const accountCreateTransaction = async (wallet, client) => {
+
+  const initialTinyBalance = 10_000_000_000_000;
+
+  const tx = await new HederaSDK.AccountCreateTransaction()
+    .setKey(HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey))
+    .setInitialBalance(HederaSDK.Hbar.fromTinybars(initialTinyBalance))
+    .execute(client);
+
+  const getReceipt = await tx.getReceipt(client);
+
+  return {
+    wallet,
+    getReceipt
+  };
+}
+
+const aliasAccountCreateTransaction = async (wallet, client) => {
+
+  const initialBalance = 10_000;
+
+  let accountId = HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey.replace('0x', '')).toAccountId(0, 0);
+  const transferTransaction = new HederaSDK.TransferTransaction()
+      .addHbarTransfer(accountId, new HederaSDK.Hbar(initialBalance))
+      .addHbarTransfer(HederaSDK.AccountId.fromString('0.0.2'), new HederaSDK.Hbar(-initialBalance));
+  const tx = await transferTransaction.execute(client);
+  await tx.getReceipt(client);
+
+  const accountInfo = await new HederaSDK.AccountInfoQuery({
+    accountId: HederaSDK.AccountId.fromEvmAddress(0, 0, wallet.address)
+  }).execute(client);
+
+  return {
+    accountInfo,
+    wallet
+  }
+
+}
+
 module.exports = class HederaUtils {
   static privateKeysECDSA = [
     '0x7f109a9e3b0d8ecfba9cc23a3614433ce0fa7ddcc80f2a8f10b222179a5a80d6',
@@ -43,72 +104,56 @@ module.exports = class HederaUtils {
   ];
 
   static async generateECDSA(client, num, startup) {
-    console.log('|------------------------------------------------------------------------------------------|');
-    console.log('|------------------------------| Accounts list (ECDSA keys) |------------------------------|');
-    console.log('|    id    |                            private key                             |  balance |');
-    console.log('|------------------------------------------------------------------------------------------|');
+
+    const params = [];
+
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom();
       if (startup && this.privateKeysECDSA[i]) {
         wallet = new hethers.Wallet(this.privateKeysECDSA[i]);
       }
-      const tx = await new HederaSDK.AccountCreateTransaction()
-          .setKey(HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey))
-          .setInitialBalance(HederaSDK.Hbar.fromTinybars(10000000000000))
-          .execute(client);
-      const getReceipt = await tx.getReceipt(client);
 
-      console.log(`| ${getReceipt.accountId.toString()} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`);
+      params.push([wallet, client]);
+
     }
-    console.log('|------------------------------------------------------------------------------------------|');
+
+    // use Promise.allSettled over all in case of errors thrown
+    return Promise.all(repeatUniqueCall(accountCreateTransaction, {params}))
+
   }
 
   static async generateAliasECDSA(client, num, startup) {
-    console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
-    console.log('|--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|');
-    console.log('|    id    |                  address                   |                             private key                            | balance |');
-    console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
+
+    const params = [];
+
     for (let i = 0; i < num; i++) {
       let wallet = ethers.Wallet.createRandom();
       if (startup && this.privateKeysAliasECDSA[i]) {
         wallet = new ethers.Wallet(this.privateKeysAliasECDSA[i]);
       }
 
-      let accountId = HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey.replace('0x', '')).toAccountId(0, 0);
-      const transferTransaction = new HederaSDK.TransferTransaction()
-          .addHbarTransfer(accountId, new HederaSDK.Hbar(10000))
-          .addHbarTransfer(HederaSDK.AccountId.fromString('0.0.2'), new HederaSDK.Hbar(-10000));
-      const tx = await transferTransaction.execute(client);
-      await tx.getReceipt(client);
-
-      const accountInfo = await new HederaSDK.AccountInfoQuery({
-        accountId: HederaSDK.AccountId.fromEvmAddress(0, 0, wallet.address)
-      }).execute(client);
-
-      console.log(`| ${accountInfo.accountId.toString()} - ${wallet.address} - ${wallet._signingKey().privateKey} - ${new HederaSDK.Hbar(10000)} |`);
+      params.push([wallet, client]);
     }
-    console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
+
+    return Promise.all(repeatUniqueCall(aliasAccountCreateTransaction, {params}))
+
   }
 
   static async generateED25519(client, num, startup) {
-    console.log('|------------------------------------------------------------------------------------------|');
-    console.log('|-----------------------------| Accounts list (ED25519 keys) |-----------------------------|');
-    console.log('|    id    |                            private key                             |  balance |');
-    console.log('|------------------------------------------------------------------------------------------|');
+
+    const params = [];
+
     for (let i = 0; i < num; i++) {
       let wallet = (hethers.Wallet.createRandom({isED25519Type: true}));
       if (startup && this.privateKeysED25519[i]) {
         wallet = new hethers.Wallet({privateKey: this.privateKeysED25519[i], isED25519Type: true});
       }
-      const tx = await new HederaSDK.AccountCreateTransaction()
-          .setKey(HederaSDK.PublicKey.fromString(wallet._signingKey().compressedPublicKey))
-          .setInitialBalance(HederaSDK.Hbar.fromTinybars(10000000000000))
-          .execute(client);
-      const getReceipt = await tx.getReceipt(client);
 
-      console.log(`| ${getReceipt.accountId.toString()} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`);
+      params.push([wallet, client]);
+
     }
-    console.log('|------------------------------------------------------------------------------------------|');
+
+    return Promise.all(repeatUniqueCall(accountCreateTransaction, {params}))
   }
 
   static async generateAccounts(num = 10, startup = false, host='127.0.0.1') {
@@ -118,10 +163,72 @@ module.exports = class HederaUtils {
         })
         .setOperator('0.0.2', '302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137');
 
-    await this.generateECDSA(client, num, startup);
-    console.log('');
-    await this.generateAliasECDSA(client, num, startup);
-    console.log('');
-    await this.generateED25519(client, num, startup);
+    Promise.all([
+      this.generateECDSA(client, num, startup),
+      this.generateAliasECDSA(client, num, startup),
+      this.generateED25519(client, num, startup)
+    ]).then((allResponses) => {
+
+      const ecdsaResponses = allResponses[0];
+      const aliasEcdsaResponses = allResponses[1];
+      const ed25519Responses = allResponses[2];
+
+      console.log('|------------------------------------------------------------------------------------------|');
+      console.log('|------------------------------| Accounts list (ECDSA keys) |------------------------------|');
+      console.log('|    id    |                            private key                             |  balance |');
+      console.log('|------------------------------------------------------------------------------------------|');
+
+      for (const response of ecdsaResponses) {
+
+        const {
+          getReceipt,
+          wallet
+        } = response;
+
+        console.log(`| ${getReceipt.accountId.toString()} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`);
+      }
+
+      console.log('|------------------------------------------------------------------------------------------|');
+
+      console.log('');
+
+      console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
+      console.log('|--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|');
+      console.log('|    id    |                  address                   |                             private key                            | balance |');
+      console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
+
+      for (const response of aliasEcdsaResponses) {
+
+        const {
+          accountInfo,
+          wallet
+        } = response;
+
+        console.log(`| ${accountInfo.accountId.toString()} - ${wallet.address} - ${wallet._signingKey().privateKey} - ${new HederaSDK.Hbar(10000)} |`);
+      }
+
+      console.log('|--------------------------------------------------------------------------------------------------------------------------------------|');
+
+      console.log('');
+
+      console.log('|------------------------------------------------------------------------------------------|');
+      console.log('|-----------------------------| Accounts list (ED25519 keys) |-----------------------------|');
+      console.log('|    id    |                            private key                             |  balance |');
+      console.log('|------------------------------------------------------------------------------------------|');
+
+      for (const response of ed25519Responses) {
+
+        const {
+          getReceipt,
+          wallet
+        } = response;
+
+        console.log(`| ${getReceipt.accountId.toString()} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`);
+      }
+
+      console.log('|------------------------------------------------------------------------------------------|');
+
+    })
+
   }
 }
