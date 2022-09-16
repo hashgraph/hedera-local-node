@@ -34,10 +34,18 @@ yargs(hideBin(process.argv))
             demandOption: false,
             default: '127.0.0.1',
           },
+          network: {
+            alias: 'n',
+            type: 'string',
+            describe: 'Select the network configuration',
+            demandOption: false,
+            choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
+            default: 'mainnet',
+          },
         });
     },
     async (argv) => {
-      await start(argv.accounts, argv.detached, argv.host);
+      await start(argv.accounts, argv.detached, argv.host, argv.network);
     }
   )
   .command('stop', 'Stops the local hedera network and delete all the existing data.', async () => {
@@ -66,11 +74,19 @@ yargs(hideBin(process.argv))
             demandOption: false,
             default: '127.0.0.1',
           },
+          network: {
+            alias: 'n',
+            type: 'string',
+            describe: 'Select the network configuration',
+            demandOption: false,
+            choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
+            default: 'mainnet',
+          },
         });
     },
     async (argv) => {
       await stop();
-      await start(argv.accounts, argv.detached, argv.host);
+      await start(argv.accounts, argv.detached, argv.host, argv.network);
     }
   )
   .command(
@@ -98,6 +114,7 @@ Available commands:
       options:
         --d or --detached for starting in detached mode.
         --h or --host to override the default host.
+        --n or --network to override the default configuration. Defaults to mainnet.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -107,9 +124,10 @@ Available commands:
   })
   .parse();
 
-async function start(n, d, h) {
+async function start(accounts, detached, host, network) {
   const nullOutput = getNullOutput();
-  
+  await CliHelper.applyNetworkConfig(network);
+
   console.log('Starting the docker containers...');
   shell.cd(__dirname);
   const output = shell.exec(`docker-compose up -d 2>${nullOutput}`);
@@ -122,14 +140,15 @@ async function start(n, d, h) {
     shell.exec(`docker stop ${containersNames} 2>${nullOutput} 1>&2`);
     shell.exec(`docker rm -f -v ${containersNames} 2>${nullOutput} 1>&2`);
     await stop();
+
     shell.exec(`docker-compose up -d 2>${nullOutput}`);
   }
-  await CliHelper.waitForFiringUp(5600, h);
+  await CliHelper.waitForFiringUp(5600, host);
   console.log('Starting the network...');
   console.log('Generating accounts...');
-  await HederaUtils.generateAccounts(n, true, h);
+  await HederaUtils.generateAccounts(accounts, true, host);
 
-  if (d) {
+  if (detached) {
     console.log('\nLocal node has been successfully started in detached mode.');
     process.exit();
   }

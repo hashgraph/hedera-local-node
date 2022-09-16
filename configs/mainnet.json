@@ -1,0 +1,10 @@
+{
+  "ledgerID": "0x01",
+  "nettyMode": "DEV",
+  "chainId":298,
+  "logPeriod":1,
+  "exportPeriodSecs":400,
+  "maxSizeKb":2048,
+  "streamExtension": "rcd.gz",
+  "enabled": false
+}
