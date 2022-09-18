@@ -22,6 +22,7 @@ module.exports = class NodeController {
 
     console.log("Starting the docker containers...");
     shell.cd(__dirname);
+    shell.cd('../../');
     const output = shell.exec(`docker-compose up -d 2>${nullOutput}`);
     if (output.code == 1) {
       const yaml = require("js-yaml");
