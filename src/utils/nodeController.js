@@ -18,7 +18,7 @@ module.exports = class NodeController {
   }
 
   static async startLocalNode() {
-    const nullOutput = getNullOutput();
+    const nullOutput = this.getNullOutput();
 
     console.log("Starting the docker containers...");
     shell.cd(__dirname);
@@ -33,9 +33,8 @@ module.exports = class NodeController {
         .join(" ");
       shell.exec(`docker stop ${containersNames} 2>${nullOutput} 1>&2`);
       shell.exec(`docker rm -f -v ${containersNames} 2>${nullOutput} 1>&2`);
-      await stop();
+      await this.stopLocalNode();
       shell.exec(`docker-compose up -d 2>${nullOutput}`);
     }
   }
-
 };

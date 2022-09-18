@@ -1,5 +1,6 @@
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
+const NodeController = require("../utils/nodeController");
 
 module.exports = class TerminalUserInterface {
   screen;
@@ -14,11 +15,13 @@ module.exports = class TerminalUserInterface {
     });
     this.screen.title = "Hedera Local Node";
 
-    this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen });
+    this.screen.key(["C-c"], async function (ch, key) {
+        this.screen.destroy();
+        await NodeController.stopLocalNode();
+        return process.exit(0);
+      });
 
-    this.screen.key(["C-c"], function (ch, key) {
-      return process.exit(0);
-    });
+    this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen });
 
     this.initStatusBoard();
     this.initEventBoard();
@@ -54,7 +57,7 @@ module.exports = class TerminalUserInterface {
   }
 
   initAccountBoard() {
-    this.accountBoard = this.grid.set(0, 3, 3, 10, blessed.log, {
+    this.accountBoard = this.grid.set(0, 2, 3, 10, blessed.log, {
       fg: "green",
       selectedFg: "green",
       label: "Account Board",
@@ -75,9 +78,5 @@ module.exports = class TerminalUserInterface {
 
   getAccountBoard() {
     return this.accountBoard;
-  }
-
-  log(msg){
-    this.accountBoard.add(msg);
   }
 };

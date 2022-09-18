@@ -109,37 +109,41 @@ Available commands:
   })
   .parse();
 
-async function main(n, h, d) {
-  let logger;
+async function main(n, d, h) {
   if (d) {
-    logger = console;
-  }else{
-    
+    await startDetached(n, h);
   }
-  if (d) {
-    console.log("Detecting the network...");
-    await ConnectionCheck.waitForFiringUp(5600, h, console);
-    console.log("Starting the network...");
-    console.log("Generating accounts...");
-    await HederaUtils.generateAccounts(n, true, h, console);
-    console.log("\nLocal node has been successfully started in detached mode.");
-    process.exit();
-  }else{
-    const screen = new TerminalUserInterface();
-    const eventBoard = screen.getEventBoard();
 
-    eventBoard.add("Detecting the network...");
-    await ConnectionCheck.waitForFiringUp(5600, h, screen);
-    eventBoard.add("Starting the network...");
-    eventBoard.add("Generating accounts...");
-    await HederaUtils.generateAccounts(n, true, h, screen);
-    eventBoard.add(
-      "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
-    );
-    // should be replace with the output of network-node
-    // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
-    let i = 0;
-    while (i++ < Number.MAX_VALUE)
-      await new Promise((resolve) => setTimeout(resolve, 10000));
-  }
+  const screen = new TerminalUserInterface();
+  eventLogger = screen.getEventBoard();
+  accountLogger = screen.getAccountBoard();
+
+  await start(n, h, eventLogger, accountLogger);
+
+  eventLogger.log(
+    "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
+  );
+  // should be replace with the output of network-node
+  // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
+  let i = 0;
+  while (i++ < Number.MAX_VALUE)
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+}
+
+async function start(n, h, eventLogger, accountLogger){
+  eventLogger.log("Detecting the network...");
+  await ConnectionCheck.waitForFiringUp(5600, h, eventLogger);
+  eventLogger.log("Starting the network...");
+  eventLogger.log("Generating accounts...");
+  await HederaUtils.generateAccounts(n, accountLogger, true, h);
+}
+
+async function startDetached(n, h){
+  console.log("Detecting the network...");
+  await ConnectionCheck.waitForFiringUp(5600, h, console);
+  console.log("Starting the network...");
+  console.log("Generating accounts...");
+  await HederaUtils.generateAccounts(n, console, true, h);
+  console.log("\nLocal node has been successfully started in detached mode.");
+  process.exit();
 }
