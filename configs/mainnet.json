@@ -6,5 +6,10 @@
   "exportPeriodSecs":400,
   "maxSizeKb":2048,
   "streamExtension": "rcd.gz",
-  "enabled": false
+  "sidecarEnabled": false,
+  "nodeImageTag": "0.28.7",
+  "havegedImageTag": "0.28.7",
+  "uploaderImageTag": "0.5.0",
+  "mirrorImageTag": "0.61.1",
+  "relayImageTag": "0.6.0"
 }
