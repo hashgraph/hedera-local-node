@@ -13,10 +13,24 @@ module.exports = class ConnectionCheck {
           logger.log(
             `Waiting for the containers at ${host}:${port}, retrying in 20 seconds...`
           );
-          logger.debug(err);
+          logger.log(err);
         });
 
       await new Promise((r) => setTimeout(r, 20000));
     }
+  }
+
+  static async containerStatusCheck(port, host = '127.0.0.1', logger){
+    let isUp = false;
+    net
+      .createConnection(port, host)
+      .on("connect", () => {
+        isUp = true;
+        return isUp;
+      })
+      .on("error", (err) => {
+        logger.log(`Error is ${err}`);
+        return false;
+      })
   }
 };

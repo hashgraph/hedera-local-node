@@ -5,7 +5,9 @@ const ConnectionCheck = require("./src/helpers/connectionCheck");
 const HederaUtils = require("./src/utils/hederaUtils");
 const TerminalUserInterface = require("./src/tui");
 const NodeController = require("./src/utils/nodeController");
-
+let screen;
+let eventLogger;
+let accountLogger;
 yargs(hideBin(process.argv))
   .command(
     "start [accounts]",
@@ -114,27 +116,30 @@ async function main(n, d, h) {
     await startDetached(n, h);
   }
 
-  const screen = new TerminalUserInterface();
-  eventLogger = screen.getEventBoard();
+  screen = new TerminalUserInterface();
+  eventLogger = screen.getConsensusLog();
   accountLogger = screen.getAccountBoard();
-
+  await screen.updateStatusBoard();
   await start(n, h, eventLogger, accountLogger);
-
+  
   eventLogger.log(
     "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
   );
   // should be replace with the output of network-node
   // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
   let i = 0;
-  while (i++ < Number.MAX_VALUE)
+  while (i++ < Number.MAX_VALUE){
+    // eventLogger.log(await ConnectionCheck.containerStatusCheck(5600,'127.0.0.1', eventLogger));
+    await screen.updateStatusBoard();
     await new Promise((resolve) => setTimeout(resolve, 10000));
+  }
 }
 
 async function start(n, h, eventLogger, accountLogger){
   eventLogger.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, h, eventLogger);
   eventLogger.log("Starting the network...");
-  eventLogger.log("Generating accounts...");
+  accountLogger.log("Generating accounts...");
   await HederaUtils.generateAccounts(n, accountLogger, true, h);
 }
 
