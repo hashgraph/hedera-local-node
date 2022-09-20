@@ -14,35 +14,8 @@ yargs(hideBin(process.argv))
   .command(
     'start [accounts]',
     'Starts the local hedera network.',
-    (_yargs) => {
-      return _yargs
-        .positional('accounts', {
-          describe: 'Generated accounts of each type.',
-          default: 10,
-        })
-        .options({
-          detached: {
-            alias: 'd',
-            type: 'boolean',
-            describe: 'Run the local node in detached mode',
-            demandOption: false,
-          },
-          host: {
-            alias: 'h',
-            type: 'string',
-            describe: 'Run the local node with host',
-            demandOption: false,
-            default: '127.0.0.1',
-          },
-          network: {
-            alias: 'n',
-            type: 'string',
-            describe: 'Select the network configuration',
-            demandOption: false,
-            choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
-            default: 'mainnet',
-          },
-        });
+    (yargs) => {
+      return yargs
     },
     async (argv) => {
       await start(argv.accounts, argv.detached, argv.host, argv.network);
@@ -54,35 +27,8 @@ yargs(hideBin(process.argv))
   .command(
     'restart',
     'Restart the local hedera network.',
-    (_yargs) => {
-      return _yargs
-        .positional('accounts', {
-          describe: 'Generated accounts of each type.',
-          default: 10,
-        })
-        .options({
-          detached: {
-            alias: 'd',
-            type: 'boolean',
-            describe: 'Run the local node in detached mode',
-            demandOption: false,
-          },
-          host: {
-            alias: 'h',
-            type: 'string',
-            describe: 'Run the local node with host',
-            demandOption: false,
-            default: '127.0.0.1',
-          },
-          network: {
-            alias: 'n',
-            type: 'string',
-            describe: 'Select the network configuration',
-            demandOption: false,
-            choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
-            default: 'mainnet',
-          },
-        });
+    (yargs) => {
+      return yargs
     },
     async (argv) => {
       await stop();
@@ -92,14 +38,11 @@ yargs(hideBin(process.argv))
   .command(
     'generate-accounts [n]',
     'Generates N accounts, default 10.',
-    (_yargs) => {
-      return _yargs.positional('n', {
-        describe: 'Generated accounts of each type.',
-        default: 10,
-      });
+    (yargs) => {
+      return yargs
     },
     async (argv) => {
-      await HederaUtils.generateAccounts(argv.n);
+      await HederaUtils.generateAccounts(argv.accounts);
     }
   )
   .command('*', '', () => {
@@ -121,6 +64,33 @@ Available commands:
       options:
         --h or --host to override the default host.
   `);
+  })
+  .positional('accounts', {
+    describe: 'Generated accounts of each type.',
+    default: 10,
+  })
+  .options({
+    detached: {
+      alias: 'd',
+      type: 'boolean',
+      describe: 'Run the local node in detached mode',
+      demandOption: false,
+    },
+    host: {
+      alias: 'h',
+      type: 'string',
+      describe: 'Run the local node with host',
+      demandOption: false,
+      default: '127.0.0.1',
+    },
+    network: {
+      alias: 'n',
+      type: 'string',
+      describe: 'Select the network configuration',
+      demandOption: false,
+      choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
+      default: 'mainnet',
+    },
   })
   .parse();
 
