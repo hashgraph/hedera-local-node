@@ -5,7 +5,7 @@
   "logPeriod":1,
   "exportPeriodSecs":400,
   "maxSizeKb":2048,
-  "streamExtension": "rcd.gz",
+  "streamExtension": "rcd",
   "sidecarEnabled": false,
   "nodeImageTag": "0.28.7",
   "havegedImageTag": "0.28.7",
