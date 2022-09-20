@@ -1,5 +1,5 @@
 const shell = require("shelljs");
-const ConnectionCheck = require("../helpers/connectionCheck");
+const DockerCheck = require("../helpers/dockerCheck");
 
 module.exports = class NodeController {
   static getNullOutput() {
@@ -19,16 +19,16 @@ module.exports = class NodeController {
   }
 
   static async startLocalNode() {
-    const dockerStatus = await ConnectionCheck.checkDocker();
-    if (!dockerStatus){
-      console.log('Docker is not running.');
+    const dockerStatus = await DockerCheck.checkDocker();
+    if (!dockerStatus) {
+      console.log("Docker is not running.");
       process.exit();
     }
     const nullOutput = this.getNullOutput();
 
     console.log("Starting the docker containers...");
     shell.cd(__dirname);
-    shell.cd('../../');
+    shell.cd("../../");
     const output = shell.exec(`docker-compose up -d 2>${nullOutput}`);
     if (output.code == 1) {
       const yaml = require("js-yaml");

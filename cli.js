@@ -121,21 +121,21 @@ async function main(n, d, h) {
   accountLogger = screen.getAccountBoard();
   await screen.updateStatusBoard();
   await start(n, h, eventLogger, accountLogger);
-  
+
   eventLogger.log(
     "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
   );
   // should be replace with the output of network-node
   // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
   let i = 0;
-  while (i++ < Number.MAX_VALUE){
+  while (i++ < Number.MAX_VALUE) {
     // eventLogger.log(await ConnectionCheck.containerStatusCheck(5600,'127.0.0.1', eventLogger));
     await screen.updateStatusBoard();
     await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 }
 
-async function start(n, h, eventLogger, accountLogger){
+async function start(n, h, eventLogger, accountLogger) {
   eventLogger.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, h, eventLogger);
   eventLogger.log("Starting the network...");
@@ -143,7 +143,7 @@ async function start(n, h, eventLogger, accountLogger){
   await HederaUtils.generateAccounts(n, accountLogger, true, h);
 }
 
-async function startDetached(n, h){
+async function startDetached(n, h) {
   console.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, h, console);
   console.log("Starting the network...");

@@ -1,6 +1,7 @@
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
 const ConnectionCheck = require("../helpers/connectionCheck");
+const DockerCheck = require("../helpers/dockerCheck");
 const NodeController = require("../utils/nodeController");
 
 module.exports = class TerminalUserInterface {
@@ -12,6 +13,24 @@ module.exports = class TerminalUserInterface {
   relayLog;
   accountBoard;
   info;
+
+  applications = [
+    {
+      name: "Consensus Node",
+      label: "network-node",
+      port: 50211,
+    },
+    {
+      name: "Mirror Node",
+      label: "mirror-node-grpc",
+      port: 5600,
+    },
+    {
+      name: "Relay",
+      label: "json-rpc-relay",
+      port: 7546,
+    },
+  ];
 
   constructor() {
     this.screen = blessed.screen({
@@ -27,97 +46,110 @@ module.exports = class TerminalUserInterface {
     const relayLog = this.initRelayLog();
     const accountBoard = this.initAccountBoard();
 
-
     //assign key events
-    this.screen.key(['tab', 'C-c', '1', '2', '3', '4'], async function (ch, key) {
-      if (key.name == 'tab'){
-        this.screen.focusNext();
+    this.screen.key(
+      ["tab", "C-c", "1", "2", "3", "4"],
+      async function (ch, key) {
+        if (key.name == "tab") {
+          this.screen.focusNext();
+        } else if (ch == "1") {
+          mirrorLog.hide();
+          relayLog.hide();
+          accountBoard.hide();
+          consensusLog.show();
+          consensusLog.focus();
+        } else if (ch == "2") {
+          relayLog.hide();
+          accountBoard.hide();
+          consensusLog.hide();
+          mirrorLog.show();
+          mirrorLog.focus();
+        } else if (ch == "3") {
+          mirrorLog.hide();
+          accountBoard.hide();
+          consensusLog.hide();
+          relayLog.show();
+          relayLog.focus();
+        } else if (ch == "4") {
+          mirrorLog.hide();
+          relayLog.hide();
+          consensusLog.hide();
+          accountBoard.show();
+          accountBoard.focus();
+        } else {
+          this.screen.destroy();
+          // await NodeController.stopLocalNode();
+          return process.exit(0);
+        }
+        this.screen.render();
       }
-      else if(ch == '1'){
-        mirrorLog.hide();
-        relayLog.hide();
-        accountBoard.hide();
-        consensusLog.show();
-        consensusLog.focus();
-      }
-      else if(ch == '2'){
-        relayLog.hide();
-        accountBoard.hide();
-        consensusLog.hide();
-        mirrorLog.show();
-        mirrorLog.focus();
-      }
-      else if(ch == '3'){
-        mirrorLog.hide();
-        accountBoard.hide();
-        consensusLog.hide();
-        relayLog.show();
-        relayLog.focus();
-      }
-      else if(ch == '4'){
-        mirrorLog.hide();
-        relayLog.hide();
-        consensusLog.hide();
-        accountBoard.show();
-        accountBoard.focus();
-      }
-      else{
-        this.screen.destroy();
-        // await NodeController.stopLocalNode();
-        return process.exit(0);
-      }
-      this.screen.render();
-    });
+    );
     this.screen.render();
   }
 
   initInfoBoard() {
-    this.info =  this.grid.set(0, 3, 2, 3, contrib.table, 
-      { keys: true
-      , fg: 'white'
-      , label: 'Commands Information'
-      , columnSpacing: 1
-      , columnWidth: [10, 30, 30]});
-    this.info.setData({headers: ['Key', 'Command'], data: [['1','Open Consensus Node Board'],['2','Open Mirror Node Log Board'],['3','Open Relay Log Board'],['4','Open Account Board']]});
+    this.info = this.grid.set(0, 3, 2, 3, contrib.table, {
+      keys: true,
+      fg: "white",
+      label: "Commands Information",
+      columnSpacing: 1,
+      columnWidth: [10, 30, 30],
+    });
+    this.info.setData({
+      headers: ["Key", "Command"],
+      data: [
+        ["1", "Open Consensus Node Board"],
+        ["2", "Open Mirror Node Log Board"],
+        ["3", "Open Relay Log Board"],
+        ["4", "Open Account Board"],
+      ],
+    });
   }
 
   async initStatusBoard() {
-    this.status =  this.grid.set(0, 0, 2, 3, contrib.table, 
-      { keys: true
-      , fg: 'white'
-      , label: 'Status'
-      , columnSpacing: 3
-      , columnWidth: [15, 15, 15]});
-    this.status.setData({headers: ['Application', 'Version', 'Status'], data: []});
+    this.status = this.grid.set(0, 0, 2, 3, contrib.table, {
+      keys: true,
+      fg: "white",
+      label: "Status",
+      columnSpacing: 3,
+      columnWidth: [15, 15, 15],
+    });
+    this.status.setData({
+      headers: ["Application", "Version", "Status"],
+      data: [],
+    });
   }
 
-  async updateStatusBoard(){
+  async updateStatusBoard() {
     let data = [];
-    const applications = [{
-      name: 'Consensus Node',
-      port: 50211
-    },
-    {
-      name: 'Mirror Node',
-      port: 5600
-    },
-    {
-      name: 'Relay',
-      port: 7546
-    }]
-    await Promise.all(applications.map(async (application) => {
-      var row = []
-      row.push(application.name);
-      row.push('latest');
-      const status = await ConnectionCheck.checkConnection(application.port).then(function() {
-        return 'Running';
-      }, function() {
-        return 'Not Running';
+
+    await Promise.all(
+      this.applications.map(async (application) => {
+        var row = [];
+        const status = await ConnectionCheck.checkConnection(
+          application.port
+        ).then(
+          function () {
+            return "Running";
+          },
+          function () {
+            return "Not Running";
+          }
+        );
+
+        const verison = await DockerCheck.getContainerVersion(
+          application.label
+        );
+        row.push(application.name);
+        row.push(verison);
+        row.push(status);
+        data.push(row);
       })
-      row.push(status);
-      data.push(row);
-    }));
-    this.status.setData({headers: ['Application', 'Version', 'Status'], data: data});
+    );
+    this.status.setData({
+      headers: ["Application", "Version", "Status"],
+      data: data,
+    });
     this.screen.render();
   }
 
@@ -199,7 +231,7 @@ module.exports = class TerminalUserInterface {
   getAccountBoard() {
     return this.accountBoard;
   }
-  
+
   getMirrorNodeLog() {
     return this.mirrorLog;
   }
