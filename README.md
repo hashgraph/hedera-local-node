@@ -54,7 +54,7 @@ git clone https://github.com/hashgraph/hedera-local-node.git
 1. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean manuelly generated files. If you would like to keep any files created manuelly in the working directory please save them before executing this command.
 
 ## Network Variables
-These are the local network variables to interact with the consensus and mirror node. 
+These are the local network variables to interact with the consensus and mirror node.
 - Consensus Node Endpoint
   -  `127.0.0.1:50211`
   -  The IP address and port of the local consensus node
@@ -65,7 +65,7 @@ These are the local network variables to interact with the consensus and mirror 
   - `127.0.0.1:5600`
   - The mirror node network to use
 - Mirror Node REST API Endpoint
-  -  `127.0.0.1:5551` 
+  -  `127.0.0.1:5551`
   -  The endpoint to submit rest API requests to
 - Account ID
   - `0.0.2`
@@ -117,10 +117,10 @@ Mirror Node Url - http://127.0.0.1:5551
 
 #### Official NPM Release
 The command below can be used to install the official release from the NPM repository. This version may not reflect
-the most recent changes to the `main` branch of this repository. 
+the most recent changes to the `main` branch of this repository.
 
-This version uses a baked in version of the Docker Compose definitions and will not reflect any local changes made to 
-the repository. 
+This version uses a baked in version of the Docker Compose definitions and will not reflect any local changes made to
+the repository.
 
 ```bash
 npm install @hashgraph/hedera-local -g
@@ -141,6 +141,7 @@ Available commands:
         options:
             --d or --detached for starting in detached mode.
             --h or --host to override the default host.
+            --n or --network to override the default configuration. Defaults to mainnet.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -383,6 +384,32 @@ $ hedera generate-accounts 2
 |------------------------------------------------------------------------------------------|
 ```
 - --h / --host - Override the default host.
+
+---
+
+## Network specific configuration
+
+Network specific configurations can be applied using the `-n/--network` option when starting/restarting the local node. Available options are `mainnet`, `previewnet`, `testnet` and `custom`
+To create a configuration for a network, create a `<network>.json` file in the `configs` folder with the following properties:
+
+mainnet.json:
+```
+{
+  "ledgerID": "0x01",
+  "nettyMode": "DEV",
+  "chainId": 298,
+  "logPeriod": 1,
+  "exportPeriodSecs": 400,
+  "maxSizeKb": 2048,
+  "streamExtension": "rcd.gz",
+  "sidecarEnabled": false,
+  "nodeImageTag": "0.28.7",
+  "havegedImageTag": "0.28.7",
+  "uploaderImageTag": "0.5.0",
+  "mirrorImageTag": "0.61.1",
+  "relayImageTag": "0.6.0"
+}
+```
 
 ---
 
