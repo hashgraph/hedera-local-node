@@ -5,9 +5,12 @@ const ConnectionCheck = require("./src/helpers/connectionCheck");
 const HederaUtils = require("./src/utils/hederaUtils");
 const TerminalUserInterface = require("./src/tui");
 const NodeController = require("./src/utils/nodeController");
+var Docker = require("dockerode");
+var stream = require('stream');
 let screen;
 let eventLogger;
 let accountLogger;
+
 yargs(hideBin(process.argv))
   .command(
     "start [accounts]",
@@ -119,6 +122,8 @@ async function main(n, d, h) {
   screen = new TerminalUserInterface();
   eventLogger = screen.getConsensusLog();
   accountLogger = screen.getAccountBoard();
+  relayLogger = screen.getRelayLog();
+
   await screen.updateStatusBoard();
   await start(n, h, eventLogger, accountLogger);
 
@@ -127,12 +132,57 @@ async function main(n, d, h) {
   );
   // should be replace with the output of network-node
   // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
-  let i = 0;
-  while (i++ < Number.MAX_VALUE) {
-    // eventLogger.log(await ConnectionCheck.containerStatusCheck(5600,'127.0.0.1', eventLogger));
-    await screen.updateStatusBoard();
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-  }
+  // let i = 0;
+  // while (i++ < Number.MAX_VALUE) {
+  //   // eventLogger.log(await ConnectionCheck.containerStatusCheck(5600,'127.0.0.1', eventLogger));
+  //   await screen.updateStatusBoard();
+  //   containerLogs('c4e693115df66438cb4e7b965da37760850730358057ac4f7da6a0d03d44b1b0', eventLogger)
+  //   // await new Promise((resolve) => setTimeout(resolve, 10000));
+  // }
+  containerLogs('4793d272334e802d96776de8c52b7bd74a2425775d1daf8d07bfcb623856587a',eventLogger);
+  containerLogs('4793d272334e802d96776de8c52b7bd74a2425775d1daf8d07bfcb623856587a',relayLogger);
+  // Promise.all([,]);
+  // Promise.allSettled(tasks).then((result)=> {
+  //   console.log(result);
+  // })
+  // .catch((err) => {
+  //   console.log(err);
+  // })
+}
+
+/**
+ * Get logs from running container
+ */
+function containerLogs(containerId,consensusLogger) {
+    var docker = new Docker({
+      socketPath: '/var/run/docker.sock'
+    });
+    const container = docker.getContainer(containerId)  
+    
+    var logStream = new stream.PassThrough();
+    logStream.on('data', function(chunk){
+      consensusLogger.log(chunk.toString('utf8'));
+    });
+  
+    container.logs({
+      follow: true,
+      stdout: true,
+      stderr: true,
+      since: Date.now()/1000
+    }, function(err, stream){
+      if(err) {
+        return console.error(err.message);
+      }
+      container.modem.demuxStream(stream, logStream, logStream);
+      stream.on('end', function(){
+        logStream.end('!stop!');
+      });
+  
+      // setTimeout(function() {
+      //   stream.destroy();
+      // }, 2000);
+    });
+  
 }
 
 async function start(n, h, eventLogger, accountLogger) {
