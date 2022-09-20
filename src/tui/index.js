@@ -71,35 +71,31 @@ module.exports = class TerminalUserInterface {
     this.screen.render();
   }
 
-  initKeyEvents(screen, hideLogs){
-
-  }
-
   initInfoBoard() {
-    this.info =  this.grid.set(0, 2, 2, 3, contrib.table, 
+    this.info =  this.grid.set(0, 3, 2, 3, contrib.table, 
       { keys: true
-      , fg: 'green'
+      , fg: 'white'
       , label: 'Commands Information'
       , columnSpacing: 1
       , columnWidth: [10, 30, 30]});
-    this.info.setData({headers: ['Key', 'Command'], data: [['1','Open Accounts Info Board'],['2','Open Consensus Node Log Board'],['3','Open Mirror Node Log Board'],['4','Open Relay Log Board']]});
+    this.info.setData({headers: ['Key', 'Command'], data: [['1','Open Consensus Node Board'],['2','Open Mirror Node Log Board'],['3','Open Relay Log Board'],['4','Open Account Board']]});
   }
 
   async initStatusBoard() {
-    this.status =  this.grid.set(0, 0, 2, 2, contrib.table, 
+    this.status =  this.grid.set(0, 0, 2, 3, contrib.table, 
       { keys: true
-      , fg: 'green'
+      , fg: 'white'
       , label: 'Status'
-      , columnSpacing: 2
-      , columnWidth: [15, 10, 10]});
+      , columnSpacing: 3
+      , columnWidth: [15, 15, 15]});
     this.status.setData({headers: ['Application', 'Version', 'Status'], data: []});
   }
 
   async updateStatusBoard(){
-    const data = [];
-    const containers = [{
+    let data = [];
+    const applications = [{
       name: 'Consensus Node',
-      port: 5600
+      port: 50211
     },
     {
       name: 'Mirror Node',
@@ -107,26 +103,28 @@ module.exports = class TerminalUserInterface {
     },
     {
       name: 'Relay',
-      port: 5600
+      port: 7546
     }]
-
-    containers.forEach(async application => {
+    await Promise.all(applications.map(async (application) => {
       var row = []
       row.push(application.name);
       row.push('latest');
-      // let status = await ConnectionCheck.containerStatusCheck(application.port);
-      // console.log(status);
-      row.push('OK');
+      const status = await ConnectionCheck.checkConnection(application.port).then(function() {
+        return 'Running';
+      }, function() {
+        return 'Not Running';
+      })
+      row.push(status);
       data.push(row);
-    })
+    }));
     this.status.setData({headers: ['Application', 'Version', 'Status'], data: data});
     this.screen.render();
   }
 
   initConsensusLog() {
     this.consensusLog = this.grid.set(2, 0, 10, 12, blessed.log, {
-      fg: "green",
-      selectedFg: "green",
+      fg: "white",
+      selectedFg: "white",
       label: "Consensus Node Log",
       scrollable: true,
       focused: true,
@@ -143,8 +141,8 @@ module.exports = class TerminalUserInterface {
 
   initMirrorLog() {
     this.mirrorLog = this.grid.set(2, 0, 10, 12, blessed.log, {
-      fg: "green",
-      selectedFg: "green",
+      fg: "white",
+      selectedFg: "white",
       label: "Mirror Node Log",
       scrollable: true,
       focused: true,
@@ -162,8 +160,8 @@ module.exports = class TerminalUserInterface {
 
   initRelayLog() {
     this.relayLog = this.grid.set(2, 0, 10, 12, blessed.log, {
-      fg: "green",
-      selectedFg: "green",
+      fg: "white",
+      selectedFg: "white",
       label: "Relay Log",
       scrollable: true,
       focused: true,
@@ -181,8 +179,8 @@ module.exports = class TerminalUserInterface {
 
   initAccountBoard() {
     this.accountBoard = this.grid.set(2, 0, 10, 12, blessed.log, {
-      fg: "green",
-      selectedFg: "green",
+      fg: "white",
+      selectedFg: "white",
       label: "Account Board",
       scrollable: true,
       focused: true,
@@ -198,17 +196,6 @@ module.exports = class TerminalUserInterface {
     return this.accountBoard;
   }
 
-  hideLogs(accountBoard, consensusLog, mirrorLog, relayLog) {
-    accountBoard.hide();
-    consensusLog.hide();
-    mirrorLog.hide();
-    relayLog.hide();
-  }
-
-  showLogBoard(board) {
-    board.show();
-  }
-
   getAccountBoard() {
     return this.accountBoard;
   }
@@ -219,5 +206,9 @@ module.exports = class TerminalUserInterface {
 
   getConsensusLog() {
     return this.consensusLog;
+  }
+
+  getRelayLog() {
+    return this.relayLog;
   }
 };

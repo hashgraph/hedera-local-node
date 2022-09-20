@@ -1,4 +1,5 @@
 const shell = require("shelljs");
+const ConnectionCheck = require("../helpers/connectionCheck");
 
 module.exports = class NodeController {
   static getNullOutput() {
@@ -18,6 +19,11 @@ module.exports = class NodeController {
   }
 
   static async startLocalNode() {
+    const dockerStatus = await ConnectionCheck.checkDocker();
+    if (!dockerStatus){
+      console.log('Docker is not running.');
+      process.exit();
+    }
     const nullOutput = this.getNullOutput();
 
     console.log("Starting the docker containers...");
