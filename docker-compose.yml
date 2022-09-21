@@ -232,7 +232,7 @@ services:
     ports:
       - "5551:5551"
     restart: unless-stopped
-    tty: true
+    tty: false
 
   web3:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_IMAGE_TAG}"
