@@ -7,6 +7,9 @@ const TerminalUserInterface = require("./src/tui");
 const NodeController = require("./src/utils/nodeController");
 var Docker = require("dockerode");
 var stream = require('stream');
+const constants = require('./src/utils/constants');
+const DockerCheck = require("./src/helpers/dockerCheck");
+
 let screen;
 let eventLogger;
 let accountLogger;
@@ -123,76 +126,79 @@ async function main(n, d, h) {
   eventLogger = screen.getConsensusLog();
   accountLogger = screen.getAccountBoard();
   relayLogger = screen.getRelayLog();
+  mirrorNodeLogger = screen.getMirrorNodeLog();
 
   await screen.updateStatusBoard();
   await start(n, h, eventLogger, accountLogger);
 
+
   eventLogger.log(
     "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
   );
-  // should be replace with the output of network-node
-  // once https://github.com/hashgraph/hedera-services/issues/3749 is implemented
-  // let i = 0;
+
+  const consensusNodeId = await DockerCheck.getCointainerId(constants.CONSENSUS_NODE_LABEL);
+  const mirrorNodeId = await DockerCheck.getCointainerId(constants.MIRROR_NODE_LABEL);
+  const relayId = await DockerCheck.getCointainerId(constants.RELAY_LABEL);
+
+  attachContainerLogs(consensusNodeId,eventLogger);
+  attachContainerLogs(relayId,relayLogger);
+  attachContainerLogs(mirrorNodeId,mirrorNodeLogger);
+
   // while (i++ < Number.MAX_VALUE) {
-  //   // eventLogger.log(await ConnectionCheck.containerStatusCheck(5600,'127.0.0.1', eventLogger));
-  //   await screen.updateStatusBoard();
-  //   containerLogs('c4e693115df66438cb4e7b965da37760850730358057ac4f7da6a0d03d44b1b0', eventLogger)
-  //   // await new Promise((resolve) => setTimeout(resolve, 10000));
+    await screen.updateStatusBoard();
+  //   await new Promise((resolve) => setTimeout(resolve, 10000));
   // }
-  containerLogs('4793d272334e802d96776de8c52b7bd74a2425775d1daf8d07bfcb623856587a',eventLogger);
-  containerLogs('4793d272334e802d96776de8c52b7bd74a2425775d1daf8d07bfcb623856587a',relayLogger);
-  // Promise.all([,]);
-  // Promise.allSettled(tasks).then((result)=> {
-  //   console.log(result);
-  // })
-  // .catch((err) => {
-  //   console.log(err);
-  // })
 }
 
 /**
- * Get logs from running container
+ * Attach container logs to given screen logger
  */
-function containerLogs(containerId,consensusLogger) {
-    var docker = new Docker({
-      socketPath: '/var/run/docker.sock'
+function attachContainerLogs(containerId, logger) {
+  var docker = new Docker({
+    socketPath: '/var/run/docker.sock'
+  });
+  const container = docker.getContainer(containerId)  
+
+  var logStream = new stream.PassThrough();
+  logStream.on('data', function(chunk){
+    var line = chunk.toString('utf8');
+    if (!line.includes(' Transaction ID: 0.0.2-')){
+      logger.log(line);
+    }
+  });
+
+  container.logs({
+    follow: true,
+    stdout: true,
+    stderr: true,
+    since: Date.now()/1000
+  }, function(err, stream){
+    if(err) {
+      return console.error(err.message);
+    }
+    container.modem.demuxStream(stream, logStream, logStream);
+    stream.on('end', function(){
+      logStream.end('!stop!');
     });
-    const container = docker.getContainer(containerId)  
-    
-    var logStream = new stream.PassThrough();
-    logStream.on('data', function(chunk){
-      consensusLogger.log(chunk.toString('utf8'));
-    });
-  
-    container.logs({
-      follow: true,
-      stdout: true,
-      stderr: true,
-      since: Date.now()/1000
-    }, function(err, stream){
-      if(err) {
-        return console.error(err.message);
-      }
-      container.modem.demuxStream(stream, logStream, logStream);
-      stream.on('end', function(){
-        logStream.end('!stop!');
-      });
-  
-      // setTimeout(function() {
-      //   stream.destroy();
-      // }, 2000);
-    });
-  
+  });
 }
 
+/**
+ * Check if network is up and generate accounts
+ */
 async function start(n, h, eventLogger, accountLogger) {
   eventLogger.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, h, eventLogger);
   eventLogger.log("Starting the network...");
+  
   accountLogger.log("Generating accounts...");
   await HederaUtils.generateAccounts(n, accountLogger, true, h);
 }
 
+
+/**
+ * Check if network is up and generate accounts
+ */
 async function startDetached(n, h) {
   console.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, h, console);

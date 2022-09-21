@@ -1,6 +1,10 @@
 const net = require("net");
 
 module.exports = class ConnectionCheck {
+
+  /**
+   * Check if containers are up and running
+   */
   static async waitForFiringUp(port, host = "127.0.0.1", logger) {
     let isReady = false;
     while (!isReady) {
@@ -20,6 +24,9 @@ module.exports = class ConnectionCheck {
     }
   }
 
+  /**
+   * Check connection to given host and port
+   */
   static checkConnection(port, host = "127.0.0.1") {
     return new Promise(function (resolve, reject) {
       const timeout = 3000;

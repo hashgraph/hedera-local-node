@@ -2,7 +2,7 @@ const blessed = require("blessed");
 const contrib = require("blessed-contrib");
 const ConnectionCheck = require("../helpers/connectionCheck");
 const DockerCheck = require("../helpers/dockerCheck");
-const NodeController = require("../utils/nodeController");
+const constants = require('../utils/constants');
 
 module.exports = class TerminalUserInterface {
   screen;
@@ -13,24 +13,6 @@ module.exports = class TerminalUserInterface {
   relayLog;
   accountBoard;
   info;
-
-  applications = [
-    {
-      name: "Consensus Node",
-      label: "network-node",
-      port: 50211,
-    },
-    {
-      name: "Mirror Node",
-      label: "mirror-node-grpc",
-      port: 5600,
-    },
-    {
-      name: "Relay",
-      label: "json-rpc-relay",
-      port: 7546,
-    },
-  ];
 
   constructor() {
     this.screen = blessed.screen({
@@ -87,8 +69,11 @@ module.exports = class TerminalUserInterface {
     this.screen.render();
   }
 
+  /**
+   * Initialize info board screen
+   */
   initInfoBoard() {
-    this.info = this.grid.set(0, 3, 2, 3, contrib.table, {
+    this.info = this.grid.set(0, 5, 2, 3, contrib.table, {
       keys: true,
       fg: "white",
       label: "Commands Information",
@@ -106,12 +91,15 @@ module.exports = class TerminalUserInterface {
     });
   }
 
+  /**
+   * Initialize status board screen
+   */
   async initStatusBoard() {
-    this.status = this.grid.set(0, 0, 2, 3, contrib.table, {
+    this.status = this.grid.set(0, 0, 2, 5, contrib.table, {
       keys: true,
       fg: "white",
       label: "Status",
-      columnSpacing: 3,
+      columnSpacing: 5,
       columnWidth: [15, 15, 15],
     });
     this.status.setData({
@@ -120,15 +108,17 @@ module.exports = class TerminalUserInterface {
     });
   }
 
+  /**
+   * Update status board screen
+   */
   async updateStatusBoard() {
     let data = [];
 
     await Promise.all(
-      this.applications.map(async (application) => {
+      constants.CONTAINERS.map(async (container) => {
         var row = [];
-        const status = await ConnectionCheck.checkConnection(
-          application.port
-        ).then(
+        const status = await ConnectionCheck.checkConnection(container.port)
+        .then(
           function () {
             return "Running";
           },
@@ -137,10 +127,8 @@ module.exports = class TerminalUserInterface {
           }
         );
 
-        const verison = await DockerCheck.getContainerVersion(
-          application.label
-        );
-        row.push(application.name);
+        const verison = await DockerCheck.getContainerVersion(container.label);
+        row.push(container.name);
         row.push(verison);
         row.push(status);
         data.push(row);
@@ -153,6 +141,9 @@ module.exports = class TerminalUserInterface {
     this.screen.render();
   }
 
+  /**
+   * Initialize consensus node logger screen
+   */
   initConsensusLog() {
     this.consensusLog = this.grid.set(2, 0, 10, 12, blessed.log, {
       fg: "white",
@@ -171,6 +162,9 @@ module.exports = class TerminalUserInterface {
     return this.consensusLog;
   }
 
+  /**
+   * Initialize mirror node logger screen
+   */
   initMirrorLog() {
     this.mirrorLog = this.grid.set(2, 0, 10, 12, blessed.log, {
       fg: "white",
@@ -190,6 +184,9 @@ module.exports = class TerminalUserInterface {
     return this.mirrorLog;
   }
 
+  /**
+   * Initialize relay logger screen
+   */
   initRelayLog() {
     this.relayLog = this.grid.set(2, 0, 10, 12, blessed.log, {
       fg: "white",
@@ -209,6 +206,9 @@ module.exports = class TerminalUserInterface {
     return this.relayLog;
   }
 
+  /**
+   * Initialize account board screen
+   */
   initAccountBoard() {
     this.accountBoard = this.grid.set(2, 0, 10, 12, blessed.log, {
       fg: "white",
@@ -228,18 +228,30 @@ module.exports = class TerminalUserInterface {
     return this.accountBoard;
   }
 
+  /**
+   * Return account screen logger object
+   */
   getAccountBoard() {
     return this.accountBoard;
   }
 
+  /**
+   * Return mirror node screen logger object
+   */
   getMirrorNodeLog() {
     return this.mirrorLog;
   }
 
+  /**
+   * Return consensus node screen logger object
+   */
   getConsensusLog() {
     return this.consensusLog;
   }
 
+  /**
+   * Return relay screen logger object
+   */
   getRelayLog() {
     return this.relayLog;
   }
