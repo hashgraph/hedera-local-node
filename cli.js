@@ -131,7 +131,6 @@ async function main(n, d, h) {
   await screen.updateStatusBoard();
   await start(n, h, eventLogger, accountLogger);
 
-
   eventLogger.log(
     "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
   );
@@ -143,11 +142,12 @@ async function main(n, d, h) {
   attachContainerLogs(consensusNodeId,eventLogger);
   attachContainerLogs(relayId,relayLogger);
   attachContainerLogs(mirrorNodeId,mirrorNodeLogger);
-
-  // while (i++ < Number.MAX_VALUE) {
+  
+  let i = 0;
+  while (i++ < Number.MAX_VALUE) {
     await screen.updateStatusBoard();
-  //   await new Promise((resolve) => setTimeout(resolve, 10000));
-  // }
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+  }
 }
 
 /**
