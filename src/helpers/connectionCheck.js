@@ -5,7 +5,7 @@ module.exports = class ConnectionCheck {
   /**
    * Check if containers are up and running
    */
-  static async waitForFiringUp(port, host = "127.0.0.1", logger) {
+  static async waitForFiringUp(port, logger, host = "127.0.0.1") {
     let isReady = false;
     while (!isReady) {
       net

@@ -74,7 +74,7 @@ module.exports = class TerminalUserInterface {
    * Initialize info board screen
    */
   initInfoBoard() {
-    this.info = this.grid.set(0, 5, 2, 3, contrib.table, {
+    this.info = this.grid.set(0, 7, 2, 3, contrib.table, {
       keys: true,
       fg: "white",
       label: "Commands Information",
@@ -96,7 +96,7 @@ module.exports = class TerminalUserInterface {
    * Initialize status board screen
    */
   async initStatusBoard() {
-    this.status = this.grid.set(0, 0, 2, 5, contrib.table, {
+    this.status = this.grid.set(0, 0, 2, 7, contrib.table, {
       keys: true,
       fg: "white",
       label: "Status",

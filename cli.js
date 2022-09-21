@@ -89,7 +89,7 @@ yargs(hideBin(process.argv))
       });
     },
     async (argv) => {
-      await HederaUtils.generateAccounts(argv.n, console);
+      await HederaUtils.generateAccounts(console, argv.n);
     }
   )
   .command("*", "", () => {
@@ -184,11 +184,11 @@ function attachContainerLogs(containerId, logger) {
  */
 async function start(n, h, eventLogger, accountLogger) {
   eventLogger.log("Detecting the network...");
-  await ConnectionCheck.waitForFiringUp(5600, h, eventLogger);
+  await ConnectionCheck.waitForFiringUp(5600, eventLogger, h);
   eventLogger.log("Starting the network...");
   
   accountLogger.log("Generating accounts...");
-  await HederaUtils.generateAccounts(n, accountLogger, true, h);
+  await HederaUtils.generateAccounts(accountLogger, n, true, h);
 }
 
 
@@ -197,10 +197,10 @@ async function start(n, h, eventLogger, accountLogger) {
  */
 async function startDetached(n, h) {
   console.log("Detecting the network...");
-  await ConnectionCheck.waitForFiringUp(5600, h, console);
+  await ConnectionCheck.waitForFiringUp(5600, console, h);
   console.log("Starting the network...");
   console.log("Generating accounts...");
-  await HederaUtils.generateAccounts(n, console, true, h);
+  await HederaUtils.generateAccounts(console, n, true, h);
   console.log("\nLocal node has been successfully started in detached mode.");
   process.exit();
 }
