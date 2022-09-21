@@ -100,10 +100,10 @@ module.exports = class TerminalUserInterface {
       fg: "white",
       label: "Status",
       columnSpacing: 5,
-      columnWidth: [15, 15, 15],
+      columnWidth: [15, 15, 15, 15, 15],
     });
     this.status.setData({
-      headers: ["Application", "Version", "Status"],
+      headers: ["Application", "Version", "Status", "Host", "Port"],
       data: [],
     });
   }
@@ -111,16 +111,15 @@ module.exports = class TerminalUserInterface {
   /**
    * Update status board screen
    */
-  async updateStatusBoard() {
+  async updateStatusBoard(h) {
     let data = [];
-
     await Promise.all(
       constants.CONTAINERS.map(async (container) => {
         var row = [];
         const status = await ConnectionCheck.checkConnection(container.port)
         .then(
           function () {
-            return "Running";
+            return `Running`;
           },
           function () {
             return "Not Running";
@@ -131,11 +130,13 @@ module.exports = class TerminalUserInterface {
         row.push(container.name);
         row.push(verison);
         row.push(status);
+        row.push(h);
+        row.push(container.port)
         data.push(row);
       })
     );
     this.status.setData({
-      headers: ["Application", "Version", "Status"],
+      headers: ["Application", "Version", "Status", "Host", "Port"],
       data: data,
     });
     this.screen.render();

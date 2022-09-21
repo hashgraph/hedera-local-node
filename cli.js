@@ -128,7 +128,7 @@ async function main(n, d, h) {
   relayLogger = screen.getRelayLog();
   mirrorNodeLogger = screen.getMirrorNodeLog();
 
-  await screen.updateStatusBoard();
+  await screen.updateStatusBoard(h);
   await start(n, h, eventLogger, accountLogger);
 
   eventLogger.log(
@@ -142,10 +142,10 @@ async function main(n, d, h) {
   attachContainerLogs(consensusNodeId,eventLogger);
   attachContainerLogs(relayId,relayLogger);
   attachContainerLogs(mirrorNodeId,mirrorNodeLogger);
-  
+
   let i = 0;
   while (i++ < Number.MAX_VALUE) {
-    await screen.updateStatusBoard();
+    await screen.updateStatusBoard(h);
     await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 }
