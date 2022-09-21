@@ -163,6 +163,24 @@ Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @h
 
 #### `hedera start <options>`
 
+![Demo](.github/demo-start.gif)
+
+- --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
+  private keys, and the next ones are with random generated private keys.
+
+- --h / --host - Override the default host.
+
+#### `hedera restart <options>`
+
+![Demo](.github/demo-restart.gif)
+
+- --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
+  private keys, and the next ones are with random generated private keys.
+
+- --h / --host - Override the default host.
+
+#### `hedera start -d <options>`
+
 ```bash
 $ hedera start
 Starting the docker images...
@@ -265,7 +283,7 @@ No available options
 
 ---
 
-#### `hedera restart <options>`
+#### `hedera restart -d <options>`
 
 ```bash
 $ hedera restart

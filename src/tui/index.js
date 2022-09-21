@@ -3,6 +3,7 @@ const contrib = require("blessed-contrib");
 const ConnectionCheck = require("../helpers/connectionCheck");
 const DockerCheck = require("../helpers/dockerCheck");
 const constants = require('../utils/constants');
+const NodeController = require("../utils/nodeController");
 
 module.exports = class TerminalUserInterface {
   screen;
@@ -60,7 +61,7 @@ module.exports = class TerminalUserInterface {
           accountBoard.focus();
         } else {
           this.screen.destroy();
-          // await NodeController.stopLocalNode();
+          await NodeController.stopLocalNode();
           return process.exit(0);
         }
         this.screen.render();
