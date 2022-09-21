@@ -1,14 +1,14 @@
-var Docker = require("dockerode");
+const Docker = require("dockerode");
 
 module.exports = class DockerCheck {
   /**
    * Check if docker is running
    */
   static async checkDocker() {
-    var socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
-    var isRunning = false;
+    const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+    let isRunning = false;
 
-    var docker = new Docker({ socketPath: socket });
+    const docker = new Docker({ socketPath: socket });
     await docker
       .info()
       .then((result) => {
@@ -24,10 +24,10 @@ module.exports = class DockerCheck {
    * Return running container ID for given container name
    */
   static async getCointainerId(name) {
-    var socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
-    var docker = new Docker({ socketPath: socket });
+    const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+    const docker = new Docker({ socketPath: socket });
 
-    var opts = {
+    const opts = {
       limit: 1,
       filters: { name: [`${name}`] },
     };
@@ -47,10 +47,10 @@ module.exports = class DockerCheck {
    * Return running container version for given container name
    */
   static async getContainerVersion(name) {
-    var socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
-    var docker = new Docker({ socketPath: socket });
+    const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+    const docker = new Docker({ socketPath: socket });
 
-    var opts = {
+    const opts = {
       limit: 1,
       filters: { name: [`${name}`] },
     };

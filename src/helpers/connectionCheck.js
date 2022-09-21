@@ -30,11 +30,11 @@ module.exports = class ConnectionCheck {
   static checkConnection(port, host = "127.0.0.1") {
     return new Promise(function (resolve, reject) {
       const timeout = 3000;
-      var timer = setTimeout(function () {
+      let timer = setTimeout(function () {
         reject("timeout");
         socket.end();
       }, timeout);
-      var socket = net.createConnection(port, host, function () {
+      let socket = net.createConnection(port, host, function () {
         clearTimeout(timer);
         resolve();
         socket.end();

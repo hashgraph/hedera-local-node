@@ -5,14 +5,10 @@ const ConnectionCheck = require("./src/helpers/connectionCheck");
 const HederaUtils = require("./src/utils/hederaUtils");
 const TerminalUserInterface = require("./src/tui");
 const NodeController = require("./src/utils/nodeController");
-var Docker = require("dockerode");
-var stream = require('stream');
+const Docker = require("dockerode");
+const stream = require('stream');
 const constants = require('./src/utils/constants');
 const DockerCheck = require("./src/helpers/dockerCheck");
-
-let screen;
-let eventLogger;
-let accountLogger;
 
 yargs(hideBin(process.argv))
   .command(
@@ -122,11 +118,11 @@ async function main(n, d, h) {
     await startDetached(n, h);
   }
 
-  screen = new TerminalUserInterface();
-  eventLogger = screen.getConsensusLog();
-  accountLogger = screen.getAccountBoard();
-  relayLogger = screen.getRelayLog();
-  mirrorNodeLogger = screen.getMirrorNodeLog();
+  const screen = new TerminalUserInterface();
+  const eventLogger = screen.getConsensusLog();
+  const accountLogger = screen.getAccountBoard();
+  const relayLogger = screen.getRelayLog();
+  const mirrorNodeLogger = screen.getMirrorNodeLog();
 
   await screen.updateStatusBoard(h);
   await start(n, h, eventLogger, accountLogger);
@@ -154,14 +150,14 @@ async function main(n, d, h) {
  * Attach container logs to given screen logger
  */
 function attachContainerLogs(containerId, logger) {
-  var docker = new Docker({
+  const docker = new Docker({
     socketPath: '/var/run/docker.sock'
   });
   const container = docker.getContainer(containerId)  
 
-  var logStream = new stream.PassThrough();
+  let logStream = new stream.PassThrough();
   logStream.on('data', function(chunk){
-    var line = chunk.toString('utf8');
+    let line = chunk.toString('utf8');
     if (!line.includes(' Transaction ID: 0.0.2-')){
       logger.log(line);
     }

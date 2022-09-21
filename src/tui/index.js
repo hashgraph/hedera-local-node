@@ -116,7 +116,7 @@ module.exports = class TerminalUserInterface {
     let data = [];
     await Promise.all(
       constants.CONTAINERS.map(async (container) => {
-        var row = [];
+        let row = [];
         const status = await ConnectionCheck.checkConnection(container.port)
         .then(
           function () {
