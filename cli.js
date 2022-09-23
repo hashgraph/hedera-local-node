@@ -4,6 +4,7 @@ const { hideBin } = require('yargs/helpers');
 const shell = require('shelljs');
 const CliHelper = require('./src/cliHelper');
 const HederaUtils = require('./src/hederaUtils');
+const CliOptions = require('./src/CliOptions')
 
 function getNullOutput() {
   if (process.platform === 'win32') return 'nul';
@@ -15,20 +16,33 @@ yargs(hideBin(process.argv))
     'start [accounts]',
     'Starts the local hedera network.',
     (yargs) => {
-      return yargs
+      CliOptions.addAccountsOption(yargs)
+      CliOptions.addDetachedOption(yargs)
+      CliOptions.addHostOption(yargs)
+      CliOptions.addNetworkOption(yargs)
     },
     async (argv) => {
       await start(argv.accounts, argv.detached, argv.host, argv.network);
     }
   )
-  .command('stop', 'Stops the local hedera network and delete all the existing data.', async () => {
-    await stop();
-  })
   .command(
-    'restart',
+    'stop',
+    'Stops the local hedera network and delete all the existing data.',
+    (yargs) => {
+      // This is needed otherwise running `stop --help` will execute the command
+      yargs
+    },
+    async () => {
+      await stop();
+    }
+  ).command(
+    'restart [accounts]',
     'Restart the local hedera network.',
     (yargs) => {
-      return yargs
+      CliOptions.addAccountsOption(yargs)
+      CliOptions.addDetachedOption(yargs)
+      CliOptions.addHostOption(yargs)
+      CliOptions.addNetworkOption(yargs)
     },
     async (argv) => {
       await stop();
@@ -36,62 +50,22 @@ yargs(hideBin(process.argv))
     }
   )
   .command(
-    'generate-accounts [n]',
+    'generate-accounts [accounts]',
     'Generates N accounts, default 10.',
     (yargs) => {
-      return yargs
+      CliOptions.addAccountsOption(yargs)
     },
     async (argv) => {
       await HederaUtils.generateAccounts(argv.accounts);
     }
   )
-  .command('*', '', () => {
-    console.log(`
-Local Hedera Plugin - Runs consensus and mirror nodes on localhost:
-- consensus node url - 127.0.0.1:50211
-- node id - 0.0.3
-- mirror node url - http://127.0.0.1:5551
-
-Available commands:
-    start - Starts the local hedera network.
-      options:
-        --d or --detached for starting in detached mode.
-        --h or --host to override the default host.
-        --n or --network to override the default configuration. Defaults to mainnet.
-    stop - Stops the local hedera network and delete all the existing data.
-    restart - Restart the local hedera network.
-    generate-accounts <n> - Generates N accounts, default 10.
-      options:
-        --h or --host to override the default host.
-  `);
-  })
   .positional('accounts', {
     describe: 'Generated accounts of each type.',
     default: 10,
   })
-  .options({
-    detached: {
-      alias: 'd',
-      type: 'boolean',
-      describe: 'Run the local node in detached mode',
-      demandOption: false,
-    },
-    host: {
-      alias: 'h',
-      type: 'string',
-      describe: 'Run the local node with host',
-      demandOption: false,
-      default: '127.0.0.1',
-    },
-    network: {
-      alias: 'n',
-      type: 'string',
-      describe: 'Select the network configuration',
-      demandOption: false,
-      choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
-      default: 'mainnet',
-    },
-  })
+  .demandCommand()
+  .strictCommands()
+  .recommendCommands()
   .parse();
 
 async function start(accounts, detached, host, network) {
