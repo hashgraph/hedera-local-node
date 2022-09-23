@@ -16,10 +16,10 @@ yargs(hideBin(process.argv))
     'start [accounts]',
     'Starts the local hedera network.',
     (yargs) => {
-      CliOptions.addAccountsOption(yargs)
-      CliOptions.addDetachedOption(yargs)
-      CliOptions.addHostOption(yargs)
-      CliOptions.addNetworkOption(yargs)
+      CliOptions.addAccountsOption(yargs);
+      CliOptions.addDetachedOption(yargs);
+      CliOptions.addHostOption(yargs);
+      CliOptions.addNetworkOption(yargs);
     },
     async (argv) => {
       await start(argv.accounts, argv.detached, argv.host, argv.network);
@@ -30,7 +30,7 @@ yargs(hideBin(process.argv))
     'Stops the local hedera network and delete all the existing data.',
     (yargs) => {
       // This is needed otherwise running `stop --help` will execute the command
-      yargs
+      return yargs;
     },
     async () => {
       await stop();
@@ -39,10 +39,10 @@ yargs(hideBin(process.argv))
     'restart [accounts]',
     'Restart the local hedera network.',
     (yargs) => {
-      CliOptions.addAccountsOption(yargs)
-      CliOptions.addDetachedOption(yargs)
-      CliOptions.addHostOption(yargs)
-      CliOptions.addNetworkOption(yargs)
+      CliOptions.addAccountsOption(yargs);
+      CliOptions.addDetachedOption(yargs);
+      CliOptions.addHostOption(yargs);
+      CliOptions.addNetworkOption(yargs);
     },
     async (argv) => {
       await stop();
@@ -53,7 +53,7 @@ yargs(hideBin(process.argv))
     'generate-accounts [accounts]',
     'Generates N accounts, default 10.',
     (yargs) => {
-      CliOptions.addAccountsOption(yargs)
+      CliOptions.addAccountsOption(yargs);
     },
     async (argv) => {
       await HederaUtils.generateAccounts(argv.accounts);
