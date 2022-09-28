@@ -2,23 +2,21 @@
 
 The Hedera Local Node project allows developers to set up their own local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
 
-Note: This currently does not map to the latest mirror node version or mainnet consensus node version. An [issue](https://github.com/hashgraph/hedera-local-node/issues/28) has been opened to address this.
-
- - [Docker](#docker)
- - [CLI Tool](#cli-tool)
+- [Docker](#docker)
+- [CLI Tool](#cli-tool)
 
 # Docker
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) `>= v14.x` and `<= v16.x`
-    - Node version check: `node -v`
+  - Node version check: `node -v`
 - NPM `>= v6.14.17` and `<= v8.5.0`
-    - NPM version check: `npm -v`
+  - NPM version check: `npm -v`
 - [Docker](https://www.docker.com/) `>= v20.10.x`
-    - Docker version check: `docker -v`
+  - Docker version check: `docker -v`
 - [Docker Compose](https://docs.docker.com/compose/) `=> v1.28.0 && <= 1.29.2`
-     - Docker Compose version check: `docker-compose -v`
+  - Docker Compose version check: `docker-compose -v`
 
 ### Note:
 
@@ -29,10 +27,10 @@ Note: The image may look different if you are on a different version
 ![docker-compose-settings.png](docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
-    - **CPUs:** 6
-    - **Memory:** 5GB
-    - **Swap:** 1 GB
-    - **Disk Image Size:** 59.6 GB
+  - **CPUs:** 6
+  - **Memory:** 5GB
+  - **Swap:** 1 GB
+  - **Disk Image Size:** 59.6 GB
 
 Note: The image may look different if you are on a different version
 ![settings.png](settings.png)
@@ -40,62 +38,71 @@ Note: The image may look different if you are on a different version
 ## Start Your Local Network
 
 1. Clone the `hedera-local-node` repo
+
 ```bash
 git clone https://github.com/hashgraph/hedera-local-node.git
 ```
+
 2. CD to the hedera-local-node directory
+
 ```bash
     cd hedera-local-node
 ```
+
 3. Run `docker-compose up -d` from the terminal to get the network up and running
 4. Set-up your local network client by following this [tutorial](https://docs.hedera.com/guides/docs/sdks/set-up-your-local-network)
 
 ## Stop Your Local Network
+
 1. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean manuelly generated files. If you would like to keep any files created manuelly in the working directory please save them before executing this command.
 
 ## Network Variables
-These are the local network variables to interact with the consensus and mirror node. 
+
+These are the local network variables to interact with the consensus and mirror node.
+
 - Consensus Node Endpoint
-  -  `127.0.0.1:50211`
-  -  The IP address and port of the local consensus node
+  - `127.0.0.1:50211`
+  - The IP address and port of the local consensus node
 - Consensus Node Account ID
-  -  `0.0.3`
-  -  The node account ID to submit transactions and queries to
+  - `0.0.3`
+  - The node account ID to submit transactions and queries to
 - Mirror Node GRPC Endpoint
   - `127.0.0.1:5600`
   - The mirror node network to use
 - Mirror Node REST API Endpoint
-  -  `127.0.0.1:5551` 
-  -  The endpoint to submit rest API requests to
+  - `127.0.0.1:5551`
+  - The endpoint to submit rest API requests to
 - Account ID
   - `0.0.2`
   - The account ID to use to pay for transactions and queries
 - Account Key
   - `302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137`
-  -  The private key to account 0.0.2 to sign transactions and queries with
+  - The private key to account 0.0.2 to sign transactions and queries with
 
 ## Folder set up
+
 1. `compose-network` folder has the static files needed for starting Local network.
 2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
 ## Steps to change the memory limits and properties
+
 The following environment variables can be changed in the `.env` file for various memory limits
+
 1. Platform
-    - PLATFORM_JAVA_HEAP_MIN
-    - PLATFORM_JAVA_HEAP_MAX
+   - PLATFORM_JAVA_HEAP_MIN
+   - PLATFORM_JAVA_HEAP_MAX
 2. Consensus node
-    - NETWORK_NODE_MEM_LIMIT
+   - NETWORK_NODE_MEM_LIMIT
 3. Mirror node
-    - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
-    - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
-    - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api
-    - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
+   - MIRROR_GRPC_MEM_LIMIT - memory limit for mirror node gRPC
+   - MIRROR_IMPORTER_MEM_LIMIT - memory limit for mirror node importer
+   - MIRROR_REST_MEM_LIMIT - memory limit for mirror node rest api
+   - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
 4. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
 
 **IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
 
 &#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
-
 
 # CLI Tool
 
@@ -107,6 +114,7 @@ This package defines a basic cli commands, that can be executed via node (npx), 
 Network.
 
 Exposed urls are:
+
 ```bash
 Consensus Node Url - 127.0.0.1:50211
 Node Id - 0.0.3
@@ -116,11 +124,12 @@ Mirror Node Url - http://127.0.0.1:5551
 ## Installation
 
 #### Official NPM Release
-The command below can be used to install the official release from the NPM repository. This version may not reflect
-the most recent changes to the `main` branch of this repository. 
 
-This version uses a baked in version of the Docker Compose definitions and will not reflect any local changes made to 
-the repository. 
+The command below can be used to install the official release from the NPM repository. This version may not reflect
+the most recent changes to the `main` branch of this repository.
+
+This version uses a baked in version of the Docker Compose definitions and will not reflect any local changes made to
+the repository.
 
 ```bash
 npm install @hashgraph/hedera-local -g
@@ -152,9 +161,25 @@ Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @h
 
 ### Commands
 
-Note: There are known issues with this command. Please see issue [#43](https://github.com/hashgraph/hedera-local-node/issues/43) and issue [#33](https://github.com/hashgraph/hedera-local-node/issues/32).
-
 #### `hedera start <options>`
+
+![Demo](.github/demo-start.gif)
+
+- --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
+  private keys, and the next ones are with random generated private keys.
+
+- --h / --host - Override the default host.
+
+#### `hedera restart <options>`
+
+![Demo](.github/demo-restart.gif)
+
+- --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
+  private keys, and the next ones are with random generated private keys.
+
+- --h / --host - Override the default host.
+
+#### `hedera start -d <options>`
 
 ```bash
 $ hedera start
@@ -258,7 +283,7 @@ No available options
 
 ---
 
-#### `hedera restart <options>`
+#### `hedera restart -d <options>`
 
 ```bash
 $ hedera restart
@@ -382,11 +407,13 @@ $ hedera generate-accounts 2
 | 0.0.1013 - 0x3fcd5855969a881dcaad4446101a3241ccb5d6e7237f3a55b19268bfcbfdfa91 - 100000 ℏ |
 |------------------------------------------------------------------------------------------|
 ```
+
 - --h / --host - Override the default host.
 
 ---
 
 #### You can use it in a hardhat project alongside with [Hardhat Hethers Plugin](https://github.com/LimeChain/hardhat-hethers) by adding the following config:
+
 ```bash
 defaultNetwork: "localHederaNetwork",
 hedera: {
@@ -430,17 +457,18 @@ hedera: {
 
 ---
 
-
-
-
 ## Support
+
 If you have a question on how to use the product, please see our [support guide](https://github.com/hashgraph/.github/blob/main/SUPPORT.md).
 
 ## Contributing
+
 Contributions are welcome. Please see the [contributing guide](https://github.com/hashgraph/.github/blob/main/CONTRIBUTING.md) to see how you can get involved.
 
 ## Code of Conduct
+
 This project is governed by the [Contributor Covenant Code of Conduct](https://github.com/hashgraph/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code of conduct. Please report unacceptable behavior to oss@hedera.com.
 
 ## License
+
 [Apache License 2.0](https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/LICENSE)
