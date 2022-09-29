@@ -50,7 +50,7 @@ yargs(hideBin(process.argv))
   )
   .command(
     "generate-accounts [accounts]",
-    "Generates N accounts, default 10.",
+    "Generates the specified number of accounts [default: 10]",
     (yargs) => {
       CliOptions.addAccountsOption(yargs);
     },
