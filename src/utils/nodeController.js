@@ -51,9 +51,9 @@ module.exports = class NodeController {
     shell.echo(`Applying ${network} config settings...`)
     const result = shell.exec(
       [
-        `npx mustache ../../configs/${network}.json ../../configs/.env.template > ../../.env`,
-        `npx mustache ../../configs/${network}.json ../../configs/bootstrap.template.properties > ../../compose-network/network-node/data/config/bootstrap.properties`,
-        `npx mustache ../../configs/${network}.json ../../configs/application.template.yml > ../../compose-network/mirror-node/application.yml`
+        `npx mustache ./configs/${network}.json ./configs/.env.template > ./.env`,
+        `npx mustache ./configs/${network}.json ./configs/bootstrap.template.properties > ./compose-network/network-node/data/config/bootstrap.properties`,
+        `npx mustache ./configs/${network}.json ./configs/application.template.yml > ./compose-network/mirror-node/application.yml`
       ].join(" && ")
     )
 
