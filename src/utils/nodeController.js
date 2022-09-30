@@ -1,3 +1,4 @@
+const path = require('path');
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
 
@@ -49,11 +50,12 @@ module.exports = class NodeController {
 
   static async applyNetworkConfig(network) {
     shell.echo(`Applying ${network} config settings...`)
+    const baseFolder = path.resolve(__dirname, '../../');
     const result = shell.exec(
       [
-        `npx mustache ./configs/${network}.json ./configs/.env.template > ./.env`,
-        `npx mustache ./configs/${network}.json ./configs/bootstrap.template.properties > ./compose-network/network-node/data/config/bootstrap.properties`,
-        `npx mustache ./configs/${network}.json ./configs/application.template.yml > ./compose-network/mirror-node/application.yml`
+        `npx mustache ./configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
+        `npx mustache ./configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
+        `npx mustache ./configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
       ].join(" && ")
     )
 
