@@ -1,0 +1,25 @@
+{
+  "ledgerID": "0x01",
+  "nettyMode": "DEV",
+  "chainId":298,
+  "logPeriod":1,
+  "exportPeriodSecs":400,
+  "maxSizeKb":2048,
+  "streamExtension": "rcd.gz",
+  "sidecarEnabled": true,
+  "nodeImageTag": "0.30.0",
+  "havegedImageTag": "0.30.0",
+  "uploaderImageTag": "0.7.0",
+  "mirrorImageTag": "0.65.0-rc2",
+  "relayImageTag": "0.6.0",
+  "timeout": "180s",
+  "pythonVersion": "python3.7",
+  "features": {
+    "recordFileVersion": 6,
+    "signatureFileVersion": 6,
+    "enableTraceabilityMigration": true,
+    "compressFilesOnCreation": true,
+    "sidecarDir": "sidecar",
+    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE,CONTRACT_ACTION"
+  }
+}
