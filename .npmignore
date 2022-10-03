@@ -127,3 +127,4 @@ secring.*
 network-logs/minio-server/data/**
 
 scripts
+test

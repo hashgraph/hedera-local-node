@@ -24,5 +24,8 @@
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "hardhat": "^2.11.2"
   }
 }
