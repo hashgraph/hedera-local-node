@@ -415,27 +415,11 @@ $ hedera generate-accounts 2
 
 ## Network specific configuration
 
-Network specific configurations can be applied using the `-n/--network` option when starting/restarting the local node. Available options are `mainnet`, `previewnet`, `testnet` and `custom`
-To create a configuration for a network, create a `<network>.json` file in the `configs` folder with the following properties:
+Network specific configurations can be applied using the `-n/--network` option when starting/restarting the local node. Pre-configured options are [mainnet](./configs/mainnet.json), [previewnet](./configs/previewnet.json), [testnet](./configs/testnet.json) and [local](./configs/local.json)
 
-mainnet.json:
-```
-{
-  "ledgerID": "0x01",
-  "nettyMode": "DEV",
-  "chainId": 298,
-  "logPeriod": 1,
-  "exportPeriodSecs": 400,
-  "maxSizeKb": 2048,
-  "streamExtension": "rcd.gz",
-  "sidecarEnabled": false,
-  "nodeImageTag": "0.28.7",
-  "havegedImageTag": "0.28.7",
-  "uploaderImageTag": "0.5.0",
-  "mirrorImageTag": "0.61.1",
-  "relayImageTag": "0.6.0"
-}
-```
+To create a custom network configuration, create a  `configs` folder in the root of your project, then inside create `<config_name>.json` config file.
+
+You can apply the configuration using the `-n/--network` options, e.g. `hedera start --network <config_name>`
 
 ---
 
