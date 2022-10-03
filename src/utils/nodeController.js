@@ -12,7 +12,7 @@ module.exports = class NodeController {
   static async stopLocalNode() {
     const nullOutput = this.getNullOutput();
     console.log("Stopping the network...");
-    // shell.cd(__dirname);
+    shell.cd(__dirname);
     console.log("Stopping the docker containers...");
     shell.exec(`docker-compose down -v 2>${nullOutput}`);
     console.log("Cleaning the volumes and temp files...");
