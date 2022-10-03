@@ -1,6 +1,7 @@
 const path = require('path');
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
+const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
 
 module.exports = class NodeController {
   static getNullOutput() {
@@ -11,7 +12,7 @@ module.exports = class NodeController {
   static async stopLocalNode() {
     const nullOutput = this.getNullOutput();
     console.log("Stopping the network...");
-    shell.cd(__dirname);
+    // shell.cd(__dirname);
     console.log("Stopping the docker containers...");
     shell.exec(`docker-compose down -v 2>${nullOutput}`);
     console.log("Cleaning the volumes and temp files...");
@@ -51,11 +52,16 @@ module.exports = class NodeController {
   static async applyNetworkConfig(network) {
     shell.echo(`Applying ${network} config settings...`)
     const baseFolder = path.resolve(__dirname, '../../');
+    let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
+
+    shell.cd(__dirname);
+    shell.cd("../../");
+
     const result = shell.exec(
       [
-        `npx mustache ./configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
-        `npx mustache ./configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
-        `npx mustache ./configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
       ].join(" && ")
     )
 

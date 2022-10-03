@@ -29,9 +29,8 @@ module.exports = class CliOptions {
     yargs.option("network", {
       alias: 'n',
       type: 'string',
-      describe: 'Select the network configuration',
+      describe: "Select the network configuration. Pre-built configs: ['mainnet', 'previewnet', 'testnet', 'local']",
       demandOption: false,
-      choices: ['mainnet', 'previewnet', 'testnet', 'custom'],
       default: 'mainnet',
     })
   }
