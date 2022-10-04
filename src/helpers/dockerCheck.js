@@ -1,11 +1,13 @@
 const Docker = require("dockerode");
+const constants = require('./../utils/constants')
 
 module.exports = class DockerCheck {
   /**
    * Check if docker is running
    */
   static async checkDocker() {
-    const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+    const defaultSocketPath = constants.IS_WINDOWS ? '//./pipe/docker_engine' : '/var/run/docker.sock';
+    const socket = process.env.DOCKER_SOCKET || defaultSocketPath;
     let isRunning = false;
 
     const docker = new Docker({ socketPath: socket });

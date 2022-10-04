@@ -1,9 +1,10 @@
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
+const constants = require("./constants");
 
 module.exports = class NodeController {
   static getNullOutput() {
-    if (process.platform === "win32") return "nul";
+    if (constants.IS_WINDOWS) return "nul";
     return "/dev/null";
   }
 
