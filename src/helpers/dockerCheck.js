@@ -2,12 +2,17 @@ const Docker = require("dockerode");
 const constants = require('./../utils/constants')
 
 module.exports = class DockerCheck {
+
+  static getDockerSocket() {
+    const defaultSocketPath = constants.IS_WINDOWS ? '//./pipe/docker_engine' : '/var/run/docker.sock';
+    return process.env.DOCKER_SOCKET || defaultSocketPath;
+  }
+
   /**
    * Check if docker is running
    */
   static async checkDocker() {
-    const defaultSocketPath = constants.IS_WINDOWS ? '//./pipe/docker_engine' : '/var/run/docker.sock';
-    const socket = process.env.DOCKER_SOCKET || defaultSocketPath;
+    const socket = DockerCheck.getDockerSocket();
     let isRunning = false;
 
     const docker = new Docker({ socketPath: socket });
@@ -26,7 +31,7 @@ module.exports = class DockerCheck {
    * Return running container ID for given container name
    */
   static async getCointainerId(name) {
-    const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+    const socket = DockerCheck.getDockerSocket();
     const docker = new Docker({ socketPath: socket });
 
     const opts = {
@@ -49,7 +54,7 @@ module.exports = class DockerCheck {
    * Return running container version for given container name
    */
   static async getContainerVersion(name) {
-    const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+    const socket = DockerCheck.getDockerSocket();
     const docker = new Docker({ socketPath: socket });
 
     const opts = {

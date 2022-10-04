@@ -150,8 +150,9 @@ async function main(n, d, h) {
  * Attach container logs to given screen logger
  */
 function attachContainerLogs(containerId, logger) {
+  const socket = DockerCheck.getDockerSocket();
   const docker = new Docker({
-    socketPath: '/var/run/docker.sock'
+    socketPath: socket
   });
   const container = docker.getContainer(containerId)  
 
