@@ -49,7 +49,7 @@ git clone https://github.com/hashgraph/hedera-local-node.git
     cd hedera-local-node
 ```
 
-If you are using Windows: You will need to update the file endings of `compose-network/mirror-node/init.sh` by doing:
+If you are using Windows: You will need to update the file endings of `compose-network/mirror-node/init.sh` by running this in WSL:
 
 ```bash
     dos2unix compose-network/mirror-node/init.sh
