@@ -49,6 +49,12 @@ git clone https://github.com/hashgraph/hedera-local-node.git
     cd hedera-local-node
 ```
 
+If you are using Windows: You will need to update the file endings of `compose-network/mirror-node/init.sh` by running this in WSL:
+
+```bash
+    dos2unix compose-network/mirror-node/init.sh
+```
+
 3. Run `docker-compose up -d` from the terminal to get the network up and running
 4. Set-up your local network client by following this [tutorial](https://docs.hedera.com/guides/docs/sdks/set-up-your-local-network)
 

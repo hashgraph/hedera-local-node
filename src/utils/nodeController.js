@@ -1,11 +1,12 @@
 const path = require('path');
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
+const constants = require("./constants");
 const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
 
 module.exports = class NodeController {
   static getNullOutput() {
-    if (process.platform === "win32") return "nul";
+    if (constants.IS_WINDOWS) return "nul";
     return "/dev/null";
   }
 
