@@ -10,7 +10,7 @@
   "nodeImageTag": "0.30.0",
   "havegedImageTag": "0.30.0",
   "uploaderImageTag": "0.7.0",
-  "mirrorImageTag": "0.65.0-rc2",
+  "mirrorImageTag": "0.66.0-beta1",
   "relayImageTag": "0.6.0",
   "timeout": "180s",
   "pythonVersion": "python3.7",
@@ -18,8 +18,6 @@
     "recordFileVersion": 6,
     "signatureFileVersion": 6,
     "enableTraceabilityMigration": true,
-    "compressFilesOnCreation": true,
-    "sidecarDir": "sidecar",
-    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE,CONTRACT_ACTION"
+    "compressFilesOnCreation": true
   }
 }
