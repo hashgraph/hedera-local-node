@@ -19,11 +19,11 @@ module.exports = class DockerCheck {
       });
     return isRunning;
   }
-  
+
   /**
    * Return running container ID for given container name
    */
-  static async getCointainerId(name) {
+  static async getContainerId(name) {
     const socket = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
     const docker = new Docker({ socketPath: socket });
 

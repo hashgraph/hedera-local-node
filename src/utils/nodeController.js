@@ -1,5 +1,7 @@
+const path = require('path');
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
+const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
 
 module.exports = class NodeController {
   static getNullOutput() {
@@ -18,7 +20,9 @@ module.exports = class NodeController {
     shell.exec(`docker network prune -f 2>${nullOutput}`);
   }
 
-  static async startLocalNode() {
+  static async startLocalNode(network) {
+    await this.applyNetworkConfig(network);
+
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
       console.log("Docker is not running.");
@@ -42,6 +46,30 @@ module.exports = class NodeController {
       shell.exec(`docker rm -f -v ${containersNames} 2>${nullOutput} 1>&2`);
       await this.stopLocalNode();
       shell.exec(`docker-compose up -d 2>${nullOutput}`);
+    }
+  }
+
+  static async applyNetworkConfig(network) {
+    shell.echo(`Applying ${network} config settings...`)
+    const baseFolder = path.resolve(__dirname, '../../');
+    let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
+
+    shell.cd(__dirname);
+    shell.cd("../../");
+
+    const result = shell.exec(
+      [
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
+      ].join(" && ")
+    )
+
+    if(result.code !== 0) {
+      shell.echo('Failed to apply config')
+      shell.exit(result.code)
+    } else {
+      shell.echo(`Successfully applied ${network} config settings`)
     }
   }
 };
