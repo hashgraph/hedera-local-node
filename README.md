@@ -446,7 +446,7 @@ These are the local network variables to interact with the consensus and mirror 
 1. `compose-network` folder has the static files needed for starting Local network.
 2. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
-## Steps to change the memory limits and properties
+## Steps to change the memory limits, properties and other configurations
 
 The following environment variables can be changed in the `.env` file for various memory limits
 
@@ -465,6 +465,69 @@ The following environment variables can be changed in the `.env` file for variou
 **IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
 
 &#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
+
+# Environment variables
+
+### Image Names & Prefixes
+The following variables control the docker registries for the containers.
+
+- `HAVEGED_IMAGE_PREFIX`: The registry address for the Haveged image
+- `NETWORK_NODE_IMAGE_PREFIX`: The registry address for the Consensus node image
+- `NETWORK_NODE_IMAGE_NAME`: The name of the Consensus node image
+- `UPLOADER_IMAGE_PREFIX`: The registry address for the Uploader image
+- `MIRROR_IMAGE_PREFIX`: The registry address for the Mirror node image
+- `RELAY_IMAGE_PREFIX`: The registry address for the JSON-RPC relay image
+- `MIRROR_POSTGRES_IMAGE`: The name of the postgres image
+
+### Image Tags/Hashes
+The following variables control the versions of the containers.
+
+- `NETWORK_NODE_IMAGE_TAG`
+- `HAVEGED_IMAGE_TAG`
+- `UPLOADER_IMAGE_TAG`
+- `MIRROR_IMAGE_TAG`
+- `RELAY_IMAGE_TAG`
+
+### Java Process Settings
+JAVA settings for the Consensus node
+
+- `PLATFORM_JAVA_HEAP_MIN`
+- `PLATFORM_JAVA_HEAP_MAX`
+- `PLATFORM_JAVA_OPTS`
+
+### Bind Mount Settings
+- `NETWORK_NODE_LOGS_ROOT_PATH`: Root path of logs directory for Consensus node
+- `APPLICATION_ROOT_PATH`
+- `APPLICATION_CONFIG_PATH`: Path to Consensus node configuration files
+
+### Memory Limits
+- `NETWORK_NODE_MEM_LIMIT`
+- `MIRROR_GRPC_MEM_LIMIT`
+- `MIRROR_IMPORTER_MEM_LIMIT`
+- `MIRROR_REST_MEM_LIMIT`
+- `MIRROR_WEB3_MEM_LIMIT`
+- `MIRROR_MONITOR_MEM_LIMIT`
+- `RELAY_MEM_LIMIT`
+
+### Uploader settings
+- `PYTHON_VERSION`: Python version for the Uploader image
+
+### MINIO settings
+- `MINIO_ROOT_USER`
+- `MINIO_ROOT_PASSWORD`
+
+### JSON RPC Relay settings
+- `RELAY_HEDERA_NETWORK`: Network configuration string in JSON format
+- `RELAY_OPERATOR_ID_MAIN`: The operator account id
+- `RELAY_OPERATOR_KEY_MAIN`: The private key of the operator
+- `RELAY_CHAIN_ID`: Chain id in hex format. Default is 0x12a (298)
+- `RELAY_MIRROR_NODE_URL`: The Mirror node url to be used by the relay
+- `RELAY_LOCAL_NODE`: Should the relay work in `local` mode
+- `RELAY_SERVER_PORT`: The port on which to run the relay
+- `RELAY_E2E_HOST`: The full relay url address
+
+### Record Stream Uploader settings
+- `STREAM_EXTENSION`: File extension for record files
 
 # Support
 
