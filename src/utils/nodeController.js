@@ -6,7 +6,7 @@ const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
 
 module.exports = class NodeController {
   static getNullOutput() {
-    if (constants.IS_WINDOWS) return "nul";
+    if (constants.IS_WINDOWS) return "null";
     return "/dev/null";
   }
 
@@ -58,13 +58,24 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
 
-    const result = shell.exec(
-      [
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
-      ].join(" && ")
-    )
+    let result;
+    if (network == 'local') {
+      result = shell.exec(
+        [
+          `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/local/.env.template > ${baseFolder}/.env`,
+          `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/local/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
+          `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/local/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
+        ].join(" && ")
+      )
+    }else{
+      result = shell.exec(
+        [
+          `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
+          `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
+          `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
+        ].join(" && ")
+      )
+    }
 
     if(result.code !== 0) {
       shell.echo('Failed to apply config')
