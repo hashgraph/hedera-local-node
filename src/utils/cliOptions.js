@@ -31,7 +31,7 @@ module.exports = class CliOptions {
       type: 'string',
       describe: "Select the network configuration. Pre-built configs: ['mainnet', 'previewnet', 'testnet', 'local']",
       demandOption: false,
-      default: 'mainnet',
+      default: 'local',
     })
   }
 }
