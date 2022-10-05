@@ -70,7 +70,7 @@ services:
       SIG_REQUIRE: "true"
       SIG_PRIORITIZE: "true"
       SIG_EXTENSION: "rcd_sig"
-      STREAM_EXTENSION: "rcd"
+      STREAM_EXTENSION: "${STREAM_EXTENSION}"
       BUCKET_NAME: "hedera-streams"
       BUCKET_PATH: "recordstreams/record0.0.3"
       S3_ACCESS_KEY: "minioadmin"

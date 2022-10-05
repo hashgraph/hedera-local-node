@@ -26,11 +26,11 @@ module.exports = class DockerCheck {
       });
     return isRunning;
   }
-  
+
   /**
    * Return running container ID for given container name
    */
-  static async getCointainerId(name) {
+  static async getContainerId(name) {
     const socket = DockerCheck.getDockerSocket();
     const docker = new Docker({ socketPath: socket });
 
