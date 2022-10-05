@@ -150,6 +150,7 @@ Available commands:
         options:
             --d or --detached for starting in detached mode.
             --h or --host to override the default host.
+            --n or --network to override the default configuration. Defaults to mainnet.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -409,6 +410,16 @@ $ hedera generate-accounts 2
 ```
 
 - --h / --host - Override the default host.
+
+---
+
+## Network specific configuration
+
+Network specific configurations can be applied using the `-n/--network` option when starting/restarting the local node. Pre-configured options are [mainnet](./configs/mainnet.json), [previewnet](./configs/previewnet.json), [testnet](./configs/testnet.json) and [local](./configs/local.json)
+
+To create a custom network configuration, create a  `configs` folder in the root of your project, then inside create `<config_name>.json` config file.
+
+You can apply the configuration using the `-n/--network` options, e.g. `hedera start --network <config_name>`
 
 ---
 
