@@ -1,11 +1,12 @@
 const path = require('path');
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
+const constants = require("./constants");
 const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
 
 module.exports = class NodeController {
   static getNullOutput() {
-    if (process.platform === "win32") return "nul";
+    if (constants.IS_WINDOWS) return "null";
     return "/dev/null";
   }
 
@@ -57,11 +58,12 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
 
+    let templatesPath = network == 'local' ? `templates/local` : `templates`;
     const result = shell.exec(
       [
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/.env.template > ${baseFolder}/.env`,
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/.env.template > ${baseFolder}/.env`,
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
       ].join(" && ")
     )
 

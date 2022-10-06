@@ -12,6 +12,5 @@
   "uploaderImageTag": "0.5.0",
   "mirrorImageTag": "0.64.3",
   "relayImageTag": "0.6.0",
-  "timeout": "30s",
   "pythonVersion": "python3.9"
 }
