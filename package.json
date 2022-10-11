@@ -25,5 +25,8 @@
     "shelljs": "^0.8.5",
     "yargs": "^17.5.1",
     "mustache": "^4.2.0"
+  },
+  "devDependencies": {
+    "hardhat": "^2.11.2"
   }
 }
