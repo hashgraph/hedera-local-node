@@ -8,13 +8,13 @@ The Hedera Local Node project allows developers to set up their own local networ
 # Requirements
 
 - [Node.js](https://nodejs.org/) `>= v14.x` and `<= v16.x`
-    - Node version check: `node -v`
+  - Node version check: `node -v`
 - NPM `>= v6.14.17` and `<= v8.5.0`
-    - NPM version check: `npm -v`
+  - NPM version check: `npm -v`
 - [Docker](https://www.docker.com/) `>= v20.10.x`
-    - Docker version check: `docker -v`
+  - Docker version check: `docker -v`
 - [Docker Compose](https://docs.docker.com/compose/) `=> v1.28.0 && <= 1.29.2`
-    - Docker Compose version check: `docker-compose -v`
+  - Docker Compose version check: `docker-compose -v`
 
 ### Note:
 
@@ -25,10 +25,10 @@ Note: The image may look different if you are on a different version
 ![docker-compose-settings.png](docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
-    - **CPUs:** 6
-    - **Memory:** 5GB
-    - **Swap:** 1 GB
-    - **Disk Image Size:** 59.6 GB
+  - **CPUs:** 6
+  - **Memory:** 5GB
+  - **Swap:** 1 GB
+  - **Disk Image Size:** 59.6 GB
 
 Note: The image may look different if you are on a different version
 ![settings.png](settings.png)
@@ -344,7 +344,7 @@ $ hedera generate-accounts 2
 
 Network specific configurations can be applied using the `-n/--network` option when starting/restarting the local node. Pre-configured options are [mainnet](./configs/mainnet.json), [previewnet](./configs/previewnet.json), [testnet](./configs/testnet.json) and [local](./configs/local.json)
 
-To create a custom network configuration, create a  `configs` folder in the root of your project, then inside create `<config_name>.json` config file.
+To create a custom network configuration, create a `configs` folder in the root of your project, then inside create `<config_name>.json` config file.
 
 You can apply the configuration using the `-n/--network` options, e.g. `hedera start --network <config_name>`
 
@@ -472,9 +472,20 @@ The following environment variables can be changed in the `.env` file for variou
 
 &#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
 
+# Exposed Endpoints
+
+| Type                          | Endpoint                                         |
+| ----------------------------- | ------------------------------------------------ |
+| Consensus Node Endpoint       | [http://localhost:50211](http://localhost:50211) |
+| Mirror Node GRPC Endpoint     | [http://localhost:5600](http://localhost:5600)   |
+| Mirror Node REST API Endpoint | [http://localhost:5551](http://localhost:5551)   |
+| JSON RPC Relay Endpoint       | [http://localhost:7546](http://localhost:7546)   |
+| Mirror Node Explorer          | [http://localhost:9090](http://localhost:9090)   |
+
 # Environment variables
 
 ### Image Names & Prefixes
+
 The following variables control the docker registries for the containers.
 
 - `HAVEGED_IMAGE_PREFIX`: The registry address for the Haveged image
@@ -486,6 +497,7 @@ The following variables control the docker registries for the containers.
 - `MIRROR_POSTGRES_IMAGE`: The name of the postgres image
 
 ### Image Tags/Hashes
+
 The following variables control the versions of the containers.
 
 - `NETWORK_NODE_IMAGE_TAG`
@@ -495,6 +507,7 @@ The following variables control the versions of the containers.
 - `RELAY_IMAGE_TAG`
 
 ### Java Process Settings
+
 JAVA settings for the Consensus node
 
 - `PLATFORM_JAVA_HEAP_MIN`
@@ -502,11 +515,13 @@ JAVA settings for the Consensus node
 - `PLATFORM_JAVA_OPTS`
 
 ### Bind Mount Settings
+
 - `NETWORK_NODE_LOGS_ROOT_PATH`: Root path of logs directory for Consensus node
 - `APPLICATION_ROOT_PATH`
 - `APPLICATION_CONFIG_PATH`: Path to Consensus node configuration files
 
 ### Memory Limits
+
 - `NETWORK_NODE_MEM_LIMIT`
 - `MIRROR_GRPC_MEM_LIMIT`
 - `MIRROR_IMPORTER_MEM_LIMIT`
@@ -516,13 +531,16 @@ JAVA settings for the Consensus node
 - `RELAY_MEM_LIMIT`
 
 ### Uploader settings
+
 - `PYTHON_VERSION`: Python version for the Uploader image
 
 ### MINIO settings
+
 - `MINIO_ROOT_USER`
 - `MINIO_ROOT_PASSWORD`
 
 ### JSON RPC Relay settings
+
 - `RELAY_HEDERA_NETWORK`: Network configuration string in JSON format
 - `RELAY_OPERATOR_ID_MAIN`: The operator account id
 - `RELAY_OPERATOR_KEY_MAIN`: The private key of the operator
@@ -542,7 +560,16 @@ JAVA settings for the Consensus node
 - `ETH_GET_LOGS_BLOCK_RANGE_LIMIT`: `eth_getLogs` fromBlock - toBlock range limit. Defaults to 1000 blocks.
 
 ### Record Stream Uploader settings
+
 - `STREAM_EXTENSION`: File extension for record files
+
+### Mirror Node Explorer
+
+- `VUE_APP_PRODUCT_NAME`: The name of the product as shown in the footer tagline.
+- `VUE_APP_DOCUMENT_TITLE_PREFIX`: The prefix used in the document title.
+- `VUE_APP_ENABLE_STAKING`: When set to 'true', this variable will enable the 'Staking' page.
+- `VUE_APP_LOCAL_MIRROR_NODE_MENU_NAME`: Name of the custom network.
+- `VUE_APP_LOCAL_MIRROR_NODE_URL`: URL for the mirror node endpoint on custom network.
 
 # Support
 
