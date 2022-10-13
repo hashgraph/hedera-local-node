@@ -531,6 +531,15 @@ JAVA settings for the Consensus node
 - `RELAY_LOCAL_NODE`: Should the relay work in `local` mode
 - `RELAY_SERVER_PORT`: The port on which to run the relay
 - `RELAY_E2E_HOST`: The full relay url address
+- `FEE_HISTORY_MAX_RESULTS`: Max number of results returned by `eth_feeHistory`. Defaults to 10.
+- `DEFAULT_RATE_LIMIT`: Default fallback rate limit, if no other is configured. Default is to `200` (200 request per IP).
+- `TIER_1_RATE_LIMIT`: Restrictive limiting tier, for expensive endpoints. Default is to `100` (100 request per IP).
+- `TIER_2_RATE_LIMIT`: Moderate limiting tier, for non expensive endpoints. Default is to `200` (200 request per IP).
+- `TIER_3_RATE_LIMIT`: Relaxed limiting tier. Default is to `400` (400 request per IP).
+- `LIMIT_DURATION`: Reset limit duration in ms. This creates a timestamp, which resets all limits, when it's reached. Default is to `60000` (1 minute).
+- `HBAR_LIMIT_TOTAL_TINYBAR`: Total hbar budget in tinybars. Default is to `5000_000_000` (50 HBAR).
+- `BAR_RATE_LIMIT_DURATION`: Hbar limit duration in ms. This creates a timestamp, which resets all limits, when it's reached. Defaults to `60000` (1 minute).
+- `ETH_GET_LOGS_BLOCK_RANGE_LIMIT`: `eth_getLogs` fromBlock - toBlock range limit. Defaults to 1000 blocks.
 
 ### Record Stream Uploader settings
 - `STREAM_EXTENSION`: File extension for record files
