@@ -484,6 +484,7 @@ The following variables control the docker registries for the containers.
 - `MIRROR_IMAGE_PREFIX`: The registry address for the Mirror node image
 - `RELAY_IMAGE_PREFIX`: The registry address for the JSON-RPC relay image
 - `MIRROR_POSTGRES_IMAGE`: The name of the postgres image
+- `ENVOY_IMAGE_PREFIX`: The registry address for the Envoy image
 
 ### Image Tags/Hashes
 The following variables control the versions of the containers.
@@ -493,6 +494,7 @@ The following variables control the versions of the containers.
 - `UPLOADER_IMAGE_TAG`
 - `MIRROR_IMAGE_TAG`
 - `RELAY_IMAGE_TAG`
+- `ENVOY_IMAGE_TAG`
 
 ### Java Process Settings
 JAVA settings for the Consensus node
