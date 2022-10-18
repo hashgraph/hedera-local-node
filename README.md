@@ -430,7 +430,9 @@ These are the local network variables to interact with the consensus and mirror 
 
 - Consensus Node Endpoint
   - `127.0.0.1:50211`
-  - The IP address and port of the local consensus node
+  - The IP address and port of the local consensus node.
+  > **_NOTE:_**  To connect to the local consensus node from a browser you will have to use the Envoy proxy at `http://127.0.0.1:50213`.
+
 - Consensus Node Account ID
   - `0.0.3`
   - The node account ID to submit transactions and queries to
