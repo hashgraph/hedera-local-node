@@ -42,7 +42,7 @@ jobs:
 
       - name: Prepare and run the tests
         run: |
-          cd test/e2e
+          cd test/cypress
           npm ci
           npm run build
           npm run start
