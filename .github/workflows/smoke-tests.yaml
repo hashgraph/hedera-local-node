@@ -30,7 +30,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run:
+        run: npm ci
 
       - name: Install Docker Compose
         run: |
