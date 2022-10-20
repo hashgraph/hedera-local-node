@@ -29,6 +29,6 @@
     "signatureFileVersion": 6,
     "enableTraceabilityMigration": true,
     "compressFilesOnCreation": true,
-    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE,CONTRACT_ACTION"
+    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE"
   }
 }
