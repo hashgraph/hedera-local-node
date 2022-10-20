@@ -271,6 +271,13 @@ services:
     restart: unless-stopped
     tty: false
 
+  explorer:
+    container_name:  hedera-explorer
+    image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
+    restart: "unless-stopped"
+    ports:
+      - "9090:80"
+
   web3:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_IMAGE_TAG}"
     container_name: mirror-node-web3

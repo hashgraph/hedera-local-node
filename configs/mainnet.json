@@ -12,6 +12,7 @@
   "uploaderImageTag": "0.5.0",
   "mirrorImageTag": "0.64.4",
   "relayImageTag": "0.6.0",
-  "pythonVersion": "python3.9",
+  "pythonVersion": "python3.9",  
+  "mirrorNodeExplorerImageTag": "latest",
   "transactionMaxBytes": "6144"
 }
