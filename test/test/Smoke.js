@@ -26,6 +26,6 @@ describe("Smoke Tests", async function () {
 
     expect(senderBalanceAfter.toString()).to.not.eq(senderBalanceBefore.toString());
     expect(senderBalanceAfter.lt(senderBalanceBefore.sub(amountbn))).to.eq(true); // account for used gas
-    expect(receiverBalanceAfter.toString()).to.eq(receiverBalanceBefore.add(amountbn).toString());
+    expect(receiverBalanceAfter).to.greaterThan(receiverBalanceBefore);
   });
 });

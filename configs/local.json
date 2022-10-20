@@ -7,18 +7,28 @@
   "maxSizeKb":2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.30.0",
-  "havegedImageTag": "0.30.0",
+  "nodeImageTag": "0.31.0",
+  "havegedImageTag": "0.31.0",
   "uploaderImageTag": "0.7.0",
-  "mirrorImageTag": "0.66.0-beta1",
-  "relayImageTag": "0.6.0",
+  "mirrorImageTag": "0.67.0-rc1",
+  "relayImageTag": "0.9.0",
   "timeout": "180s",
   "pythonVersion": "python3.7",
   "transactionMaxBytes": "30720",
+  "maxResults": "10",
+  "defaultLimit": "200",
+  "tier1Limit": "100",
+  "tier2Limit": "800",  
+  "tier3Limit": "1600",
+  "limitDuration": "60000",
+  "hbarLimit": "8000000000",
+  "hbarLimitDuration": "60000",
+  "blockRangeLimit": "2000",
   "features": {
     "recordFileVersion": 6,
     "signatureFileVersion": 6,
     "enableTraceabilityMigration": true,
-    "compressFilesOnCreation": true
+    "compressFilesOnCreation": true,
+    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE"
   }
 }

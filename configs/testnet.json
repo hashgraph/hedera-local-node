@@ -7,11 +7,11 @@
   "maxSizeKb":2048,
   "streamExtension": "rcd",
   "sidecarEnabled": false,
-  "nodeImageTag": "0.28.7",
-  "havegedImageTag": "0.28.7",
-  "uploaderImageTag": "0.5.0",
-  "mirrorImageTag": "0.61.1",
-  "relayImageTag": "0.6.0",
-  "pythonVersion": "python3.9",
+  "nodeImageTag": "0.30.4",
+  "havegedImageTag": "0.30.4",
+  "uploaderImageTag": "0.7.0",
+  "mirrorImageTag": "0.66.1",
+  "relayImageTag": "0.7.0",
+  "pythonVersion": "python3.7",
   "transactionMaxBytes": "6144"
 }
