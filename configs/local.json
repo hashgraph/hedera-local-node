@@ -12,6 +12,7 @@
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.67.0-rc1",
   "relayImageTag": "0.9.0",
+  "mirrorNodeExplorerImageTag": "latest",
   "timeout": "180s",
   "pythonVersion": "python3.7",
   "transactionMaxBytes": "30720",
