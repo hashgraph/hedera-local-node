@@ -125,6 +125,43 @@ services:
       - --s3-endpoint
       - http://minio:9000
       - --debug
+      
+  record-sidecar-uploader:
+    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
+    container_name: record-sidecar-uploader
+    user: root
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - cloud-storage
+    environment:
+      DEBUG: "true"
+      REAPER_ENABLE: "true"
+      REAPER_MIN_KEEP: "1"
+      REAPER_INTERVAL: "5"
+      S3_ENABLE: "true"
+      GCS_ENABLE: "false"
+      SIG_REQUIRE: "false"
+      SIG_PRIORITIZE: "false"
+      STREAM_EXTENSION: "rcd.gz"
+      BUCKET_NAME: "hedera-streams"
+      BUCKET_PATH: "recordstreams/record0.0.3/sidecar"
+      S3_ACCESS_KEY: "minioadmin"
+      S3_SECRET_KEY: "minioadmin"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3/sidecar:/sidecar-files"
+    command:
+      - /usr/bin/env
+      - ${PYTHON_VERSION}
+      - /usr/local/bin/mirror.py
+      - --linux
+      - --watch-directory
+      - /sidecar-files
+      - --s3-endpoint
+      - http://minio:9000
+      - --debug
 
   minio:
     image: minio/minio
