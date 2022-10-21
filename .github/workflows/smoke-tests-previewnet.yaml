@@ -1,4 +1,4 @@
-name: Smoke Tests
+name: Smoke Tests - Previewnet
 
 on:
   push:
