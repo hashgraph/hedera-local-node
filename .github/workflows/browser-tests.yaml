@@ -1,4 +1,4 @@
-name: Smoke Tests
+name: Browser Tests
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
 
   tests:
 
-    name: Smoke Tests
+    name: Browser Tests
 
     runs-on: ubuntu-latest
 
@@ -42,9 +42,11 @@ jobs:
 
       - name: Prepare and run the tests
         run: |
-          cd test/smoke
+          cd test/cypress
           npm ci
-          npx hardhat test --grep Smoke
+          npm run build
+          npm run start
+          npm run test
 
       - name: Stop the local node
         run: node cli.js stop
