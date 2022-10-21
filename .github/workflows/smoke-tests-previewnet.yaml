@@ -1,4 +1,4 @@
-name: Smoke Tests
+name: Smoke Tests - Previewnet
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
 
   tests:
 
-    name: Smoke Tests
+    name: Smoke Tests - Previewnet
 
     runs-on: ubuntu-latest
 
@@ -37,8 +37,8 @@ jobs:
           sudo curl -SL -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
           sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: Start the local node
-        run: node cli.js start -d
+      - name: Start the local node with previewnet images
+        run: node cli.js start --network previewnet -d
 
       - name: Prepare and run the tests
         run: |
