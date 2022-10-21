@@ -10,7 +10,7 @@ jobs:
 
   tests:
 
-    name: Smoke Tests
+    name: Smoke Tests - Local
 
     runs-on: ubuntu-latest
 
