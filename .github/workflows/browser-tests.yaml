@@ -1,4 +1,4 @@
-name: Smoke Tests - Local
+name: Browser Tests
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
 
   tests:
 
-    name: Smoke Tests
+    name: Browser Tests
 
     runs-on: ubuntu-latest
 
@@ -37,14 +37,16 @@ jobs:
           sudo curl -SL -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
           sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: Start the local node with latest images
-        run: node cli.js start --network local -d
+      - name: Start the local node
+        run: node cli.js start -d
 
       - name: Prepare and run the tests
         run: |
-          cd test/smoke
+          cd test/cypress
           npm ci
-          npx hardhat test --grep Smoke
+          npm run build
+          npm run start
+          npm run test
 
       - name: Stop the local node
         run: node cli.js stop
