@@ -1,10 +1,10 @@
 {
   "ledgerID": "0x01",
   "nettyMode": "DEV",
-  "chainId":298,
-  "logPeriod":1,
-  "exportPeriodSecs":400,
-  "maxSizeKb":2048,
+  "chainId": 298,
+  "logPeriod": 1,
+  "exportPeriodSecs": 400,
+  "maxSizeKb": 2048,
   "streamExtension": "rcd",
   "sidecarEnabled": false,
   "nodeImageTag": "0.29.2",
@@ -12,7 +12,7 @@
   "uploaderImageTag": "0.5.0",
   "mirrorImageTag": "0.64.4",
   "relayImageTag": "0.6.0",
-  "pythonVersion": "python3.9",  
+  "pythonVersion": "python3.9",
   "mirrorNodeExplorerImageTag": "latest",
   "transactionMaxBytes": "6144"
 }
