@@ -42,7 +42,7 @@ jobs:
 
       - name: Prepare and run the tests
         run: |
-          cd test
+          cd test/smoke
           npm ci
           npx hardhat test --grep Smoke
 
