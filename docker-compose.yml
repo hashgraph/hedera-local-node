@@ -361,6 +361,16 @@ services:
     restart: unless-stopped
     tty: false
 
+  envoy:
+    image: "${ENVOY_IMAGE_PREFIX}envoy:${ENVOY_IMAGE_TAG}"
+    container_name: envoy-proxy
+    ports:
+      - "50213:50213"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - network-node-bridge
+
 networks:
   network-node-bridge:
     name: network-node-bridge

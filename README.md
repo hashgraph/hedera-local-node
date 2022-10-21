@@ -430,7 +430,9 @@ These are the local network variables to interact with the consensus and mirror 
 
 - Consensus Node Endpoint
   - `127.0.0.1:50211`
-  - The IP address and port of the local consensus node
+  - The IP address and port of the local consensus node.
+  > **_NOTE:_**  To connect to the local consensus node from a browser you will have to use the Envoy proxy at `http://127.0.0.1:50213`.
+
 - Consensus Node Account ID
   - `0.0.3`
   - The node account ID to submit transactions and queries to
@@ -495,6 +497,7 @@ The following variables control the docker registries for the containers.
 - `MIRROR_IMAGE_PREFIX`: The registry address for the Mirror node image
 - `RELAY_IMAGE_PREFIX`: The registry address for the JSON-RPC relay image
 - `MIRROR_POSTGRES_IMAGE`: The name of the postgres image
+- `ENVOY_IMAGE_PREFIX`: The registry address for the Envoy image
 
 ### Image Tags/Hashes
 
@@ -505,6 +508,7 @@ The following variables control the versions of the containers.
 - `UPLOADER_IMAGE_TAG`
 - `MIRROR_IMAGE_TAG`
 - `RELAY_IMAGE_TAG`
+- `ENVOY_IMAGE_TAG`
 
 ### Java Process Settings
 
