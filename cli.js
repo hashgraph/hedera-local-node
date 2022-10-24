@@ -137,8 +137,8 @@ async function start(accounts, host, eventLogger, accountLogger) {
   eventLogger.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, eventLogger, host);
   eventLogger.log("Starting the network...");
-  //wait 5 sec to properly initialize the node
-  await new Promise(r => setTimeout(r, 5000));
+  //wait 10 sec to properly initialize the node
+  await new Promise(r => setTimeout(r, 10000));
     
   accountLogger.log("Generating accounts...");
   await HederaUtils.generateAccounts(accountLogger, accounts, true, host);
@@ -152,8 +152,8 @@ async function startDetached(accounts, host) {
   console.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, console, host);
   console.log("Starting the network...");
-  //wait 5 sec to properly initialize the node
-  await new Promise(r => setTimeout(r, 5000));
+  //wait 10 sec to properly initialize the node
+  await new Promise(r => setTimeout(r, 10000));
 
   console.log("Generating accounts...");
   await HederaUtils.generateAccounts(console, accounts, true, host);
