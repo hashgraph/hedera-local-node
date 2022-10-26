@@ -34,4 +34,14 @@ module.exports = class CliOptions {
       default: 'local',
     })
   }
+
+  static addRateLimitOption(yargs) {
+    yargs.option("limits", {
+      alias: 'l',
+      type: 'boolean',
+      describe: "Enable or disable the rate limits in the JSON-RPC relay",
+      demandOption: false,
+      default: true,
+    })
+  }
 }
