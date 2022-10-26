@@ -29,9 +29,9 @@ async function main() {
     await transferHbar(client, myAccountId, newAccountId);
 
     const { validStart } = await createHTSToken(client);
-    const transactionIdFormatted = `${myAccountId}-${validStart.replace(/\./g,'-')}`
+    const transactionIdFormatted = `${myAccountId}-${validStart.replace(/\./g,'-')}`;
+    console.log(`- Mirror Node Explorer URL: http://localhost:9090/#/devnet/transaction/${transactionIdFormatted}`);
     await getTransactionInformation(transactionIdFormatted);
-    console.log(`- Mirror Node Explorer URL: http://localhost:9090/#/devnet/transaction/${transactionIdFormatted}`)
 }
 
 
@@ -39,11 +39,10 @@ const getTransactionInformation = async function(transactionIdFormatted) {
     const url = "http://localhost:5551/api/v1/transactions/"+transactionIdFormatted
     console.log('- Mirror Node Url: ' + url)
     await new Promise(r => setTimeout(r, 5000));
-    axios.get(url, {
-        
-    })
+    axios.get(url, {})
     .then(function (response) {
         console.log(response.data.transactions);
+        process.exit(0);
     })
 }
 
@@ -117,4 +116,4 @@ const createHTSToken = async function(client) {
     return { tokenId, transactionId, validStart };
   };
 
-main()
+main();
