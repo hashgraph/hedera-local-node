@@ -38,7 +38,7 @@ async function main() {
 const getTransactionInformation = async function(transactionIdFormatted) {
     const url = "http://localhost:5551/api/v1/transactions/"+transactionIdFormatted
     console.log('- Mirror Node Url: ' + url)
-    await new Promise(r => setTimeout(r, 5000));
+    await sleep(5);
     axios.get(url, {})
     .then(function (response) {
         console.log(response.data.transactions);
@@ -78,7 +78,8 @@ const transferHbar = async function (client, myAccountId, newAccountId) {
         .addHbarTransfer(myAccountId, Hbar.fromTinybars(-10000))
         .addHbarTransfer(newAccountId, Hbar.fromTinybars(10000))
         .execute(client);
-    await new Promise(r => setTimeout(r, 5000));
+
+    await sleep(5);
 
     const balance = await new AccountBalanceQuery()
         .setAccountId(newAccountId)
@@ -115,5 +116,9 @@ const createHTSToken = async function(client) {
   
     return { tokenId, transactionId, validStart };
   };
+
+const sleep = async function (seconds) {
+    await new Promise(r => setTimeout(r, seconds * 1000 ));
+}
 
 main();
