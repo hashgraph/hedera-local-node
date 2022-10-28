@@ -7,11 +7,11 @@
   "maxSizeKb": 2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.31.0",
-  "havegedImageTag": "0.31.0",
+  "nodeImageTag": "0.32.0-alpha.1",
+  "havegedImageTag": "0.32.0-alpha.1",
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.67.0-rc1",
-  "relayImageTag": "0.9.0",
+  "relayImageTag": "0.10.0",
   "mirrorNodeExplorerImageTag": "latest",
   "timeout": "180s",
   "pythonVersion": "python3.7",
@@ -30,6 +30,7 @@
     "signatureFileVersion": 6,
     "enableTraceabilityMigration": true,
     "compressFilesOnCreation": true,
-    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE"
+    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE",
+    "atomicCryptoTransfer": true
   }
 }
