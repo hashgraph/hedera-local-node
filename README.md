@@ -78,6 +78,7 @@ Available commands:
             --d or --detached for starting in detached mode.
             --h or --host to override the default host.
             --n or --network to override the default configuration. Defaults to mainnet.
+            --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -562,6 +563,7 @@ JAVA settings for the Consensus node
 - `HBAR_LIMIT_TOTAL_TINYBAR`: Total hbar budget in tinybars. Default is to `5000_000_000` (50 HBAR).
 - `BAR_RATE_LIMIT_DURATION`: Hbar limit duration in ms. This creates a timestamp, which resets all limits, when it's reached. Defaults to `60000` (1 minute).
 - `ETH_GET_LOGS_BLOCK_RANGE_LIMIT`: `eth_getLogs` fromBlock - toBlock range limit. Defaults to 1000 blocks.
+- `RELAY_RATE_LIMIT_DISABLED`: If set to `true` the relay will not perform any rate limiting.
 
 ### Record Stream Uploader settings
 
