@@ -89,6 +89,8 @@ Available commands:
 
 Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @hashgraph/hethers. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.
 
+Note: Read more about `developer mode` [here](https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/docs/dev-mode.md)
+
 ### Commands
 
 #### `hedera start <options>`
