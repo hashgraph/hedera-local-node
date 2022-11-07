@@ -44,4 +44,14 @@ module.exports = class CliOptions {
       default: true,
     })
   }
+  
+  static addDevModeOption(yargs) {
+    yargs.option("dev", {
+      alias: 'dev',
+      type: 'boolean',
+      describe: "Enable or disable developer mode",
+      demandOption: false,
+      default: false,
+    })
+  }
 }
