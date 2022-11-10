@@ -60,6 +60,16 @@ yargs(hideBin(process.argv))
       await HederaUtils.generateAccounts(console, argv.accounts);
     }
   )
+  .command(
+      "debug [timestamp]",
+      "Parses and prints the contents of the record file that has been created during the selected timestamp [default: latest]",
+      (yargs) => {
+        CliOptions.addTimestampOption(yargs);
+      },
+      async (argv) => {
+        await HederaUtils.debug(console, argv.timestamp);
+      }
+  )
   .demandCommand()
   .strictCommands()
   .recommendCommands()
