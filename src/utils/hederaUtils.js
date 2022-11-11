@@ -188,7 +188,7 @@ module.exports = class HederaUtils {
   }
 
   static async debug(logger, timestamp) {
-    const timestampRegEx = /^[0-9]{10}[\.-][0-9]{9}$/;
+    const timestampRegEx = /^\d{10}[\.-]\d{9}$/;
     if (!timestampRegEx.test(timestamp)) {
       logger.log("Invalid timestamp string. Accepted formats are: 0000000000.000000000 and 0000000000-000000000");
       return;
