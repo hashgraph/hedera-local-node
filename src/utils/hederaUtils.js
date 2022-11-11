@@ -188,15 +188,16 @@ module.exports = class HederaUtils {
   }
 
   static async debug(logger, timestamp) {
-    const recordFilesDir = path.resolve(__dirname, '../../network-logs/node/recordStreams/record0.0.3');
-    const tempDir = path.resolve(__dirname, '../record-parser/temp');
+    const timestampRegEx = /^[0-9]{10}[\.-][0-9]{9}$/;
+    if (!timestampRegEx.test(timestamp)) {
+      logger.log("Invalid timestamp string. Accepted formats are: 0000000000.000000000 and 0000000000-000000000");
+      return;
+    }
 
-    // TODO validate timestamp
-    let jsTimestamp = timestamp.replace('.', '').substring(0, 13);
+    // Parse the timestamp to a record file filename
+    let jsTimestamp = timestamp.replace('.', '').replace('-', '').substring(0, 13);
     let timestampDate = new Date(parseInt(jsTimestamp));
-
     const padWith0 = (str, symbols = 2) => {return str.toString().padStart(symbols, '0')};
-
     const year = padWith0(timestampDate.getUTCFullYear(), 4);
     const month = padWith0((timestampDate.getUTCMonth() + 1));
     const day = padWith0(timestampDate.getUTCDate());
@@ -206,26 +207,36 @@ module.exports = class HederaUtils {
     const milliseconds = padWith0(timestampDate.getUTCMilliseconds(), 3);
     const recordFileName = `${year}-${month}-${day}T${hours}_${minutes}_${seconds}.${milliseconds}`;
 
+    // Copy the record file to a temp directory
+    const recordFilesDir = path.resolve(__dirname, '../../network-logs/node/recordStreams/record0.0.3');
+    const tempDir = path.resolve(__dirname, '../record-parser/temp');
     const files = fs.readdirSync(recordFilesDir);
+    let recordFileFound = false;
     files.forEach(file => {
       if (file.startsWith(recordFileName)) {
-        const timestampLogString = `---  Timestamp: ${timestamp} | Record File: ${file}  `;
+        const timestampLogString = `Parsing record file [${file}]`;
         if (file.endsWith('.rcd.gz')) {
-          logger.log(`|${timestampLogString.padEnd(120, '-')}|\n`);
+          logger.log(`${timestampLogString}\n`);
         }
 
+        recordFileFound = true;
         fs.copyFileSync(path.resolve(recordFilesDir, file), path.resolve(tempDir, file));
       }
     });
 
+    if (!recordFileFound) {
+      logger.log('No record file was found for the provided timestamp');
+      return;
+    }
+
+    // Perform the parsing
     await shell.exec(`docker exec network-node bash /opt/hgcapp/recordParser/parse.sh`);
 
+    // Clean temp directory
     for (const tempFile of fs.readdirSync(tempDir)) {
       if (tempFile !== '.gitignore') {
         fs.unlinkSync(path.resolve(tempDir, tempFile));
       }
     }
-
-    logger.log(`\n|${"".padStart(120, '-')}|`);
   }
 };
