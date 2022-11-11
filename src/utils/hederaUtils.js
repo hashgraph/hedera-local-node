@@ -3,6 +3,7 @@ const hethers = require("@hashgraph/hethers");
 const ethers = require("ethers");
 const fs = require('fs');
 const path = require('path');
+const shell = require("shelljs");
 
 module.exports = class HederaUtils {
   static privateKeysECDSA = [
@@ -187,39 +188,44 @@ module.exports = class HederaUtils {
   }
 
   static async debug(logger, timestamp) {
-    const timestampLogString = `---  ${timestamp}  `;
-    logger.log(`|${timestampLogString.padEnd(90, '-')}|`);
-
     const recordFilesDir = path.resolve(__dirname, '../../network-logs/node/recordStreams/record0.0.3');
-    const temp = path.resolve(__dirname, '../../temp');
+    const tempDir = path.resolve(__dirname, '../record-parser/MyRecords');
 
     // TODO validate timestamp
     let jsTimestamp = timestamp.replace('.', '').substring(0, 13);
     let timestampDate = new Date(parseInt(jsTimestamp));
 
-    const year = timestampDate.getUTCFullYear();
-    const month = (timestampDate.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = timestampDate.getUTCDate().toString().padStart(2, '0');
-    const hours = timestampDate.getUTCHours();
-    const minutes = timestampDate.getUTCMinutes();
-    const seconds = timestampDate.getUTCSeconds();
-    const milliseconds = timestampDate.getUTCMilliseconds();
+    const padWith0 = (str, symbols = 2) => {return str.toString().padStart(symbols, '0')};
+
+    const year = padWith0(timestampDate.getUTCFullYear(), 4);
+    const month = padWith0((timestampDate.getUTCMonth() + 1));
+    const day = padWith0(timestampDate.getUTCDate());
+    const hours = padWith0(timestampDate.getUTCHours());
+    const minutes = padWith0(timestampDate.getUTCMinutes());
+    const seconds = padWith0(timestampDate.getUTCSeconds());
+    const milliseconds = padWith0(timestampDate.getUTCMilliseconds(), 3);
     const recordFileName = `${year}-${month}-${day}T${hours}_${minutes}_${seconds}.${milliseconds}`;
 
     const files = fs.readdirSync(recordFilesDir);
     files.forEach(file => {
       if (file.startsWith(recordFileName)) {
-        console.log(file)
-        fs.copyFileSync(path.resolve(recordFilesDir, file), path.resolve(temp, file));
+        const timestampLogString = `---  Timestamp: ${timestamp} | Record File: ${file}  `;
+        if (file.endsWith('.rcd.gz')) {
+          logger.log(`|${timestampLogString.padEnd(120, '-')}|\n`);
+        }
+
+        fs.copyFileSync(path.resolve(recordFilesDir, file), path.resolve(tempDir, file));
       }
     });
 
-    for (const tempFile of fs.readdirSync(temp)) {
+    await shell.exec(`docker exec network-node bash /opt/hgcapp/recordParser/parse.sh`);
+
+    for (const tempFile of fs.readdirSync(tempDir)) {
       if (tempFile !== '.gitignore') {
-        fs.unlinkSync(path.resolve(temp, tempFile));
+        fs.unlinkSync(path.resolve(tempDir, tempFile));
       }
     }
 
-    logger.log("|------------------------------------------------------------------------------------------|");
+    logger.log("\n|------------------------------------------------------------------------------------------|");
   }
 };
