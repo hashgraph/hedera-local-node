@@ -189,7 +189,7 @@ module.exports = class HederaUtils {
 
   static async debug(logger, timestamp) {
     const recordFilesDir = path.resolve(__dirname, '../../network-logs/node/recordStreams/record0.0.3');
-    const tempDir = path.resolve(__dirname, '../record-parser/MyRecords');
+    const tempDir = path.resolve(__dirname, '../record-parser/temp');
 
     // TODO validate timestamp
     let jsTimestamp = timestamp.replace('.', '').substring(0, 13);
@@ -226,6 +226,6 @@ module.exports = class HederaUtils {
       }
     }
 
-    logger.log("\n|------------------------------------------------------------------------------------------|");
+    logger.log(`\n|${"".padStart(120, '-')}|`);
   }
 };
