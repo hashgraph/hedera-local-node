@@ -4,6 +4,7 @@ const ethers = require("ethers");
 const fs = require('fs');
 const path = require('path');
 const shell = require("shelljs");
+require("dotenv").config();
 
 module.exports = class HederaUtils {
   static privateKeysECDSA = [
@@ -196,33 +197,28 @@ module.exports = class HederaUtils {
 
     // Parse the timestamp to a record file filename
     let jsTimestamp = timestamp.replace('.', '').replace('-', '').substring(0, 13);
-    let timestampDate = new Date(parseInt(jsTimestamp));
-    const padWith0 = (str, symbols = 2) => {return str.toString().padStart(symbols, '0')};
-    const year = padWith0(timestampDate.getUTCFullYear(), 4);
-    const month = padWith0((timestampDate.getUTCMonth() + 1));
-    const day = padWith0(timestampDate.getUTCDate());
-    const hours = padWith0(timestampDate.getUTCHours());
-    const minutes = padWith0(timestampDate.getUTCMinutes());
-    const seconds = padWith0(timestampDate.getUTCSeconds());
-    const milliseconds = padWith0(timestampDate.getUTCMilliseconds(), 3);
-    const recordFileName = `${year}-${month}-${day}T${hours}_${minutes}_${seconds}.${milliseconds}`;
+    jsTimestamp = parseInt(jsTimestamp);
 
     // Copy the record file to a temp directory
     const recordFilesDir = path.resolve(__dirname, '../../network-logs/node/recordStreams/record0.0.3');
     const tempDir = path.resolve(__dirname, '../record-parser/temp');
     const files = fs.readdirSync(recordFilesDir);
     let recordFileFound = false;
-    files.forEach(file => {
-      if (file.startsWith(recordFileName)) {
-        const timestampLogString = `Parsing record file [${file}]`;
-        if (file.endsWith('.rcd.gz')) {
-          logger.log(`${timestampLogString}\n`);
+    const recordExt = `.${process.env.STREAM_EXTENSION}`;
+    for (let file of files) {
+      const recordFileName = file.replace(recordExt, '');
+      let fileTimestamp = new Date(recordFileName.replace(/\_/g, ':')).getTime();
+      if (fileTimestamp >= jsTimestamp) {
+        if (file.endsWith(recordExt)) {
+          logger.log(`Parsing record file [${file}]\n`);
         }
-
         recordFileFound = true;
+        const sigFile = recordFileName + '.rcd_sig';
         fs.copyFileSync(path.resolve(recordFilesDir, file), path.resolve(tempDir, file));
+        fs.copyFileSync(path.resolve(recordFilesDir, sigFile), path.resolve(tempDir, sigFile));
+        break;
       }
-    });
+    }
 
     if (!recordFileFound) {
       logger.log('No record file was found for the provided timestamp');
