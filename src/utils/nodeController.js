@@ -23,8 +23,8 @@ module.exports = class NodeController {
     shell.exec(`docker network prune -f 2>${nullOutput}`);
   }
 
-  static async startLocalNode(network, limits) {
-    await this.applyConfig(network, limits);
+  static async startLocalNode(network, limits, devMode) {
+    await this.applyConfig(network, limits, devMode);
 
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
@@ -52,7 +52,7 @@ module.exports = class NodeController {
     }
   }
 
-  static async applyConfig(network, limits) {
+  static async applyConfig(network, limits, devMode) {
     shell.echo(`Applying ${network} config settings...`)
     const baseFolder = path.resolve(__dirname, '../../');
     let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
@@ -72,6 +72,7 @@ module.exports = class NodeController {
 
     const relayRateLimitDisabled = !limits;
     NodeController.setEnvValue(`${baseFolder}/.env`, 'RELAY_RATE_LIMIT_DISABLED', relayRateLimitDisabled);
+    NodeController.setEnvValue(`${baseFolder}/.env`, 'DEV_MODE', devMode);
 
     if(result.code !== 0) {
       shell.echo('Failed to apply config')
