@@ -64,7 +64,7 @@ yargs(hideBin(process.argv))
   )
   .command(
       "debug [timestamp]",
-      "Parses and prints the contents of the record file that has been created during the selected timestamp [default: latest]",
+      "Parses and prints the contents of the record file that has been created during the selected timestamp.",
       (yargs) => {
         CliOptions.addTimestampOption(yargs);
       },
