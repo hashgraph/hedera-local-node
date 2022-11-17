@@ -1,4 +1,6 @@
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
 const constants = require("./constants");
@@ -21,8 +23,8 @@ module.exports = class NodeController {
     shell.exec(`docker network prune -f 2>${nullOutput}`);
   }
 
-  static async startLocalNode(network) {
-    await this.applyNetworkConfig(network);
+  static async startLocalNode(network, limits, devMode) {
+    await this.applyConfig(network, limits, devMode);
 
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
@@ -50,7 +52,7 @@ module.exports = class NodeController {
     }
   }
 
-  static async applyNetworkConfig(network) {
+  static async applyConfig(network, limits, devMode) {
     shell.echo(`Applying ${network} config settings...`)
     const baseFolder = path.resolve(__dirname, '../../');
     let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
@@ -68,11 +70,25 @@ module.exports = class NodeController {
       ].join(" && ")
     )
 
+    const relayRateLimitDisabled = !limits;
+    NodeController.setEnvValue(`${baseFolder}/.env`, 'RELAY_RATE_LIMIT_DISABLED', relayRateLimitDisabled);
+    NodeController.setEnvValue(`${baseFolder}/.env`, 'DEV_MODE', devMode);
+
     if(result.code !== 0) {
       shell.echo('Failed to apply config')
       shell.exit(result.code)
     } else {
       shell.echo(`Successfully applied ${network} config settings`)
     }
+  }
+
+  static setEnvValue(envPath, key, value) {
+    const lines = fs.readFileSync(envPath, "utf8").split(os.EOL);
+    const target = lines.indexOf(lines.find((line) => {
+      return line.match(new RegExp(key));
+    }));
+
+    lines.splice(target, 1, `${key}=${value}`);
+    fs.writeFileSync(envPath, lines.join(os.EOL));
   }
 };

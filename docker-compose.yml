@@ -49,6 +49,7 @@ services:
       - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
       - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
       - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
+      - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
 
   record-streams-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
@@ -273,7 +274,7 @@ services:
 
   explorer:
     container_name:  hedera-explorer
-    image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
+    image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-mirror-node-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
     restart: "unless-stopped"
     ports:
       - "9090:80"
@@ -356,6 +357,8 @@ services:
       HBAR_RATE_LIMIT_TINYBAR: "${HBAR_RATE_LIMIT_TINYBAR}"
       HBAR_RATE_LIMIT_DURATION: "${HBAR_RATE_LIMIT_DURATION}"
       ETH_GET_LOGS_BLOCK_RANGE_LIMIT: "${ETH_GET_LOGS_BLOCK_RANGE_LIMIT}"
+      RATE_LIMIT_DISABLED: "${RELAY_RATE_LIMIT_DISABLED}"
+      DEV_MODE: "${DEV_MODE}"
     ports:
       - "7546:7546"
     restart: unless-stopped

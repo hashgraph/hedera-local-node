@@ -20,9 +20,11 @@ yargs(hideBin(process.argv))
       CliOptions.addDetachedOption(yargs);
       CliOptions.addHostOption(yargs);
       CliOptions.addNetworkOption(yargs);
+      CliOptions.addRateLimitOption(yargs);
+      CliOptions.addDevModeOption(yargs);
     },
     async (argv) => {
-      await NodeController.startLocalNode(argv.network);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev);
       await main(argv.accounts, argv.detached, argv.host);
     }
   )
@@ -41,10 +43,12 @@ yargs(hideBin(process.argv))
       CliOptions.addDetachedOption(yargs);
       CliOptions.addHostOption(yargs);
       CliOptions.addNetworkOption(yargs);
+      CliOptions.addRateLimitOption(yargs);
+      CliOptions.addDevModeOption(yargs);
     },
     async (argv) => {
       await NodeController.stopLocalNode();
-      await NodeController.startLocalNode(argv.network);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev);
       await main(argv.accounts, argv.detached, argv.host);
     }
   )
@@ -57,6 +61,16 @@ yargs(hideBin(process.argv))
     async (argv) => {
       await HederaUtils.generateAccounts(console, argv.accounts);
     }
+  )
+  .command(
+      "debug [timestamp]",
+      "Parses and prints the contents of the record file that has been created during the selected timestamp.",
+      (yargs) => {
+        CliOptions.addTimestampOption(yargs);
+      },
+      async (argv) => {
+        await HederaUtils.debug(console, argv.timestamp);
+      }
   )
   .demandCommand()
   .strictCommands()

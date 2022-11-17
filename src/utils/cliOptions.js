@@ -34,4 +34,32 @@ module.exports = class CliOptions {
       default: 'local',
     })
   }
+
+  static addRateLimitOption(yargs) {
+    yargs.option("limits", {
+      alias: 'l',
+      type: 'boolean',
+      describe: "Enable or disable the rate limits in the JSON-RPC relay",
+      demandOption: false,
+      default: true,
+    })
+  }
+
+  static addTimestampOption(yargs) {
+    yargs.option("timestamp", {
+      type: 'string',
+      describe: "Record file timestamp",
+      demandOption: true,
+    })
+  }
+
+  static addDevModeOption(yargs) {
+    yargs.option("dev", {
+      alias: 'dev',
+      type: 'boolean',
+      describe: "Enable or disable developer mode",
+      demandOption: false,
+      default: false,
+    })
+  }
 }
