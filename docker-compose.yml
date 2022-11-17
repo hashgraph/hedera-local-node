@@ -274,7 +274,7 @@ services:
 
   explorer:
     container_name:  hedera-explorer
-    image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
+    image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-mirror-node-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
     restart: "unless-stopped"
     ports:
       - "9090:80"
