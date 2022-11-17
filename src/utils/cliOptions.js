@@ -44,7 +44,15 @@ module.exports = class CliOptions {
       default: true,
     })
   }
-  
+
+  static addTimestampOption(yargs) {
+    yargs.option("timestamp", {
+      type: 'string',
+      describe: "Record file timestamp",
+      demandOption: true,
+    })
+  }
+
   static addDevModeOption(yargs) {
     yargs.option("dev", {
       alias: 'dev',
