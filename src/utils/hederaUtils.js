@@ -4,7 +4,7 @@ const ethers = require("ethers");
 const fs = require('fs');
 const path = require('path');
 const shell = require("shelljs");
-require("dotenv").config();
+const dotenv = require("dotenv");
 
 module.exports = class HederaUtils {
   static privateKeysECDSA = [
@@ -189,6 +189,7 @@ module.exports = class HederaUtils {
   }
 
   static async debug(logger, timestamp) {
+    dotenv.config();
     const timestampRegEx = /^\d{10}[\.-]\d{9}$/;
     if (!timestampRegEx.test(timestamp)) {
       logger.log("Invalid timestamp string. Accepted formats are: 0000000000.000000000 and 0000000000-000000000");
