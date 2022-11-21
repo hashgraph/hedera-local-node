@@ -57,9 +57,6 @@ module.exports = class NodeController {
     const baseFolder = path.resolve(__dirname, '../../');
     let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
 
-    shell.cd(__dirname);
-    shell.cd("../../");
-
     let templatesPath = network == 'local' ? `templates/local` : `templates`;
     const result = shell.exec(
       [
