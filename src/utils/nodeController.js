@@ -5,6 +5,7 @@ const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
 const constants = require("./constants");
 const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
+const rootPath = process.cwd();
 
 module.exports = class NodeController {
   static getNullOutput() {
@@ -21,6 +22,7 @@ module.exports = class NodeController {
     console.log("Cleaning the volumes and temp files...");
     shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
     shell.exec(`docker network prune -f 2>${nullOutput}`);
+    shell.cd(rootPath);
   }
 
   static async startLocalNode(network, limits, devMode) {
@@ -50,9 +52,11 @@ module.exports = class NodeController {
       await this.stopLocalNode();
       shell.exec(`docker-compose up -d 2>${nullOutput}`);
     }
+    shell.cd(rootPath);
   }
 
   static async applyConfig(network, limits, devMode) {
+    shell.cd(rootPath);
     shell.echo(`Applying ${network} config settings...`)
     const baseFolder = path.resolve(__dirname, '../../');
     let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
