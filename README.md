@@ -17,9 +17,7 @@ The Hedera Local Node project allows developers to set up their own local networ
   - Docker Compose version check: `docker-compose -v`
 
 ### Note:
-
-- Ensure to use Docker Compose version 1.29.2 on macOS, due to known bug in Docker Compose V2.
-- Ensure the `gRPC FUSE for file sharing` and `Use Docker Compose V2` settings are disabled in the docker settings.
+- Ensure the `gRPC FUSE for file sharing` setting is disabled in the docker settings.
 
 Note: The image may look different if you are on a different version
 ![docker-compose-settings.png](docker-compose-settings.png)
