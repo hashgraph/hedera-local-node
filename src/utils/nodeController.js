@@ -72,6 +72,10 @@ module.exports = class NodeController {
     )
 
     const relayRateLimitDisabled = !limits;
+    if (relayRateLimitDisabled) {
+      NodeController.setEnvValue(`${baseFolder}/.env`, 'HBAR_RATE_LIMIT_TINYBAR', '0');
+      NodeController.setEnvValue(`${baseFolder}/.env`, 'HBAR_RATE_LIMIT_DURATION', '0');
+    }
     NodeController.setEnvValue(`${baseFolder}/.env`, 'RELAY_RATE_LIMIT_DISABLED', relayRateLimitDisabled);
     NodeController.setEnvValue(`${baseFolder}/.env`, 'DEV_MODE', devMode);
 
