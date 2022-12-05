@@ -31,7 +31,7 @@ module.exports = class NodeController {
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
       console.log("Docker is not running.");
-      process.exit();
+      process.exit(1);
     }
     const nullOutput = this.getNullOutput();
 
