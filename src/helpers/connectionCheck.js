@@ -15,12 +15,12 @@ module.exports = class ConnectionCheck {
         })
         .on("error", (err) => {
           logger.log(
-            `Waiting for the containers at ${host}:${port}, retrying in 20 seconds...`
+            `Waiting for the containers at ${host}:${port}, retrying in 0.1 seconds...`
           );
           logger.log(err);
         });
 
-      await new Promise((r) => setTimeout(r, 20000));
+      await new Promise((r) => setTimeout(r, 100));
     }
   }
 
