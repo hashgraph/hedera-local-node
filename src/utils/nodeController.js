@@ -18,6 +18,7 @@ module.exports = class NodeController {
     console.log("Stopping the network...");
     shell.cd(__dirname);
     console.log("Stopping the docker containers...");
+    shell.exec(`docker-compose kill 2>${nullOutput}`);
     shell.exec(`docker-compose down -v 2>${nullOutput}`);
     console.log("Cleaning the volumes and temp files...");
     shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
