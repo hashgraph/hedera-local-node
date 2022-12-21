@@ -1,7 +1,6 @@
 const net = require("net");
 
 module.exports = class ConnectionCheck {
-
   /**
    * Check if containers are up and running
    */

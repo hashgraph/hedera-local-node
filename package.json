@@ -17,20 +17,20 @@
     "test:readiness": "node src/utils/testNode.js"
   },
   "dependencies": {
-    "@hashgraph/hethers": "^1.1.2",
-    "@hashgraph/sdk": "2.18.5",
+    "@hashgraph/hethers": "^1.2.2",
+    "@hashgraph/sdk": "^2.19.0",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.11.0",
     "dockerode": "^3.3.4",
     "dotenv": "^16.0.3",
-    "ethers": "^5.6.9",
+    "ethers": "^5.7.2",
     "js-yaml": "^4.1.0",
     "mustache": "^4.2.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
-    "yargs": "^17.5.1"
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "hardhat": "^2.11.2"
+    "hardhat": "^2.12.4"
   }
 }
