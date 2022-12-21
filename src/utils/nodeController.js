@@ -1,10 +1,10 @@
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+const path = require("path");
+const fs = require("fs");
+const os = require("os");
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
 const constants = require("./constants");
-const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"]
+const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"];
 const rootPath = process.cwd();
 
 module.exports = class NodeController {
@@ -58,41 +58,55 @@ module.exports = class NodeController {
 
   static async applyConfig(network, limits, devMode) {
     shell.cd(rootPath);
-    shell.echo(`Applying ${network} config settings...`)
-    const baseFolder = path.resolve(__dirname, '../../');
-    let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
+    shell.echo(`Applying ${network} config settings...`);
+    const baseFolder = path.resolve(__dirname, "../../");
+    let configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : ".";
 
-    let templatesPath = network == 'local' ? `templates/local` : `templates`;
+    let templatesPath = network == "local" ? `templates/local` : `templates`;
     const result = shell.exec(
       [
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/.env.template > ${baseFolder}/.env`,
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/settings.txt > ${baseFolder}/compose-network/network-node/settings.txt`,
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
-        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`
+        `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`,
       ].join(" && ")
-    )
+    );
 
     const relayRateLimitDisabled = !limits;
     if (relayRateLimitDisabled) {
-      NodeController.setEnvValue(`${baseFolder}/.env`, 'HBAR_RATE_LIMIT_TINYBAR', '0');
-      NodeController.setEnvValue(`${baseFolder}/.env`, 'HBAR_RATE_LIMIT_DURATION', '0');
+      NodeController.setEnvValue(
+        `${baseFolder}/.env`,
+        "HBAR_RATE_LIMIT_TINYBAR",
+        "0"
+      );
+      NodeController.setEnvValue(
+        `${baseFolder}/.env`,
+        "HBAR_RATE_LIMIT_DURATION",
+        "0"
+      );
     }
-    NodeController.setEnvValue(`${baseFolder}/.env`, 'RELAY_RATE_LIMIT_DISABLED', relayRateLimitDisabled);
-    NodeController.setEnvValue(`${baseFolder}/.env`, 'DEV_MODE', devMode);
+    NodeController.setEnvValue(
+      `${baseFolder}/.env`,
+      "RELAY_RATE_LIMIT_DISABLED",
+      relayRateLimitDisabled
+    );
+    NodeController.setEnvValue(`${baseFolder}/.env`, "DEV_MODE", devMode);
 
-    if(result.code !== 0) {
-      shell.echo('Failed to apply config')
-      shell.exit(result.code)
+    if (result.code !== 0) {
+      shell.echo("Failed to apply config");
+      shell.exit(result.code);
     } else {
-      shell.echo(`Successfully applied ${network} config settings`)
+      shell.echo(`Successfully applied ${network} config settings`);
     }
   }
 
   static setEnvValue(envPath, key, value) {
     const lines = fs.readFileSync(envPath, "utf8").split(os.EOL);
-    const target = lines.indexOf(lines.find((line) => {
-      return line.match(new RegExp(key));
-    }));
+    const target = lines.indexOf(
+      lines.find((line) => {
+        return line.match(new RegExp(key));
+      })
+    );
 
     lines.splice(target, 1, `${key}=${value}`);
     fs.writeFileSync(envPath, lines.join(os.EOL));

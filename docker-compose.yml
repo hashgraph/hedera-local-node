@@ -20,7 +20,13 @@ services:
       JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
       JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
     healthcheck:
-      test: ["CMD", "grep", "ServicesMain - Now current platform status = ACTIVE", "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"]
+      test:
+        [
+          "CMD",
+          "grep",
+          "Now current platform status = ACTIVE",
+          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log",
+        ]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -126,7 +132,7 @@ services:
       - --s3-endpoint
       - http://minio:9000
       - --debug
-      
+
   record-sidecar-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: record-sidecar-uploader
@@ -273,11 +279,11 @@ services:
     tty: false
 
   explorer:
-    container_name:  hedera-explorer
+    container_name: hedera-explorer
     image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-mirror-node-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
     restart: "unless-stopped"
     ports:
-      - "9090:8080"
+      - "8080:8080"
     environment:
       VUE_APP_PRODUCT_NAME: ${VUE_APP_PRODUCT_NAME}
       VUE_APP_DOCUMENT_TITLE_PREFIX: ${VUE_APP_DOCUMENT_TITLE_PREFIX}

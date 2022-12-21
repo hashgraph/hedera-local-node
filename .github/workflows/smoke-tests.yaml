@@ -1,5 +1,4 @@
-name: Smoke Tests - Previewnet
-
+name: Smoke Tests
 on:
   push:
     branches: [main, develop]
@@ -7,17 +6,16 @@ on:
   workflow_dispatch:
 
 jobs:
-
   tests:
-
-    name: Smoke Tests - Previewnet
-
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 16.x ]
+        node-version: [18.x]
+        network: [mainnet, testnet, local, previewnet]
+
+    name: ${{ matrix.network }}
 
     steps:
       - name: Checkout repository
@@ -32,13 +30,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -SL -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      - name: Start the local node with previewnet images
-        run: node cli.js start --network previewnet -d
+      - name: Start the local node with testnet images
+        run: node cli.js start --network ${{ matrix.network }} -d
 
       - name: Prepare and run the tests
         run: |

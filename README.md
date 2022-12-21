@@ -17,6 +17,7 @@ The Hedera Local Node project allows developers to set up their own local networ
   - Docker Compose version check: `docker-compose -v`
 
 ### Note:
+
 - Ensure the `gRPC FUSE for file sharing` setting is disabled in the docker settings.
 
 Note: The image may look different if you are on a different version
@@ -431,9 +432,10 @@ For Windows users: You will need to update the file endings of `compose-network/
 These are the local network variables to interact with the consensus and mirror node.
 
 - Consensus Node Endpoint
+
   - `127.0.0.1:50211`
   - The IP address and port of the local consensus node.
-  > **_NOTE:_**  To connect to the local consensus node from a browser you will have to use the Envoy proxy at `http://127.0.0.1:50213`.
+    > **_NOTE:_** To connect to the local consensus node from a browser you will have to use the Envoy proxy at `http://127.0.0.1:50213`.
 
 - Consensus Node Account ID
   - `0.0.3`
@@ -484,7 +486,7 @@ The following environment variables can be changed in the `.env` file for variou
 | Mirror Node GRPC Endpoint     | [http://localhost:5600](http://localhost:5600)   |
 | Mirror Node REST API Endpoint | [http://localhost:5551](http://localhost:5551)   |
 | JSON RPC Relay Endpoint       | [http://localhost:7546](http://localhost:7546)   |
-| Mirror Node Explorer          | [http://localhost:9090](http://localhost:9090)   |
+| Mirror Node Explorer          | [http://localhost:8080](http://localhost:8080)   |
 
 # Environment variables
 

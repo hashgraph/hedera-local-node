@@ -6,10 +6,10 @@ const HederaUtils = require("./src/utils/hederaUtils");
 const TerminalUserInterface = require("./src/tui");
 const NodeController = require("./src/utils/nodeController");
 const Docker = require("dockerode");
-const stream = require('stream');
-const constants = require('./src/utils/constants');
+const stream = require("stream");
+const constants = require("./src/utils/constants");
 const DockerCheck = require("./src/helpers/dockerCheck");
-const CliOptions = require('./src/utils/cliOptions');
+const CliOptions = require("./src/utils/cliOptions");
 
 yargs(hideBin(process.argv))
   .command(
@@ -63,14 +63,14 @@ yargs(hideBin(process.argv))
     }
   )
   .command(
-      "debug [timestamp]",
-      "Parses and prints the contents of the record file that has been created during the selected timestamp.",
-      (yargs) => {
-        CliOptions.addTimestampOption(yargs);
-      },
-      async (argv) => {
-        await HederaUtils.debug(console, argv.timestamp);
-      }
+    "debug [timestamp]",
+    "Parses and prints the contents of the record file that has been created during the selected timestamp.",
+    (yargs) => {
+      CliOptions.addTimestampOption(yargs);
+    },
+    async (argv) => {
+      await HederaUtils.debug(console, argv.timestamp);
+    }
   )
   .demandCommand()
   .strictCommands()
@@ -95,13 +95,17 @@ async function main(accounts, detached, host) {
     "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
   );
 
-  const consensusNodeId = await DockerCheck.getContainerId(constants.CONSENSUS_NODE_LABEL);
-  const mirrorNodeId = await DockerCheck.getContainerId(constants.MIRROR_NODE_LABEL);
+  const consensusNodeId = await DockerCheck.getContainerId(
+    constants.CONSENSUS_NODE_LABEL
+  );
+  const mirrorNodeId = await DockerCheck.getContainerId(
+    constants.MIRROR_NODE_LABEL
+  );
   const relayId = await DockerCheck.getContainerId(constants.RELAY_LABEL);
 
-  attachContainerLogs(consensusNodeId,eventLogger);
-  attachContainerLogs(relayId,relayLogger);
-  attachContainerLogs(mirrorNodeId,mirrorNodeLogger);
+  attachContainerLogs(consensusNodeId, eventLogger);
+  attachContainerLogs(relayId, relayLogger);
+  attachContainerLogs(mirrorNodeId, mirrorNodeLogger);
 
   let i = 0;
   while (i++ < Number.MAX_VALUE) {
@@ -116,32 +120,35 @@ async function main(accounts, detached, host) {
 function attachContainerLogs(containerId, logger) {
   const socket = DockerCheck.getDockerSocket();
   const docker = new Docker({
-    socketPath: socket
+    socketPath: socket,
   });
-  const container = docker.getContainer(containerId)
+  const container = docker.getContainer(containerId);
 
   let logStream = new stream.PassThrough();
-  logStream.on('data', function(chunk){
-    let line = chunk.toString('utf8');
-    if (!line.includes(' Transaction ID: 0.0.2-')){
+  logStream.on("data", function (chunk) {
+    let line = chunk.toString("utf8");
+    if (!line.includes(" Transaction ID: 0.0.2-")) {
       logger.log(line);
     }
   });
 
-  container.logs({
-    follow: true,
-    stdout: true,
-    stderr: true,
-    since: Date.now() / 1000
-  }, function(err, stream){
-    if(err) {
-      return console.error(err.message);
+  container.logs(
+    {
+      follow: true,
+      stdout: true,
+      stderr: true,
+      since: Date.now() / 1000,
+    },
+    function (err, stream) {
+      if (err) {
+        return console.error(err.message);
+      }
+      container.modem.demuxStream(stream, logStream, logStream);
+      stream.on("end", function () {
+        logStream.end("!stop!");
+      });
     }
-    container.modem.demuxStream(stream, logStream, logStream);
-    stream.on('end', function(){
-      logStream.end('!stop!');
-    });
-  });
+  );
 }
 
 /**
@@ -152,11 +159,10 @@ async function start(accounts, host, eventLogger, accountLogger) {
   await ConnectionCheck.waitForFiringUp(5600, eventLogger, host);
   await ConnectionCheck.waitForFiringUp(50211, console, host);
   eventLogger.log("Starting the network...");
-    
+
   accountLogger.log("Generating accounts...");
   await HederaUtils.generateAccounts(accountLogger, accounts, true, host);
 }
-
 
 /**
  * Check if network is up and generate accounts

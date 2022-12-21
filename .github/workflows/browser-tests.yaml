@@ -7,9 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
   tests:
-
     name: Browser Tests
 
     runs-on: ubuntu-latest
@@ -17,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 16.x ]
+        node-version: [18.x]
 
     steps:
       - name: Checkout repository
@@ -31,11 +29,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Docker Compose
-        run: |
-          sudo curl -SL -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
-          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Start the local node
         run: node cli.js start -d
