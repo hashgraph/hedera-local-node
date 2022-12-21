@@ -283,7 +283,7 @@ services:
     image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-mirror-node-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
     restart: "unless-stopped"
     ports:
-      - "9090:8080"
+      - "8080:8080"
     environment:
       VUE_APP_PRODUCT_NAME: ${VUE_APP_PRODUCT_NAME}
       VUE_APP_DOCUMENT_TITLE_PREFIX: ${VUE_APP_DOCUMENT_TITLE_PREFIX}
