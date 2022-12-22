@@ -1,3 +1,4 @@
+const NodeController = require("./nodeController");
 const HederaSDK = require("@hashgraph/sdk");
 const hethers = require("@hashgraph/hethers");
 const ethers = require("ethers");
@@ -45,6 +46,32 @@ module.exports = class HederaUtils {
     "0x9b6adacefbbecff03e4359098d084a3af8039ce7f29d95ed28c7ebdb83740c83",
     "0x9a07bbdbb62e24686d2a4259dc88e38438e2c7a1ba167b147ad30ac540b0a3cd",
   ];
+
+  static async importFees(host = "127.0.0.1") {
+    const timestamp = Date.now();
+    const client = HederaSDK.Client.forNetwork({
+      [`${host}:50211`]: "0.0.3",
+    }).setOperator(
+        "0.0.2",
+        "302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137"
+    );
+
+    const feesFileId = 111;
+    const queryFees = new HederaSDK.FileContentsQuery()
+        .setFileId(`0.0.${feesFileId}`);
+    const fees = (await queryFees.execute(client)).toString('hex');
+    await shell.exec(
+        `docker exec mirror-node-db psql mirror_node -U mirror_node -c "INSERT INTO public.file_data(file_data, consensus_timestamp, entity_id, transaction_type) VALUES (decode('${fees}', 'hex'), ${timestamp + '000000'}, ${feesFileId}, 17);" >> ${NodeController.getNullOutput()}`
+    );
+
+    const exchangeRatesFileId = 112;
+    const queryExchangeRates = new HederaSDK.FileContentsQuery()
+        .setFileId(`0.0.${exchangeRatesFileId}`);
+    const exchangeRates = (await queryExchangeRates.execute(client)).toString('hex');
+    await shell.exec(
+        `docker exec mirror-node-db psql mirror_node -U mirror_node -c "INSERT INTO public.file_data(file_data, consensus_timestamp, entity_id, transaction_type) VALUES (decode('${exchangeRates}', 'hex'), ${timestamp + '000001'}, ${exchangeRatesFileId}, 17);" >> ${NodeController.getNullOutput()}`
+    );
+  }
 
   static async generateECDSA(client, num, startup, logger) {
     logger.log(

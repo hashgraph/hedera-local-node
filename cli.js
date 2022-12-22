@@ -160,6 +160,8 @@ async function start(accounts, host, eventLogger, accountLogger) {
   await ConnectionCheck.waitForFiringUp(50211, console, host);
   eventLogger.log("Starting the network...");
 
+  eventLogger.log("Importing fees...");
+  await HederaUtils.importFees(host);
   accountLogger.log("Generating accounts...");
   await HederaUtils.generateAccounts(accountLogger, accounts, true, host);
 }
@@ -173,6 +175,8 @@ async function startDetached(accounts, host) {
   await ConnectionCheck.waitForFiringUp(50211, console, host);
   console.log("Starting the network...");
 
+  console.log("Importing fees...");
+  await HederaUtils.importFees(host);
   console.log("Generating accounts...");
   await HederaUtils.generateAccounts(console, accounts, true, host);
   console.log("\nLocal node has been successfully started in detached mode.");
