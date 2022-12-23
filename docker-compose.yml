@@ -371,6 +371,7 @@ services:
       ETH_GET_LOGS_BLOCK_RANGE_LIMIT: "${ETH_GET_LOGS_BLOCK_RANGE_LIMIT}"
       RATE_LIMIT_DISABLED: "${RELAY_RATE_LIMIT_DISABLED}"
       DEV_MODE: "${DEV_MODE}"
+      INPUT_SIZE_LIMIT: "${RELAY_INPUT_SIZE_LIMIT}"
     ports:
       - "7546:7546"
     restart: unless-stopped
