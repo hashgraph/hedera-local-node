@@ -73,6 +73,21 @@ module.exports = class HederaUtils {
     );
   }
 
+  static async waitForMonitorTopicCreation() {
+    const LOG_SEARCH_TEXT = 'Created TOPIC entity';
+
+    return new Promise((resolve, reject) => {
+      const command = shell.exec(`docker logs mirror-node-monitor -f`, {silent: true, async: true})
+      command.stdout.on('data', (data) => {
+        if (data.indexOf(LOG_SEARCH_TEXT) !== -1) {
+          command.kill('SIGINT');
+          command.stdout.destroy();
+          resolve();
+        }
+      });
+    })
+  }
+
   static async generateECDSA(client, num, startup, logger) {
     logger.log(
       "|------------------------------------------------------------------------------------------|"
@@ -212,6 +227,11 @@ module.exports = class HederaUtils {
       "0.0.2",
       "302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137"
     );
+
+    // Mirror Node Monitor creates a Topic Entity. If that happens during the account generation step
+    // all consecutive AccountIds get shifted by 1 and the private keys no longer correspond to the
+    // expected AccountIds.
+    await this.waitForMonitorTopicCreation();
 
     await this.generateECDSA(client, num, startup, logger);
     logger.log("");
