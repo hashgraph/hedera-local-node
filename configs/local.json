@@ -34,7 +34,6 @@
     "atomicCryptoTransfer": true,
     "autoCreation": true,
     "lazyCreation": true,
-    "cryptoCreateWithAliasAndEvmAddress": true,
-    "evm": "v0.34"
+    "cryptoCreateWithAliasAndEvmAddress": true
   }
 }
