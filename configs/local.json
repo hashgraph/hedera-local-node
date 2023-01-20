@@ -7,10 +7,10 @@
   "maxSizeKb": 2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.33.2",
-  "havegedImageTag": "0.33.2",
+  "nodeImageTag": "0.35.0-alpha.1",
+  "havegedImageTag": "0.35.0-alpha.1",
   "uploaderImageTag": "0.7.0",
-  "mirrorImageTag": "0.72.0-rc1",
+  "mirrorImageTag": "0.73.0-rc1",
   "relayImageTag": "0.15.0",
   "mirrorNodeExplorerImageTag": "0.0.1-b01",
   "timeout": "180s",
@@ -31,6 +31,9 @@
     "enableTraceabilityMigration": true,
     "compressFilesOnCreation": true,
     "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE",
-    "atomicCryptoTransfer": true
+    "atomicCryptoTransfer": true,
+    "autoCreation": true,
+    "lazyCreation": true,
+    "cryptoCreateWithAliasAndEvmAddress": true
   }
 }
