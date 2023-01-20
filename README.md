@@ -567,6 +567,7 @@ JAVA settings for the Consensus node
 - `BAR_RATE_LIMIT_DURATION`: Hbar limit duration in ms. This creates a timestamp, which resets all limits, when it's reached. Defaults to `60000` (1 minute).
 - `ETH_GET_LOGS_BLOCK_RANGE_LIMIT`: `eth_getLogs` fromBlock - toBlock range limit. Defaults to 1000 blocks.
 - `RELAY_RATE_LIMIT_DISABLED`: If set to `true` the relay will not perform any rate limiting.
+- `RELAY_INPUT_SIZE_LIMIT`: The function input size limit in mb. Defaults to 1. 
 - `DEV_MODE`: Allows the asserting of contract call revert messages
 
 ### Record Stream Uploader settings
