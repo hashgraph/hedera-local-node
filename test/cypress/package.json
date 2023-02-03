@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npx cypress run",
     "build": "npx webpack",
-    "start": "npx http-server dist -p 9090 &"
+    "start": "npx http-server dist -p 9060 &"
   },
   "author": "",
   "license": "ISC",
