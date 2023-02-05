@@ -25,7 +25,7 @@ services:
           "CMD",
           "grep",
           "Now current platform status = ACTIVE",
-          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log",
+          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
         ]
       interval: 30s
       timeout: 10s
@@ -42,6 +42,7 @@ services:
     ports:
       - "50211:50211"
       - "50212:50212"
+      - "9999:9999"
     volumes:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
@@ -387,6 +388,39 @@ services:
     networks:
       - network-node-bridge
 
+  prometheus:
+    image: "${PROMETHEUS_IMAGE_NAME}:${PROMETHEUS_IMAGE_TAG}"
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./compose-network/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.4
+
+  grafana:
+      image: "${GRAFANA_IMAGE_NAME}:${GRAFANA_IMAGE_TAG}"
+      container_name: grafana
+      ports:
+        - "3000:3000"
+      restart: unless-stopped
+      volumes:
+        - ./compose-network/grafana/datasources:/etc/grafana/provisioning/datasources
+        - ./compose-network/grafana/dashboards:/etc/grafana/provisioning/dashboards
+        - grafana-data:/var/lib/grafana
+      networks:
+        network-node-bridge:
+          ipv4_address: 172.27.0.5
+
 networks:
   network-node-bridge:
     name: network-node-bridge
@@ -408,17 +442,11 @@ networks:
     driver: bridge
 
 volumes:
-  network-node-postgres:
-    name: network-node-postgres
   mirror-node-postgres:
     name: mirror-node-postgres
-  network-node-event-streams:
-    name: network-node-event-streams
-  network-node-record-streams:
-    name: network-node-record-streams
-  network-node-account-balances:
-    name: network-node-account-balances
-  network-node-stats:
-    name: network-node-stats
   minio-data:
     name: minio-data
+  prometheus-data:
+    name: prometheus-data
+  grafana-data:
+    name: grafana-data
