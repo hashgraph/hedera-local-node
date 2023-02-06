@@ -18,5 +18,5 @@ services:
     command: []
   importer:
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/streams/balances"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/streams/records"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/streams/accountBalances"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/streams/recordstreams"
