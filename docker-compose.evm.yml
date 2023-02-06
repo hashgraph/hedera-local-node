@@ -1,0 +1,18 @@
+version: "2.4"
+services:
+  record-streams-uploader:
+    restart: "no"
+    entrypoint: ["echo", "This container is intentionally disabled by the EVM profile."]
+  account-balances-uploader:
+    restart: "no"
+    entrypoint: [ "echo", "This container is intentionally disabled by the EVM profile." ]
+  record-sidecar-uploader:
+    restart: "no"
+    entrypoint: [ "echo", "This container is intentionally disabled by the EVM profile." ]
+  minio:
+    restart: "no"
+    entrypoint: [ "echo", "This container is intentionally disabled by the EVM profile." ]
+  importer:
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/streams/balances"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/streams/records"
