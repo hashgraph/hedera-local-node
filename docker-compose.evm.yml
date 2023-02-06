@@ -17,6 +17,7 @@ services:
     entrypoint: [ "echo", "This container is intentionally disabled by the EVM profile." ]
     command: []
   importer:
+    user: "root"
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/streams/accountBalances"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/streams/recordstreams"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.3:/node/streams/accountBalances/balance0.0.3"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3:/node/streams/recordstreams/record0.0.3"
