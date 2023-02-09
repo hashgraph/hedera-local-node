@@ -105,9 +105,6 @@ module.exports = class NodeController {
     }
 
     if (turboMode) {
-      NodeController.setEnvValue(`${baseFolder}/.env`, "MIRROR_NODE_RETRIES", 15);
-      NodeController.setEnvValue(`${baseFolder}/.env`, "MIRROR_NODE_RETRY_DELAY", 100);
-
       const yaml = require("js-yaml");
       const fs = require("fs");
       const application = yaml.load(fs.readFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`));
