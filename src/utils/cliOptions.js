@@ -63,7 +63,7 @@ module.exports = class CliOptions {
   }
 
   static addTurboModeOption(yargs) {
-    yargs.option("turboMode", {
+    yargs.option("turbo", {
       type: 'boolean',
       describe: "Enable or disable turbo mode",
       demandOption: false,

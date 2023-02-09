@@ -25,7 +25,7 @@ yargs(hideBin(process.argv))
       CliOptions.addTurboModeOption(yargs);
     },
     async (argv) => {
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turboMode);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turbo);
       await main(argv.accounts, argv.detached, argv.host);
     }
   )
@@ -50,7 +50,7 @@ yargs(hideBin(process.argv))
     },
     async (argv) => {
       await NodeController.stopLocalNode();
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turboMode);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turbo);
       await main(argv.accounts, argv.detached, argv.host);
     }
   )
