@@ -55,7 +55,6 @@ module.exports = class CliOptions {
 
   static addDevModeOption(yargs) {
     yargs.option("dev", {
-      alias: 'dev',
       type: 'boolean',
       describe: "Enable or disable developer mode",
       demandOption: false,
@@ -65,7 +64,6 @@ module.exports = class CliOptions {
 
   static addTurboModeOption(yargs) {
     yargs.option("turboMode", {
-      alias: 'turboMode',
       type: 'boolean',
       describe: "Enable or disable turbo mode",
       demandOption: false,

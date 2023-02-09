@@ -22,7 +22,7 @@ yargs(hideBin(process.argv))
       CliOptions.addNetworkOption(yargs);
       CliOptions.addRateLimitOption(yargs);
       CliOptions.addDevModeOption(yargs);
-      CliOptions.addturboModeOption(yargs);
+      CliOptions.addTurboModeOption(yargs);
     },
     async (argv) => {
       await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turboMode);
