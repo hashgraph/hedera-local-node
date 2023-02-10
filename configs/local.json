@@ -18,6 +18,8 @@
   "transactionMaxBytes": "30720",
   "maxResults": "10",
   "defaultLimit": "200",
+  "mirrorNodeRetries": "10",
+  "mirrorNodeRetryDelay": "150",
   "tier1Limit": "100",
   "tier2Limit": "800",
   "tier3Limit": "1600",
