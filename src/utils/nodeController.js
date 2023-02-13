@@ -26,8 +26,8 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode) {
-    await this.applyConfig(network, limits, devMode);
+  static async startLocalNode(network, limits, devMode, turboMode) {
+    await this.applyConfig(network, limits, devMode, turboMode);
 
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
@@ -39,7 +39,12 @@ module.exports = class NodeController {
     console.log("Starting the docker containers...");
     shell.cd(__dirname);
     shell.cd("../../");
-    const output = shell.exec(`docker-compose up -d 2>${nullOutput}`);
+    const dockerComposeUpCmd = () => {
+      return (turboMode)
+          ? shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`)
+          : shell.exec(`docker-compose up -d 2>${nullOutput}`);
+    };
+    const output = dockerComposeUpCmd();
     if (output.code == 1) {
       const yaml = require("js-yaml");
       const fs = require("fs");
@@ -51,12 +56,12 @@ module.exports = class NodeController {
       shell.exec(`docker stop ${containersNames} 2>${nullOutput} 1>&2`);
       shell.exec(`docker rm -f -v ${containersNames} 2>${nullOutput} 1>&2`);
       await this.stopLocalNode();
-      shell.exec(`docker-compose up -d 2>${nullOutput}`);
+      dockerComposeUpCmd();
     }
     shell.cd(rootPath);
   }
 
-  static async applyConfig(network, limits, devMode) {
+  static async applyConfig(network, limits, devMode, turboMode) {
     shell.cd(rootPath);
     shell.echo(`Applying ${network} config settings...`);
     const baseFolder = path.resolve(__dirname, "../../");
@@ -97,6 +102,15 @@ module.exports = class NodeController {
       shell.exit(result.code);
     } else {
       shell.echo(`Successfully applied ${network} config settings`);
+    }
+
+    if (turboMode) {
+      const yaml = require("js-yaml");
+      const fs = require("fs");
+      const application = yaml.load(fs.readFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`));
+      application.hedera.mirror.importer.dataPath = 'file:///node/';
+      application.hedera.mirror.importer.downloader.sources = [{type: 'LOCAL'}];
+      fs.writeFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`, yaml.dump(application, {forceQuotes: true}));
     }
   }
 

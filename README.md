@@ -80,6 +80,7 @@ Available commands:
             --n or --network to override the default configuration. Defaults to mainnet.
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
             --dev to enable/disable developer mode.
+            --turbo to enable/disable turbo mode.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -564,6 +565,8 @@ JAVA settings for the Consensus node
 - `RELAY_E2E_HOST`: The full relay url address
 - `FEE_HISTORY_MAX_RESULTS`: Max number of results returned by `eth_feeHistory`. Defaults to 10.
 - `DEFAULT_RATE_LIMIT`: Default fallback rate limit, if no other is configured. Default is to `200` (200 request per IP).
+- `MIRROR_NODE_RETRIES`: Default mirror node retries, if no other is configured. Default is set to `10` for local and `3` for mainnet/testnet/previewnet.
+- `MIRROR_NODE_RETRY_DELAY`: Default mirror node retry delay, if no other is configured. Default is set to `150ms` for local and `500ms` for mainnet/testnet/previewnet.
 - `TIER_1_RATE_LIMIT`: Restrictive limiting tier, for expensive endpoints. Default is to `100` (100 request per IP).
 - `TIER_2_RATE_LIMIT`: Moderate limiting tier, for non expensive endpoints. Default is to `200` (200 request per IP).
 - `TIER_3_RATE_LIMIT`: Relaxed limiting tier. Default is to `400` (400 request per IP).
