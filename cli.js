@@ -77,7 +77,7 @@ yargs(hideBin(process.argv))
   .demandCommand()
   .strictCommands()
   .recommendCommands()
-    .epilogue(`
+  .epilogue(`
 Requirements:
   - Node.js >= v14.x
       Node version check: node -v
