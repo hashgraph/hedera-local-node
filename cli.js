@@ -77,6 +77,23 @@ yargs(hideBin(process.argv))
   .demandCommand()
   .strictCommands()
   .recommendCommands()
+  .epilogue(`
+Requirements:
+  - Node.js >= v14.x
+      Node version check: node -v
+  - NPM >= v6.14.17
+      NPM version check: npm -v
+  - Docker >= v20.10.x
+      Docker version check: docker -v
+  - Docker Compose => v1.28.0 && <= 1.29.2
+      Docker Compose version check: docker-compose -v
+
+  * Ensure the gRPC FUSE for file sharing setting is disabled in the docker settings
+  * Ensure the following configurations are set at minimum in Docker Settings -> Resources and are available for use
+      CPUs: 6
+      Memory: 5GB
+      Swap: 1 GB
+      Disk Image Size: 59.6 GB`)
   .parse();
 
 async function main(accounts, detached, host) {

@@ -8,9 +8,9 @@ The Hedera Local Node project allows developers to set up their own local networ
 
 # Requirements
 
-- [Node.js](https://nodejs.org/) `>= v14.x` and `<= v16.x`
+- [Node.js](https://nodejs.org/) `>= v14.x`
   - Node version check: `node -v`
-- NPM `>= v6.14.17` and `<= v8.5.0`
+- NPM `>= v6.14.17`
   - NPM version check: `npm -v`
 - [Docker](https://www.docker.com/) `>= v20.10.x`
   - Docker version check: `docker -v`
@@ -22,7 +22,7 @@ The Hedera Local Node project allows developers to set up their own local networ
 - Ensure the `gRPC FUSE for file sharing` setting is disabled in the docker settings.
 
 Note: The image may look different if you are on a different version
-![docker-compose-settings.png](docker-compose-settings.png)
+![docker-compose-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
   - **CPUs:** 6
@@ -31,7 +31,7 @@ Note: The image may look different if you are on a different version
   - **Disk Image Size:** 59.6 GB
 
 Note: The image may look different if you are on a different version
-![settings.png](settings.png)
+![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/settings.png)
 
 # CLI Tool - @hashgraph/hedera-local
 
@@ -136,7 +136,7 @@ Generating accounts...
 
 |--------------------------------------------------------------------------------------------------------------------------------------|
 |--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|
-|    id    |                  address                   |                             private key                            | balance |
+|    id    |              public address                |                             private key                            | balance |
 |--------------------------------------------------------------------------------------------------------------------------------------|
 | 0.0.1012 - 0x67D8d32E9Bf1a9968a5ff53B87d777Aa8EBBEe69 - 0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524 - 10000 ℏ |
 | 0.0.1013 - 0x05FbA803Be258049A27B820088bab1cAD2058871 - 0x2e1d968b041d84dd120a5860cee60cd83f9374ef527ca86996317ada3d0d03e7 - 10000 ℏ |
@@ -187,7 +187,7 @@ Generating accounts...
 
 |--------------------------------------------------------------------------------------------------------------------------------------|
 |--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|
-|    id    |                  address                   |                             private key                            | balance |
+|    id    |              public address                |                             private key                            | balance |
 |--------------------------------------------------------------------------------------------------------------------------------------|
 | 0.0.1004 - 0x67D8d32E9Bf1a9968a5ff53B87d777Aa8EBBEe69 - 0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524 - 10000 ℏ |
 | 0.0.1005 - 0x05FbA803Be258049A27B820088bab1cAD2058871 - 0x2e1d968b041d84dd120a5860cee60cd83f9374ef527ca86996317ada3d0d03e7 - 10000 ℏ |
@@ -242,7 +242,7 @@ Generating accounts...
 
 |--------------------------------------------------------------------------------------------------------------------------------------|
 |--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|
-|    id    |                  address                   |                             private key                            | balance |
+|    id    |              public address                |                             private key                            | balance |
 |--------------------------------------------------------------------------------------------------------------------------------------|
 | 0.0.1012 - 0x67D8d32E9Bf1a9968a5ff53B87d777Aa8EBBEe69 - 0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524 - 10000 ℏ |
 | 0.0.1013 - 0x05FbA803Be258049A27B820088bab1cAD2058871 - 0x2e1d968b041d84dd120a5860cee60cd83f9374ef527ca86996317ada3d0d03e7 - 10000 ℏ |
@@ -295,7 +295,7 @@ Generating accounts...
 
 |--------------------------------------------------------------------------------------------------------------------------------------|
 |--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|
-|    id    |                  address                   |                             private key                            | balance |
+|    id    |              public address                |                             private key                            | balance |
 |--------------------------------------------------------------------------------------------------------------------------------------|
 | 0.0.1004 - 0x67D8d32E9Bf1a9968a5ff53B87d777Aa8EBBEe69 - 0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524 - 10000 ℏ |
 | 0.0.1005 - 0x05FbA803Be258049A27B820088bab1cAD2058871 - 0x2e1d968b041d84dd120a5860cee60cd83f9374ef527ca86996317ada3d0d03e7 - 10000 ℏ |
@@ -326,7 +326,7 @@ $ hedera generate-accounts 2
 
 |--------------------------------------------------------------------------------------------------------------------------------------|
 |--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|
-|    id    |                  address                   |                             private key                            | balance |
+|    id    |              public address                |                             private key                            | balance |
 |--------------------------------------------------------------------------------------------------------------------------------------|
 | 0.0.1010 - 0xeBaea5B3BB2f7C96C035804C7913eC79593f3097 - 0xa44cbbd0d48c6b534fc7b243b267bae73f5843df71c73628c9883ff20c660b04 - 10000 ℏ |
 | 0.0.1011 - 0x58a2452e618586c439325d549Ef9d1549e3c7A26 - 0x79a9bcb39994373774c06bb0a5e8289ffe8f8a734e2c01e32186196fb68abccf - 10000 ℏ |

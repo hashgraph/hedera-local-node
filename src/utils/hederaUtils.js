@@ -135,7 +135,7 @@ module.exports = class HederaUtils {
       "|--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|"
     );
     logger.log(
-      "|    id    |                  address                   |                             private key                            | balance |"
+      "|    id    |               public address               |                             private key                            | balance |"
     );
     logger.log(
       "|--------------------------------------------------------------------------------------------------------------------------------------|"
