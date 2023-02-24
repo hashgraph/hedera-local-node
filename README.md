@@ -16,10 +16,11 @@ The Hedera Local Node project allows developers to set up their own local networ
   - Docker version check: `docker -v`
 - [Docker Compose](https://docs.docker.com/compose/) `=> v1.28.0 && <= 1.29.2`
   - Docker Compose version check: `docker-compose -v`
+- Minimum 8GB RAM
 
 ### Note:
 
-- Ensure the `gRPC FUSE for file sharing` setting is disabled in the docker settings.
+- **Ensure the `gRPC FUSE for file sharing` setting is disabled in the docker settings.**
 
 Note: The image may look different if you are on a different version
 ![docker-compose-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/docker-compose-settings.png)
@@ -459,7 +460,7 @@ These are the local network variables to interact with the consensus and mirror 
 
 1. `compose-network` folder has the static files needed for starting Local network.
 2. `compose-network/grafana/dashboards` folder contains the Grafana dashboard definitions in JSON format which will be automatically provisioned at startup.
-3. `compose-network/grafana/datasources` folder contains the Grafana datasource definitions in YAML format which wil be automatically provisioned at startup. 
+3. `compose-network/grafana/datasources` folder contains the Grafana datasource definitions in YAML format which wil be automatically provisioned at startup.
 4. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
 
 ## Steps to change the memory limits, properties and other configurations
@@ -485,7 +486,7 @@ The following environment variables can be changed in the `.env` file for variou
 # Exposed Endpoints
 
 | Type                          | Endpoint                                         |
-|-------------------------------|--------------------------------------------------|
+| ----------------------------- | ------------------------------------------------ |
 | Consensus Node Endpoint       | [http://localhost:50211](http://localhost:50211) |
 | Mirror Node GRPC Endpoint     | [http://localhost:5600](http://localhost:5600)   |
 | Mirror Node REST API Endpoint | [http://localhost:5551](http://localhost:5551)   |
@@ -575,7 +576,7 @@ JAVA settings for the Consensus node
 - `BAR_RATE_LIMIT_DURATION`: Hbar limit duration in ms. This creates a timestamp, which resets all limits, when it's reached. Defaults to `60000` (1 minute).
 - `ETH_GET_LOGS_BLOCK_RANGE_LIMIT`: `eth_getLogs` fromBlock - toBlock range limit. Defaults to 1000 blocks.
 - `RELAY_RATE_LIMIT_DISABLED`: If set to `true` the relay will not perform any rate limiting.
-- `RELAY_INPUT_SIZE_LIMIT`: The function input size limit in mb. Defaults to 1. 
+- `RELAY_INPUT_SIZE_LIMIT`: The function input size limit in mb. Defaults to 1.
 - `DEV_MODE`: Allows the asserting of contract call revert messages
 
 ### Record Stream Uploader settings
@@ -594,25 +595,25 @@ JAVA settings for the Consensus node
 
 ## Accessing Prometheus
 
-The deployed Prometheus instance may be accessed from [http://localhost:9090](http://localhost:9090) and no credentials are required. 
+The deployed Prometheus instance may be accessed from [http://localhost:9090](http://localhost:9090) and no credentials are required.
 
 ## Accessing Grafana
 
 The deployed Grafana instance may be accessed from [http://localhost:3000](http://localhost:3000) and the following default credentials are needed at first login:
 
 | User Name | Password |
-|-----------|----------|
+| --------- | -------- |
 | admin     | admin    |
 
 ## Adding New Dashboards
 
-Creating new dashboards may be accomplished using the Grafana visual editor; however, these dashboards will not persist after a `docker-compose down -v` command 
+Creating new dashboards may be accomplished using the Grafana visual editor; however, these dashboards will not persist after a `docker-compose down -v` command
 or any other command which removes the named volumes.
 
 Dashboards may be exported as JSON definitions and placed under the `compose-network/grafana/dashboards` folder to ensure they are automatically restored after a `docker-compose down -v` or equivalent operation.
 
-Any dashboard definitions placed into the root of the `compose-network/grafana/dashboards` folder will appear under the `General` folder in the Grafana dashboard list 
-Placing dashboards under a subfolder will result in a new folder in the Grafana dashboard list and the dashboards will be deployed under the folder. 
+Any dashboard definitions placed into the root of the `compose-network/grafana/dashboards` folder will appear under the `General` folder in the Grafana dashboard list
+Placing dashboards under a subfolder will result in a new folder in the Grafana dashboard list and the dashboards will be deployed under the folder.
 
 # Support
 
