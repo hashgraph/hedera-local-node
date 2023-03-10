@@ -26,6 +26,9 @@ jobs:
       version: ${{ steps.extract.outputs.version }}
       tag: ${{ steps.extract.outputs.tag }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # pinned to v3.3.0
+
       - name: Install Semantic Version Tools
         run: |
           echo "::group::Download SemVer Binary"
@@ -73,7 +76,7 @@ jobs:
         run: gsutil cp "gs://hedera-platform-builds/build-${{ steps.extract.outputs.tag }}.zip"
 
       - name: Retrieve the Artifact Checksum/Hash
-        run: gsutil cp "gs://hedera-platform-builds/build-${{ steps.extract.outputs.tag }}.sha384"
+        run: gsutil cp "gs://hedera-platform-builds/build-${{ steps.extract.outputs.tag }}.sha384" .
 
       - name: Validate the Build Artifact
         run: sha384sum -c "build-${{ steps.extract.outputs.tag }}.sha384"
