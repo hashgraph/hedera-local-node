@@ -124,7 +124,6 @@ jobs:
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # pinned to v4.0.0
         with:
           push: true
-          file: Dockerfile
           context: ${{ github.workspace }}/docker/network-node-haveged
           platforms: |
             linux/arm64
@@ -166,7 +165,6 @@ jobs:
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # pinned to v4.0.0
         with:
           push: true
-          file: Dockerfile
           context: ${{ github.workspace }}/docker/network-node-base
           platforms: |
             linux/arm64
@@ -219,7 +217,6 @@ jobs:
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # pinned to v4.0.0
         with:
           push: true
-          file: Dockerfile
           context: ${{ github.workspace }}/docker/main-network-node
           platforms: |
             linux/arm64
