@@ -227,7 +227,7 @@ jobs:
             IMAGE_TAG=${{ needs.prepare-release.outputs.version }}
 
   report-published-images:
-    name: Deploy / Base / Image
+    name: Image / Report
     runs-on: [ self-hosted, Linux, large, ephemeral ]
     needs:
       - prepare-release
