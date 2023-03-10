@@ -243,19 +243,19 @@ jobs:
           printf "| %s | %s | %s | %s |\n" \
             "gcr.io/hedera-registry/network-node-base" \
             "${{ needs.prepare-release.outputs.version }}" \
-            "[GCP Console](https://console.cloud.google.com/gcr/images/hedera-registry/global/network-node-base?project=hedera-registry)" \
+            "[GCP Console](https://console.cloud.google.com/gcr/images/hedera-registry/global/network-node-base)" \
             "linux/amd64, linux/arm64" >> "${GITHUB_STEP_SUMMARY}"
           
           printf "| %s | %s | %s | %s |\n" \
             "gcr.io/hedera-registry/network-node-haveged" \
             "${{ needs.prepare-release.outputs.version }}" \
-            "[GCP Console](https://console.cloud.google.com/gcr/images/hedera-registry/global/network-node-haveged?project=hedera-registry)" \
+            "[GCP Console](https://console.cloud.google.com/gcr/images/hedera-registry/global/network-node-haveged)" \
             "linux/amd64, linux/arm64" >> "${GITHUB_STEP_SUMMARY}"
           
           printf "| %s | %s | %s | %s |\n" \
             "gcr.io/hedera-registry/main-network-node" \
             "${{ needs.prepare-release.outputs.version }}" \
-            "[GCP Console](https://console.cloud.google.com/gcr/images/hedera-registry/global/main-network-node?project=hedera-registry)" \
+            "[GCP Console](https://console.cloud.google.com/gcr/images/hedera-registry/global/main-network-node)" \
             "linux/amd64, linux/arm64" >> "${GITHUB_STEP_SUMMARY}"
 
           printf "\n\n" >> "${GITHUB_STEP_SUMMARY}"
