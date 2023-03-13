@@ -1,5 +1,5 @@
 const blessed = require("blessed");
-const contrib = require("blessed-contrib");
+const terminal = require("blessed-terminal");
 const ConnectionCheck = require("../helpers/connectionCheck");
 const DockerCheck = require("../helpers/dockerCheck");
 const constants = require('../utils/constants');
@@ -20,7 +20,7 @@ module.exports = class TerminalUserInterface {
       smartCSR: true,
     });
     this.screen.title = "Hedera Local Node";
-    this.grid = new contrib.grid({ rows: 12, cols: 12, screen: this.screen });
+    this.grid = new terminal.grid({ rows: 12, cols: 12, screen: this.screen });
 
     this.initInfoBoard();
     this.initStatusBoard();
@@ -74,7 +74,7 @@ module.exports = class TerminalUserInterface {
    * Initialize info board screen
    */
   initInfoBoard() {
-    this.info = this.grid.set(0, 7, 2, 3, contrib.table, {
+    this.info = this.grid.set(0, 7, 2, 3, terminal.table, {
       keys: true,
       fg: "white",
       label: "Commands Information",
@@ -96,7 +96,7 @@ module.exports = class TerminalUserInterface {
    * Initialize status board screen
    */
   async initStatusBoard() {
-    this.status = this.grid.set(0, 0, 2, 7, contrib.table, {
+    this.status = this.grid.set(0, 0, 2, 7, terminal.table, {
       keys: true,
       fg: "white",
       label: "Status",
