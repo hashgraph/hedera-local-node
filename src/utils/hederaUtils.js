@@ -89,6 +89,7 @@ module.exports = class HederaUtils {
   }
 
   static async generateECDSA(client, num, startup, logger) {
+    let firstAccountNum = 1002;
     logger.log(
       "|------------------------------------------------------------------------------------------|"
     );
@@ -114,13 +115,22 @@ module.exports = class HederaUtils {
         )
         .setInitialBalance(HederaSDK.Hbar.fromTinybars(10000000000000))
         .execute(client);
-      const getReceipt = await tx.getReceipt(client);
+      if (startup) {
+        logger.log(
+          `| 0.0.${firstAccountNum} - ${
+            wallet._signingKey().privateKey
+          } - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
+        );
+        firstAccountNum++;
+      } else {
+        const getReceipt = await tx.getReceipt(client);
 
-      logger.log(
-        `| ${getReceipt.accountId.toString()} - ${
-          wallet._signingKey().privateKey
-        } - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
-      );
+        logger.log(
+          `| ${getReceipt.accountId.toString()} - ${
+            wallet._signingKey().privateKey
+          } - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
+        );
+      }
     }
     logger.log(
       "|------------------------------------------------------------------------------------------|"
@@ -128,6 +138,7 @@ module.exports = class HederaUtils {
   }
 
   static async generateAliasECDSA(client, num, startup, logger) {
+    let firstAccountNum = 1012;
     logger.log(
       "|--------------------------------------------------------------------------------------------------------------------------------------|"
     );
@@ -156,17 +167,27 @@ module.exports = class HederaUtils {
           new HederaSDK.Hbar(-10000)
         );
       const tx = await transferTransaction.execute(client);
-      await tx.getReceipt(client);
+      if (startup) {
+        logger.log(
+          `| 0.0.${firstAccountNum} - ${wallet.address} - ${
+            wallet._signingKey().privateKey
+          } - ${new HederaSDK.Hbar(10000)} |`
+        );
+        firstAccountNum++;
+      } else {
+        await tx.getReceipt(client);
 
-      const accountInfo = await new HederaSDK.AccountInfoQuery({
-        accountId: HederaSDK.AccountId.fromEvmAddress(0, 0, wallet.address),
-      }).execute(client);
-
-      logger.log(
-        `| ${accountInfo.accountId.toString()} - ${wallet.address} - ${
-          wallet._signingKey().privateKey
-        } - ${new HederaSDK.Hbar(10000)} |`
-      );
+        const accountInfo = await new HederaSDK.AccountInfoQuery({
+          accountId: HederaSDK.AccountId.fromEvmAddress(0, 0, wallet.address),
+        }).execute(client);
+  
+        logger.log(
+          `| ${accountInfo.accountId.toString()} - ${wallet.address} - ${
+            wallet._signingKey().privateKey
+          } - ${new HederaSDK.Hbar(10000)} |`
+        );
+      }
+      
     }
     logger.log(
       "|--------------------------------------------------------------------------------------------------------------------------------------|"
@@ -174,6 +195,7 @@ module.exports = class HederaUtils {
   }
 
   static async generateED25519(client, num, startup, logger) {
+    let firstAccountNum = 1022;
     logger.log(
       "|------------------------------------------------------------------------------------------|"
     );
@@ -202,13 +224,23 @@ module.exports = class HederaUtils {
         )
         .setInitialBalance(HederaSDK.Hbar.fromTinybars(10000000000000))
         .execute(client);
-      const getReceipt = await tx.getReceipt(client);
 
-      logger.log(
-        `| ${getReceipt.accountId.toString()} - ${
-          wallet._signingKey().privateKey
-        } - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
-      );
+      if (startup) {
+        logger.log(
+          `| 0.0.${firstAccountNum} - ${
+            wallet._signingKey().privateKey
+          } - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
+        );
+        firstAccountNum++;
+      } else {
+        const getReceipt = await tx.getReceipt(client);
+
+        logger.log(
+          `| ${getReceipt.accountId.toString()} - ${
+            wallet._signingKey().privateKey
+          } - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
+        );
+      }
     }
     logger.log(
       "|------------------------------------------------------------------------------------------|"
