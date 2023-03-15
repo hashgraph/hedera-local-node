@@ -70,4 +70,13 @@ module.exports = class CliOptions {
       default: false,
     })
   }
+
+  static addBalanceOption(yargs) {
+    yargs.option('balance', {
+      type: 'number',
+      describe: "Set starting balance of the created accounts",
+      demandOption: false,
+      default: 10000,
+    })
+  }
 }

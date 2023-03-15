@@ -47,6 +47,8 @@ module.exports = class HederaUtils {
     "0x9a07bbdbb62e24686d2a4259dc88e38438e2c7a1ba167b147ad30ac540b0a3cd",
   ];
 
+  static startingHbarBalance = this.startingHbarBalance;
+
   static async importFees(host = "127.0.0.1") {
     const timestamp = Date.now();
     const client = HederaSDK.Client.forNetwork({
@@ -89,39 +91,38 @@ module.exports = class HederaUtils {
   }
 
   static async generateECDSA(client, num, startup, logger) {
-    let accountNum = 1002;
+    let ecdsaAccountNumCounter = 1002;
     logger.log(
-      "|------------------------------------------------------------------------------------------|"
+      "|-----------------------------------------------------------------------------------------|"
     );
     logger.log(
-      "|------------------------------| Accounts list (ECDSA keys) |------------------------------|"
+      "|------------------------------| Accounts list (ECDSA keys) |-----------------------------|"
     );
     logger.log(
-      "|    id    |                            private key                             |  balance |"
+      "|    id    |                            private key                            |  balance |"
     );
     logger.log(
-      "|------------------------------------------------------------------------------------------|"
+      "|-----------------------------------------------------------------------------------------|"
     );
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom();
       if (startup && this.privateKeysECDSA[i]) {
         wallet = new hethers.Wallet(this.privateKeysECDSA[i]);
       }
-      await this.createAccount(client, wallet, accountNum, logger, startup);
-      accountNum++;
+      await this.createAccount(client, wallet, ecdsaAccountNumCounter++, logger, startup);
     }
     logger.log(
-      "|------------------------------------------------------------------------------------------|"
+      "|-----------------------------------------------------------------------------------------|"
     );
   }
 
   static async generateAliasECDSA(client, num, startup, logger) {
-    let firstAccountNum = 1012;
+    let aliasedAccountNumCounter = 1012;
     logger.log(
       "|--------------------------------------------------------------------------------------------------------------------------------------|"
     );
     logger.log(
-      "|--------------------------------------------------| Accounts list (Alias ECDSA keys) |------------------------------------------------|"
+      "|--------------------------------------------------------------------------------------------------------------------------------------|"
     );
     logger.log(
       "|    id    |               public address               |                             private key                            | balance |"
@@ -139,32 +140,29 @@ module.exports = class HederaUtils {
         wallet._signingKey().compressedPublicKey.replace("0x", "")
       ).toAccountId(0, 0);
       const transferTransaction = new HederaSDK.TransferTransaction()
-        .addHbarTransfer(accountId, new HederaSDK.Hbar(10000))
+        .addHbarTransfer(accountId, new HederaSDK.Hbar(this.startingHbarBalance))
         .addHbarTransfer(
           HederaSDK.AccountId.fromString("0.0.2"),
-          new HederaSDK.Hbar(-10000)
+          new HederaSDK.Hbar(-this.startingHbarBalance)
         );
       const tx = await transferTransaction.execute(client);
+      let accountNum = `0.0.${aliasedAccountNumCounter}`;
       if (startup) {
-        logger.log(
-          `| 0.0.${firstAccountNum} - ${wallet.address} - ${
-            wallet._signingKey().privateKey
-          } - ${new HederaSDK.Hbar(10000)} |`
-        );
-        firstAccountNum++;
+        aliasedAccountNumCounter++;
       } else {
         await tx.getReceipt(client);
 
         const accountInfo = await new HederaSDK.AccountInfoQuery({
           accountId: HederaSDK.AccountId.fromEvmAddress(0, 0, wallet.address),
         }).execute(client);
-  
-        logger.log(
-          `| ${accountInfo.accountId.toString()} - ${wallet.address} - ${
-            wallet._signingKey().privateKey
-          } - ${new HederaSDK.Hbar(10000)} |`
-        );
+        accountNum = accountInfo.accountId.toString();
       }
+
+      logger.log(
+        `| ${accountNum} - ${wallet.address} - ${
+          wallet._signingKey().privateKey
+        } - ${new HederaSDK.Hbar(this.startingHbarBalance)} |`
+      );
       
     }
     logger.log(
@@ -173,18 +171,18 @@ module.exports = class HederaUtils {
   }
 
   static async generateED25519(client, num, startup, logger) {
-    let accountNum = 1022;
+    let edAccountNumCounter = 1022;
     logger.log(
-      "|------------------------------------------------------------------------------------------|"
+      "|-----------------------------------------------------------------------------------------|"
     );
     logger.log(
-      "|-----------------------------| Accounts list (ED25519 keys) |-----------------------------|"
+      "|-----------------------------| Accounts list (ED25519 keys) |----------------------------|"
     );
     logger.log(
-      "|    id    |                            private key                             |  balance |"
+      "|    id    |                            private key                            |  balance |"
     );
     logger.log(
-      "|------------------------------------------------------------------------------------------|"
+      "|-----------------------------------------------------------------------------------------|"
     );
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom({ isED25519Type: true });
@@ -194,17 +192,17 @@ module.exports = class HederaUtils {
           isED25519Type: true,
         });
       }
-      await this.createAccount(client, wallet, accountNum, logger, startup);
-      accountNum++;
+      await this.createAccount(client, wallet, edAccountNumCounter++, logger, startup);
     }
     logger.log(
-      "|------------------------------------------------------------------------------------------|"
+      "|-----------------------------------------------------------------------------------------|"
     );
   }
 
   static async generateAccounts(
     logger,
     num = 10,
+    balance,
     startup = false,
     host = "127.0.0.1"
   ) {
@@ -214,7 +212,7 @@ module.exports = class HederaUtils {
       "0.0.2",
       "302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137"
     );
-
+    this.startingHbarBalance = balance;
     // Mirror Node Monitor creates a Topic Entity. If that happens during the account generation step
     // all consecutive AccountIds get shifted by 1 and the private keys no longer correspond to the
     // expected AccountIds.
@@ -234,19 +232,22 @@ module.exports = class HederaUtils {
           wallet._signingKey().compressedPublicKey
         )
       )
-      .setInitialBalance(HederaSDK.Hbar.fromTinybars(10000000000000))
+      .setInitialBalance(new HederaSDK.Hbar(this.startingHbarBalance))
       .execute(client);
+    let accoundId = `0.0.${accountNum}`;
     if (startup) {
-      logger.log(
-        `| 0.0.${accountNum} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
-      );
+      await this.logAccount(logger, accoundId, wallet._signingKey().privateKey, new HederaSDK.Hbar(this.startingHbarBalance));
     } else {
       const getReceipt = await tx.getReceipt(client);
-
-      logger.log(
-        `| ${getReceipt.accountId.toString()} - ${wallet._signingKey().privateKey} - ${HederaSDK.Hbar.fromTinybars(10000000000000)} |`
-      );
+      accoundId = getReceipt.accountId.toString();
     }
+    await this.logAccount(logger, accoundId, wallet._signingKey().privateKey, new HederaSDK.Hbar(this.startingHbarBalance));
+  }
+
+  static async logAccount(logger, accountId, privateKey, balance){
+    logger.log(
+      `| ${accountId} - ${privateKey} - ${balance} |`
+    );
   }
 
   static async debug(logger, timestamp) {
