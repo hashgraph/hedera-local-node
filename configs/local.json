@@ -10,7 +10,7 @@
   "nodeImageTag": "0.35.0-alpha.6",
   "havegedImageTag": "0.35.0-alpha.6",
   "uploaderImageTag": "0.7.0",
-  "mirrorImageTag": "0.76.0",
+  "mirrorImageTag": "0.75.0-rc3",
   "relayImageTag": "0.18.0",
   "mirrorNodeExplorerImageTag": "0.0.1-b01",
   "timeout": "180s",
