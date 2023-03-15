@@ -64,7 +64,7 @@ yargs(hideBin(process.argv))
       CliOptions.addBalanceOption(yargs);
     },
     async (argv) => {
-      await HederaUtils.generateAccounts(console, argv.accounts, argv.balance);
+      await HederaUtils.generateAccounts(console, argv.balance, argv.accounts);
     }
   )
   .command(
@@ -185,7 +185,7 @@ async function start(accounts, balance, host, eventLogger, accountLogger) {
   eventLogger.log("Importing fees...");
   await HederaUtils.importFees(host);
   accountLogger.log("Generating accounts...");
-  await HederaUtils.generateAccounts(accountLogger, accounts, balance, true, host);
+  await HederaUtils.generateAccounts(accountLogger, balance, accounts, true, host);
 }
 
 /**
@@ -200,7 +200,7 @@ async function startDetached(accounts, balance, host) {
   console.log("Importing fees...");
   await HederaUtils.importFees(host);
   console.log("Generating accounts...");
-  await HederaUtils.generateAccounts(console, accounts, balance, true, host);
+  await HederaUtils.generateAccounts(console, balance, accounts, true, host);
   console.log("\nLocal node has been successfully started in detached mode.");
   process.exit();
 }

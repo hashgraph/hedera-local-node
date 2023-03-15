@@ -23,7 +23,7 @@
     "blessed-terminal": "^0.1.22",
     "dockerode": "^3.3.4",
     "dotenv": "^16.0.3",
-    "ethers": "^6.1.0",
+    "ethers": "^5.7.2",
     "js-yaml": "^4.1.0",
     "mustache": "^4.2.0",
     "rimraf": "^3.0.2",

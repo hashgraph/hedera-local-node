@@ -201,8 +201,8 @@ module.exports = class HederaUtils {
 
   static async generateAccounts(
     logger,
-    num = 10,
     balance,
+    num = 10,
     startup = false,
     host = "127.0.0.1"
   ) {
