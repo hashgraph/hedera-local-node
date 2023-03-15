@@ -235,12 +235,11 @@ module.exports = class HederaUtils {
       .setInitialBalance(new HederaSDK.Hbar(this.startingHbarBalance))
       .execute(client);
     let accoundId = `0.0.${accountNum}`;
-    if (startup) {
-      await this.logAccount(logger, accoundId, wallet._signingKey().privateKey, new HederaSDK.Hbar(this.startingHbarBalance));
-    } else {
+    if (!startup) {
       const getReceipt = await tx.getReceipt(client);
       accoundId = getReceipt.accountId.toString();
     }
+    
     await this.logAccount(logger, accoundId, wallet._signingKey().privateKey, new HederaSDK.Hbar(this.startingHbarBalance));
   }
 
