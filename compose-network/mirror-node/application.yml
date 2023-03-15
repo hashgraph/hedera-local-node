@@ -17,7 +17,6 @@ hedera:
         secretKey: minioadmin
         bucketName: hedera-streams
         endpointOverride: http://minio:9000
-        timeout: 180s
       initialAddressBook: "/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin"
       network: OTHER
     monitor:
@@ -39,7 +38,7 @@ hedera:
               transferTypes:
                 - CRYPTO
             receiptPercent: 1.0
-            tps: 10.0
+            tps: 1.0
             type: CRYPTO_TRANSFER
       subscribe:
         grpc:

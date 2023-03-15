@@ -22,4 +22,4 @@ waitAtStartup,                                 false
 jasperDb.storagePath,                          /opt/hgcapp/services-hedera/HapiApp2.0/data/saved
 jasperDb.iteratorInputBufferBytes,             16777216
 prometheusEndpointEnabled,                     true
-transactionMaxBytes,                           30720
+transactionMaxBytes,                           6144
