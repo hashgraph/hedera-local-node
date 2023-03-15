@@ -39,6 +39,7 @@ module.exports = class NodeController {
     console.log("Starting the docker containers...");
     shell.cd(__dirname);
     shell.cd("../../");
+    shell.exec("rm -rf network-logs");
     const dockerComposeUpCmd = () => {
       return (turboMode)
           ? shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`)
