@@ -41,7 +41,7 @@ module.exports = class NodeController {
     shell.cd("../../");
     const dockerComposeUpCmd = () => {
       return (turboMode)
-          ? shell.exec(`sudo rm -rf network-logs && docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`)
+          ? shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`)
           : shell.exec(`docker-compose up -d 2>${nullOutput}`);
     };
     const output = dockerComposeUpCmd();
