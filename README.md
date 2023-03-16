@@ -82,11 +82,13 @@ Available commands:
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
             --dev to enable/disable developer mode.
             --turbo to enable/disable turbo mode.
+            --balance to set starting hbar balance of the created accounts.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
         options:
             --h or --host to override the default host.
+            --balance to set starting hbar balance of the created accounts.
 ```
 
 Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @hashgraph/hethers. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.

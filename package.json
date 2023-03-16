@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@hashgraph/hethers": "^1.2.6",
-    "@hashgraph/sdk": "^2.20.0",
+    "@hashgraph/sdk": "^2.22.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "dockerode": "^3.3.4",
@@ -31,6 +31,6 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "hardhat": "^2.12.7"
+    "hardhat": "^2.13.0"
   }
 }

@@ -23,10 +23,11 @@ yargs(hideBin(process.argv))
       CliOptions.addRateLimitOption(yargs);
       CliOptions.addDevModeOption(yargs);
       CliOptions.addTurboModeOption(yargs);
+      CliOptions.addBalanceOption(yargs);
     },
     async (argv) => {
       await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turbo);
-      await main(argv.accounts, argv.detached, argv.host);
+      await main(argv.accounts, argv.balance, argv.detached, argv.host);
     }
   )
   .command(
@@ -47,11 +48,12 @@ yargs(hideBin(process.argv))
       CliOptions.addRateLimitOption(yargs);
       CliOptions.addDevModeOption(yargs);
       CliOptions.addTurboModeOption(yargs);
+      CliOptions.addBalanceOption(yargs);
     },
     async (argv) => {
       await NodeController.stopLocalNode();
       await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turbo);
-      await main(argv.accounts, argv.detached, argv.host);
+      await main(argv.accounts, argv.balance, argv.detached, argv.host);
     }
   )
   .command(
@@ -59,9 +61,10 @@ yargs(hideBin(process.argv))
     "Generates the specified number of accounts [default: 10]",
     (yargs) => {
       CliOptions.addAccountsOption(yargs);
+      CliOptions.addBalanceOption(yargs);
     },
     async (argv) => {
-      await HederaUtils.generateAccounts(console, argv.accounts);
+      await HederaUtils.generateAccounts(console, argv.balance, argv.accounts);
     }
   )
   .command(
@@ -96,9 +99,9 @@ Requirements:
       Disk Image Size: 59.6 GB`)
   .parse();
 
-async function main(accounts, detached, host) {
+async function main(accounts, balance, detached, host) {
   if (detached) {
-    await startDetached(accounts, host);
+    await startDetached(accounts, balance, host);
   }
 
   const screen = new TerminalUserInterface();
@@ -108,7 +111,7 @@ async function main(accounts, detached, host) {
   const mirrorNodeLogger = screen.getMirrorNodeLog();
 
   await screen.updateStatusBoard(host);
-  await start(accounts, host, eventLogger, accountLogger);
+  await start(accounts, balance, host, eventLogger, accountLogger);
 
   eventLogger.log(
     "\nLocal node has been successfully started. Press Ctrl+C to stop the node."
@@ -173,7 +176,7 @@ function attachContainerLogs(containerId, logger) {
 /**
  * Check if network is up and generate accounts
  */
-async function start(accounts, host, eventLogger, accountLogger) {
+async function start(accounts, balance, host, eventLogger, accountLogger) {
   eventLogger.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, eventLogger, host);
   await ConnectionCheck.waitForFiringUp(50211, console, host);
@@ -182,13 +185,13 @@ async function start(accounts, host, eventLogger, accountLogger) {
   eventLogger.log("Importing fees...");
   await HederaUtils.importFees(host);
   accountLogger.log("Generating accounts...");
-  await HederaUtils.generateAccounts(accountLogger, accounts, true, host);
+  await HederaUtils.generateAccounts(accountLogger, balance, accounts, true, host);
 }
 
 /**
  * Check if network is up and generate accounts
  */
-async function startDetached(accounts, host) {
+async function startDetached(accounts, balance, host) {
   console.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, console, host);
   await ConnectionCheck.waitForFiringUp(50211, console, host);
@@ -197,7 +200,7 @@ async function startDetached(accounts, host) {
   console.log("Importing fees...");
   await HederaUtils.importFees(host);
   console.log("Generating accounts...");
-  await HederaUtils.generateAccounts(console, accounts, true, host);
+  await HederaUtils.generateAccounts(console, balance, accounts, true, host);
   console.log("\nLocal node has been successfully started in detached mode.");
   process.exit();
 }
