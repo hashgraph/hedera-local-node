@@ -30,7 +30,7 @@ services:
       "echo",
       "Deleting old sidecars files.",
       "&&",
-      "rm -rf /records/sidecars/*",
+      "rm -rf /sidecar-files/*",
       "&&",
       "echo",
       "This container is intentionally disabled by the EVM profile."
