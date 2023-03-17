@@ -7,20 +7,17 @@
   "maxSizeKb": 2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.35.0-alpha.6",
-  "havegedImageTag": "0.35.0-alpha.6",
+  "nodeImageTag": "0.36.0-alpha.1",
+  "havegedImageTag": "0.36.0-alpha.1",
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.75.0-rc3",
-  "relayImageTag": "0.18.0",
+  "relayImageTag": "0.19.0",
   "pythonVersion": "python3.7",
   "mirrorNodeExplorerImageTag": "0.0.1-b01",
   "transactionMaxBytes": "6144",
   "features": {
-    "recordFileVersion": 6,
-    "signatureFileVersion": 6,
-    "enableTraceabilityMigration": true,
+    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE,CONTRACT_ACTION",
     "compressFilesOnCreation": true,
-    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE",
-    "atomicCryptoTransfer": true
+    "compressOnCreation": true
   }
 }
