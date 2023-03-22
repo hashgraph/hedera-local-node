@@ -26,7 +26,7 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, turboMode) {
+  static async startLocalNode(network, limits, devMode, turboMode, fullMode) {
     await this.applyConfig(network, limits, devMode, turboMode);
 
     const dockerStatus = await DockerCheck.checkDocker();
@@ -40,7 +40,7 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
     const dockerComposeUpCmd = () => {
-      return (turboMode)
+      return (turboMode && !fullMode)
           ? shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`)
           : shell.exec(`docker-compose up -d 2>${nullOutput}`);
     };
