@@ -62,15 +62,6 @@ module.exports = class CliOptions {
     })
   }
 
-  static addTurboModeOption(yargs) {
-    yargs.option("turbo", {
-      type: 'boolean',
-      describe: "Enable or disable turbo mode. Faster local-node.",
-      demandOption: false,
-      default: true,
-    })
-  }
-
   static addFullModeOption(yargs) {
     yargs.option("full", {
       type: 'boolean',

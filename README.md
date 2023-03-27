@@ -81,7 +81,6 @@ Available commands:
             --n or --network to override the default configuration. Defaults to mainnet.
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
             --dev to enable/disable developer mode.
-            --turbo to enable/disable turbo mode. Faster local-node
             --full to enable/disable full mode. Production local-node.
             --balance to set starting hbar balance of the created accounts.
     stop - Stops the local hedera network and delete all the existing data.
