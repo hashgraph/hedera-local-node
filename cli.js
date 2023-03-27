@@ -22,12 +22,11 @@ yargs(hideBin(process.argv))
       CliOptions.addNetworkOption(yargs);
       CliOptions.addRateLimitOption(yargs);
       CliOptions.addDevModeOption(yargs);
-      CliOptions.addTurboModeOption(yargs);
       CliOptions.addFullModeOption(yargs);
       CliOptions.addBalanceOption(yargs);
     },
     async (argv) => {
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turbo, argv.full);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full);
       await main(argv.accounts, argv.balance, argv.detached, argv.host);
     }
   )
@@ -48,13 +47,12 @@ yargs(hideBin(process.argv))
       CliOptions.addNetworkOption(yargs);
       CliOptions.addRateLimitOption(yargs);
       CliOptions.addDevModeOption(yargs);
-      CliOptions.addTurboModeOption(yargs);
       CliOptions.addFullModeOption(yargs);
       CliOptions.addBalanceOption(yargs);
     },
     async (argv) => {
       await NodeController.stopLocalNode();
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.turbo, argv.full);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full);
       await main(argv.accounts, argv.balance, argv.detached, argv.host);
     }
   )
