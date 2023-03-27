@@ -95,7 +95,7 @@ module.exports = class NodeController {
       "RELAY_RATE_LIMIT_DISABLED",
       relayRateLimitDisabled
     );
-    NodeController.setEnvValue(`${baseFolder}/.env`, "DEV_MODE", devMode);
+    NodeController.setEnvValue(`${baseFolder}/.env`, "RELAY_DEV_MODE", devMode);
 
     if (result.code !== 0) {
       shell.echo("Failed to apply config");
