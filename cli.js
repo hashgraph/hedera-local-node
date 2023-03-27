@@ -89,7 +89,7 @@ Requirements:
   - Docker >= v20.10.x
       Docker version check: docker -v
   - Docker Compose => v1.28.0 && <= 1.29.2
-      Docker Compose version check: docker-compose -v
+      Docker Compose version check: docker compose version
 
   * Ensure the gRPC FUSE for file sharing setting is disabled in the docker settings
   * Ensure the following configurations are set at minimum in Docker Settings -> Resources and are available for use
