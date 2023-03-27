@@ -26,8 +26,8 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, turboMode) {
-    await this.applyConfig(network, limits, devMode, turboMode);
+  static async startLocalNode(network, limits, devMode, fullMode) {
+    await this.applyConfig(network, limits, devMode, fullMode);
 
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
@@ -40,9 +40,9 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
     const dockerComposeUpCmd = () => {
-      return (turboMode)
-          ? shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`)
-          : shell.exec(`docker-compose up -d 2>${nullOutput}`);
+      return (fullMode)
+          ? shell.exec(`docker-compose up -d 2>${nullOutput}`)
+          : shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`);
     };
     const output = dockerComposeUpCmd();
     if (output.code == 1) {
@@ -61,7 +61,7 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async applyConfig(network, limits, devMode, turboMode) {
+  static async applyConfig(network, limits, devMode, fullMode) {
     shell.cd(rootPath);
     shell.echo(`Applying ${network} config settings...`);
     const baseFolder = path.resolve(__dirname, "../../");
@@ -104,7 +104,7 @@ module.exports = class NodeController {
       shell.echo(`Successfully applied ${network} config settings`);
     }
 
-    if (turboMode) {
+    if (!fullMode) {
       const yaml = require("js-yaml");
       const fs = require("fs");
       const application = yaml.load(fs.readFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`));
