@@ -63,6 +63,16 @@ the repository.
 npm install @hashgraph/hedera-local -g
 ```
 
+#### Local Development Installation
+The command below can be used to install the `hedera-local` module as a symlink against your locally checked out copy of
+this repository.
+
+This is the recommended method for testing against the latest changes or a point in time version from a branch/tag.
+
+```bash
+npm install && npm install -g
+```
+
 ## Using hedera-local
 
 ```
