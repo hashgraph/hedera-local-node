@@ -17,8 +17,11 @@ hedera:
         secretKey: minioadmin
         bucketName: hedera-streams
         endpointOverride: http://minio:9000
-      initialAddressBook: "/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin"
+        sources:
+          - type: LOCAL
+      initialAddressBook: /usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
       network: OTHER
+      dataPath: file:///node/
     monitor:
       mirrorNode:
         grpc:
