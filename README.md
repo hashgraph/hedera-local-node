@@ -16,7 +16,7 @@ The Hedera Local Node project allows developers to set up their own local networ
   - Docker version check: `docker -v`
 - [Docker Compose](https://docs.docker.com/compose/) `=> v2.12.2`
   - Docker Compose version check: `docker compose version`
-- Minimum 8GB RAM
+- Minimum 16GB RAM
 
 ### Note:
 
@@ -27,7 +27,7 @@ Note: The image may look different if you are on a different version
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
   - **CPUs:** 6
-  - **Memory:** 5GB
+  - **Memory:** 8GB
   - **Swap:** 1 GB
   - **Disk Image Size:** 60 GB
 
