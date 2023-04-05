@@ -88,7 +88,7 @@ Requirements:
       NPM version check: npm -v
   - Docker >= v20.10.x
       Docker version check: docker -v
-  - Docker Compose => v1.28.0 && <= 1.29.2
+  - Docker Compose => v2.12.2
       Docker Compose version check: docker compose version
 
   * Ensure the gRPC FUSE for file sharing setting is disabled in the docker settings
