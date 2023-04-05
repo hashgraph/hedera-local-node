@@ -347,7 +347,6 @@ services:
       network-node:
         condition: service_started
     networks:
-      - json-rpc-relay
       - mirror-node
       - network-node-bridge
     environment:
@@ -436,9 +435,6 @@ networks:
     driver: bridge
   cloud-storage:
     name: cloud-storage
-    driver: bridge
-  json-rpc-relay:
-    name: json-rpc-relay
     driver: bridge
 
 volumes:
