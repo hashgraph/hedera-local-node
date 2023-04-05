@@ -18,8 +18,8 @@ module.exports = class NodeController {
     console.log("Stopping the network...");
     shell.cd(__dirname);
     console.log("Stopping the docker containers...");
-    shell.exec(`docker-compose kill 2>${nullOutput}`);
-    shell.exec(`docker-compose down -v 2>${nullOutput}`);
+    shell.exec(`docker compose kill 2>${nullOutput}`);
+    shell.exec(`docker compose down -v 2>${nullOutput}`);
     console.log("Cleaning the volumes and temp files...");
     shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
     shell.exec(`docker network prune -f 2>${nullOutput}`);
@@ -41,8 +41,8 @@ module.exports = class NodeController {
     shell.cd("../../");
     const dockerComposeUpCmd = () => {
       return (fullMode)
-          ? shell.exec(`docker-compose up -d 2>${nullOutput}`)
-          : shell.exec(`docker-compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`);
+          ? shell.exec(`docker compose up -d 2>${nullOutput}`)
+          : shell.exec(`docker compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`);
     };
     const output = dockerComposeUpCmd();
     if (output.code == 1) {
@@ -95,7 +95,7 @@ module.exports = class NodeController {
       "RELAY_RATE_LIMIT_DISABLED",
       relayRateLimitDisabled
     );
-    NodeController.setEnvValue(`${baseFolder}/.env`, "DEV_MODE", devMode);
+    NodeController.setEnvValue(`${baseFolder}/.env`, "RELAY_DEV_MODE", devMode);
 
     if (result.code !== 0) {
       shell.echo("Failed to apply config");

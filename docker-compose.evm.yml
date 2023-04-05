@@ -1,8 +1,7 @@
-version: "2.4"
 services:
   record-streams-uploader:
     restart: "no"
-    entrypoint: [ 
+    entrypoint: [
       "echo",
       "Deleting old recordStream files.",
       "&&",
@@ -14,7 +13,7 @@ services:
     command: []
   account-balances-uploader:
     restart: "no"
-    entrypoint: [ 
+    entrypoint: [
       "echo",
       "Deleting old accountBalances files.",
       "&&",
@@ -26,7 +25,7 @@ services:
     command: []
   record-sidecar-uploader:
     restart: "no"
-    entrypoint: [ 
+    entrypoint: [
       "echo",
       "Deleting old sidecars files.",
       "&&",

@@ -14,13 +14,13 @@ The Hedera Local Node project allows developers to set up their own local networ
   - NPM version check: `npm -v`
 - [Docker](https://www.docker.com/) `>= v20.10.x`
   - Docker version check: `docker -v`
-- [Docker Compose](https://docs.docker.com/compose/) `=> v1.28.0 && <= 1.29.2`
-  - Docker Compose version check: `docker-compose -v`
+- [Docker Compose](https://docs.docker.com/compose/) `=> v2.12.2`
+  - Docker Compose version check: `docker compose version`
 - Minimum 8GB RAM
 
 ### Note:
 
-- **Ensure the `gRPC FUSE for file sharing` setting is disabled in the docker settings.**
+- **Ensure the `VirtioFS` file sharing implementation is enabled in the docker settings.**
 
 Note: The image may look different if you are on a different version
 ![docker-compose-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/docker-compose-settings.png)
@@ -29,7 +29,7 @@ Note: The image may look different if you are on a different version
   - **CPUs:** 6
   - **Memory:** 5GB
   - **Swap:** 1 GB
-  - **Disk Image Size:** 59.6 GB
+  - **Disk Image Size:** 60 GB
 
 Note: The image may look different if you are on a different version
 ![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/settings.png)
@@ -61,6 +61,16 @@ the repository.
 
 ```bash
 npm install @hashgraph/hedera-local -g
+```
+
+#### Local Development Installation
+The command below can be used to install the `hedera-local` module as a symlink against your locally checked out copy of
+this repository.
+
+This is the recommended method for testing against the latest changes or a point in time version from a branch/tag.
+
+```bash
+npm install && npm install -g
 ```
 
 ## Using hedera-local
@@ -425,12 +435,12 @@ For Windows users: You will need to update the file endings of `compose-network/
     dos2unix compose-network/mirror-node/init.sh
 ```
 
-3. Run `docker-compose up -d` from the terminal to get the network up and running
+3. Run `docker compose up -d` from the terminal to get the network up and running
 4. Set-up your local network client by following this [tutorial](https://docs.hedera.com/guides/docs/sdks/set-up-your-local-network)
 
 ## Stop Your Local Network
 
-1. Run `docker-compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean manually generated files. If you would like to keep any files created manually in the working directory please save them before executing this command.
+1. Run `docker compose down -v; git clean -xfd; git reset --hard` to stop and remove the containers, volumes and clean manually generated files. If you would like to keep any files created manually in the working directory please save them before executing this command.
 
 ## Network Variables
 
@@ -481,7 +491,7 @@ The following environment variables can be changed in the `.env` file for variou
    - MIRROR_WEB3_MEM_LIMIT - memory limit for mirror node web3
 4. To change `application.properties`, `api-permission.properties` or `bootstrap.properties` properties, update the `APPLICATION_CONFIG_PATH` to the location of updated config folder in `.env` file
 
-**IMPORTANT :** Ensure to do `docker-compose down -v; git clean -xfd; git reset --hard` and then `docker-compose up -d` for the new changes to take any effect.
+**IMPORTANT :** Ensure to do `docker compose down -v; git clean -xfd; git reset --hard` and then `docker compose up -d` for the new changes to take any effect.
 
 &#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
 
@@ -609,10 +619,10 @@ The deployed Grafana instance may be accessed from [http://localhost:3000](http:
 
 ## Adding New Dashboards
 
-Creating new dashboards may be accomplished using the Grafana visual editor; however, these dashboards will not persist after a `docker-compose down -v` command
+Creating new dashboards may be accomplished using the Grafana visual editor; however, these dashboards will not persist after a `docker compose down -v` command
 or any other command which removes the named volumes.
 
-Dashboards may be exported as JSON definitions and placed under the `compose-network/grafana/dashboards` folder to ensure they are automatically restored after a `docker-compose down -v` or equivalent operation.
+Dashboards may be exported as JSON definitions and placed under the `compose-network/grafana/dashboards` folder to ensure they are automatically restored after a `docker compose down -v` or equivalent operation.
 
 Any dashboard definitions placed into the root of the `compose-network/grafana/dashboards` folder will appear under the `General` folder in the Grafana dashboard list
 Placing dashboards under a subfolder will result in a new folder in the Grafana dashboard list and the dashboards will be deployed under the folder.
