@@ -29,7 +29,7 @@ Note: The image may look different if you are on a different version
   - **CPUs:** 6
   - **Memory:** 8GB
   - **Swap:** 1 GB
-  - **Disk Image Size:** 60 GB
+  - **Disk Image Size:** 64 GB
 
 Note: The image may look different if you are on a different version
 ![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/settings.png)
