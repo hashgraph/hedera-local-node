@@ -5,7 +5,7 @@ PGCONF="${PGCONF:-/var/lib/postgresql/data}"
 PGHBA="${PGCONF}/pg_hba.conf"
 DB_SPECIFIC_SQL="alter user :ownerUsername with createrole;"
 
-# TimescaleDB v2 schema no longer creates the REST API user, while v1 schema still does
+# v2 schema no longer creates the REST API user, while v1 schema still does
 if [[ "${SCHEMA_V2}" == "true" ]]; then
   DB_SPECIFIC_SQL="create user :restUsername with login password :'restPassword' in role readonly;"
 fi
