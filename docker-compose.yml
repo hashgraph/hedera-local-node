@@ -407,18 +407,18 @@ services:
         ipv4_address: 172.27.0.4
 
   grafana:
-      image: "${GRAFANA_IMAGE_NAME}:${GRAFANA_IMAGE_TAG}"
-      container_name: grafana
-      ports:
-        - "3000:3000"
-      restart: unless-stopped
-      volumes:
-        - ./compose-network/grafana/datasources:/etc/grafana/provisioning/datasources
-        - ./compose-network/grafana/dashboards:/etc/grafana/provisioning/dashboards
-        - grafana-data:/var/lib/grafana
-      networks:
-        network-node-bridge:
-          ipv4_address: 172.27.0.5
+    image: "${GRAFANA_IMAGE_NAME}:${GRAFANA_IMAGE_TAG}"
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - ./compose-network/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./compose-network/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - grafana-data:/var/lib/grafana
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.5
 
 networks:
   network-node-bridge:
