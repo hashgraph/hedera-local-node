@@ -110,7 +110,7 @@ module.exports = class NodeController {
       const application = yaml.load(fs.readFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`));
       application.hedera.mirror.importer.dataPath = 'file:///node/';
       application.hedera.mirror.importer.downloader.sources = [{type: 'LOCAL'}];
-      fs.writeFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`, yaml.dump(application, {forceQuotes: true}));
+      fs.writeFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`, yaml.dump(application, {lineWidth: 256}));
     }
   }
 
