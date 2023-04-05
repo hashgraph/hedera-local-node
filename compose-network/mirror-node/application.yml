@@ -13,7 +13,7 @@ hedera:
             enabled: true
       downloader:
         accessKey: minioadmin
-        cloudProvider: S3
+        cloudProvider: "S3"
         secretKey: minioadmin
         bucketName: hedera-streams
         endpointOverride: http://minio:9000
@@ -40,8 +40,8 @@ hedera:
               recipientAccountId: 0.0.55
               transferTypes:
                 - CRYPTO
-            receiptPercent: 1
-            tps: 1
+            receiptPercent: 1.0
+            tps: 1.0
             type: CRYPTO_TRANSFER
       subscribe:
         grpc:
@@ -50,7 +50,7 @@ hedera:
         rest:
           transactionId:
             enabled: true
-            samplePercent: 1
+            samplePercent: 1.0
       network: OTHER
       nodes:
         - accountId: 0.0.3
