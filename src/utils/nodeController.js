@@ -17,6 +17,7 @@ module.exports = class NodeController {
     const nullOutput = this.getNullOutput();
     console.log("Stopping the network...");
     shell.cd(__dirname);
+    shell.cd("../../");
     console.log("Stopping the docker containers...");
     shell.exec(`docker compose kill 2>${nullOutput}`);
     shell.exec(`docker compose down -v 2>${nullOutput}`);
