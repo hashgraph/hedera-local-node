@@ -130,6 +130,7 @@ services:
       - "50611:50211"
       - "50612:50212"
       - "9969:9999"
+
   network-node-3:
     <<: *network-node-definition
     container_name: network-node-3
@@ -147,6 +148,7 @@ services:
       - "50711:50211"
       - "50712:50212"
       - "9979:9999"
+
   record-streams-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: record-streams-uploader
@@ -224,6 +226,7 @@ services:
       BUCKET_PATH: "recordstreams/record0.0.4"
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
+
   record-streams-uploader-2:
     <<: *record-streams-definition
     container_name: record-streams-uploader-2
@@ -280,6 +283,64 @@ services:
       - http://minio:9000
       - --debug
 
+  account-balances-uploader-1:
+    &account-balances-definition
+    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
+    container_name: account-balances-uploader-1
+    user: root
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - cloud-storage
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.4:/balances"
+    command:
+      - /usr/bin/env
+      - ${PYTHON_VERSION}
+      - /usr/local/bin/mirror.py
+      - --linux
+      - --watch-directory
+      - /balances
+      - --s3-endpoint
+      - http://minio:9000
+      - --debug
+    environment:
+      &account-balances-env
+      DEBUG: "true"
+      REAPER_ENABLE: "true"
+      REAPER_MIN_KEEP: "1"
+      REAPER_INTERVAL: "5"
+      S3_ENABLE: "true"
+      GCS_ENABLE: "false"
+      SIG_REQUIRE: "true"
+      SIG_PRIORITIZE: "true"
+      SIG_EXTENSION: "pb_sig"
+      STREAM_EXTENSION: "pb"
+      BUCKET_NAME: "hedera-streams"
+      BUCKET_PATH: "accountBalances/balance0.0.4"
+      S3_ACCESS_KEY: "minioadmin"
+      S3_SECRET_KEY: "minioadmin"
+
+  account-balances-uploader-2:
+    <<: *account-balances-definition
+    container_name: account-balances-uploader-2
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.5:/balances"
+    environment:
+      <<: *account-balances-env
+      BUCKET_PATH: "accountBalances/balance0.0.5"
+
+  account-balances-uploader-3:
+    <<: *account-balances-definition
+    container_name: account-balances-uploader-3
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.6:/balances"
+    environment:
+      <<: *account-balances-env
+      BUCKET_PATH: "accountBalances/balance0.0.6"
+
   record-sidecar-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: record-sidecar-uploader
@@ -316,6 +377,63 @@ services:
       - --s3-endpoint
       - http://minio:9000
       - --debug
+
+  record-sidecar-uploader-1:
+    &record-sidecar-definition
+    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
+    container_name: record-sidecar-uploader-1
+    user: root
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - cloud-storage
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4/sidecar:/sidecar-files"
+    command:
+      - /usr/bin/env
+      - ${PYTHON_VERSION}
+      - /usr/local/bin/mirror.py
+      - --linux
+      - --watch-directory
+      - /sidecar-files
+      - --s3-endpoint
+      - http://minio:9000
+      - --debug
+    environment:
+      &record-sidecar-env
+      DEBUG: "true"
+      REAPER_ENABLE: "true"
+      REAPER_MIN_KEEP: "1"
+      REAPER_INTERVAL: "5"
+      S3_ENABLE: "true"
+      GCS_ENABLE: "false"
+      SIG_REQUIRE: "false"
+      SIG_PRIORITIZE: "false"
+      STREAM_EXTENSION: "rcd.gz"
+      BUCKET_NAME: "hedera-streams"
+      BUCKET_PATH: "recordstreams/record0.0.4/sidecar"
+      S3_ACCESS_KEY: "minioadmin"
+      S3_SECRET_KEY: "minioadmin"
+
+  record-sidecar-uploader-2:
+    <<: *record-sidecar-definition
+    container_name: record-sidecar-uploader-2
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.5/sidecar:/sidecar-files"
+    environment:
+      <<: *record-sidecar-env
+      BUCKET_PATH: "recordstreams/record0.0.5/sidecar"
+
+  record-sidecar-uploader-3:
+    <<: *record-sidecar-definition
+    container_name: record-sidecar-uploader-3
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.6/sidecar:/sidecar-files"
+    environment:
+      <<: *record-sidecar-env
+      BUCKET_PATH: "recordstreams/record0.0.6/sidecar"
 
   minio:
     image: minio/minio
@@ -469,7 +587,7 @@ services:
         condition: service_started
       rest:
         condition: service_started
-      network-node:
+      network-node-3:
         condition: service_healthy
     networks:
       - mirror-node
