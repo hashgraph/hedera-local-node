@@ -71,6 +71,15 @@ module.exports = class CliOptions {
     })
   }
 
+  static addMultiNodeOption(yargs) {
+    yargs.option("multinode", {
+      type: 'boolean',
+      describe: "Enable or disable multi-node mode.",
+      demandOption: false,
+      default: false,
+    })
+  }
+
   static addBalanceOption(yargs) {
     yargs.option('balance', {
       type: 'number',
