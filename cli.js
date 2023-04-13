@@ -91,12 +91,12 @@ Requirements:
   - Docker Compose => v2.12.2
       Docker Compose version check: docker compose version
 
-  * Ensure the gRPC FUSE for file sharing setting is disabled in the docker settings
+  * Ensure the gRPC FUSE for file sharing setting is disabled in the docker settings and VirtioFS is enabled
   * Ensure the following configurations are set at minimum in Docker Settings -> Resources and are available for use
       CPUs: 6
-      Memory: 5GB
+      Memory: 8GB
       Swap: 1 GB
-      Disk Image Size: 59.6 GB`)
+      Disk Image Size: 64 GB`)
   .parse();
 
 async function main(accounts, balance, detached, host) {
