@@ -11,7 +11,7 @@ hedera:
             redis:
               enabled: false
           sidecar:
-            enabled: {{sidecarEnabled}}
+            enabled: { { sidecarEnabled } }
       downloader:
         accessKey: minioadmin
         cloudProvider: "S3"
@@ -54,6 +54,12 @@ hedera:
       nodes:
         - accountId: 0.0.3
           host: network-node
+        - accountId: 0.0.4
+          host: network-node-1
+        - accountId: 0.0.5
+          host: network-node-2
+        - accountId: 0.0.6
+          host: network-node-3
       operator:
         accountId: 0.0.2
         privateKey: 302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137

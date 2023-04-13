@@ -16,8 +16,8 @@ services:
       resources:
         limits:
           memory: "${NETWORK_NODE_MEM_LIMIT}"
-    # mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    # memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
     environment:
       JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
       JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
@@ -61,16 +61,13 @@ services:
       - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
 
   network-node-1:
-    # profiles:
-    #   - two-nodes
-    #   - three-nodes
-    #   - four-nodes
+    &network-node-definition
     image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
     container_name: network-node-1
     user: root
     mem_swappiness: 0
-    # mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    # memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
     environment:
       JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
       JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
@@ -117,32 +114,8 @@ services:
       - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
 
   network-node-2:
-    # profiles:
-    #   - two-nodes
-    #   - three-nodes
-    #   - four-nodes
-    image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
+    <<: *network-node-definition
     container_name: network-node-2
-    user: root
-    mem_swappiness: 0
-    # mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    # memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    environment:
-      JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
-      JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
-      JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "grep",
-          "Now current platform status = ACTIVE",
-          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 10s
     depends_on:
       haveged:
         condition: service_started
@@ -157,47 +130,9 @@ services:
       - "50611:50211"
       - "50612:50212"
       - "9969:9999"
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
-      - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
-      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
-      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
-      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
-      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
-      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
-      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
-      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
-      - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
   network-node-3:
-    # profiles:
-    #   - two-nodes
-    #   - three-nodes
-    #   - four-nodes
-    image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
+    <<: *network-node-definition
     container_name: network-node-3
-    user: root
-    mem_swappiness: 0
-    # mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    # memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    environment:
-      JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
-      JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
-      JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "grep",
-          "Now current platform status = ACTIVE",
-          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 10s
     depends_on:
       haveged:
         condition: service_started
@@ -208,20 +143,10 @@ services:
     networks:
       network-node-bridge:
         ipv4_address: 172.27.0.10
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
-      - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
-      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
-      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
-      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
-      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
-      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
-      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
-      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
-
+    ports:
+      - "50711:50211"
+      - "50712:50212"
+      - "9979:9999"
   record-streams-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: record-streams-uploader
@@ -260,43 +185,62 @@ services:
       - http://minio:9000
       - --debug
 
-  # record-streams-uploader-1:
-  #   image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
-  #   container_name: record-streams-uploader-1
-  #   user: root
-  #   restart: unless-stopped
-  #   depends_on:
-  #     minio:
-  #       condition: service_started
-  #   networks:
-  #     - cloud-storage
-  #   environment:
-  #     DEBUG: "true"
-  #     REAPER_ENABLE: "true"
-  #     REAPER_MIN_KEEP: "1"
-  #     REAPER_INTERVAL: "5"
-  #     S3_ENABLE: "true"
-  #     GCS_ENABLE: "false"
-  #     SIG_REQUIRE: "true"
-  #     SIG_PRIORITIZE: "true"
-  #     SIG_EXTENSION: "rcd_sig"
-  #     STREAM_EXTENSION: "${STREAM_EXTENSION}"
-  #     BUCKET_NAME: "hedera-streams"
-  #     BUCKET_PATH: "recordstreams/record0.0.4"
-  #     S3_ACCESS_KEY: "minioadmin"
-  #     S3_SECRET_KEY: "minioadmin"
-  #   volumes:
-  #     - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4:/records"
-  #   command:
-  #     - /usr/bin/env
-  #     - ${PYTHON_VERSION}
-  #     - /usr/local/bin/mirror.py
-  #     - --linux
-  #     - --watch-directory
-  #     - /records
-  #     - --s3-endpoint
-  #     - http://minio:9000
-  #     - --debug
+  record-streams-uploader-1:
+    &record-streams-definition
+    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
+    container_name: record-streams-uploader-1
+    user: root
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - cloud-storage
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4:/records"
+    command:
+      - /usr/bin/env
+      - ${PYTHON_VERSION}
+      - /usr/local/bin/mirror.py
+      - --linux
+      - --watch-directory
+      - /records
+      - --s3-endpoint
+      - http://minio:9000
+      - --debug
+    environment:
+      &record-streams-env
+      DEBUG: "true"
+      REAPER_ENABLE: "true"
+      REAPER_MIN_KEEP: "1"
+      REAPER_INTERVAL: "5"
+      S3_ENABLE: "true"
+      GCS_ENABLE: "false"
+      SIG_REQUIRE: "true"
+      SIG_PRIORITIZE: "true"
+      SIG_EXTENSION: "rcd_sig"
+      STREAM_EXTENSION: "${STREAM_EXTENSION}"
+      BUCKET_NAME: "hedera-streams"
+      BUCKET_PATH: "recordstreams/record0.0.4"
+      S3_ACCESS_KEY: "minioadmin"
+      S3_SECRET_KEY: "minioadmin"
+  record-streams-uploader-2:
+    <<: *record-streams-definition
+    container_name: record-streams-uploader-2
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.5:/records"
+    environment:
+      <<: *record-streams-env
+      BUCKET_PATH: "recordstreams/record0.0.5"
+
+  record-streams-uploader-3:
+    <<: *record-streams-definition
+    container_name: record-streams-uploader-3
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.6:/records"
+    environment:
+      <<: *record-streams-env
+      BUCKET_PATH: "recordstreams/record0.0.6"
 
   account-balances-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
