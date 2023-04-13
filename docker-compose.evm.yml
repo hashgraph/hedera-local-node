@@ -1,5 +1,6 @@
 services:
   record-streams-uploader:
+    &record-streams-uploader
     restart: "no"
     entrypoint:
       [
@@ -8,7 +9,14 @@ services:
         "echo 'Deleting old recordStream files.';find /records/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
+
+  record-streams-uploader-1: *record-streams-uploader
+
+  record-streams-uploader-2: *record-streams-uploader
+
+  record-streams-uploader-3: *record-streams-uploader
   account-balances-uploader:
+    &account-balances-uploader
     restart: "no"
     entrypoint:
       [
@@ -17,7 +25,14 @@ services:
         "echo 'Deleting old accountBalances files.';find /balances/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
+
+  account-balances-uploader-1: *account-balances-uploader
+
+  account-balances-uploader-2: *account-balances-uploader
+
+  account-balances-uploader-3: *account-balances-uploader
   record-sidecar-uploader:
+    &record-sidecar-uploader
     restart: "no"
     entrypoint:
       [
@@ -26,6 +41,13 @@ services:
         "echo 'Deleting old sidecars files.';find /sidecar-files/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
+
+  record-sidecar-uploader-1: *record-sidecar-uploader
+
+  record-sidecar-uploader-2: *record-sidecar-uploader
+
+  record-sidecar-uploader-3: *record-sidecar-uploader
+
   minio:
     restart: "no"
     entrypoint:
