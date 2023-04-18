@@ -5,7 +5,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "echo 'Deleting old recordStream files.';rm -rf /records/*;echo 'This container is intentionally disabled by the EVM profile.';"
+        "echo 'Deleting old recordStream files.';find /records/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
   account-balances-uploader:
@@ -14,7 +14,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "echo 'Deleting old accountBalances files.';rm -rf /balances/*;echo 'This container is intentionally disabled by the EVM profile.';"
+        "echo 'Deleting old accountBalances files.';find /balances/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
   record-sidecar-uploader:
@@ -23,7 +23,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "echo 'Deleting old sidecars files.';rm -rf /sidecar-files/*;echo 'This container is intentionally disabled by the EVM profile.';"
+        "echo 'Deleting old sidecars files.';find /sidecar-files/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
   minio:
