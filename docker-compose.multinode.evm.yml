@@ -1,0 +1,50 @@
+services:
+  record-streams-uploader-1:
+    extends:
+      file: docker-compose.evm.yml
+      service: record-streams-uploader
+
+  record-streams-uploader-2:
+    extends:
+      file: docker-compose.evm.yml
+      service: record-streams-uploader
+
+  record-streams-uploader-3:
+    extends:
+      file: docker-compose.evm.yml
+      service: record-streams-uploader
+
+  account-balances-uploader-1:
+    extends:
+      file: docker-compose.evm.yml
+      service: account-balances-uploader
+
+  account-balances-uploader-2:
+    extends:
+      file: docker-compose.evm.yml
+      service: account-balances-uploader
+
+  account-balances-uploader-3:
+    extends:
+      file: docker-compose.evm.yml
+      service: account-balances-uploader
+
+  record-sidecar-uploader-1:
+    extends:
+      file: docker-compose.evm.yml
+      service: record-sidecar-uploader
+
+  record-sidecar-uploader-2:
+    extends:
+      file: docker-compose.evm.yml
+      service: record-sidecar-uploader
+
+  record-sidecar-uploader-3:
+    extends:
+      file: docker-compose.evm.yml
+      service: record-sidecar-uploader
+
+  importer:
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/:/node/streams/accountBalances/"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/:/node/streams/recordstreams/"
