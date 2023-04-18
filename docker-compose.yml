@@ -12,10 +12,6 @@ services:
     container_name: network-node
     user: root
     mem_swappiness: 0
-    deploy:
-      resources:
-        limits:
-          memory: "${NETWORK_NODE_MEM_LIMIT}"
     mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
     memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
     environment:
@@ -27,7 +23,7 @@ services:
         [
           "CMD",
           "grep",
-          "Now current platform status",
+          "Now current platform status = ACTIVE",
           "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
         ]
       interval: 30s
@@ -59,95 +55,6 @@ services:
       - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
       - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
       - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
-
-  network-node-1:
-    &network-node-definition
-    image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
-    container_name: network-node-1
-    user: root
-    mem_swappiness: 0
-    mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
-    environment:
-      JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
-      JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
-      JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "grep",
-          "Now current platform status = ACTIVE",
-          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 10s
-    depends_on:
-      haveged:
-        condition: service_started
-      record-streams-uploader:
-        condition: service_started
-      network-node:
-        condition: service_healthy
-    networks:
-      network-node-bridge:
-        ipv4_address: 172.27.0.8
-    ports:
-      - "50511:50211"
-      - "50512:50212"
-      - "9959:9999"
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
-      - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
-      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
-      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
-      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
-      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
-      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
-      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
-      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
-      - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
-
-  network-node-2:
-    <<: *network-node-definition
-    container_name: network-node-2
-    depends_on:
-      haveged:
-        condition: service_started
-      record-streams-uploader:
-        condition: service_started
-      network-node-1:
-        condition: service_healthy
-    networks:
-      network-node-bridge:
-        ipv4_address: 172.27.0.9
-    ports:
-      - "50611:50211"
-      - "50612:50212"
-      - "9969:9999"
-
-  network-node-3:
-    <<: *network-node-definition
-    container_name: network-node-3
-    depends_on:
-      haveged:
-        condition: service_started
-      record-streams-uploader:
-        condition: service_started
-      network-node-2:
-        condition: service_healthy
-    networks:
-      network-node-bridge:
-        ipv4_address: 172.27.0.10
-    ports:
-      - "50711:50211"
-      - "50712:50212"
-      - "9979:9999"
 
   record-streams-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
@@ -187,64 +94,6 @@ services:
       - http://minio:9000
       - --debug
 
-  record-streams-uploader-1:
-    &record-streams-definition
-    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
-    container_name: record-streams-uploader-1
-    user: root
-    restart: unless-stopped
-    depends_on:
-      minio:
-        condition: service_started
-    networks:
-      - cloud-storage
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4:/records"
-    command:
-      - /usr/bin/env
-      - ${PYTHON_VERSION}
-      - /usr/local/bin/mirror.py
-      - --linux
-      - --watch-directory
-      - /records
-      - --s3-endpoint
-      - http://minio:9000
-      - --debug
-    environment:
-      &record-streams-env
-      DEBUG: "true"
-      REAPER_ENABLE: "true"
-      REAPER_MIN_KEEP: "1"
-      REAPER_INTERVAL: "5"
-      S3_ENABLE: "true"
-      GCS_ENABLE: "false"
-      SIG_REQUIRE: "true"
-      SIG_PRIORITIZE: "true"
-      SIG_EXTENSION: "rcd_sig"
-      STREAM_EXTENSION: "${STREAM_EXTENSION}"
-      BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "recordstreams/record0.0.4"
-      S3_ACCESS_KEY: "minioadmin"
-      S3_SECRET_KEY: "minioadmin"
-
-  record-streams-uploader-2:
-    <<: *record-streams-definition
-    container_name: record-streams-uploader-2
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.5:/records"
-    environment:
-      <<: *record-streams-env
-      BUCKET_PATH: "recordstreams/record0.0.5"
-
-  record-streams-uploader-3:
-    <<: *record-streams-definition
-    container_name: record-streams-uploader-3
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.6:/records"
-    environment:
-      <<: *record-streams-env
-      BUCKET_PATH: "recordstreams/record0.0.6"
-
   account-balances-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: account-balances-uploader
@@ -283,64 +132,6 @@ services:
       - http://minio:9000
       - --debug
 
-  account-balances-uploader-1:
-    &account-balances-definition
-    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
-    container_name: account-balances-uploader-1
-    user: root
-    restart: unless-stopped
-    depends_on:
-      minio:
-        condition: service_started
-    networks:
-      - cloud-storage
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.4:/balances"
-    command:
-      - /usr/bin/env
-      - ${PYTHON_VERSION}
-      - /usr/local/bin/mirror.py
-      - --linux
-      - --watch-directory
-      - /balances
-      - --s3-endpoint
-      - http://minio:9000
-      - --debug
-    environment:
-      &account-balances-env
-      DEBUG: "true"
-      REAPER_ENABLE: "true"
-      REAPER_MIN_KEEP: "1"
-      REAPER_INTERVAL: "5"
-      S3_ENABLE: "true"
-      GCS_ENABLE: "false"
-      SIG_REQUIRE: "true"
-      SIG_PRIORITIZE: "true"
-      SIG_EXTENSION: "pb_sig"
-      STREAM_EXTENSION: "pb"
-      BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "accountBalances/balance0.0.4"
-      S3_ACCESS_KEY: "minioadmin"
-      S3_SECRET_KEY: "minioadmin"
-
-  account-balances-uploader-2:
-    <<: *account-balances-definition
-    container_name: account-balances-uploader-2
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.5:/balances"
-    environment:
-      <<: *account-balances-env
-      BUCKET_PATH: "accountBalances/balance0.0.5"
-
-  account-balances-uploader-3:
-    <<: *account-balances-definition
-    container_name: account-balances-uploader-3
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.6:/balances"
-    environment:
-      <<: *account-balances-env
-      BUCKET_PATH: "accountBalances/balance0.0.6"
-
   record-sidecar-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: record-sidecar-uploader
@@ -377,63 +168,6 @@ services:
       - --s3-endpoint
       - http://minio:9000
       - --debug
-
-  record-sidecar-uploader-1:
-    &record-sidecar-definition
-    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
-    container_name: record-sidecar-uploader-1
-    user: root
-    restart: unless-stopped
-    depends_on:
-      minio:
-        condition: service_started
-    networks:
-      - cloud-storage
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4/sidecar:/sidecar-files"
-    command:
-      - /usr/bin/env
-      - ${PYTHON_VERSION}
-      - /usr/local/bin/mirror.py
-      - --linux
-      - --watch-directory
-      - /sidecar-files
-      - --s3-endpoint
-      - http://minio:9000
-      - --debug
-    environment:
-      &record-sidecar-env
-      DEBUG: "true"
-      REAPER_ENABLE: "true"
-      REAPER_MIN_KEEP: "1"
-      REAPER_INTERVAL: "5"
-      S3_ENABLE: "true"
-      GCS_ENABLE: "false"
-      SIG_REQUIRE: "false"
-      SIG_PRIORITIZE: "false"
-      STREAM_EXTENSION: "rcd.gz"
-      BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "recordstreams/record0.0.4/sidecar"
-      S3_ACCESS_KEY: "minioadmin"
-      S3_SECRET_KEY: "minioadmin"
-
-  record-sidecar-uploader-2:
-    <<: *record-sidecar-definition
-    container_name: record-sidecar-uploader-2
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.5/sidecar:/sidecar-files"
-    environment:
-      <<: *record-sidecar-env
-      BUCKET_PATH: "recordstreams/record0.0.5/sidecar"
-
-  record-sidecar-uploader-3:
-    <<: *record-sidecar-definition
-    container_name: record-sidecar-uploader-3
-    volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.6/sidecar:/sidecar-files"
-    environment:
-      <<: *record-sidecar-env
-      BUCKET_PATH: "recordstreams/record0.0.6/sidecar"
 
   minio:
     image: minio/minio
@@ -587,7 +321,7 @@ services:
         condition: service_started
       rest:
         condition: service_started
-      network-node-3:
+      network-node:
         condition: service_healthy
     networks:
       - mirror-node
