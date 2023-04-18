@@ -12,6 +12,8 @@ services:
       timeout: 10s
       retries: 10
       start_period: 10s
+    volumes:
+      - "${APPLICATION_ROOT_PATH}/config.multinode.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
 
   network-node-1:
     &network-node-definition
@@ -57,9 +59,8 @@ services:
       - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
       - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
-      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
-      - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
+      - "${APPLICATION_ROOT_PATH}/config.multinode.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
       - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
       - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
       - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
