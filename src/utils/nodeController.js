@@ -41,7 +41,7 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
     const dockerComposeUpCmd = () => {
-      var composeFiles = ['docker-compose.yml'];
+      const composeFiles = ['docker-compose.yml'];
       if (!fullMode) {
         composeFiles.push('docker-compose.evm.yml');
       }
