@@ -48,7 +48,6 @@ services:
       - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
       - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
-      - "${APPLICATION_ROOT_PATH}/data/onboard:/opt/hgcapp/services-hedera/HapiApp2.0/data/onboard"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
       - "${APPLICATION_ROOT_PATH}/config.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
       - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
@@ -202,8 +201,8 @@ services:
       ROSETTA_PASSWORD: mirror_rosetta_pass
     networks:
       - mirror-node
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     restart: unless-stopped
     stop_grace_period: 2m
     stop_signal: SIGTERM
@@ -348,7 +347,6 @@ services:
       network-node:
         condition: service_started
     networks:
-      - json-rpc-relay
       - mirror-node
       - network-node-bridge
     environment:
@@ -409,18 +407,18 @@ services:
         ipv4_address: 172.27.0.4
 
   grafana:
-      image: "${GRAFANA_IMAGE_NAME}:${GRAFANA_IMAGE_TAG}"
-      container_name: grafana
-      ports:
-        - "3000:3000"
-      restart: unless-stopped
-      volumes:
-        - ./compose-network/grafana/datasources:/etc/grafana/provisioning/datasources
-        - ./compose-network/grafana/dashboards:/etc/grafana/provisioning/dashboards
-        - grafana-data:/var/lib/grafana
-      networks:
-        network-node-bridge:
-          ipv4_address: 172.27.0.5
+    image: "${GRAFANA_IMAGE_NAME}:${GRAFANA_IMAGE_TAG}"
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - ./compose-network/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./compose-network/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - grafana-data:/var/lib/grafana
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.5
 
 networks:
   network-node-bridge:
@@ -437,9 +435,6 @@ networks:
     driver: bridge
   cloud-storage:
     name: cloud-storage
-    driver: bridge
-  json-rpc-relay:
-    name: json-rpc-relay
     driver: bridge
 
 volumes:

@@ -1,43 +1,38 @@
 services:
   record-streams-uploader:
     restart: "no"
-    entrypoint: [
-      "echo",
-      "Deleting old recordStream files.",
-      "&&",
-      "rm -rf /records/*",
-      "&&",
-      "echo",
-      "This container is intentionally disabled by the EVM profile."
-    ]
+    entrypoint:
+      [
+        "/bin/bash",
+        "-c",
+        "echo 'Deleting old recordStream files.';find /records/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
+      ]
     command: []
   account-balances-uploader:
     restart: "no"
-    entrypoint: [
-      "echo",
-      "Deleting old accountBalances files.",
-      "&&",
-      "rm -rf /balances/*",
-      "&&",
-      "echo",
-      "This container is intentionally disabled by the EVM profile."
-    ]
+    entrypoint:
+      [
+        "/bin/bash",
+        "-c",
+        "echo 'Deleting old accountBalances files.';find /balances/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
+      ]
     command: []
   record-sidecar-uploader:
     restart: "no"
-    entrypoint: [
-      "echo",
-      "Deleting old sidecars files.",
-      "&&",
-      "rm -rf /sidecar-files/*",
-      "&&",
-      "echo",
-      "This container is intentionally disabled by the EVM profile."
-    ]
+    entrypoint:
+      [
+        "/bin/bash",
+        "-c",
+        "echo 'Deleting old sidecars files.';find /sidecar-files/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
+      ]
     command: []
   minio:
     restart: "no"
-    entrypoint: [ "echo", "This container is intentionally disabled by the EVM profile." ]
+    entrypoint:
+      [
+        "echo",
+        "This container is intentionally disabled by the EVM profile."
+      ]
     command: []
   importer:
     volumes:
