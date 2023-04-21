@@ -24,7 +24,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install basic OS utilities for building
 RUN apt-get update && \
-	apt-get install --yes tar gzip gnupg2 curl
+  apt-get install --yes --no-install-recommends tar gzip gnupg2 curl ca-certificates
 
 ##########################
 ####    Java Setup    ####
