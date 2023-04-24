@@ -28,7 +28,7 @@ ADD checksums/* /tmp/checksums/
 
 # Install basic OS utilities for building
 RUN apt-get update && \
-	apt-get install -y tar gzip
+    apt-get install -y  --no-install-recommends tar gzip
 
 # Download Haveged deb archive
 WORKDIR "/tmp/deb"
@@ -55,7 +55,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=haveged-builder /tmp/deb/*.deb /tmp/deb/
 
 # Install Validated Local Debian Packages
-RUN apt-get --allow-unauthenticated install --yes /tmp/deb/*.deb && \
+RUN apt-get --allow-unauthenticated install --no-install-recommends --yes /tmp/deb/*.deb && \
     apt-get autoremove --yes && \
     apt-get autoclean --yes && \
     apt-get clean all --yes && \

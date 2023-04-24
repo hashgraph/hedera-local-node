@@ -19,7 +19,7 @@ ADD sdk/data/lib/* /opt/hgcapp/services-hedera/HapiApp2.0/data/lib/
 
 # Add Diagnostic Utilities
 RUN apt-get update && \
-    apt-get install --yes net-tools && \
+    apt-get install --yes --no-install-recommends net-tools && \
     apt-get autoremove --yes && \
     apt-get autoclean --yes && \
     apt-get clean all --yes && \
