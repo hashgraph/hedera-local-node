@@ -29,6 +29,7 @@
   "blockRangeLimit": "2000",
   "features": {
     "compressFilesOnCreation": true,
-    "atomicCryptoTransfer": true
+    "atomicCryptoTransfer": true,
+    "maxNumWithHapiSigsAccess": "0"
   }
 }

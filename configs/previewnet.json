@@ -16,8 +16,8 @@
   "mirrorNodeExplorerImageTag": "0.0.1-b01",
   "transactionMaxBytes": "6144",
   "features": {
-    "sidecars": "CONTRACT_STATE_CHANGE,CONTRACT_BYTECODE,CONTRACT_ACTION",
     "compressFilesOnCreation": true,
-    "compressOnCreation": true
+    "compressOnCreation": true,
+    "maxNumWithHapiSigsAccess": "0"
   }
 }
