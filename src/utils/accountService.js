@@ -112,15 +112,21 @@ class AccountService {
       const ed25519Responses = allResponses[2];
       
       this._logECDSATitle();
-      console.log(ecdsaResponses)
+      ecdsaResponses.forEach(element => {
+        this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
+      });
       this._logAccountivider();
 
       this._logAliasECDSATitle();
-      console.log(aliasEcdsaResponses);
+      aliasEcdsaResponses.forEach(element => {
+        this._logAliasAccount(element.accountNum, element.balance, element.wallet);
+      });
       this._logAliasAccountDivider();
 
       this._logED25519Title();
-      console.log(ed25519Responses);
+      ed25519Responses.forEach(element => {
+        this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
+      });
       this._logAccountivider();
     })
   }
@@ -198,14 +204,10 @@ class AccountService {
         accountNum = accountInfo.accountId.toString();
       }
       if (async) {
-        params.push({ accountNum: accountNum, wallet: wallet, balance: new Hbar(balance)});
+        params.push({ accountNum: accountNum, wallet: wallet, balance: balance});
         continue;
       }
-      this.logger.log(
-        `| ${accountNum} - ${wallet.address} - ${
-          wallet._signingKey().privateKey
-        } - ${new Hbar(balance)} |`
-      );
+      this._logAliasAccount(accountNum, balance, wallet);
     }
     if (async) return params;
     this._logED25519Divider();
@@ -278,12 +280,27 @@ class AccountService {
   /**
    * @internal
    * Log account to console.
-   * @param {number} accountId
+   * @param {string} accountId
    * @param {number} balance
    * @param {string} privateKey
    */
   _logAccount(accountId, balance, privateKey) {
     this.logger.log(`| ${accountId} - ${privateKey} - ${balance} |`);
+  }
+
+  /**
+   * @internal
+   * Log alias account to console.
+   * @param {string} accountId
+   * @param {number} balance
+   * @param {Wallet} wallet
+   */
+  _logAliasAccount(accountId, balance, wallet) {
+    this.logger.log(
+      `| ${accountId} - ${wallet.address} - ${
+        wallet._signingKey().privateKey
+      } - ${new Hbar(balance)} |`
+    );
   }
 
   /**
