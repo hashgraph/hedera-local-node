@@ -79,4 +79,14 @@ module.exports = class CliOptions {
       default: 10000,
     })
   }
+
+  static addAsyncOption(yargs) {
+    yargs.option('async', {
+      alias: 'a',
+      type: 'boolean',
+      describe: "Enable or disable asynchronous creation of accounts",
+      demandOption: false,
+      default: false,
+    })
+  }
 }

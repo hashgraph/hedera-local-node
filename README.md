@@ -64,6 +64,7 @@ npm install @hashgraph/hedera-local -g
 ```
 
 #### Local Development Installation
+
 The command below can be used to install the `hedera-local` module as a symlink against your locally checked out copy of
 this repository.
 
@@ -93,12 +94,14 @@ Available commands:
             --dev to enable/disable developer mode.
             --full to enable/disable full mode. Production local-node.
             --balance to set starting hbar balance of the created accounts.
+            --async to enable or disable asynchronous creation of accounts.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
         options:
             --h or --host to override the default host.
             --balance to set starting hbar balance of the created accounts.
+            --async to enable or disable asynchronous creation of accounts.
 ```
 
 Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @hashgraph/hethers. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.
