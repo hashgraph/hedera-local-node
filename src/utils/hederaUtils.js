@@ -50,8 +50,17 @@ module.exports = class HederaUtils {
     })
   }
 
+  /**
+   * Prepare the node for inital startup, wait for topic creation, import fees and generate accounts
+   * @param {boolean} async
+   * @param {any} logger
+   * @param {number} balance
+   * @param {boolean} num
+   * @param {startup} boolean
+   * @param {string} host
+   */
   static async prepareNode(
-    async = false,
+    async,
     logger,
     balance,
     num = 10,
@@ -64,14 +73,16 @@ module.exports = class HederaUtils {
       "0.0.2",
       "302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137"
     );
-    logger.log("Importing fees...");
-    await HederaUtils.importFees(host);
-
-    // Mirror Node Monitor creates a Topic Entity. If that happens during the account generation step
-    // all consecutive AccountIds get shifted by 1 and the private keys no longer correspond to the
-    // expected AccountIds.
-    logger.log("Waiting for topic creation...");
-    await this.waitForMonitorTopicCreation();
+    if (startup) {
+      logger.log("Importing fees...");
+      await HederaUtils.importFees(host);
+  
+      // Mirror Node Monitor creates a Topic Entity. If that happens during the account generation step
+      // all consecutive AccountIds get shifted by 1 and the private keys no longer correspond to the
+      // expected AccountIds.
+      logger.log("Waiting for topic creation...");
+      await this.waitForMonitorTopicCreation();
+    }
 
     const accountService = new AccountService({ client, logger });
     await accountService.generate(async, balance, num, startup);

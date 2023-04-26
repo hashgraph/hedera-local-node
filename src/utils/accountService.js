@@ -88,11 +88,11 @@ class AccountService {
    * @param {boolean} startup
    */
   async generateSync(balance, num, startup) {
-    await this._generateECDSA(balance, num, startup);
+    await this._generateECDSA(false, balance, num, startup);
     this.logger.log("");
-    await this._generateAliasECDSA(balance, num, startup);
+    await this._generateAliasECDSA(false, balance, num, startup);
     this.logger.log("");
-    await this._generateED25519(balance, num, startup);
+    await this._generateED25519(false, balance, num, startup);
   }
 
   /**
@@ -101,67 +101,78 @@ class AccountService {
    * @param {number} num
    * @param {boolean} startup
    */
-  async generateAsync(balance, num, startup = false) {}
+  async generateAsync(balance, num, startup = false) {
+    Promise.all([
+      await this._generateECDSA(true, balance, num, startup),
+      await this._generateAliasECDSA(true, balance, num, startup),
+      await this._generateED25519(true, balance, num, startup)
+    ]).then((allResponses) => {
+      const ecdsaResponses = allResponses[0];
+      const aliasEcdsaResponses = allResponses[1];
+      const ed25519Responses = allResponses[2];
+      
+      this._logECDSATitle();
+      console.log(ecdsaResponses)
+      this._logAccountivider();
+
+      this._logAliasECDSATitle();
+      console.log(aliasEcdsaResponses);
+      this._logAliasAccountDivider();
+
+      this._logED25519Title();
+      console.log(ed25519Responses);
+      this._logAccountivider();
+    })
+  }
 
   /**
    * @internal
    * Generate ECDSA accounts.
+   * @param {boolean} async
    * @param {number} balance
    * @param {number} num
    * @param {boolean} startup
    */
-  async _generateECDSA(balance, num, startup) {
+  async _generateECDSA(async, balance, num, startup) {
     let ecdsaAccountNumCounter = 1002;
-    this.logger.log(
-      "|-----------------------------------------------------------------------------------------|"
-    );
-    this.logger.log(
-      "|------------------------------| Accounts list (ECDSA keys) |-----------------------------|"
-    );
-    this.logger.log(
-      "|    id    |                            private key                            |  balance |"
-    );
-    this.logger.log(
-      "|-----------------------------------------------------------------------------------------|"
-    );
+    const params = [];
+
+    if (!async) this._logECDSATitle();
+
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom();
       if (startup && this.privateKeysECDSA[i]) {
         wallet = new hethers.Wallet(this.privateKeysECDSA[i]);
       }
-      await this._createAccount(
+      params.push(await this._createAccount(
+        async,
         ecdsaAccountNumCounter++,
         balance,
         startup,
         wallet
-      );
+      ));
     }
-    this.logger.log(
-      "|-----------------------------------------------------------------------------------------|"
-    );
+
+    if (!async) {
+      this._logECDSADivider();
+    }
+    return params;
   }
 
   /**
    * @internal
    * Generate Alias ECDSA accounts.
+   * @param {boolean} async
    * @param {number} balance
    * @param {number} num
    * @param {boolean} startup
    */
-  async _generateAliasECDSA(balance, num, startup) {
+  async _generateAliasECDSA(async, balance, num, startup) {
     let aliasedAccountNumCounter = 1012;
-    this.logger.log(
-      "|--------------------------------------------------------------------------------------------------------------------------------------|"
-    );
-    this.logger.log(
-      "|--------------------------------------------------------------------------------------------------------------------------------------|"
-    );
-    this.logger.log(
-      "|    id    |               public address               |                             private key                            | balance |"
-    );
-    this.logger.log(
-      "|--------------------------------------------------------------------------------------------------------------------------------------|"
-    );
+    const params = [];
+
+    if (!async) this._logAliasECDSATitle();
+
     for (let i = 0; i < num; i++) {
       let wallet = ethers.Wallet.createRandom();
       if (startup && this.privateKeysAliasECDSA[i]) {
@@ -186,39 +197,34 @@ class AccountService {
         }).execute(this.client);
         accountNum = accountInfo.accountId.toString();
       }
-
+      if (async) {
+        params.push({ accountNum: accountNum, wallet: wallet, balance: new Hbar(balance)});
+        continue;
+      }
       this.logger.log(
         `| ${accountNum} - ${wallet.address} - ${
           wallet._signingKey().privateKey
         } - ${new Hbar(balance)} |`
       );
     }
-    this.logger.log(
-      "|--------------------------------------------------------------------------------------------------------------------------------------|"
-    );
+    if (async) return params;
+    this._logED25519Divider();
   }
 
   /**
    * @internal
    * Generate ED25519 accounts.
+   * @param {boolean} async
    * @param {number} balance
    * @param {number} num
    * @param {boolean} startup
    */
-  async _generateED25519(balance, num, startup) {
+  async _generateED25519(async, balance, num, startup) {
     let edAccountNumCounter = 1022;
-    this.logger.log(
-      "|-----------------------------------------------------------------------------------------|"
-    );
-    this.logger.log(
-      "|-----------------------------| Accounts list (ED25519 keys) |----------------------------|"
-    );
-    this.logger.log(
-      "|    id    |                            private key                            |  balance |"
-    );
-    this.logger.log(
-      "|-----------------------------------------------------------------------------------------|"
-    );
+    const params = [];
+
+    if (!async) this._logED25519Title();
+
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom({ isED25519Type: true });
       if (startup && this.privateKeysED25519[i]) {
@@ -227,27 +233,30 @@ class AccountService {
           isED25519Type: true,
         });
       }
-      await this._createAccount(
+      params.push(await this._createAccount(
+        async,
         edAccountNumCounter++,
         balance,
         startup,
         wallet
-      );
+      ));
     }
-    this.logger.log(
-      "|-----------------------------------------------------------------------------------------|"
-    );
+    if (!async) {
+      this._logECDSADivider();
+    }
+    return params;
   }
 
   /**
    * @internal
    * Creates account.
+   * @param {boolean} async
    * @param {number} accountNum
    * @param {number} balance
    * @param {boolean} startup
    * @param {Wallet} wallet
    */
-  async _createAccount(accountNum, balance, startup, wallet) {
+  async _createAccount(async, accountNum, balance, startup, wallet) {
     const tx = await new AccountCreateTransaction()
       .setKey(PublicKey.fromString(wallet._signingKey().compressedPublicKey))
       .setInitialBalance(new Hbar(balance))
@@ -258,7 +267,7 @@ class AccountService {
       const getReceipt = await tx.getReceipt(this.client);
       accoundId = getReceipt.accountId.toString();
     }
-
+    if (async) return { accountNum: accoundId, wallet: wallet, balance: new Hbar(balance) };
     this._logAccount(
       accoundId,
       new Hbar(balance),
@@ -275,6 +284,65 @@ class AccountService {
    */
   _logAccount(accountId, balance, privateKey) {
     this.logger.log(`| ${accountId} - ${privateKey} - ${balance} |`);
+  }
+
+  /**
+   * @internal
+   * Log title for ECDSA accounts to console.
+   */
+  _logECDSATitle() {
+    this._logAccountivider();
+    this._logAccountivider();
+    this.logger.log(
+      "|    id    |                            private key                            |  balance |"
+    );
+    this._logAccountivider();
+  }
+
+  /**
+   * @internal
+   * Log title for AliasECDSA accounts to console.
+   */
+  _logAliasECDSATitle() {
+    this._logAliasAccountDivider();
+    this._logAliasAccountDivider();
+    this.logger.log(
+      "|    id    |               public address               |                             private key                            | balance |"
+    );
+    this._logAliasAccountDivider();
+  }
+
+  /**
+   * @internal
+   * Log title for ED25519 accounts to console.
+   */
+  _logED25519Title() {
+    this._logAccountivider();
+    this._logAccountivider();
+    this.logger.log(
+      "|    id    |                            private key                            |  balance |"
+    );
+    this._logAccountivider();
+  }
+
+  /**
+   * @internal
+   * Log divider between accounts.
+   */
+  _logAccountivider() {
+    this.logger.log(
+      "|-----------------------------------------------------------------------------------------|"
+    );
+  }
+
+  /**
+   * @internal
+   * Log divider between alias accounts.
+   */
+  _logAliasAccountDivider() {
+    this.logger.log(
+      "|--------------------------------------------------------------------------------------------------------------------------------------|"
+    );
   }
 }
 
