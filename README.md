@@ -495,6 +495,7 @@ The following environment variables can be changed in the `.env` file for variou
 
 &#10008; The keys under `network-node` (`hedera.key`, `hedera.crt` and the `keys` folder) are only intended to be used for testing with this docker based local network. These keys should not be used with any other networks.
 
+
 # Exposed Endpoints
 
 | Type                          | Endpoint                                         |
