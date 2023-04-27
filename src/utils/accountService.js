@@ -111,19 +111,19 @@ class AccountService {
       const aliasEcdsaResponses = allResponses[1];
       const ed25519Responses = allResponses[2];
       
-      this._logECDSATitle();
+      this._logAccountTitle();
       ecdsaResponses.forEach(element => {
         this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
       });
       this._logAccountivider();
 
-      this._logAliasECDSATitle();
+      this._logAliasAccountTitle();
       aliasEcdsaResponses.forEach(element => {
         this._logAliasAccount(element.accountNum, element.balance, element.wallet);
       });
       this._logAliasAccountDivider();
 
-      this._logED25519Title();
+      this._logAccountTitle();
       ed25519Responses.forEach(element => {
         this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
       });
@@ -143,7 +143,7 @@ class AccountService {
     let ecdsaAccountNumCounter = 1002;
     const params = [];
 
-    if (!async) this._logECDSATitle();
+    if (!async) this._logAccountTitle();
 
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom();
@@ -177,7 +177,7 @@ class AccountService {
     let aliasedAccountNumCounter = 1012;
     const params = [];
 
-    if (!async) this._logAliasECDSATitle();
+    if (!async) this._logAliasAccountTitle();
 
     for (let i = 0; i < num; i++) {
       let wallet = ethers.Wallet.createRandom();
@@ -225,7 +225,7 @@ class AccountService {
     let edAccountNumCounter = 1022;
     const params = [];
 
-    if (!async) this._logED25519Title();
+    if (!async) this._logAccountTitle();
 
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom({ isED25519Type: true });
@@ -305,9 +305,9 @@ class AccountService {
 
   /**
    * @internal
-   * Log title for ECDSA accounts to console.
+   * Log title for accounts to console.
    */
-  _logECDSATitle() {
+  _logAccountTitle() {
     this._logAccountivider();
     this._logAccountivider();
     this.logger.log(
@@ -318,28 +318,15 @@ class AccountService {
 
   /**
    * @internal
-   * Log title for AliasECDSA accounts to console.
+   * Log title for Alias accounts to console.
    */
-  _logAliasECDSATitle() {
+  _logAliasAccountTitle() {
     this._logAliasAccountDivider();
     this._logAliasAccountDivider();
     this.logger.log(
       "|    id    |               public address               |                             private key                            | balance |"
     );
     this._logAliasAccountDivider();
-  }
-
-  /**
-   * @internal
-   * Log title for ED25519 accounts to console.
-   */
-  _logED25519Title() {
-    this._logAccountivider();
-    this._logAccountivider();
-    this.logger.log(
-      "|    id    |                            private key                            |  balance |"
-    );
-    this._logAccountivider();
   }
 
   /**
