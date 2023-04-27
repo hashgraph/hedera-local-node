@@ -160,7 +160,7 @@ class AccountService {
     }
 
     if (!async) {
-      this._logECDSADivider();
+      this._logAccountivider();
     }
     return params;
   }
@@ -210,7 +210,7 @@ class AccountService {
       this._logAliasAccount(accountNum, balance, wallet);
     }
     if (async) return params;
-    this._logED25519Divider();
+    this._logAccountivider();
   }
 
   /**
@@ -244,7 +244,7 @@ class AccountService {
       ));
     }
     if (!async) {
-      this._logECDSADivider();
+      this._logAccountivider();
     }
     return params;
   }
