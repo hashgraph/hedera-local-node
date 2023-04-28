@@ -202,7 +202,7 @@ services:
     networks:
       - mirror-node
     ports:
-      - "5432:5432"
+      - "5433:5432"
     restart: unless-stopped
     stop_grace_period: 2m
     stop_signal: SIGTERM

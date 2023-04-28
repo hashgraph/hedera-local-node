@@ -48,11 +48,10 @@ services:
         condition: service_healthy
     networks:
       network-node-bridge:
-        ipv4_address: 172.27.0.8
+        ipv4_address: 172.27.0.11
     ports:
-      - "50511:50211"
-      - "50512:50212"
-      - "9959:9999"
+      - "51211:50211"
+      - "51212:50212"
     volumes:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
@@ -79,11 +78,10 @@ services:
         condition: service_healthy
     networks:
       network-node-bridge:
-        ipv4_address: 172.27.0.9
+        ipv4_address: 172.27.0.12
     ports:
-      - "50611:50211"
-      - "50612:50212"
-      - "9969:9999"
+      - "52211:50211"
+      - "52212:50212"
 
   network-node-3:
     <<: *network-node-definition
@@ -97,11 +95,10 @@ services:
         condition: service_healthy
     networks:
       network-node-bridge:
-        ipv4_address: 172.27.0.10
+        ipv4_address: 172.27.0.13
     ports:
-      - "50711:50211"
-      - "50712:50212"
-      - "9979:9999"
+      - "53211:50211"
+      - "53212:50212"
 
   record-streams-uploader-1:
     extends:
