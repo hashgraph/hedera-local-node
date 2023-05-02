@@ -151,7 +151,7 @@ class AccountService {
         wallet = new hethers.Wallet(this.privateKeysECDSA[i]);
       }
       if (async) {
-        accounts.push(() => this._createAccount(
+        accounts.push(this._createAccount(
           async,
           ecdsaAccountNumCounter++,
           balance,
@@ -171,7 +171,7 @@ class AccountService {
     if (!async) {
       this._logAccountivider();
     } else {
-      return Promise.all(accounts.map(f => f()));
+      return Promise.all(accounts);
     }
   }
 
@@ -196,14 +196,14 @@ class AccountService {
       }
 
       if (async) {
-        accounts.push(() => this._createAliasAccount(async, aliasedAccountNumCounter++, balance, startup, wallet));
+        accounts.push(this._createAliasAccount(async, aliasedAccountNumCounter++, balance, startup, wallet));
         continue;
       }
       let account = await this._createAliasAccount(async, aliasedAccountNumCounter++, balance, startup, wallet);
       
       this._logAliasAccount(account.accountNum, account.balance, account.wallet);
     }
-    if (async) return Promise.all(accounts.map(f => f()));
+    if (async) return Promise.all(accounts);
     this._logAccountivider();
   }
 
