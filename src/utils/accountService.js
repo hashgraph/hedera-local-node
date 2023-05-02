@@ -110,7 +110,7 @@ class AccountService {
       const ecdsaResponses = allResponses[0];
       const aliasEcdsaResponses = allResponses[1];
       const ed25519Responses = allResponses[2];
-      
+
       this._logAccountTitle();
       ecdsaResponses.forEach(element => {
         this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
@@ -141,7 +141,7 @@ class AccountService {
    */
   async _generateECDSA(async, balance, num, startup) {
     let ecdsaAccountNumCounter = 1002;
-    const params = [];
+    const accounts = [];
 
     if (!async) this._logAccountTitle();
 
@@ -150,7 +150,17 @@ class AccountService {
       if (startup && this.privateKeysECDSA[i]) {
         wallet = new hethers.Wallet(this.privateKeysECDSA[i]);
       }
-      params.push(await this._createAccount(
+      if (async) {
+        accounts.push(() => this._createAccount(
+          async,
+          ecdsaAccountNumCounter++,
+          balance,
+          startup,
+          wallet
+        ));
+        continue;
+      }
+      accounts.push(await this._createAccount(
         async,
         ecdsaAccountNumCounter++,
         balance,
@@ -158,11 +168,11 @@ class AccountService {
         wallet
       ));
     }
-
     if (!async) {
       this._logAccountivider();
+    } else {
+      return Promise.all(accounts.map(f => f()));
     }
-    return params;
   }
 
   /**
@@ -175,7 +185,7 @@ class AccountService {
    */
   async _generateAliasECDSA(async, balance, num, startup) {
     let aliasedAccountNumCounter = 1012;
-    const params = [];
+    const accounts = [];
 
     if (!async) this._logAliasAccountTitle();
 
@@ -185,31 +195,15 @@ class AccountService {
         wallet = new ethers.Wallet(this.privateKeysAliasECDSA[i]);
       }
 
-      let accountId = PublicKey.fromString(
-        wallet._signingKey().compressedPublicKey.replace("0x", "")
-      ).toAccountId(0, 0);
-      const transferTransaction = new TransferTransaction()
-        .addHbarTransfer(accountId, new Hbar(balance))
-        .addHbarTransfer(AccountId.fromString("0.0.2"), new Hbar(-balance));
-      const tx = await transferTransaction.execute(this.client);
-      let accountNum = `0.0.${aliasedAccountNumCounter}`;
-      if (startup) {
-        aliasedAccountNumCounter++;
-      } else {
-        await tx.getReceipt(this.client);
-
-        const accountInfo = await new AccountInfoQuery({
-          accountId: AccountId.fromEvmAddress(0, 0, wallet.address),
-        }).execute(this.client);
-        accountNum = accountInfo.accountId.toString();
-      }
       if (async) {
-        params.push({ accountNum: accountNum, wallet: wallet, balance: balance});
+        accounts.push(() => this._createAliasAccount(async, aliasedAccountNumCounter++, balance, startup, wallet));
         continue;
       }
-      this._logAliasAccount(accountNum, balance, wallet);
+      let account = await this._createAliasAccount(async, aliasedAccountNumCounter++, balance, startup, wallet);
+      
+      this._logAliasAccount(account.accountNum, account.balance, account.wallet);
     }
-    if (async) return params;
+    if (async) return Promise.all(accounts.map(f => f()));
     this._logAccountivider();
   }
 
@@ -223,7 +217,7 @@ class AccountService {
    */
   async _generateED25519(async, balance, num, startup) {
     let edAccountNumCounter = 1022;
-    const params = [];
+    const accounts = [];
 
     if (!async) this._logAccountTitle();
 
@@ -235,7 +229,17 @@ class AccountService {
           isED25519Type: true,
         });
       }
-      params.push(await this._createAccount(
+      if (async) {
+        accounts.push(() => this._createAccount(
+          async,
+          edAccountNumCounter++,
+          balance,
+          startup,
+          wallet
+        ));
+        continue;
+      }
+      accounts.push(await this._createAccount(
         async,
         edAccountNumCounter++,
         balance,
@@ -245,8 +249,9 @@ class AccountService {
     }
     if (!async) {
       this._logAccountivider();
+    } else {
+      return Promise.all(accounts.map(f => f()));
     }
-    return params;
   }
 
   /**
@@ -265,7 +270,7 @@ class AccountService {
       .execute(this.client);
     let accoundId = `0.0.${accountNum}`;
 
-    if (!startup) {
+    if (!startup || async) {
       const getReceipt = await tx.getReceipt(this.client);
       accoundId = getReceipt.accountId.toString();
     }
@@ -275,6 +280,35 @@ class AccountService {
       new Hbar(balance),
       wallet._signingKey().privateKey
     );
+  }
+
+  /**
+   * @internal
+   * Creates alias account.
+   * @param {boolean} async
+   * @param {number} aliasedAccountNumCounter
+   * @param {number} balance
+   * @param {boolean} startup
+   * @param {Wallet} wallet
+   */
+  async _createAliasAccount(async, aliasedAccountNumCounter, balance, startup, wallet) {
+    let accountId = PublicKey.fromString(
+      wallet._signingKey().compressedPublicKey.replace("0x", "")
+    ).toAccountId(0, 0);
+    const transferTransaction = new TransferTransaction()
+      .addHbarTransfer(accountId, new Hbar(balance))
+      .addHbarTransfer(AccountId.fromString("0.0.2"), new Hbar(-balance));
+    const tx = await transferTransaction.execute(this.client);
+    let accountNum = `0.0.${aliasedAccountNumCounter}`;
+    if (!startup || async) {
+      await tx.getReceipt(this.client);
+
+      const accountInfo = await new AccountInfoQuery({
+        accountId: AccountId.fromEvmAddress(0, 0, wallet.address),
+      }).execute(this.client);
+      accountNum = accountInfo.accountId.toString();
+    }
+    return { accountNum: accountNum, wallet: wallet, balance: balance };
   }
 
   /**
