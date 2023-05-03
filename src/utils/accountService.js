@@ -230,7 +230,7 @@ class AccountService {
         });
       }
       if (async) {
-        accounts.push(() => this._createAccount(
+        accounts.push(this._createAccount(
           async,
           edAccountNumCounter++,
           balance,
@@ -250,7 +250,7 @@ class AccountService {
     if (!async) {
       this._logAccountivider();
     } else {
-      return Promise.all(accounts.map(f => f()));
+      return Promise.all(accounts);
     }
   }
 
