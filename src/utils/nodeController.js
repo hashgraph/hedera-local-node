@@ -167,8 +167,14 @@ module.exports = class NodeController {
   }
 
   static getUserComposeFiles(dirPath = './overrides/') {
+    dirPath = path.normalize(dirPath);
+    if (!dirPath.endsWith(path.sep)) {
+      dirPath += path.sep;
+    }
     if (fs.existsSync(dirPath)) {
-      const files = fs.readdirSync(dirPath).sort().map(file => dirPath.concat(file));
+      const files = fs.readdirSync(dirPath)
+        .filter(file => path.extname(file).toLowerCase() === '.yml')
+        .sort().map(file => dirPath.concat(file));
       return files;
     } else {
       return [];

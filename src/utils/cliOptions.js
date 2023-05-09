@@ -111,7 +111,7 @@ module.exports = class CliOptions {
       type: 'string',
       describe: 'Path to a directory with user Compose configuration files',
       demandOption: false,
-      default: './overrides',
+      default: './overrides/',
     })
   }
 }
