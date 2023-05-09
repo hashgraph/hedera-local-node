@@ -27,7 +27,7 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, fullMode, multiNode, host) {
+  static async startLocalNode(network, limits, devMode, fullMode, multiNode, host, userCompose, composeDir) {
     await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
 
     const dockerStatus = await DockerCheck.checkDocker();
@@ -50,6 +50,9 @@ module.exports = class NodeController {
         if (!fullMode) {
           composeFiles.push('docker-compose.multinode.evm.yml');
         }
+      }
+      if (userCompose) {
+        composeFiles.push(...this.getUserComposeFiles(composeDir));
       }
       return shell.exec(`docker compose -f ${composeFiles.join(' -f ')} up -d 2>${nullOutput}`);
     };
@@ -161,5 +164,14 @@ module.exports = class NodeController {
 
     lines.splice(target, 1, `${key}=${value}`);
     fs.writeFileSync(envPath, lines.join(os.EOL));
+  }
+
+  static getUserComposeFiles(dirPath = './overrides/') {
+    if (fs.existsSync(dirPath)) {
+      const files = fs.readdirSync(dirPath).sort().map(file => dirPath.concat(file));
+      return files;
+    } else {
+      return [];
+    }
   }
 };

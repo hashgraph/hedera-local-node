@@ -26,9 +26,11 @@ yargs(hideBin(process.argv))
       CliOptions.addBalanceOption(yargs);
       CliOptions.addAsyncOption(yargs);
       CliOptions.addMultiNodeOption(yargs);
+      CliOptions.addUserComposeOption(yargs);
+      CliOptions.addUserComposeDirOption(yargs);
     },
     async (argv) => {
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full, argv.multinode, argv.host);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full, argv.multinode, argv.host, argv.usercompose, argv.composedir);
       await main(argv.accounts, argv.async, argv.balance, argv.detached, argv.host);
     }
   )
@@ -53,10 +55,12 @@ yargs(hideBin(process.argv))
       CliOptions.addBalanceOption(yargs);
       CliOptions.addAsyncOption(yargs);
       CliOptions.addMultiNodeOption(yargs);
+      CliOptions.addUserComposeOption(yargs);
+      CliOptions.addUserComposeDirOption(yargs);
     },
     async (argv) => {
       await NodeController.stopLocalNode();
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full, argv.multinode, argv.host);
+      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full, argv.multinode, argv.host, argv.usercompose, argv.composedir);
       await main(argv.accounts, argv.async, argv.balance, argv.detached, argv.host);
     }
   )
