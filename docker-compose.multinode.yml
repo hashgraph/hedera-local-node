@@ -1,0 +1,222 @@
+services:
+  network-node:
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "grep",
+          "Now current platform status",
+          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - "${APPLICATION_ROOT_PATH}/config.multinode.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
+
+  network-node-1:
+    &network-node-definition
+    image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
+    container_name: network-node-1
+    user: root
+    mem_swappiness: 0
+    mem_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    memswap_limit: "${NETWORK_NODE_MEM_LIMIT}"
+    environment:
+      JAVA_HEAP_MIN: "${PLATFORM_JAVA_HEAP_MIN}"
+      JAVA_HEAP_MAX: "${PLATFORM_JAVA_HEAP_MAX}"
+      JAVA_OPTS: "${PLATFORM_JAVA_OPTS}"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "grep",
+          "Now current platform status = ACTIVE",
+          "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      haveged:
+        condition: service_started
+      record-streams-uploader:
+        condition: service_started
+      network-node:
+        condition: service_healthy
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.11
+    ports:
+      - "51211:50211"
+      - "51212:50212"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances:/opt/hgcapp/accountBalances"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams:/opt/hgcapp/recordStreams"
+      - "${APPLICATION_CONFIG_PATH}:/opt/hgcapp/services-hedera/HapiApp2.0/data/config"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/logs:/opt/hgcapp/services-hedera/HapiApp2.0/output"
+      - "${APPLICATION_ROOT_PATH}/data/keys:/opt/hgcapp/services-hedera/HapiApp2.0/data/keys"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/stats:/opt/hgcapp/services-hedera/HapiApp2.0/data/stats"
+      - "${APPLICATION_ROOT_PATH}/config.multinode.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
+      - "${APPLICATION_ROOT_PATH}/settings.txt:/opt/hgcapp/services-hedera/HapiApp2.0/settings.txt"
+      - "${APPLICATION_ROOT_PATH}/log4j2.xml:/opt/hgcapp/services-hedera/HapiApp2.0/log4j2.xml"
+      - "${APPLICATION_ROOT_PATH}/hedera.crt:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.crt"
+      - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
+      - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
+
+  network-node-2:
+    <<: *network-node-definition
+    container_name: network-node-2
+    depends_on:
+      haveged:
+        condition: service_started
+      record-streams-uploader:
+        condition: service_started
+      network-node-1:
+        condition: service_healthy
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.12
+    ports:
+      - "52211:50211"
+      - "52212:50212"
+
+  network-node-3:
+    <<: *network-node-definition
+    container_name: network-node-3
+    depends_on:
+      haveged:
+        condition: service_started
+      record-streams-uploader:
+        condition: service_started
+      network-node-2:
+        condition: service_healthy
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.13
+    ports:
+      - "53211:50211"
+      - "53212:50212"
+
+  record-streams-uploader-1:
+    extends:
+      file: docker-compose.yml
+      service: record-streams-uploader
+    container_name: record-streams-uploader-1
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "recordstreams/record0.0.4"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4:/records"
+
+  record-streams-uploader-2:
+    extends:
+      file: docker-compose.yml
+      service: record-streams-uploader
+    container_name: record-streams-uploader-2
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "recordstreams/record0.0.5"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.5:/records"
+
+  record-streams-uploader-3:
+    extends:
+      file: docker-compose.yml
+      service: record-streams-uploader
+    container_name: record-streams-uploader-3
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "recordstreams/record0.0.6"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.6:/records"
+
+  account-balances-uploader-1:
+    extends:
+      file: docker-compose.yml
+      service: account-balances-uploader
+    container_name: account-balances-uploader-1
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "accountBalances/balance0.0.4"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.4:/balances"
+
+  account-balances-uploader-2:
+    extends:
+      file: docker-compose.yml
+      service: account-balances-uploader
+    container_name: account-balances-uploader-2
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "accountBalances/balance0.0.5"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.5:/balances"
+
+  account-balances-uploader-3:
+    extends:
+      file: docker-compose.yml
+      service: account-balances-uploader
+    container_name: account-balances-uploader-3
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "accountBalances/balance0.0.6"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.6:/balances"
+
+  record-sidecar-uploader-1:
+    extends:
+      file: docker-compose.yml
+      service: record-sidecar-uploader
+    container_name: record-sidecar-uploader-1
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "recordstreams/record0.0.4/sidecar"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.4/sidecar:/sidecar-files"
+
+  record-sidecar-uploader-2:
+    extends:
+      file: docker-compose.yml
+      service: record-sidecar-uploader
+    container_name: record-sidecar-uploader-2
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "recordstreams/record0.0.5/sidecar"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.5/sidecar:/sidecar-files"
+
+  record-sidecar-uploader-3:
+    extends:
+      file: docker-compose.yml
+      service: record-sidecar-uploader
+    container_name: record-sidecar-uploader-3
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      BUCKET_PATH: "recordstreams/record0.0.6/sidecar"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.6/sidecar:/sidecar-files"
+
+  importer:
+    volumes:
+      - ./compose-network/mirror-node/addressBook.multinode.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin

@@ -19,16 +19,16 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
     console.log("Stopping the docker containers...");
-    shell.exec(`docker compose kill 2>${nullOutput}`);
-    shell.exec(`docker compose down -v 2>${nullOutput}`);
+    shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
+    shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
     console.log("Cleaning the volumes and temp files...");
     shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
     shell.exec(`docker network prune -f 2>${nullOutput}`);
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, fullMode) {
-    await this.applyConfig(network, limits, devMode, fullMode);
+  static async startLocalNode(network, limits, devMode, fullMode, multiNode) {
+    await this.applyConfig(network, limits, devMode, fullMode, multiNode);
 
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
@@ -41,9 +41,17 @@ module.exports = class NodeController {
     shell.cd(__dirname);
     shell.cd("../../");
     const dockerComposeUpCmd = () => {
-      return (fullMode)
-          ? shell.exec(`docker compose up -d 2>${nullOutput}`)
-          : shell.exec(`docker compose -f docker-compose.yml -f docker-compose.evm.yml up -d 2>${nullOutput}`);
+      const composeFiles = ['docker-compose.yml'];
+      if (!fullMode) {
+        composeFiles.push('docker-compose.evm.yml');
+      }
+      if (multiNode) {
+        composeFiles.push('docker-compose.multinode.yml');
+        if (!fullMode) {
+          composeFiles.push('docker-compose.multinode.evm.yml');
+        }
+      }
+      return shell.exec(`docker compose -f ${composeFiles.join(' -f ')} up -d 2>${nullOutput}`);
     };
     const output = dockerComposeUpCmd();
     if (output.code == 1) {
@@ -62,7 +70,7 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async applyConfig(network, limits, devMode, fullMode) {
+  static async applyConfig(network, limits, devMode, fullMode, multiNode) {
     shell.cd(rootPath);
     shell.echo(`Applying ${network} config settings...`);
     const baseFolder = path.resolve(__dirname, "../../");
@@ -97,21 +105,44 @@ module.exports = class NodeController {
       relayRateLimitDisabled
     );
     NodeController.setEnvValue(`${baseFolder}/.env`, "RELAY_DEV_MODE", devMode);
-
+    if (multiNode) {
+      NodeController.setEnvValue(`${baseFolder}/.env`, "RELAY_HEDERA_NETWORK", '{"network-node:50211":"0.0.3","network-node-1:50211":"0.0.4","network-node-2:50211":"0.0.5","network-node-3:50211":"0.0.6"}');
+    }
     if (result.code !== 0) {
       shell.echo("Failed to apply config");
       shell.exit(result.code);
     } else {
       shell.echo(`Successfully applied ${network} config settings`);
     }
-
-    if (!fullMode) {
+    if (!fullMode || multiNode) {
       const yaml = require("js-yaml");
       const fs = require("fs");
       const application = yaml.load(fs.readFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`));
-      application.hedera.mirror.importer.dataPath = 'file:///node/';
-      application.hedera.mirror.importer.downloader.sources = [{type: 'LOCAL'}];
-      fs.writeFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`, yaml.dump(application, {lineWidth: 256}));
+      if (!fullMode) {
+        application.hedera.mirror.importer.dataPath = 'file:///node/';
+        application.hedera.mirror.importer.downloader.sources = [{ type: 'LOCAL' }];
+      }
+      if (multiNode) {
+        application.hedera.mirror.monitor.nodes = [
+          {
+            "accountId": "0.0.3",
+            "host": "network-node"
+          },
+          {
+            "accountId": "0.0.4",
+            "host": "network-node-1"
+          },
+          {
+            "accountId": "0.0.5",
+            "host": "network-node-2"
+          },
+          {
+            "accountId": "0.0.6",
+            "host": "network-node-3"
+          }
+        ]
+      }
+      fs.writeFileSync(`${baseFolder}/compose-network/mirror-node/application.yml`, yaml.dump(application, { lineWidth: 256 }));
     }
   }
 
