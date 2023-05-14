@@ -27,8 +27,8 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, fullMode, multiNode) {
-    await this.applyConfig(network, limits, devMode, fullMode, multiNode);
+  static async startLocalNode(network, limits, devMode, fullMode, multiNode, host) {
+    await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
 
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
@@ -70,7 +70,7 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async applyConfig(network, limits, devMode, fullMode, multiNode) {
+  static async applyConfig(network, limits, devMode, fullMode, multiNode, host) {
     shell.cd(rootPath);
     shell.echo(`Applying ${network} config settings...`);
     const baseFolder = path.resolve(__dirname, "../../");
@@ -105,6 +105,11 @@ module.exports = class NodeController {
       relayRateLimitDisabled
     );
     NodeController.setEnvValue(`${baseFolder}/.env`, "RELAY_DEV_MODE", devMode);
+    NodeController.setEnvValue(
+      `${baseFolder}/.env`,
+      "VUE_APP_LOCAL_MIRROR_NODE_URL",
+      `http://${host}:5551/`
+    )
     if (multiNode) {
       NodeController.setEnvValue(`${baseFolder}/.env`, "RELAY_HEDERA_NETWORK", '{"network-node:50211":"0.0.3","network-node-1:50211":"0.0.4","network-node-2:50211":"0.0.5","network-node-3:50211":"0.0.6"}');
     }
