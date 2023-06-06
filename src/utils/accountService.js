@@ -111,7 +111,7 @@ class AccountService {
       const aliasEcdsaResponses = allResponses[1];
       const ed25519Responses = allResponses[2];
 
-      this._logAccountTitle("ECDSA");
+      this._logAccountTitle(" ECDSA ");
       ecdsaResponses.forEach(element => {
         this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
       });
@@ -143,7 +143,7 @@ class AccountService {
     let ecdsaAccountNumCounter = 1002;
     const accounts = [];
 
-    if (!async) this._logAccountTitle("ECDSA");
+    if (!async) this._logAccountTitle(" ECDSA ");
 
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom();
