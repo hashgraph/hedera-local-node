@@ -1,4 +1,5 @@
 const path = require("path");
+const yargs = require("yargs");
 const fs = require("fs");
 const os = require("os");
 const shell = require("shelljs");
@@ -27,7 +28,12 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, fullMode, multiNode, host, userCompose, composeDir) {
+  /**
+   * Checks the nessecery arguments and start the local node
+   * @param {yargs.ArgumentsCamelCase<{}>} argv
+   */
+  static async startLocalNode(argv) {
+    const { network, limits, devMode, fullMode, multiNode, host, userCompose, composeDir } = argv;
     await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
 
     const dockerStatus = await DockerCheck.checkDocker();
