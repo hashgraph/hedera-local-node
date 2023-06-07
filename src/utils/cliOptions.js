@@ -98,4 +98,20 @@ module.exports = class CliOptions {
       default: false,
     })
   }
+  static addUserComposeOption(yargs) {
+    yargs.option('usercompose', {
+      type: 'boolean',
+      describe: "Enable or disable user Compose configuration files",
+      demandOption: false,
+      default: true
+    })
+  }
+  static addUserComposeDirOption(yargs) {
+    yargs.option('composedir', {
+      type: 'string',
+      describe: 'Path to a directory with user Compose configuration files',
+      demandOption: false,
+      default: './overrides/',
+    })
+  }
 }

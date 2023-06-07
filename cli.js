@@ -16,19 +16,10 @@ yargs(hideBin(process.argv))
     "start [accounts]",
     "Starts the local hedera network.",
     (yargs) => {
-      CliOptions.addAccountsOption(yargs);
-      CliOptions.addDetachedOption(yargs);
-      CliOptions.addHostOption(yargs);
-      CliOptions.addNetworkOption(yargs);
-      CliOptions.addRateLimitOption(yargs);
-      CliOptions.addDevModeOption(yargs);
-      CliOptions.addFullModeOption(yargs);
-      CliOptions.addBalanceOption(yargs);
-      CliOptions.addAsyncOption(yargs);
-      CliOptions.addMultiNodeOption(yargs);
+      loadStartCliOptions(yargs);
     },
     async (argv) => {
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full, argv.multinode, argv.host);
+      await NodeController.startLocalNode(argv);
       await main(argv.accounts, argv.async, argv.balance, argv.detached, argv.host);
     }
   )
@@ -43,20 +34,11 @@ yargs(hideBin(process.argv))
     "restart [accounts]",
     "Restart the local hedera network.",
     (yargs) => {
-      CliOptions.addAccountsOption(yargs);
-      CliOptions.addDetachedOption(yargs);
-      CliOptions.addHostOption(yargs);
-      CliOptions.addNetworkOption(yargs);
-      CliOptions.addRateLimitOption(yargs);
-      CliOptions.addDevModeOption(yargs);
-      CliOptions.addFullModeOption(yargs);
-      CliOptions.addBalanceOption(yargs);
-      CliOptions.addAsyncOption(yargs);
-      CliOptions.addMultiNodeOption(yargs);
+      loadStartCliOptions(yargs);
     },
     async (argv) => {
       await NodeController.stopLocalNode();
-      await NodeController.startLocalNode(argv.network, argv.limits, argv.dev, argv.full, argv.multinode, argv.host);
+      await NodeController.startLocalNode(argv);
       await main(argv.accounts, argv.async, argv.balance, argv.detached, argv.host);
     }
   )
@@ -205,4 +187,23 @@ async function startDetached(accounts, async, balance, host) {
   await HederaUtils.prepareNode(async, console, balance, accounts, true, host);
   console.log("\nLocal node has been successfully started in detached mode.");
   process.exit();
+}
+
+/**
+ * Loads the node starting options
+ * @param {yargs} yargs
+ */
+function loadStartCliOptions(yargs) {
+  CliOptions.addAccountsOption(yargs);
+  CliOptions.addDetachedOption(yargs);
+  CliOptions.addHostOption(yargs);
+  CliOptions.addNetworkOption(yargs);
+  CliOptions.addRateLimitOption(yargs);
+  CliOptions.addDevModeOption(yargs);
+  CliOptions.addFullModeOption(yargs);
+  CliOptions.addBalanceOption(yargs);
+  CliOptions.addAsyncOption(yargs);
+  CliOptions.addMultiNodeOption(yargs);
+  CliOptions.addUserComposeOption(yargs);
+  CliOptions.addUserComposeDirOption(yargs);
 }

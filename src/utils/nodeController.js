@@ -1,4 +1,5 @@
 const path = require("path");
+const yargs = require("yargs");
 const fs = require("fs");
 const os = require("os");
 const shell = require("shelljs");
@@ -27,7 +28,12 @@ module.exports = class NodeController {
     shell.cd(rootPath);
   }
 
-  static async startLocalNode(network, limits, devMode, fullMode, multiNode, host) {
+  /**
+   * Checks the nessecery arguments and start the local node
+   * @param {yargs.ArgumentsCamelCase<{}>} argv
+   */
+  static async startLocalNode(argv) {
+    const { network, limits, devMode, fullMode, multiNode, host, userCompose, composeDir } = argv;
     await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
 
     const dockerStatus = await DockerCheck.checkDocker();
@@ -50,6 +56,9 @@ module.exports = class NodeController {
         if (!fullMode) {
           composeFiles.push('docker-compose.multinode.evm.yml');
         }
+      }
+      if (userCompose) {
+        composeFiles.push(...this.getUserComposeFiles(composeDir));
       }
       return shell.exec(`docker compose -f ${composeFiles.join(' -f ')} up -d 2>${nullOutput}`);
     };
@@ -161,5 +170,20 @@ module.exports = class NodeController {
 
     lines.splice(target, 1, `${key}=${value}`);
     fs.writeFileSync(envPath, lines.join(os.EOL));
+  }
+
+  static getUserComposeFiles(dirPath = './overrides/') {
+    dirPath = path.normalize(dirPath);
+    if (!dirPath.endsWith(path.sep)) {
+      dirPath += path.sep;
+    }
+    if (fs.existsSync(dirPath)) {
+      const files = fs.readdirSync(dirPath)
+        .filter(file => path.extname(file).toLowerCase() === '.yml')
+        .sort().map(file => dirPath.concat(file));
+      return files;
+    } else {
+      return [];
+    }
   }
 };
