@@ -70,6 +70,7 @@ yargs(hideBin(process.argv))
     },
     async (argv) => {
       await HederaUtils.prepareNode(argv.async, console, argv.balance, argv.accounts);
+      process.exit();
     }
   )
   .command(

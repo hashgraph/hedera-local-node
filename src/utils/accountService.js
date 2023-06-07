@@ -111,11 +111,11 @@ class AccountService {
       const aliasEcdsaResponses = allResponses[1];
       const ed25519Responses = allResponses[2];
 
-      this._logAccountTitle();
+      this._logAccountTitle(" ECDSA ");
       ecdsaResponses.forEach(element => {
         this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
       });
-      this._logAccountivider();
+      this._logAccountDivider();
 
       this._logAliasAccountTitle();
       aliasEcdsaResponses.forEach(element => {
@@ -123,11 +123,11 @@ class AccountService {
       });
       this._logAliasAccountDivider();
 
-      this._logAccountTitle();
+      this._logAccountTitle("ED25519");
       ed25519Responses.forEach(element => {
         this._logAccount(element.accountNum, element.balance, element.wallet._signingKey().privateKey);
       });
-      this._logAccountivider();
+      this._logAccountDivider();
     })
   }
 
@@ -143,7 +143,7 @@ class AccountService {
     let ecdsaAccountNumCounter = 1002;
     const accounts = [];
 
-    if (!async) this._logAccountTitle();
+    if (!async) this._logAccountTitle(" ECDSA ");
 
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom();
@@ -169,7 +169,7 @@ class AccountService {
       ));
     }
     if (!async) {
-      this._logAccountivider();
+      this._logAccountDivider();
     } else {
       return Promise.all(accounts);
     }
@@ -204,7 +204,7 @@ class AccountService {
       this._logAliasAccount(account.accountNum, account.balance, account.wallet);
     }
     if (async) return Promise.all(accounts);
-    this._logAccountivider();
+    this._logAliasAccountDivider();
   }
 
   /**
@@ -219,7 +219,7 @@ class AccountService {
     let edAccountNumCounter = 1022;
     const accounts = [];
 
-    if (!async) this._logAccountTitle();
+    if (!async) this._logAccountTitle("ED25519");
 
     for (let i = 0; i < num; i++) {
       let wallet = hethers.Wallet.createRandom({ isED25519Type: true });
@@ -248,7 +248,7 @@ class AccountService {
       ));
     }
     if (!async) {
-      this._logAccountivider();
+      this._logAccountDivider();
     } else {
       return Promise.all(accounts);
     }
@@ -340,14 +340,18 @@ class AccountService {
   /**
    * @internal
    * Log title for accounts to console.
+   * @param {string} accountType
    */
-  _logAccountTitle() {
-    this._logAccountivider();
-    this._logAccountivider();
+  _logAccountTitle(accountType) {
+    this._logAccountDivider();
+    this.logger.log(
+      `|-----------------------------| Accounts list (${accountType} keys) |----------------------------|`
+    );
+    this._logAccountDivider();
     this.logger.log(
       "|    id    |                            private key                            |  balance |"
     );
-    this._logAccountivider();
+    this._logAccountDivider();
   }
 
   /**
@@ -356,6 +360,9 @@ class AccountService {
    */
   _logAliasAccountTitle() {
     this._logAliasAccountDivider();
+    this.logger.log(
+      "|------------------------------------------------| Accounts list (Alias ECDSA keys) |--------------------------------------------------|"
+    );
     this._logAliasAccountDivider();
     this.logger.log(
       "|    id    |               public address               |                             private key                            | balance |"
@@ -367,7 +374,7 @@ class AccountService {
    * @internal
    * Log divider between accounts.
    */
-  _logAccountivider() {
+  _logAccountDivider() {
     this.logger.log(
       "|-----------------------------------------------------------------------------------------|"
     );
