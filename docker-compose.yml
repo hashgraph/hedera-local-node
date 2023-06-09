@@ -345,7 +345,7 @@ services:
       rest:
         condition: service_started
       network-node:
-        condition: service_started
+        condition: service_healthy
     networks:
       - mirror-node
       - network-node-bridge
