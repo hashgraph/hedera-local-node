@@ -50,7 +50,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -107,7 +107,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -126,7 +126,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "",
         "fieldConfig": {
@@ -181,7 +181,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -199,7 +199,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -282,7 +282,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg_over_time(rpc_relay_operator_balance{cluster=\"$cluster\", namespace=\"$namespace\", mode!=\"QUERY\", mode!=\"TRANSACTION\"}[$__interval]) / 100000000",
@@ -297,7 +297,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "",
         "fieldConfig": {
@@ -352,7 +352,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -370,7 +370,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "",
         "fieldConfig": {
@@ -421,7 +421,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -439,7 +439,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -523,7 +523,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -542,7 +542,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -629,7 +629,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -649,7 +649,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -735,7 +735,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -755,7 +755,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -813,7 +813,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -832,7 +832,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -890,7 +890,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -909,7 +909,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -967,7 +967,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -986,7 +986,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1068,7 +1068,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1086,7 +1086,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1168,7 +1168,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1186,7 +1186,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1275,7 +1275,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1294,7 +1294,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1399,7 +1399,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1417,7 +1417,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1499,7 +1499,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1517,7 +1517,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "",
         "fieldConfig": {
@@ -1598,7 +1598,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1616,7 +1616,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "",
         "fieldConfig": {
@@ -1704,7 +1704,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1738,7 +1738,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1791,7 +1791,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))",
@@ -1806,7 +1806,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1889,7 +1889,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))",
@@ -1904,7 +1904,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -1953,7 +1953,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(increase(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__range]))",
@@ -1968,7 +1968,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2023,7 +2023,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2040,7 +2040,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2127,7 +2127,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_method_response_bucket{cluster=\"$cluster\", namespace=\"$namespace\", statusCode!=\"200\"}[$__rate_interval]))",
@@ -2142,7 +2142,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2197,7 +2197,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2214,7 +2214,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2269,7 +2269,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2286,7 +2286,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2341,7 +2341,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2358,7 +2358,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2445,7 +2445,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_method_response_bucket{cluster=\"$cluster\", namespace=\"$namespace\", statusCode!=\"200\",method=\"eth_call\"}[$__rate_interval]))",
@@ -2460,7 +2460,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2515,7 +2515,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2532,7 +2532,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2587,7 +2587,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2604,7 +2604,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2659,7 +2659,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2676,7 +2676,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2763,7 +2763,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_method_response_bucket{cluster=\"$cluster\", namespace=\"$namespace\", statusCode!=\"200\",method=\"eth_sendRawTransaction\"}[$__rate_interval]))",
@@ -2778,7 +2778,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2833,7 +2833,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2850,7 +2850,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -2905,7 +2905,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -2922,7 +2922,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3009,7 +3009,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3029,7 +3029,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3116,7 +3116,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3136,7 +3136,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3222,7 +3222,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3242,7 +3242,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3351,7 +3351,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3372,7 +3372,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3463,7 +3463,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3483,7 +3483,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3574,7 +3574,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3594,7 +3594,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3681,7 +3681,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3704,7 +3704,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3759,7 +3759,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3773,7 +3773,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3791,7 +3791,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3875,7 +3875,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg (rate(rpc_relay_method_response_sum{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) / avg (rate(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))",
@@ -3887,7 +3887,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -3905,7 +3905,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -3992,7 +3992,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum by (method) (rate(rpc_relay_method_response_sum{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) / sum by (method) (rate(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))",
@@ -4008,7 +4008,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4094,7 +4094,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -4113,7 +4113,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4197,7 +4197,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "builder",
             "expr": "topk by(statusCode) (10, sum by(statusCode) (rate(rpc_relay_mirror_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])))",
@@ -4214,7 +4214,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4298,7 +4298,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "builder",
             "expr": "topk by(statusCode) (10, sum by(statusCode) (rate(rpc_relay_mirror_response_count{cluster=\"$cluster\", namespace=\"$namespace\", method=\"contracts/call\"}[$__rate_interval])))",
@@ -4315,7 +4315,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4399,7 +4399,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -4418,7 +4418,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4476,7 +4476,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -4495,7 +4495,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4581,7 +4581,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_mirror_response_count{cluster=~\"$cluster\", namespace=~\"$namespace\"}[$__rate_interval])) by (method)",
@@ -4598,7 +4598,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4691,7 +4691,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "sum(rate(rpc_relay_mirror_response_sum{cluster=~\"$cluster\", namespace=~\"$namespace\"}[$__rate_interval])) by (method) /\nsum(rate(rpc_relay_mirror_response_count{cluster=~\"$cluster\", namespace=~\"$namespace\"}[$__rate_interval])) by (method)",
@@ -4708,7 +4708,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4792,7 +4792,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "topk by(statusCode) (5, sum by(statusCode, method) (rate(rpc_relay_mirror_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])))",
@@ -4809,7 +4809,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4893,7 +4893,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "topk by(status) (10, sum by(status) (rate(rpc_relay_consensusnode_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])))",
@@ -4910,7 +4910,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -4994,7 +4994,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "topk by(status) (10, sum by(status) (rate(rpc_relay_consensusnode_response_count{cluster=\"$cluster\", namespace=\"$namespace\", mode=\"TRANSACTION\", type=\"EthereumTransaction\"}[$__rate_interval])))",
@@ -5011,7 +5011,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -5095,7 +5095,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "builder",
             "expr": "topk by(status) (10, sum by(status, type) (rate(rpc_relay_consensusnode_response_count{cluster=\"$cluster\", namespace=\"$namespace\", mode=\"QUERY\"}[$__rate_interval])))",
@@ -5112,7 +5112,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "Amount of times the IP Rate Limited has limited a request by method.",
         "fieldConfig": {
@@ -5194,7 +5194,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -5212,7 +5212,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "Amount of times the Hbar Rate Limited has limited a request grouped by method.",
         "fieldConfig": {
@@ -5294,7 +5294,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -5328,7 +5328,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "description": "Node.js memory",
         "fieldConfig": {
@@ -5413,7 +5413,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rpc_relay_nodejs_external_memory_bytes{cluster=\"$cluster\", namespace=\"$namespace\"})",
@@ -5424,7 +5424,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rpc_relay_process_resident_memory_bytes{cluster=\"$cluster\", namespace=\"$namespace\"})",
@@ -5436,7 +5436,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rpc_relay_nodejs_heap_size_used_bytes{cluster=\"$cluster\", namespace=\"$namespace\"})",
@@ -5448,7 +5448,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rpc_relay_nodejs_heap_size_total_bytes{cluster=\"$cluster\", namespace=\"$namespace\"})",
@@ -5464,7 +5464,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -5524,7 +5524,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -5543,7 +5543,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -5625,7 +5625,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rate(rpc_relay_process_cpu_seconds_total{cluster=\"$cluster\",namespace=\"$namespace\"}[$__rate_interval]))*100",
@@ -5636,7 +5636,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rate(rpc_relay_process_cpu_system_seconds_total{cluster=\"$cluster\",namespace=\"$namespace\"}[$__rate_interval]))*100",
@@ -5648,7 +5648,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "avg(rate(rpc_relay_process_cpu_user_seconds_total{cluster=\"$cluster\",namespace=\"$namespace\"}[$__rate_interval]))*100",
@@ -5664,7 +5664,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -5746,7 +5746,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "container_memory_max_usage_bytes{cluster=\"$cluster\",namespace=\"$namespace\", container=\"hedera-json-rpc-relay\"}",
@@ -5761,7 +5761,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -5843,7 +5843,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "rate(container_cpu_usage_seconds_total{cluster=\"$cluster\",namespace=\"$namespace\", container=\"hedera-json-rpc-relay\"}[$__rate_interval])",
@@ -5858,7 +5858,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "grafanacloud-prom"
+          "uid": "local-prom"
         },
         "fieldConfig": {
           "defaults": {
@@ -5940,7 +5940,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "grafanacloud-prom"
+              "uid": "local-prom"
             },
             "editorMode": "code",
             "expr": "container_sockets{cluster=\"$cluster\",namespace=\"$namespace\", container=\"hedera-json-rpc-relay\"}",
@@ -5967,15 +5967,15 @@
           "current": {
             "selected": true,
             "text": [
-              "hashio-mainnet"
+              "local"
             ],
             "value": [
-              "hashio-mainnet"
+              "local"
             ]
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "grafanacloud-prom"
+            "uid": "local-prom"
           },
           "definition": "label_values(cluster)",
           "description": "Kubernetes cluster",
@@ -6001,12 +6001,12 @@
           "allValue": "blank = testnet",
           "current": {
             "selected": false,
-            "text": "mainnet",
-            "value": "mainnet"
+            "text": "local",
+            "value": "local"
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "grafanacloud-prom"
+            "uid": "local-prom"
           },
           "definition": "label_values(namespace)",
           "hide": 0,
