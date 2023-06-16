@@ -3766,7 +3766,7 @@
             "expr": "avg (rate(rpc_relay_method_response_sum{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) / avg (rate(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))",
             "hide": false,
             "instant": true,
-            "legendFormat": "HashIO",
+            "legendFormat": "Relay",
             "range": false,
             "refId": "A"
           },
@@ -3880,7 +3880,7 @@
             "editorMode": "code",
             "expr": "avg (rate(rpc_relay_method_response_sum{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) / avg (rate(rpc_relay_method_response_count{cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))",
             "hide": false,
-            "legendFormat": "HashIO E2E Avg. Latency",
+            "legendFormat": "Relay E2E Avg. Latency",
             "range": true,
             "refId": "A"
           },
