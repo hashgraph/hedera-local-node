@@ -8,3 +8,10 @@ scrape_configs:
       labels:
         environment: 'local'
         node_id: "0"
+  - job_name: 'relay-development'
+    scrape_interval: 15s
+    static_configs:
+    - targets: [ 'json-rpc-relay:7546' ]
+      labels:
+        cluster: 'local'
+        namespace: 'local'        
