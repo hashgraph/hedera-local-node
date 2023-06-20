@@ -24,7 +24,7 @@
   "tier2Limit": "800",
   "tier3Limit": "1600",
   "limitDuration": "60000",
-  "hbarLimit": "8000000000",
+  "hbarLimit": "500000000000",
   "hbarLimitDuration": "60000",
   "blockRangeLimit": "2000",
   "features": {
