@@ -33,7 +33,7 @@ module.exports = class NodeController {
    * @param {yargs.ArgumentsCamelCase<{}>} argv
    */
   static async startLocalNode(argv) {
-    const { network, limits, devMode, fullMode, multiNode, host, userCompose, composeDir } = argv;
+    const { network, limits, dev: devMode, full: fullMode, multinode: multiNode, host, usercompose: userCompose, composedir: composeDir } = argv;
     await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
 
     const dockerStatus = await DockerCheck.checkDocker();
