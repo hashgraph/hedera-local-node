@@ -41,7 +41,7 @@ module.exports = class CliOptions {
       type: 'boolean',
       describe: "Enable or disable the rate limits in the JSON-RPC relay",
       demandOption: false,
-      default: true,
+      default: false,
     })
   }
 
