@@ -13,7 +13,7 @@
   "mirrorImageTag": "0.79.1",
   "relayImageTag": "0.23.3",
   "pythonVersion": "python3.7",
-  "mirrorNodeExplorerImageTag": "0.2.0",
+  "mirrorNodeExplorerImageTag": "23.5.0",
   "transactionMaxBytes": "6144",
   "features": {
     "compressFilesOnCreation": true,
