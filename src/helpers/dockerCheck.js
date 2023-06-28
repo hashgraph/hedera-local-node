@@ -67,7 +67,11 @@ module.exports = class DockerCheck {
         if (err) {
           reject(err);
         } else {
-          resolve(containers[0].Image.split(":")[1]);
+          try {
+            resolve(containers[0].Image.split(":")[1]);
+          } catch (e) {
+            resolve(constants.UNKNOWN_VERSION);
+          }
         }
       });
     });

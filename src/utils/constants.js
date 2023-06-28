@@ -19,5 +19,6 @@ module.exports = {
     CONSENSUS_NODE_LABEL: "network-node",
     MIRROR_NODE_LABEL: "mirror-node-rest",
     RELAY_LABEL: "json-rpc-relay",
-    IS_WINDOWS: process.platform === "win32"
+    IS_WINDOWS: process.platform === "win32",
+    UNKNOWN_VERSION: "Unknown"
 }
