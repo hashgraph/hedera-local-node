@@ -171,7 +171,7 @@ async function start(accounts, async, balance, host, eventLogger, accountLogger)
   eventLogger.log("Starting the network...");
 
   eventLogger.log("Preparing Node...");
-  await HederaUtils.prepareNode(async, accountLogger, async, balance, accounts, true, host);
+  await HederaUtils.prepareNode(async, accountLogger, balance, accounts, true, host);
 }
 
 /**
