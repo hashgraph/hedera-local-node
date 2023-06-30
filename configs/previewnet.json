@@ -11,7 +11,7 @@
   "havegedImageTag": "0.39.0-alpha.4",
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.78.0-beta1",
-  "relayImageTag": "0.23.3",
+  "relayImageTag": "0.26.0",
   "pythonVersion": "python3.7",
   "mirrorNodeExplorerImageTag": "23.5.0",
   "transactionMaxBytes": "6144",
