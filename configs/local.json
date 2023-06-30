@@ -31,5 +31,10 @@
     "compressFilesOnCreation": true,
     "atomicCryptoTransfer": true,
     "maxNumWithHapiSigsAccess": "0"
-  }
+  },
+  "wsConnectionLimitPerIp": 10,
+  "wsConnectionLimit": 100,
+  "wsConnectionTTL": 300000,
+  "wsMultipleAddressesEnabled": false,
+  "wsSubscriptionsLimit": 100
 }
