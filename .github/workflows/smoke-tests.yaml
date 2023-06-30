@@ -37,6 +37,7 @@ jobs:
         run: |
           cd test/smoke
           npm ci
+          npx hardhat compile
           npx hardhat test --grep Smoke
 
       - name: Stop the local node
