@@ -18,19 +18,19 @@
   },
   "dependencies": {
     "@hashgraph/hethers": "^1.2.6",
-    "@hashgraph/sdk": "^2.24.1",
+    "@hashgraph/sdk": "^2.29.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "dockerode": "^3.3.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "ethers": "^5.7.2",
     "js-yaml": "^4.1.0",
     "mustache": "^4.2.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "hardhat": "^2.14.0"
+    "hardhat": "^2.16.1"
   }
 }
