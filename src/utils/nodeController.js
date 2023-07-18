@@ -92,6 +92,7 @@ module.exports = class NodeController {
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/templates/settings.txt > ${baseFolder}/compose-network/network-node/settings.txt`,
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/bootstrap.template.properties > ${baseFolder}/compose-network/network-node/data/config/bootstrap.properties`,
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/application.template.yml > ${baseFolder}/compose-network/mirror-node/application.yml`,
+        `cp ${configRoot}/configs/${network}-config.txt ${baseFolder}/compose-network/network-node/config.txt`,
       ].join(" && ")
     );
 
