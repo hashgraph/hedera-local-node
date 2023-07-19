@@ -100,6 +100,11 @@ module.exports = class NodeController {
         path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.txt`),
     );
 
+    await fs.copyFileSync(
+        path.resolve(__dirname, `${configRoot}/configs/${network}-config.multinode.txt`),
+        path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.multinode.txt`)
+    );
+
     const relayRateLimitDisabled = !limits;
     if (relayRateLimitDisabled) {
       NodeController.setEnvValue(
