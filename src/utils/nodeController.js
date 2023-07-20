@@ -5,6 +5,7 @@ const os = require("os");
 const shell = require("shelljs");
 const DockerCheck = require("../helpers/dockerCheck");
 const constants = require("./constants");
+const yaml = require("js-yaml");
 const PREBUILT_CONFIGS = ["mainnet", "testnet", "previewnet", "local"];
 const rootPath = process.cwd();
 
@@ -95,15 +96,40 @@ module.exports = class NodeController {
       ].join(" && ")
     );
 
-    await fs.copyFileSync(
-        path.resolve(__dirname, `${configRoot}/configs/${network}-config.txt`),
-        path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.txt`),
-    );
+    // Network node versions before and after 0.40.0 require different formats of the config.txt file
+    const envVarsParsed = await NodeController.parseEnvFile(baseFolder);
+    const networkNodeEnvVar = 'NETWORK_NODE_IMAGE_TAG';
+    const networkNodeVersion = process.env[networkNodeEnvVar] || envVarsParsed[networkNodeEnvVar];
+    let isPost40 = true;
+    if (networkNodeVersion) {
+      const versionSplit = networkNodeVersion.split('.').map(v => parseInt(v));
+      if (versionSplit.length < 3 || (versionSplit[1] && versionSplit[1] < 40)) {
+        isPost40 = false;
+      }
+    }
 
-    await fs.copyFileSync(
-        path.resolve(__dirname, `${configRoot}/configs/${network}-config.multinode.txt`),
-        path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.multinode.txt`)
-    );
+    if (isPost40) {
+      await fs.copyFileSync(
+          path.resolve(__dirname, `${configRoot}/configs/post-0.40-config.txt`),
+          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.txt`),
+      );
+
+      await fs.copyFileSync(
+          path.resolve(__dirname, `${configRoot}/configs/post-0.40-config.multinode.txt`),
+          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.multinode.txt`)
+      );
+    }
+    else {
+      await fs.copyFileSync(
+          path.resolve(__dirname, `${configRoot}/configs/pre-0.40-config.txt`),
+          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.txt`),
+      );
+
+      await fs.copyFileSync(
+          path.resolve(__dirname, `${configRoot}/configs/pre-0.40-config.multinode.txt`),
+          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.multinode.txt`)
+      );
+    }
 
     const relayRateLimitDisabled = !limits;
     if (relayRateLimitDisabled) {
@@ -195,5 +221,17 @@ module.exports = class NodeController {
     } else {
       return [];
     }
+  }
+
+  static async parseEnvFile(baseFolder) {
+    const env = (await fs.readFileSync(`${baseFolder}/.env`)).toString();
+    const varsParsed = {};
+    env.split('\n').forEach(line => {
+      if (line.indexOf('=') !== -1) {
+        const data = line.split('=').map(d => d.trim());
+        varsParsed[data[0]] = data[1];
+      }
+    });
+    return varsParsed;
   }
 };
