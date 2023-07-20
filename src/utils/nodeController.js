@@ -126,12 +126,12 @@ module.exports = class NodeController {
     if (relayRateLimitDisabled) {
       NodeController.setEnvValue(
         `${baseFolder}/.env`,
-        "HBAR_RATE_LIMIT_TINYBAR",
+        "RELAY_HBAR_RATE_LIMIT_TINYBAR",
         "0"
       );
       NodeController.setEnvValue(
         `${baseFolder}/.env`,
-        "HBAR_RATE_LIMIT_DURATION",
+        "RELAY_HBAR_RATE_LIMIT_DURATION",
         "0"
       );
     }
