@@ -97,13 +97,14 @@ module.exports = class NodeController {
     );
 
     // Network node versions before and after 0.40.0 require different formats of the config.txt file
+    // If the version number format is not standard then it is assumed to be post 0.40.0
     const envVarsParsed = await NodeController.parseEnvFile(baseFolder);
     const networkNodeEnvVar = 'NETWORK_NODE_IMAGE_TAG';
     const networkNodeVersion = process.env[networkNodeEnvVar] || envVarsParsed[networkNodeEnvVar];
     let isPost40 = true;
     if (networkNodeVersion) {
       const versionSplit = networkNodeVersion.split('.').map(v => parseInt(v));
-      if (versionSplit.length < 3 || (versionSplit[1] && versionSplit[1] < 40)) {
+      if (versionSplit.length >= 3 && versionSplit[0] === 0 && versionSplit[1] < 40) {
         isPost40 = false;
       }
     }
