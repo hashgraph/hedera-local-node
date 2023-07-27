@@ -36,7 +36,7 @@ module.exports = class NodeController {
   static async startLocalNode(argv) {
     const { network, limits, dev: devMode, full: fullMode, multinode: multiNode, host, usercompose: userCompose, composedir: composeDir } = argv;
     await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
-
+    await DockerCheck.checkDockerComposeVersion()
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
       console.log("Docker is not running.");

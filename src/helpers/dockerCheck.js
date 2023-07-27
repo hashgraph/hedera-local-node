@@ -1,5 +1,6 @@
 const Docker = require("dockerode");
-const constants = require('./../utils/constants')
+const constants = require('./../utils/constants');
+const shell = require("shelljs");
 
 module.exports = class DockerCheck {
 
@@ -75,5 +76,24 @@ module.exports = class DockerCheck {
         }
       });
     });
+  }
+
+  static async checkDockerComposeVersion() {
+    console.log('docker compose checking...')
+    shell.exec(`docker compose version -f json`, (code, stdout, stderr) => {
+      console.log("here")
+      if (code != 0) {
+        console.error('Seems like you are using docker compose v1, please upgrade to v2')
+        return;
+      }
+      console.log("Code", code);
+      const output = JSON.parse(stdout);
+      const version = output["version"].slice(0, 4);
+
+      if (version === '2.9' || version === '2.10') {
+        console.error("You are using docker compose v2.9 or v2.10, which is not recommended by docker. Please choose another version below 2.9 or above 2.10");
+      }
+    });
+
   }
 };
