@@ -1,6 +1,7 @@
-const Docker = require("dockerode");
+const Docker = require('dockerode');
 const constants = require('./../utils/constants');
-const shell = require("shelljs");
+const shell = require('shelljs');
+const semver = require('semver')
 
 module.exports = class DockerCheck {
 
@@ -83,14 +84,15 @@ module.exports = class DockerCheck {
     const {code, stdout, stderr} = await shell.exec(`docker compose version -f json`, {silent:true});
 
     if (code != 0) {
-        console.error(stderr)
-        console.error('Seems like you are using docker compose v1, please upgrade to v2')
+        console.error(stderr);
+        console.error('Seems like you do not have docker install or you are using docker compose v1');
+        console.error('Please install docker compose or upgrade to v2');
     } else {
       const output = JSON.parse(stdout);
-      const version = output["version"].slice(0, 4);
+      const version = output["version"];
   
-      if (version === '2.9' || version === '2.10') {
-          console.error("You are using docker compose v2.9 or v2.10, which is not recommended by docker. Please choose another version below 2.9 or above 2.10");
+      if (semver.lt(version, '2.12.2')) {
+        console.error("You are using docker compose version prior to 2.12.2, please upgrade");
       }
     }
   }
