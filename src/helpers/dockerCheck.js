@@ -85,16 +85,19 @@ module.exports = class DockerCheck {
     const resultFirstCommand = await shell.exec(`docker compose version --short`, {silent:true});
     const resultSecondCommand = await shell.exec(`docker-compose version --short`, {silent:true})
 
-    // Exit code is 127 when no docker installation is found
+    //Exit code is 127 when no docker installation is found
     if (resultFirstCommand.code === 127 && resultSecondCommand.code === 127) {
       console.error('Please install docker compose V2.');
     } else if (resultFirstCommand.code === 127 && resultSecondCommand.code === 0) {
-      console.error('Looks like you have docker-compose, but you need docker compose V2');
+      console.error('Looks like you have docker-compose V1, but you need docker compose V2');
     } else {
       const version = resultFirstCommand.stdout ? resultFirstCommand.stdout : resultSecondCommand.stdout
-      if (semver.lt(version, '2.12.2')) {
-        console.error("You are using docker compose version prior to 2.12.2, please upgrade");
+      if (semver.gt(version, '2.12.2')) {
+        //Docker version is OK
+        return;
       }
+      console.error("You are using docker compose version prior to 2.12.2, please upgrade");
     }
+    process.exit();
   }
 };
