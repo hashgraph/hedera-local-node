@@ -28,7 +28,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          cd test/smoke
+          npm ci
 
       - name: Start the local node with ${{ matrix.network }} images
         run: node cli.js start --network ${{ matrix.network }} -d
