@@ -14,11 +14,12 @@
     "hedera": "./cli.js"
   },
   "scripts": {
-    "test:readiness": "node src/utils/testNode.js"
+    "test:readiness": "node src/utils/testNode.js",
+    "test:smoke": "npm --prefix test/smoke run test"
   },
   "dependencies": {
     "@hashgraph/hethers": "^1.2.6",
-    "@hashgraph/sdk": "^2.29.0",
+    "@hashgraph/sdk": "^2.31.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "dockerode": "^3.3.5",
@@ -31,7 +32,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "hardhat": "^2.16.1",
+    "hardhat": "^2.17.1",
     "semver": "^7.5.4"
   }
 }

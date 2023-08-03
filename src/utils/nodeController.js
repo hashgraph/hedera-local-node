@@ -44,7 +44,7 @@ module.exports = class NodeController {
     }
     const nullOutput = this.getNullOutput();
 
-    console.log("Starting the docker containers...");
+    console.log(`Starting hedera local node in ${multiNode ? "multi-node mode" : "single-node mode"}...`);
     shell.cd(__dirname);
     shell.cd("../../");
     const dockerComposeUpCmd = () => {

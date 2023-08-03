@@ -11,21 +11,20 @@ describe("Smoke Tests", async function () {
   });
 
   it("Should perform a crypto transfer transaction", async function() {
-    const amount = 100_000_000_000;
-    const amountbn = hre.ethers.BigNumber.from(amount);
-    const senderBalanceBefore = await walletSender.getBalance();
-    const receiverBalanceBefore = await walletReceiver.getBalance();
+    const amount = 100_000_000_000n;
+    const senderBalanceBefore = await hre.ethers.provider.getBalance(walletSender);
+    const receiverBalanceBefore = await hre.ethers.provider.getBalance(walletReceiver);
 
     await walletSender.sendTransaction({
       to: walletReceiver.address,
       value: amount
     });
-
-    const senderBalanceAfter = await walletSender.getBalance();
-    const receiverBalanceAfter = await walletReceiver.getBalance();
+    await new Promise(r => setTimeout(r, 500)); // add wait, because otherwise balance is not correctly updated
+    const senderBalanceAfter = await hre.ethers.provider.getBalance(walletSender);
+    const receiverBalanceAfter = await hre.ethers.provider.getBalance(walletReceiver);
 
     expect(senderBalanceAfter.toString()).to.not.eq(senderBalanceBefore.toString());
-    expect(senderBalanceAfter.lt(senderBalanceBefore.sub(amountbn))).to.eq(true); // account for used gas
+    expect(senderBalanceAfter < (senderBalanceBefore - amount)).to.eq(true); // account for used gas
     expect(receiverBalanceAfter).to.greaterThan(receiverBalanceBefore);
   });
 });
