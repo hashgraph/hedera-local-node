@@ -7,8 +7,8 @@
   "maxSizeKb": 2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.41.0-alpha.1",
-  "havegedImageTag": "0.41.0-alpha.1",
+  "nodeImageTag": "0.41.0-alpha.2",
+  "havegedImageTag": "0.41.0-alpha.2",
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.86.0-beta1",
   "relayImageTag": "0.28.0-rc3",
@@ -28,6 +28,7 @@
   "hbarLimitDuration": "60000",
   "blockRangeLimit": "2000",
   "features": {
-    "atomicCryptoTransfer": true
+    "atomicCryptoTransfer": true,
+    "eip2930": true
   }
 }
