@@ -7,12 +7,12 @@
   "maxSizeKb": 2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.40.1",
-  "havegedImageTag": "0.40.1",
+  "nodeImageTag": "0.41.0-alpha.3",
+  "havegedImageTag": "0.41.0-alpha.3",
   "uploaderImageTag": "0.7.0",
-  "mirrorImageTag": "0.85.0-rc2",
-  "relayImageTag": "0.28.0-rc3",
-  "mirrorNodeExplorerImageTag": "23.5.0",
+  "mirrorImageTag": "0.86.0-beta1",
+  "relayImageTag": "0.29.1",
+  "mirrorNodeExplorerImageTag": "23.7.0",
   "timeout": "180s",
   "pythonVersion": "python3.7",
   "transactionMaxBytes": "30720",
@@ -28,6 +28,7 @@
   "hbarLimitDuration": "60000",
   "blockRangeLimit": "2000",
   "features": {
-    "atomicCryptoTransfer": true
+    "atomicCryptoTransfer": true,
+    "eip2930": true
   }
 }
