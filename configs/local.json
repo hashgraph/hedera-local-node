@@ -11,7 +11,7 @@
   "havegedImageTag": "0.41.0-alpha.3",
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.86.0-beta1",
-  "relayImageTag": "0.29.0",
+  "relayImageTag": "0.29.1",
   "mirrorNodeExplorerImageTag": "23.7.0",
   "timeout": "180s",
   "pythonVersion": "python3.7",
