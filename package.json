@@ -29,10 +29,10 @@
     "mustache": "^4.2.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "semver": "^7.5.4"
   },
   "devDependencies": {
-    "hardhat": "^2.17.1",
-    "semver": "^7.5.4"
+    "hardhat": "^2.17.1"
   }
 }
