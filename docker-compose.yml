@@ -422,6 +422,18 @@ services:
       network-node-bridge:
         ipv4_address: 172.27.0.5
 
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    stop_grace_period: 2m
+    stop_signal: SIGTERM
+    tty: true
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.50
+
 networks:
   network-node-bridge:
     name: network-node-bridge
