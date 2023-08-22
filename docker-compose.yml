@@ -427,7 +427,6 @@ services:
     ports:
       - 6379:6379
     restart: unless-stopped
-    stop_grace_period: 2m
     stop_signal: SIGTERM
     tty: true
     networks:
