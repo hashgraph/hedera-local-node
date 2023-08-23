@@ -19,4 +19,5 @@ useLoopbackIp,                                 false
 waitAtStartup,                                 false
 jasperDb.iteratorInputBufferBytes,             16777216
 prometheusEndpointEnabled,                     true
-transactionMaxBytes,                           30720
+transactionMaxBytes,                           6144
+event.creation.maxCreationRate,                20
