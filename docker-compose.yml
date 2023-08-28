@@ -374,6 +374,8 @@ services:
       INPUT_SIZE_LIMIT: "${RELAY_INPUT_SIZE_LIMIT}"
       RATE_LIMIT_DISABLED: "${RELAY_RATE_LIMIT_DISABLED}"
       ETH_POPULATE_SYNTHETIC_CONTRACT_RESULTS: "${RELAY_ETH_POPULATE_SYNTHETIC_CONTRACT_RESULTS}"
+      REDIS_ENABLED: "${RELAY_REDIS_ENABLED}"
+      REDIS_URL: "${RELAY_REDIS_URL}"
     ports:
       - "7546:7546"
     restart: unless-stopped
@@ -421,6 +423,20 @@ services:
     networks:
       network-node-bridge:
         ipv4_address: 172.27.0.5
+
+  cache:
+    image: redis:6-alpine
+    container_name: relay-cache
+    mem_limit: "${RELAY_MEM_LIMIT}"
+    memswap_limit: "${RELAY_MEM_LIMIT}"
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    tty: true
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.50
 
 networks:
   network-node-bridge:

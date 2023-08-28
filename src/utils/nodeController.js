@@ -96,32 +96,6 @@ module.exports = class NodeController {
       ].join(" && ")
     );
 
-    // Network node versions before and after 0.40.0 require different formats of the config.txt file
-    const isPost40 = await NodeController.isNetworkNodePost40();
-
-    if (isPost40) {
-      await fs.copyFileSync(
-          path.resolve(__dirname, `${configRoot}/configs/post-0.40-config.txt`),
-          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.txt`),
-      );
-
-      await fs.copyFileSync(
-          path.resolve(__dirname, `${configRoot}/configs/post-0.40-config.multinode.txt`),
-          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.multinode.txt`)
-      );
-    }
-    else {
-      await fs.copyFileSync(
-          path.resolve(__dirname, `${configRoot}/configs/pre-0.40-config.txt`),
-          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.txt`),
-      );
-
-      await fs.copyFileSync(
-          path.resolve(__dirname, `${configRoot}/configs/pre-0.40-config.multinode.txt`),
-          path.resolve(__dirname, `${baseFolder}/compose-network/network-node/config.multinode.txt`)
-      );
-    }
-
     const relayRateLimitDisabled = !limits;
     if (relayRateLimitDisabled) {
       NodeController.setEnvValue(
@@ -225,21 +199,5 @@ module.exports = class NodeController {
       }
     });
     return varsParsed;
-  }
-
-  static async isNetworkNodePost40() {
-    // If the version number format is not standard then it is assumed to be post 0.40.0
-    const envVarsParsed = await NodeController.parseEnvFile();
-    const networkNodeEnvVar = 'NETWORK_NODE_IMAGE_TAG';
-    const networkNodeVersion = process.env[networkNodeEnvVar] || envVarsParsed[networkNodeEnvVar];
-    let isPost40 = true;
-    if (networkNodeVersion) {
-      const versionSplit = networkNodeVersion.split('.').map(v => parseInt(v));
-      if (versionSplit.length >= 3 && versionSplit[0] === 0 && versionSplit[1] < 40) {
-        isPost40 = false;
-      }
-    }
-
-    return isPost40;
   }
 };
