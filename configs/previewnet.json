@@ -10,7 +10,7 @@
   "nodeImageTag": "0.41.0-alpha.5",
   "havegedImageTag": "0.41.0-alpha.5",
   "uploaderImageTag": "0.7.0",
-  "mirrorImageTag": "0.87.0-rc2",
+  "mirrorImageTag": "0.87.0-rc3",
   "relayImageTag": "0.30.0-rc1",
   "pythonVersion": "python3.7",
   "mirrorNodeExplorerImageTag": "23.5.0",
