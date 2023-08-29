@@ -1,7 +1,5 @@
 const NodeController = require("./nodeController");
 const HederaSDK = require("@hashgraph/sdk");
-const hethers = require("@hashgraph/hethers");
-const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
 const shell = require("shelljs");
