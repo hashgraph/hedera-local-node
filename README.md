@@ -104,7 +104,7 @@ Available commands:
             --async to enable or disable asynchronous creation of accounts.
 ```
 
-Note: Generated accounts are 3 types. All of them are usable via HederaSDK or @hashgraph/hethers. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.
+Note: Generated accounts are 3 types. All of them are usable via HederaSDK. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.
 
 Note: Read more about `developer mode` [here](https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/docs/dev-mode.md)
 
@@ -371,47 +371,25 @@ You can apply the configuration using the `-n/--network` options, e.g. `hedera s
 
 ---
 
-#### You can use it in a hardhat project alongside with [Hardhat Hethers Plugin](https://github.com/LimeChain/hardhat-hethers) by adding the following config:
+#### You can use it in a hardhat project by adding the following config:
 
 ```bash
-defaultNetwork: "localHederaNetwork",
-hedera: {
-  gasLimit: 300000,
+defaultNetwork: 'local',
   networks: {
-    localHederaNetwork: {
-      consensusNodes: [
-        {
-          url: '127.0.0.1:50211',
-          nodeId: '0.0.3'
-        }
-      ],
-      mirrorNodeUrl: 'http://127.0.0.1:5551',
-      chainId: 0,
+    local: {
+      url: 'http://localhost:7546',
       accounts: [
-        {
-          "account": '0.0.1001',
-          "privateKey": '0x7f109a9e3b0d8ecfba9cc23a3614433ce0fa7ddcc80f2a8f10b222179a5a80d6'
-        },
-        {
-          "account": '0.0.1002',
-          "privateKey": '0x6ec1f2e7d126a74a1d2ff9e1c5d90b92378c725e506651ff8bb8616a5c724628'
-        },
-        {
-          "account": '0.0.1003',
-          "privateKey": '0xb4d7f7e82f61d81c95985771b8abf518f9328d019c36849d4214b5f995d13814'
-        },
-        {
-          "account": '0.0.1004',
-          "privateKey": '0x941536648ac10d5734973e94df413c17809d6cc5e24cd11e947e685acfbd12ae'
-        },
-        {
-          "account": '0.0.1005',
-          "privateKey": '0x5829cf333ef66b6bdd34950f096cb24e06ef041c5f63e577b4f3362309125863'
-        }
-      ]
-    }
-  }
-}
+        0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524,
+        0x2e1d968b041d84dd120a5860cee60cd83f9374ef527ca86996317ada3d0d03e7
+      ],
+      chainId: 298,
+    },
+    testnet: {
+      url: 'https://testnet.hashio.io/api',
+      accounts: [],
+      chainId: 296,
+    },
+  },
 ```
 
 ---

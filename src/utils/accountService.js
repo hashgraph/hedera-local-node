@@ -1,4 +1,3 @@
-const { Wallet, hethers } = require("@hashgraph/hethers");
 const { ethers } = require("ethers");
 const {
   AccountId,
@@ -8,6 +7,8 @@ const {
   TransferTransaction,
   PublicKey,
   Hbar,
+  Wallet,
+  PrivateKey,
 } = require("@hashgraph/sdk");
 
 class AccountService {
@@ -142,13 +143,14 @@ class AccountService {
   async _generateECDSA(async, balance, num, startup) {
     let ecdsaAccountNumCounter = 1002;
     const accounts = [];
-
+    let privateKey;
     if (!async) this._logAccountTitle(" ECDSA ");
 
     for (let i = 0; i < num; i++) {
-      let wallet = hethers.Wallet.createRandom();
+      privateKey = PrivateKey.generateECDSA();
+      let wallet = new Wallet(AccountId.fromString(ecdsaAccountNumCounter.toString()), privateKey);
       if (startup && this.privateKeysECDSA[i]) {
-        wallet = new hethers.Wallet(this.privateKeysECDSA[i]);
+        wallet = new Wallet(AccountId.fromString(ecdsaAccountNumCounter.toString()), this.privateKeysECDSA[i]);
       }
       if (async) {
         accounts.push(this._createAccount(
@@ -156,7 +158,8 @@ class AccountService {
           ecdsaAccountNumCounter++,
           balance,
           startup,
-          wallet
+          wallet,
+          privateKey
         ));
         continue;
       }
@@ -165,7 +168,8 @@ class AccountService {
         ecdsaAccountNumCounter++,
         balance,
         startup,
-        wallet
+        wallet,
+        privateKey
       ));
     }
     if (!async) {
@@ -218,16 +222,15 @@ class AccountService {
   async _generateED25519(async, balance, num, startup) {
     let edAccountNumCounter = 1022;
     const accounts = [];
+    let privateKey;
 
     if (!async) this._logAccountTitle("ED25519");
 
     for (let i = 0; i < num; i++) {
-      let wallet = hethers.Wallet.createRandom({ isED25519Type: true });
+      privateKey = PrivateKey.generateED25519();
+      let wallet = new Wallet(AccountId.fromString(edAccountNumCounter.toString()), privateKey);
       if (startup && this.privateKeysED25519[i]) {
-        wallet = new hethers.Wallet({
-          privateKey: this.privateKeysED25519[i],
-          isED25519Type: true,
-        });
+        wallet = new Wallet(AccountId.fromString(edAccountNumCounter.toString()), this.privateKeysED25519[i]);
       }
       if (async) {
         accounts.push(this._createAccount(
@@ -235,7 +238,8 @@ class AccountService {
           edAccountNumCounter++,
           balance,
           startup,
-          wallet
+          wallet,
+          privateKey
         ));
         continue;
       }
@@ -244,7 +248,8 @@ class AccountService {
         edAccountNumCounter++,
         balance,
         startup,
-        wallet
+        wallet,
+        privateKey
       ));
     }
     if (!async) {
@@ -262,10 +267,11 @@ class AccountService {
    * @param {number} balance
    * @param {boolean} startup
    * @param {Wallet} wallet
+   * @param {PrivateKey} privateKey
    */
-  async _createAccount(async, accountNum, balance, startup, wallet) {
+  async _createAccount(async, accountNum, balance, startup, wallet, privateKey) {
     const tx = await new AccountCreateTransaction()
-      .setKey(PublicKey.fromString(wallet._signingKey().compressedPublicKey))
+      .setKey(PublicKey.fromString(wallet.publicKey.toStringDer()))
       .setInitialBalance(new Hbar(balance))
       .execute(this.client);
     let accoundId = `0.0.${accountNum}`;
@@ -278,7 +284,7 @@ class AccountService {
     this._logAccount(
       accoundId,
       new Hbar(balance),
-      wallet._signingKey().privateKey
+      `0x${privateKey.toStringRaw()}`
     );
   }
 
@@ -289,11 +295,11 @@ class AccountService {
    * @param {number} aliasedAccountNumCounter
    * @param {number} balance
    * @param {boolean} startup
-   * @param {Wallet} wallet
+   * @param {ethers.Wallet} wallet
    */
   async _createAliasAccount(async, aliasedAccountNumCounter, balance, startup, wallet) {
     let accountId = PublicKey.fromString(
-      wallet._signingKey().compressedPublicKey.replace("0x", "")
+      wallet.signingKey.compressedPublicKey.replace("0x", "")
     ).toAccountId(0, 0);
     const transferTransaction = new TransferTransaction()
       .addHbarTransfer(accountId, new Hbar(balance))
@@ -327,12 +333,12 @@ class AccountService {
    * Log alias account to console.
    * @param {string} accountId
    * @param {number} balance
-   * @param {Wallet} wallet
+   * @param {ethers.Wallet} wallet
    */
   _logAliasAccount(accountId, balance, wallet) {
     this.logger.log(
       `| ${accountId} - ${wallet.address} - ${
-        wallet._signingKey().privateKey
+        wallet.signingKey.privateKey
       } - ${new Hbar(balance)} |`
     );
   }
