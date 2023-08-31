@@ -29,6 +29,8 @@
   "blockRangeLimit": "2000",
   "features": {
     "atomicCryptoTransfer": true,
-    "eip2930": true
+    "eip2930": true,
+    "blocklistEnabled": true,
+    "blocklistResource": "evm-addresses-blocklist.csv"
   }
 }
