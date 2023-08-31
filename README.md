@@ -578,11 +578,8 @@ JAVA settings for the Consensus node
 
 ### Mirror Node Explorer
 
-- `VUE_APP_PRODUCT_NAME`: The name of the product as shown in the footer tagline.
-- `VUE_APP_DOCUMENT_TITLE_PREFIX`: The prefix used in the document title.
-- `VUE_APP_ENABLE_STAKING`: When set to 'true', this variable will enable the 'Staking' page.
-- `VUE_APP_LOCAL_MIRROR_NODE_MENU_NAME`: Name of the custom network.
-- `VUE_APP_LOCAL_MIRROR_NODE_URL`: URL for the mirror node endpoint on custom network.
+- `DOCKER_LOCAL_MIRROR_NODE_MENU_NAME`: Name of the custom network.
+- `DOCKER_LOCAL_MIRROR_NODE_URL`: URL for the mirror node endpoint on custom network.
 
 # Grafana & Prometheus
 
