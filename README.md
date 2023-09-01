@@ -575,11 +575,11 @@ JAVA settings for the Consensus node
 
 ### JSON RPC Relay Websocket settings
 
-- `WS_CONNECTION_LIMIT_PER_IP`: Limit of active connections per IP 
-- `WS_CONNECTION_LIMIT`: Global limit of active connections
-- `WS_MAX_INACTIVITY_TTL`: Time in ms before a connection is terminated
-- `WS_MULTIPLE_ADDRESSES_ENABLED`: Flag for allowing subscribing to multiple contract addresses in a single subscription
-- `WS_SUBSCRIPTION_LIMIT`: Maximum allowed subscriptions per single connection
+- `RELAY_WS_CONNECTION_LIMIT_PER_IP`: Limit of active connections per IP 
+- `RELAY_WS_CONNECTION_LIMIT`: Global limit of active connections
+- `RELAY_WS_MAX_INACTIVITY_TTL`: Time in ms before a connection is terminated
+- `RELAY_WS_MULTIPLE_ADDRESSES_ENABLED`: Flag for allowing subscribing to multiple contract addresses in a single subscription
+- `RELAY_WS_SUBSCRIPTION_LIMIT`: Maximum allowed subscriptions per single connection
 
 ### Record Stream Uploader settings
 
