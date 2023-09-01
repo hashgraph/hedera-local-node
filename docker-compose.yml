@@ -284,11 +284,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      VUE_APP_PRODUCT_NAME: ${VUE_APP_PRODUCT_NAME}
-      VUE_APP_DOCUMENT_TITLE_PREFIX: ${VUE_APP_DOCUMENT_TITLE_PREFIX}
-      VUE_APP_ENABLE_STAKING: ${VUE_APP_ENABLE_STAKING}
-      VUE_APP_LOCAL_MIRROR_NODE_MENU_NAME: ${VUE_APP_LOCAL_MIRROR_NODE_MENU_NAME}
-      VUE_APP_LOCAL_MIRROR_NODE_URL: ${VUE_APP_LOCAL_MIRROR_NODE_URL}
+      DOCKER_LOCAL_MIRROR_NODE_MENU_NAME: ${DOCKER_LOCAL_MIRROR_NODE_MENU_NAME}
+      DOCKER_LOCAL_MIRROR_NODE_URL: ${DOCKER_LOCAL_MIRROR_NODE_URL}
 
   web3:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_IMAGE_TAG}"
@@ -355,6 +352,7 @@ services:
       OPERATOR_KEY_MAIN: "${RELAY_OPERATOR_KEY_MAIN}"
       CHAIN_ID: "${RELAY_CHAIN_ID}"
       MIRROR_NODE_URL: "${RELAY_MIRROR_NODE_URL}"
+      MIRROR_NODE_URL_WEB3: "${RELAY_MIRROR_NODE_URL_WEB3}"
       MIRROR_NODE_RETRIES: "${RELAY_MIRROR_NODE_RETRIES}"
       MIRROR_NODE_RETRY_DELAY: "${RELAY_MIRROR_NODE_RETRY_DELAY}"
       LOCAL_NODE: "${RELAY_LOCAL_NODE}"
@@ -372,6 +370,9 @@ services:
       DEV_MODE: "${RELAY_DEV_MODE}"
       INPUT_SIZE_LIMIT: "${RELAY_INPUT_SIZE_LIMIT}"
       RATE_LIMIT_DISABLED: "${RELAY_RATE_LIMIT_DISABLED}"
+      ETH_POPULATE_SYNTHETIC_CONTRACT_RESULTS: "${RELAY_ETH_POPULATE_SYNTHETIC_CONTRACT_RESULTS}"
+      REDIS_ENABLED: "${RELAY_REDIS_ENABLED}"
+      REDIS_URL: "${RELAY_REDIS_URL}"
     ports:
       - "7546:7546"
     restart: unless-stopped
@@ -469,6 +470,20 @@ services:
     networks:
       network-node-bridge:
         ipv4_address: 172.27.0.5
+
+  cache:
+    image: redis:6-alpine
+    container_name: relay-cache
+    mem_limit: "${RELAY_MEM_LIMIT}"
+    memswap_limit: "${RELAY_MEM_LIMIT}"
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    tty: true
+    networks:
+      network-node-bridge:
+        ipv4_address: 172.27.0.50
 
 networks:
   network-node-bridge:

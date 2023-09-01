@@ -20,3 +20,4 @@ waitAtStartup,                                 false
 jasperDb.iteratorInputBufferBytes,             16777216
 prometheusEndpointEnabled,                     true
 transactionMaxBytes,                           {{transactionMaxBytes}}
+event.creation.maxCreationRate,                20
