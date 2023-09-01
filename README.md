@@ -577,7 +577,7 @@ JAVA settings for the Consensus node
 
 - `WS_CONNECTION_LIMIT_PER_IP`: Limit of active connections per IP 
 - `WS_CONNECTION_LIMIT`: Global limit of active connections
-- `WS_MAX_CONNECTION_TTL`: Time in ms before a connection is terminated
+- `WS_MAX_INACTIVITY_TTL`: Time in ms before a connection is terminated
 - `WS_MULTIPLE_ADDRESSES_ENABLED`: Flag for allowing subscribing to multiple contract addresses in a single subscription
 - `WS_SUBSCRIPTION_LIMIT`: Maximum allowed subscriptions per single connection
 

@@ -3,7 +3,7 @@ const hre = require("hardhat");
 
 describe("Smoke Tests", async function () {
   let walletSender, walletReceiver;
-  const WEBSOCKET_URL = 'http://localhost:8546';
+  const WEBSOCKET_URL = 'ws://localhost:8546';
 
   before(async function () {
     const signers = await hre.ethers.getSigners();
@@ -37,11 +37,11 @@ describe("Smoke Tests", async function () {
     before(async function() {
       const Logger = await hre.ethers.getContractFactory("Logger");
       logger = await Logger.deploy({gasLimit: 1000000});
-      logger = await logger.deployed();
+      await logger.waitForDeployment();
 
-      provider = await new hre.ethers.providers.WebSocketProvider(WEBSOCKET_URL);
+      provider = await new hre.ethers.WebSocketProvider(WEBSOCKET_URL);
 
-      provider._websocket.on('close', (code, message) => {
+      provider.websocket.on('close', (code, message) => {
         console.error(`Websocket closed: ${code}`);
         console.error(message);
       })
@@ -50,7 +50,7 @@ describe("Smoke Tests", async function () {
 
     it("Should receive events for subscribed contract", async function() {
       const logHandled = new Promise(resolve => {
-        provider.on({address: logger.address}, (event) => {
+        provider.on({address: logger.target}, (event) => {
           expect(event).to.exist;
           expect(event.transactionHash).to.exist;
           expect(event.blockHash).to.exist;
@@ -62,7 +62,7 @@ describe("Smoke Tests", async function () {
       const rec = await tx.wait();
 
       expect(rec).to.exist;
-      expect(rec.transactionHash).to.exist;
+      expect(rec.hash).to.exist;
 
       await logHandled;
 
