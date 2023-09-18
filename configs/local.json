@@ -30,5 +30,10 @@
   "features": {
     "atomicCryptoTransfer": true,
     "eip2930": true
-  }
+  },
+  "wsConnectionLimitPerIp": 10,
+  "wsConnectionLimit": 100,
+  "wsConnectionTTL": 300000,
+  "wsMultipleAddressesEnabled": false,
+  "wsSubscriptionsLimit": 100
 }

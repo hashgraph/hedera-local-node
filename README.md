@@ -478,15 +478,16 @@ The following environment variables can be changed in the `.env` file for variou
 
 # Exposed Endpoints
 
-| Type                          | Endpoint                                         |
-| ----------------------------- | ------------------------------------------------ |
-| Consensus Node Endpoint       | [http://localhost:50211](http://localhost:50211) |
-| Mirror Node GRPC Endpoint     | [http://localhost:5600](http://localhost:5600)   |
-| Mirror Node REST API Endpoint | [http://localhost:5551](http://localhost:5551)   |
-| JSON RPC Relay Endpoint       | [http://localhost:7546](http://localhost:7546)   |
-| Mirror Node Explorer          | [http://localhost:8080](http://localhost:8080)   |
-| Grafana UI                    | [http://localhost:3000](http://localhost:3000)   |
-| Prometheus UI                 | [http://localhost:9090](http://localhost:9090)   |
+| Type                              | Endpoint                                         |
+|-----------------------------------|--------------------------------------------------|
+| Consensus Node Endpoint           | [http://localhost:50211](http://localhost:50211) |
+| Mirror Node GRPC Endpoint         | [http://localhost:5600](http://localhost:5600)   |
+| Mirror Node REST API Endpoint     | [http://localhost:5551](http://localhost:5551)   |
+| JSON RPC Relay Endpoint           | [http://localhost:7546](http://localhost:7546)   |
+| JSON RPC Relay Websocket Endpoint | [http://localhost:8546](http://localhost:8546)   |
+| Mirror Node Explorer              | [http://localhost:8080](http://localhost:8080)   |
+| Grafana UI                        | [http://localhost:3000](http://localhost:3000)   |
+| Prometheus UI                     | [http://localhost:9090](http://localhost:9090)   |
 
 # Environment variables
 
@@ -571,6 +572,14 @@ JAVA settings for the Consensus node
 - `RELAY_RATE_LIMIT_DISABLED`: If set to `true` the relay will not perform any rate limiting.
 - `RELAY_INPUT_SIZE_LIMIT`: The function input size limit in mb. Defaults to 1.
 - `DEV_MODE`: Allows the asserting of contract call revert messages
+
+### JSON RPC Relay Websocket settings
+
+- `RELAY_WS_CONNECTION_LIMIT_PER_IP`: Limit of active connections per IP 
+- `RELAY_WS_CONNECTION_LIMIT`: Global limit of active connections
+- `RELAY_WS_MAX_INACTIVITY_TTL`: Time in ms before a connection is terminated
+- `RELAY_WS_MULTIPLE_ADDRESSES_ENABLED`: Flag for allowing subscribing to multiple contract addresses in a single subscription
+- `RELAY_WS_SUBSCRIPTION_LIMIT`: Maximum allowed subscriptions per single connection
 
 ### Record Stream Uploader settings
 

@@ -1,4 +1,4 @@
-const { ethers } = require('ethers')
+const { ethers } = require('ethers');
 const {
   AccountId,
   AccountInfoQuery,
@@ -8,7 +8,7 @@ const {
   Hbar,
   Wallet,
   PrivateKey
-} = require('@hashgraph/sdk')
+} = require('@hashgraph/sdk');
 
 class AccountService {
   privateKeysECDSA = [
@@ -22,7 +22,7 @@ class AccountService {
     '0xfe8875acb38f684b2025d5472445b8e4745705a9e7adc9b0485a05df790df700',
     '0xbdc6e0a69f2921a78e9af930111334a41d3fab44653c8de0775572c526feea2d',
     '0x3e215c3d2a59626a669ed04ec1700f36c05c9b216e592f58bbfd3d8aa6ea25f9'
-  ]
+  ];
 
   privateKeysAliasECDSA = [
     '0x105d050185ccb907fba04dd92d8de9e32c18305e097ab41dadda21489a211524',
@@ -35,7 +35,7 @@ class AccountService {
     '0x5072e7aa1b03f531b4731a32a021f6a5d20d5ddc4e55acbb71ae202fc6f3a26d',
     '0x60fe891f13824a2c1da20fb6a14e28fa353421191069ba6b6d09dd6c29b90eff',
     '0xeae4e00ece872dd14fb6dc7a04f390563c7d69d16326f2a703ec8e0934060cc7'
-  ]
+  ];
 
   privateKeysED25519 = [
     '0xa608e2130a0a3cb34f86e757303c862bee353d9ab77ba4387ec084f881d420d4',
@@ -48,7 +48,7 @@ class AccountService {
     '0xcb833706d1df537f59c418a00e36159f67ce3760ce6bf661f11f6da2b11c2c5a',
     '0x9b6adacefbbecff03e4359098d084a3af8039ce7f29d95ed28c7ebdb83740c83',
     '0x9a07bbdbb62e24686d2a4259dc88e38438e2c7a1ba167b147ad30ac540b0a3cd'
-  ]
+  ];
 
   /**
    * @internal
@@ -57,8 +57,8 @@ class AccountService {
    * @param {any} props.logger
    */
   constructor (props) {
-    this.client = props.client
-    this.logger = props.logger
+    this.client = props.client;
+    this.logger = props.logger;
   }
 
   /**
@@ -73,11 +73,11 @@ class AccountService {
    */
   async generate (async, balance, num, startup) {
     if (async) {
-      this.logger.log('Generating accounts in asynchronous mode...')
-      await this.generateAsync(balance, num, startup)
+      this.logger.log('Generating accounts in asynchronous mode...');
+      await this.generateAsync(balance, num, startup);
     } else {
-      this.logger.log('Generating accounts in synchronous mode...')
-      await this.generateSync(balance, num, startup)
+      this.logger.log('Generating accounts in synchronous mode...');
+      await this.generateSync(balance, num, startup);
     }
   }
 
@@ -88,11 +88,11 @@ class AccountService {
    * @param {boolean} startup
    */
   async generateSync (balance, num, startup) {
-    await this._generateECDSA(false, balance, num, startup)
-    this.logger.log('')
-    await this._generateAliasECDSA(false, balance, num, startup)
-    this.logger.log('')
-    await this._generateED25519(false, balance, num, startup)
+    await this._generateECDSA(false, balance, num, startup);
+    this.logger.log('');
+    await this._generateAliasECDSA(false, balance, num, startup);
+    this.logger.log('');
+    await this._generateED25519(false, balance, num, startup);
   }
 
   /**
@@ -107,40 +107,40 @@ class AccountService {
       await this._generateAliasECDSA(true, balance, num, startup),
       await this._generateED25519(true, balance, num, startup)
     ]).then((allResponses) => {
-      const ecdsaResponses = allResponses[0]
-      const aliasEcdsaResponses = allResponses[1]
-      const ed25519Responses = allResponses[2]
+      const ecdsaResponses = allResponses[0];
+      const aliasEcdsaResponses = allResponses[1];
+      const ed25519Responses = allResponses[2];
 
-      this._logAccountTitle(' ECDSA ')
+      this._logAccountTitle(' ECDSA ');
       ecdsaResponses.forEach((element) => {
         this._logAccount(
           element.accountNum,
           element.balance,
           element.wallet._signingKey().privateKey
-        )
-      })
-      this._logAccountDivider()
+        );
+      });
+      this._logAccountDivider();
 
-      this._logAliasAccountTitle()
+      this._logAliasAccountTitle();
       aliasEcdsaResponses.forEach((element) => {
         this._logAliasAccount(
           element.accountNum,
           element.balance,
           element.wallet
-        )
-      })
-      this._logAliasAccountDivider()
+        );
+      });
+      this._logAliasAccountDivider();
 
-      this._logAccountTitle('ED25519')
+      this._logAccountTitle('ED25519');
       ed25519Responses.forEach((element) => {
         this._logAccount(
           element.accountNum,
           element.balance,
           element.wallet._signingKey().privateKey
-        )
-      })
-      this._logAccountDivider()
-    })
+        );
+      });
+      this._logAccountDivider();
+    });
   }
 
   /**
@@ -152,22 +152,22 @@ class AccountService {
    * @param {boolean} startup
    */
   async _generateECDSA (async, balance, num, startup) {
-    let ecdsaAccountNumCounter = 1002
-    const accounts = []
-    let privateKey
-    if (!async) this._logAccountTitle(' ECDSA ')
+    let ecdsaAccountNumCounter = 1002;
+    const accounts = [];
+    let privateKey;
+    if (!async) this._logAccountTitle(' ECDSA ');
 
     for (let i = 0; i < num; i++) {
-      privateKey = PrivateKey.generateECDSA()
+      privateKey = PrivateKey.generateECDSA();
       let wallet = new Wallet(
         AccountId.fromString(ecdsaAccountNumCounter.toString()),
         privateKey
-      )
+      );
       if (startup && this.privateKeysECDSA[i]) {
         wallet = new Wallet(
           AccountId.fromString(ecdsaAccountNumCounter.toString()),
           this.privateKeysECDSA[i]
-        )
+        );
       }
       if (async) {
         accounts.push(
@@ -179,8 +179,8 @@ class AccountService {
             wallet,
             privateKey
           )
-        )
-        continue
+        );
+        continue;
       }
       accounts.push(
         await this._createAccount(
@@ -191,12 +191,12 @@ class AccountService {
           wallet,
           privateKey
         )
-      )
+      );
     }
     if (!async) {
-      this._logAccountDivider()
+      this._logAccountDivider();
     } else {
-      return Promise.all(accounts)
+      return Promise.all(accounts);
     }
   }
 
@@ -209,15 +209,15 @@ class AccountService {
    * @param {boolean} startup
    */
   async _generateAliasECDSA (async, balance, num, startup) {
-    let aliasedAccountNumCounter = 1012
-    const accounts = []
+    let aliasedAccountNumCounter = 1012;
+    const accounts = [];
 
-    if (!async) this._logAliasAccountTitle()
+    if (!async) this._logAliasAccountTitle();
 
     for (let i = 0; i < num; i++) {
-      let wallet = ethers.Wallet.createRandom()
+      let wallet = ethers.Wallet.createRandom();
       if (startup && this.privateKeysAliasECDSA[i]) {
-        wallet = new ethers.Wallet(this.privateKeysAliasECDSA[i])
+        wallet = new ethers.Wallet(this.privateKeysAliasECDSA[i]);
       }
 
       if (async) {
@@ -229,8 +229,8 @@ class AccountService {
             startup,
             wallet
           )
-        )
-        continue
+        );
+        continue;
       }
       const account = await this._createAliasAccount(
         async,
@@ -238,16 +238,16 @@ class AccountService {
         balance,
         startup,
         wallet
-      )
+      );
 
       this._logAliasAccount(
         account.accountNum,
         account.balance,
         account.wallet
-      )
+      );
     }
-    if (async) return Promise.all(accounts)
-    this._logAliasAccountDivider()
+    if (async) return Promise.all(accounts);
+    this._logAliasAccountDivider();
   }
 
   /**
@@ -259,23 +259,23 @@ class AccountService {
    * @param {boolean} startup
    */
   async _generateED25519 (async, balance, num, startup) {
-    let edAccountNumCounter = 1022
-    const accounts = []
-    let privateKey
+    let edAccountNumCounter = 1022;
+    const accounts = [];
+    let privateKey;
 
-    if (!async) this._logAccountTitle('ED25519')
+    if (!async) this._logAccountTitle('ED25519');
 
     for (let i = 0; i < num; i++) {
-      privateKey = PrivateKey.generateED25519()
+      privateKey = PrivateKey.generateED25519();
       let wallet = new Wallet(
         AccountId.fromString(edAccountNumCounter.toString()),
         privateKey
-      )
+      );
       if (startup && this.privateKeysED25519[i]) {
         wallet = new Wallet(
           AccountId.fromString(edAccountNumCounter.toString()),
           this.privateKeysED25519[i]
-        )
+        );
       }
       if (async) {
         accounts.push(
@@ -287,8 +287,8 @@ class AccountService {
             wallet,
             privateKey
           )
-        )
-        continue
+        );
+        continue;
       }
       accounts.push(
         await this._createAccount(
@@ -299,12 +299,12 @@ class AccountService {
           wallet,
           privateKey
         )
-      )
+      );
     }
     if (!async) {
-      this._logAccountDivider()
+      this._logAccountDivider();
     } else {
-      return Promise.all(accounts)
+      return Promise.all(accounts);
     }
   }
 
@@ -329,25 +329,25 @@ class AccountService {
     const tx = await new AccountCreateTransaction()
       .setKey(PublicKey.fromString(wallet.publicKey.toStringDer()))
       .setInitialBalance(new Hbar(balance))
-      .execute(this.client)
-    let accoundId = `0.0.${accountNum}`
+      .execute(this.client);
+    let accoundId = `0.0.${accountNum}`;
 
     if (!startup || async) {
-      const getReceipt = await tx.getReceipt(this.client)
-      accoundId = getReceipt.accountId.toString()
+      const getReceipt = await tx.getReceipt(this.client);
+      accoundId = getReceipt.accountId.toString();
     }
     if (async) {
       return {
         accountNum: accoundId,
         wallet,
         balance: new Hbar(balance)
-      }
+      };
     }
     this._logAccount(
       accoundId,
       new Hbar(balance),
       `0x${privateKey.toStringRaw()}`
-    )
+    );
   }
 
   /**
@@ -368,21 +368,21 @@ class AccountService {
   ) {
     const accountId = PublicKey.fromString(
       wallet.signingKey.compressedPublicKey.replace('0x', '')
-    ).toAccountId(0, 0)
+    ).toAccountId(0, 0);
     const transferTransaction = new TransferTransaction()
       .addHbarTransfer(accountId, new Hbar(balance))
-      .addHbarTransfer(AccountId.fromString('0.0.2'), new Hbar(-balance))
-    const tx = await transferTransaction.execute(this.client)
-    let accountNum = `0.0.${aliasedAccountNumCounter}`
+      .addHbarTransfer(AccountId.fromString('0.0.2'), new Hbar(-balance));
+    const tx = await transferTransaction.execute(this.client);
+    let accountNum = `0.0.${aliasedAccountNumCounter}`;
     if (!startup || async) {
-      await tx.getReceipt(this.client)
+      await tx.getReceipt(this.client);
 
       const accountInfo = await new AccountInfoQuery({
         accountId: AccountId.fromEvmAddress(0, 0, wallet.address)
-      }).execute(this.client)
-      accountNum = accountInfo.accountId.toString()
+      }).execute(this.client);
+      accountNum = accountInfo.accountId.toString();
     }
-    return { accountNum, wallet, balance }
+    return { accountNum, wallet, balance };
   }
 
   /**
@@ -393,7 +393,7 @@ class AccountService {
    * @param {string} privateKey
    */
   _logAccount (accountId, balance, privateKey) {
-    this.logger.log(`| ${accountId} - ${privateKey} - ${balance} |`)
+    this.logger.log(`| ${accountId} - ${privateKey} - ${balance} |`);
   }
 
   /**
@@ -408,7 +408,7 @@ class AccountService {
       `| ${accountId} - ${wallet.address} - ${
         wallet.signingKey.privateKey
       } - ${new Hbar(balance)} |`
-    )
+    );
   }
 
   /**
@@ -417,15 +417,15 @@ class AccountService {
    * @param {string} accountType
    */
   _logAccountTitle (accountType) {
-    this._logAccountDivider()
+    this._logAccountDivider();
     this.logger.log(
       `|-----------------------------| Accounts list (${accountType} keys) |----------------------------|`
-    )
-    this._logAccountDivider()
+    );
+    this._logAccountDivider();
     this.logger.log(
       '|    id    |                            private key                            |  balance |'
-    )
-    this._logAccountDivider()
+    );
+    this._logAccountDivider();
   }
 
   /**
@@ -433,15 +433,15 @@ class AccountService {
    * Log title for Alias accounts to console.
    */
   _logAliasAccountTitle () {
-    this._logAliasAccountDivider()
+    this._logAliasAccountDivider();
     this.logger.log(
       '|------------------------------------------------| Accounts list (Alias ECDSA keys) |--------------------------------------------------|'
-    )
-    this._logAliasAccountDivider()
+    );
+    this._logAliasAccountDivider();
     this.logger.log(
       '|    id    |               public address               |                             private key                            | balance |'
-    )
-    this._logAliasAccountDivider()
+    );
+    this._logAliasAccountDivider();
   }
 
   /**
@@ -451,7 +451,7 @@ class AccountService {
   _logAccountDivider () {
     this.logger.log(
       '|-----------------------------------------------------------------------------------------|'
-    )
+    );
   }
 
   /**
@@ -461,8 +461,8 @@ class AccountService {
   _logAliasAccountDivider () {
     this.logger.log(
       '|--------------------------------------------------------------------------------------------------------------------------------------|'
-    )
+    );
   }
 }
 
-module.exports = { AccountService }
+module.exports = { AccountService };
