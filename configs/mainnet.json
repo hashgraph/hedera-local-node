@@ -20,6 +20,6 @@
     "compressOnCreation": true,
     "maxNumWithHapiSigsAccess": "0",
     "blocklistEnabled": true,
-    "blocklistResource": "evm-addresses-blocklist.csv"
+    "blocklistPath": "data/config/evm-addresses-blocklist.csv"
   }
 }
