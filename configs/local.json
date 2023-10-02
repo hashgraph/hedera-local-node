@@ -7,8 +7,8 @@
   "maxSizeKb": 2048,
   "streamExtension": "rcd.gz",
   "sidecarEnabled": true,
-  "nodeImageTag": "0.42.0-alpha.0",
-  "havegedImageTag": "0.42.0-alpha.0",
+  "nodeImageTag": "0.43.0-alpha.4",
+  "havegedImageTag": "0.43.0-alpha.4",
   "uploaderImageTag": "0.7.0",
   "mirrorImageTag": "0.87.0-rc3",
   "relayImageTag": "0.30.0-rc3",
@@ -29,7 +29,9 @@
   "blockRangeLimit": "2000",
   "features": {
     "atomicCryptoTransfer": true,
-    "eip2930": true
+    "eip2930": true,
+    "blocklistEnabled": true,
+    "blocklistPath": "data/config/evm-addresses-blocklist.csv"
   },
   "wsConnectionLimitPerIp": 10,
   "wsConnectionLimit": 100,
