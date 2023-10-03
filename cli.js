@@ -20,7 +20,13 @@ yargs(hideBin(process.argv))
     },
     async (argv) => {
       await NodeController.startLocalNode(argv);
-      await main(argv.accounts, argv.async, argv.balance, argv.detached, argv.host);
+      await main(
+        argv.accounts,
+        argv.async,
+        argv.balance,
+        argv.detached,
+        argv.host
+      );
     }
   )
   .command(
@@ -39,7 +45,13 @@ yargs(hideBin(process.argv))
     async (argv) => {
       await NodeController.stopLocalNode();
       await NodeController.startLocalNode(argv);
-      await main(argv.accounts, argv.async, argv.balance, argv.detached, argv.host);
+      await main(
+        argv.accounts,
+        argv.async,
+        argv.balance,
+        argv.detached,
+        argv.host
+      );
     }
   )
   .command(
@@ -51,7 +63,12 @@ yargs(hideBin(process.argv))
       CliOptions.addAsyncOption(yargs);
     },
     async (argv) => {
-      await HederaUtils.prepareNode(argv.async, console, argv.balance, argv.accounts);
+      await HederaUtils.prepareNode(
+        argv.async,
+        console,
+        argv.balance,
+        argv.accounts
+      );
       process.exit();
     }
   )
@@ -68,7 +85,8 @@ yargs(hideBin(process.argv))
   .demandCommand()
   .strictCommands()
   .recommendCommands()
-  .epilogue(`
+  .epilogue(
+    `
 Requirements:
   - Node.js >= v14.x
       Node version check: node -v
@@ -84,7 +102,8 @@ Requirements:
       CPUs: 6
       Memory: 8GB
       Swap: 1 GB
-      Disk Image Size: 64 GB`)
+      Disk Image Size: 64 GB`
+  )
   .parse();
 
 async function main(accounts, async, balance, detached, host) {
@@ -164,14 +183,28 @@ function attachContainerLogs(containerId, logger) {
 /**
  * Check if network is up and generate accounts
  */
-async function start(accounts, async, balance, host, eventLogger, accountLogger) {
+async function start(
+  accounts,
+  async,
+  balance,
+  host,
+  eventLogger,
+  accountLogger
+) {
   eventLogger.log("Detecting the network...");
   await ConnectionCheck.waitForFiringUp(5600, eventLogger, host);
   await ConnectionCheck.waitForFiringUp(50211, console, host);
   eventLogger.log("Starting the network...");
 
   eventLogger.log("Preparing Node...");
-  await HederaUtils.prepareNode(async, accountLogger, balance, accounts, true, host);
+  await HederaUtils.prepareNode(
+    async,
+    accountLogger,
+    balance,
+    accounts,
+    true,
+    host
+  );
 }
 
 /**
