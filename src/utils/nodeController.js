@@ -40,10 +40,19 @@ module.exports = class NodeController {
       multinode: multiNode,
       host,
       usercompose: userCompose,
-      composedir: composeDir
+      composedir: composeDir,
+      blocklist
     } = argv;
     await DockerCheck.checkDockerComposeVersion();
-    await this.applyConfig(network, limits, devMode, fullMode, multiNode, host);
+    await this.applyConfig(
+      network,
+      limits,
+      devMode,
+      fullMode,
+      multiNode,
+      host,
+      blocklist
+    );
     const dockerStatus = await DockerCheck.checkDocker();
     if (!dockerStatus) {
       console.log('Docker is not running.');
@@ -99,7 +108,8 @@ module.exports = class NodeController {
     devMode,
     fullMode,
     multiNode,
-    host
+    host,
+    blocklist
   ) {
     shell.cd(rootPath);
     shell.echo(`Applying ${network} config settings...`);
@@ -107,6 +117,16 @@ module.exports = class NodeController {
     const configRoot = PREBUILT_CONFIGS.includes(network) ? baseFolder : '.';
 
     const templatesPath = network === 'local' ? 'templates/local' : 'templates';
+
+    if (blocklist && network === 'local') {
+      const route = `${configRoot}/configs/${network}.json`;
+      const config = JSON.parse(fs.readFileSync(route).toString());
+
+      config.features.blocklistEnabled = true;
+
+      fs.writeFileSync(route, JSON.stringify(config));
+    }
+
     const result = shell.exec(
       [
         `npx mustache ${configRoot}/configs/${network}.json ${baseFolder}/${templatesPath}/.env.template > ${baseFolder}/.env`,
