@@ -239,4 +239,5 @@ function loadStartCliOptions(yargs) {
   CliOptions.addMultiNodeOption(yargs);
   CliOptions.addUserComposeOption(yargs);
   CliOptions.addUserComposeDirOption(yargs);
+  CliOptions.addBlocklistingOption(yargs);
 }

@@ -95,6 +95,7 @@ Available commands:
             --full to enable/disable full mode. Production local-node.
             --balance to set starting hbar balance of the created accounts.
             --async to enable or disable asynchronous creation of accounts.
+            --b or --blocklist to enable or disable account blocklisting. Depending on how many private keys are blocklisted, this will affect the generated on startup accounts.
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -479,7 +480,7 @@ The following environment variables can be changed in the `.env` file for variou
 # Exposed Endpoints
 
 | Type                              | Endpoint                                         |
-|-----------------------------------|--------------------------------------------------|
+| --------------------------------- | ------------------------------------------------ |
 | Consensus Node Endpoint           | [http://localhost:50211](http://localhost:50211) |
 | Mirror Node GRPC Endpoint         | [http://localhost:5600](http://localhost:5600)   |
 | Mirror Node REST API Endpoint     | [http://localhost:5551](http://localhost:5551)   |
@@ -575,7 +576,7 @@ JAVA settings for the Consensus node
 
 ### JSON RPC Relay Websocket settings
 
-- `RELAY_WS_CONNECTION_LIMIT_PER_IP`: Limit of active connections per IP 
+- `RELAY_WS_CONNECTION_LIMIT_PER_IP`: Limit of active connections per IP
 - `RELAY_WS_CONNECTION_LIMIT`: Global limit of active connections
 - `RELAY_WS_MAX_INACTIVITY_TTL`: Time in ms before a connection is terminated
 - `RELAY_WS_MULTIPLE_ADDRESSES_ENABLED`: Flag for allowing subscribing to multiple contract addresses in a single subscription
