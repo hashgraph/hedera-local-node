@@ -10,7 +10,15 @@ export class AccountCreationState implements IState{
         this.logger.trace('Account Creaton State Initialized!');
     }
 
-    public start(): void {
-        
+    onStart(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    onError(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    onFinish(): void {
+        throw new Error('Method not implemented.');
     }
 }

@@ -2,6 +2,7 @@
 import { Bootstrapper } from "./services/Bootstrapper";
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { StateController } from "./controller/StateController";
 
 Bootstrapper.Initiailze();
 
@@ -13,6 +14,7 @@ yargs(hideBin(process.argv))
       //loadStartCliOptions(yargs);
     },
     async (argv) => {
+        await new StateController("start").start();
     //   await NodeController.startLocalNode(argv);
     //   await main(
     //     argv.accounts,

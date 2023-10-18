@@ -2,7 +2,7 @@ import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 
-export class StopClass implements IState{
+export class StopState implements IState{
     private logger: LoggerService;
 
     constructor() {
@@ -10,7 +10,15 @@ export class StopClass implements IState{
         this.logger.trace('Stop State Initialized!');
     }
 
-    public start(): void {
-        
+    onStart(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    onError(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    onFinish(): void {
+        throw new Error('Method not implemented.');
     }
 }

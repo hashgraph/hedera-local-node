@@ -1,0 +1,6 @@
+{
+    "states": [
+        { "procedureName": "start", "states": ["InitState"]},
+        { "procedureName": "restart", "states": ["InitState"]}
+    ]
+}

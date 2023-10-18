@@ -1,3 +1,5 @@
 export interface IState {
-    start(): void;
+    onStart(): void;
+    onError(): void;
+    onFinish(): void;
 }
