@@ -2,9 +2,12 @@ import { StateData } from '../data/StateData';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
+import { SelectedStateConfiguration } from '../types/SelectedStateConfiguration';
 
 export class StateController {
     private logger: LoggerService;
+
+    private stateConfiguration: SelectedStateConfiguration | undefined;
 
     private currStateNum: number;
 
@@ -12,6 +15,7 @@ export class StateController {
 
     constructor(stateName: string) {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
+        this.stateConfiguration = new StateData().getSelectedStateConfiguration(stateName);
         this.currStateNum = 0;
         this.maxStateNum = 0;
         this.logger.trace('State Controller Initialized!');
@@ -19,32 +23,32 @@ export class StateController {
     }
 
     public async startStateMachine() {
-        this.logger.info('starting something');
-        const startConfig = new StateData().getSelectedStateConfiguration('start1');
-        if (!startConfig) {
+        if (!this.stateConfiguration) {
+            this.logger.error("Something is wrong with state configuration!")
             process.exit(1);
             // TODO: do something about this.
         }
 
-        this.maxStateNum = startConfig.states.length;
-        startConfig.states[this.currStateNum].onStart();
+        this.maxStateNum = this.stateConfiguration.states.length;
+        this.stateConfiguration.states[this.currStateNum].onStart();
     }
 
     public update(event: EventType): void {
         if (event === EventType.Finish) {
+            this.transitionToNextState();
             // TODO: do something on finish
         } else {
             // TODO: do something on error
         }
     }
 
-    private transition(): void {
+    private transitionToNextState(): void {
         if (!(this.currStateNum < this.maxStateNum)) {
             // TODO: end program
             process.exit(0);
         }
         this.currStateNum+=1;
-        
+        this.stateConfiguration!.states[this.currStateNum].onStart();
     }
 }
 

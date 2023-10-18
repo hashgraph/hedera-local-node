@@ -14,7 +14,7 @@ yargs(hideBin(process.argv))
       //loadStartCliOptions(yargs);
     },
     async (argv) => {
-        await new StateController("start").start();
+        await new StateController("start").startStateMachine();
     //   await NodeController.startLocalNode(argv);
     //   await main(
     //     argv.accounts,

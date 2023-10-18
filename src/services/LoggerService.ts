@@ -31,4 +31,8 @@ export class LoggerService implements IService{
     public trace(msg: string): void {
         this.logger.trace(msg);
     }
+
+    public error(msg: string): void {
+        this.logger.error(msg);
+    }
 }
