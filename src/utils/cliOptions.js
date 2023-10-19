@@ -127,4 +127,13 @@ module.exports = class CliOptions {
       default: false
     });
   }
+
+  static addVerboseOption (yargs) {
+    yargs.option('verbose', {
+      type: 'boolean',
+      describe: 'Enable or disable verbose output',
+      demandOption: false,
+      default: false
+    });
+  }
 };

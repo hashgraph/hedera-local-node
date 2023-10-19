@@ -24,7 +24,7 @@ module.exports = class HederaUtils {
     await shell.exec(
       `docker exec mirror-node-db psql mirror_node -U mirror_node -c "INSERT INTO public.file_data(file_data, consensus_timestamp, entity_id, transaction_type) VALUES (decode('${fees}', 'hex'), ${
         timestamp + '000000'
-      }, ${feesFileId}, 17);" >> ${NodeController.getNullOutput()}`
+      }, ${feesFileId}, 17);" >> ${NodeController.getConsoleOutput()}`
     );
 
     const exchangeRatesFileId = 112;
@@ -37,7 +37,7 @@ module.exports = class HederaUtils {
     await shell.exec(
       `docker exec mirror-node-db psql mirror_node -U mirror_node -c "INSERT INTO public.file_data(file_data, consensus_timestamp, entity_id, transaction_type) VALUES (decode('${exchangeRates}', 'hex'), ${
         timestamp + '000001'
-      }, ${exchangeRatesFileId}, 17);" >> ${NodeController.getNullOutput()}`
+      }, ${exchangeRatesFileId}, 17);" >> ${NodeController.getConsoleOutput()}`
     );
   }
 
@@ -125,7 +125,9 @@ module.exports = class HederaUtils {
     const recordExt = `.${process.env.STREAM_EXTENSION}`;
     for (const file of files) {
       const recordFileName = file.replace(recordExt, '');
-      const fileTimestamp = new Date(recordFileName.replace(/_/g, ':')).getTime();
+      const fileTimestamp = new Date(
+        recordFileName.replace(/_/g, ':')
+      ).getTime();
       if (fileTimestamp >= jsTimestamp) {
         if (file.endsWith(recordExt)) {
           logger.log(`Parsing record file [${file}]\n`);

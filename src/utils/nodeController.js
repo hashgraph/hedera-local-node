@@ -6,24 +6,32 @@ const DockerCheck = require('../helpers/dockerCheck');
 const constants = require('./constants');
 const PREBUILT_CONFIGS = ['mainnet', 'testnet', 'previewnet', 'local'];
 const rootPath = process.cwd();
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
 module.exports = class NodeController {
-  static getNullOutput () {
-    if (constants.IS_WINDOWS) return 'null';
-    return '/dev/null';
+  static getConsoleOutput () {
+    const { verbose } = yargs(hideBin(process.argv)).argv;
+    if (verbose) {
+      if (constants.IS_WINDOWS) return '';
+      return '/dev/stdout';
+    } else {
+      if (constants.IS_WINDOWS) return 'null';
+      return '/dev/null';
+    }
   }
 
   static async stopLocalNode () {
-    const nullOutput = this.getNullOutput();
+    const consoleOutput = this.getConsoleOutput();
     console.log('Stopping the network...');
     shell.cd(__dirname);
     shell.cd('../../');
     console.log('Stopping the docker containers...');
-    shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
-    shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
+    shell.exec(`docker compose kill --remove-orphans 2>${consoleOutput}`);
+    shell.exec(`docker compose down -v --remove-orphans 2>${consoleOutput}`);
     console.log('Cleaning the volumes and temp files...');
-    shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
-    shell.exec(`docker network prune -f 2>${nullOutput}`);
+    shell.exec(`rm -rf network-logs/* >${consoleOutput} 2>&1`);
+    shell.exec(`docker network prune -f 2>${consoleOutput}`);
     shell.cd(rootPath);
   }
 
@@ -58,7 +66,7 @@ module.exports = class NodeController {
       console.log('Docker is not running.');
       process.exit(1);
     }
-    const nullOutput = this.getNullOutput();
+    const consoleOutput = this.getConsoleOutput();
 
     console.log(
       `Starting hedera local node in ${
@@ -82,7 +90,9 @@ module.exports = class NodeController {
         composeFiles.push(...this.getUserComposeFiles(composeDir));
       }
       return shell.exec(
-        `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${nullOutput}`
+        `docker compose -f ${composeFiles.join(
+          ' -f '
+        )} up -d 2>${consoleOutput}`
       );
     };
     const output = dockerComposeUpCmd();
@@ -94,8 +104,8 @@ module.exports = class NodeController {
       )
         .map((e) => e.container_name)
         .join(' ');
-      shell.exec(`docker stop ${containersNames} 2>${nullOutput} 1>&2`);
-      shell.exec(`docker rm -f -v ${containersNames} 2>${nullOutput} 1>&2`);
+      shell.exec(`docker stop ${containersNames} 2>${consoleOutput} 1>&2`);
+      shell.exec(`docker rm -f -v ${containersNames} 2>${consoleOutput} 1>&2`);
       await this.stopLocalNode();
       dockerComposeUpCmd();
     }
