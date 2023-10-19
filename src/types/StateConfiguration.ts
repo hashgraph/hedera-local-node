@@ -1,6 +1,6 @@
 import { IState } from "../state/IState";
 
-export interface SelectedStateConfiguration {
+export interface StateConfiguration {
     stateMachineName: String;
     states: Array<IState>;
 }

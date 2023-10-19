@@ -2,13 +2,13 @@ import { StateData } from '../data/StateData';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
-import { SelectedStateConfiguration } from '../types/SelectedStateConfiguration';
+import { StateConfiguration } from '../types/StateConfiguration';
 import { IOBserver } from './IObserver';
 
 export class StateController implements IOBserver{
     private logger: LoggerService;
 
-    private stateConfiguration: SelectedStateConfiguration | undefined;
+    private stateConfiguration: StateConfiguration | undefined;
 
     private currStateNum: number;
 
@@ -54,5 +54,3 @@ export class StateController implements IOBserver{
         this.stateConfiguration!.states[this.currStateNum].onStart();
     }
 }
-
-// use observer pattern so that states can send events and don't have any connection to this controller

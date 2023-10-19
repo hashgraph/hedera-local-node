@@ -5,11 +5,11 @@ import { InitState } from '../state/InitState';
 import { NetworkPrepState } from '../state/NetworkPrepState';
 import { StartState } from '../state/StartState';
 import { StopState } from '../state/StopState';
-import { SelectedStateConfiguration } from '../types/SelectedStateConfiguration';
+import { StateConfiguration } from '../types/StateConfiguration';
 
 export class StateData {
 
-    public getSelectedStateConfiguration(stateName: string): SelectedStateConfiguration | undefined {
+    public getSelectedStateConfiguration(stateName: string): StateConfiguration | undefined {
         switch (stateName) {
             case 'start':
                 return this.getStartConfiguration();
@@ -22,7 +22,7 @@ export class StateData {
         }
     }
         
-    private getRestartConfiguration(): SelectedStateConfiguration {
+    private getRestartConfiguration(): StateConfiguration {
         return {
             'stateMachineName' : 'restart',
             'states' : [
@@ -36,7 +36,7 @@ export class StateData {
         };
     }
 
-    private getStartConfiguration(): SelectedStateConfiguration {
+    private getStartConfiguration(): StateConfiguration {
         return {
             'stateMachineName' : 'start',
             'states' : [
@@ -49,7 +49,7 @@ export class StateData {
         };
     }
 
-    private getStopConfiguration(): SelectedStateConfiguration {
+    private getStopConfiguration(): StateConfiguration {
         return {
             'stateMachineName' : 'stop',
             'states' : [
