@@ -1,4 +1,4 @@
-import { IOBserver } from "../controller/IObserver";
+import { IOBserver } from '../controller/IObserver';
 
 export interface IState {
     onStart(): void;

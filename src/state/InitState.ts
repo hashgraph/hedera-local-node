@@ -8,7 +8,9 @@ import { EventType } from '../types/EventType';
 
 export class InitState implements IState{
     private logger: LoggerService;
+
     private observer: IOBserver | undefined;
+
     private cliOptions: CLIOptions;
 
     constructor() {
@@ -39,4 +41,4 @@ export class InitState implements IState{
         throw new Error('Method not implemented.');
     }
 }
-//this state loads all configurations and files
+// this state loads all configurations and files

@@ -43,33 +43,33 @@ export class CLIService implements IService{
     }
 
     public getCurrentArgv(){
-        const accounts: number = this.currentArgv!['accounts'] as number || 10;
-        const async: boolean = this.currentArgv!['async'] as boolean || true;
-        const balance: number = this.currentArgv!['balance'] as number || 10000;
-        const host: string = this.currentArgv!['host'] as string || '127.0.0.1';
-        const network: string = this.currentArgv!['network'] as string || 'local';
-        const limits: boolean = this.currentArgv!['limits'] as boolean || false;
-        const devMode: boolean = this.currentArgv!['dev'] as boolean || false;
-        const fullMode: boolean = this.currentArgv!['full'] as boolean || false;
-        const multiNode: boolean = this.currentArgv!['multinode'] as boolean || false;
-        const userCompose: boolean = this.currentArgv!['usercompose'] as boolean || true;
-        const userComposeDir: string = this.currentArgv!['composedir'] as string || './overrides/';
-        const blocklisting: boolean = this.currentArgv!['blocklist'] as boolean || false;
+        const accounts: number = this.currentArgv!.accounts as number || 10;
+        const async: boolean = this.currentArgv!.async as boolean || true;
+        const balance: number = this.currentArgv!.balance as number || 10000;
+        const host: string = this.currentArgv!.host as string || '127.0.0.1';
+        const network: string = this.currentArgv!.network as string || 'local';
+        const limits: boolean = this.currentArgv!.limits as boolean || false;
+        const devMode: boolean = this.currentArgv!.dev as boolean || false;
+        const fullMode: boolean = this.currentArgv!.full as boolean || false;
+        const multiNode: boolean = this.currentArgv!.multinode as boolean || false;
+        const userCompose: boolean = this.currentArgv!.usercompose as boolean || true;
+        const userComposeDir: string = this.currentArgv!.composedir as string || './overrides/';
+        const blocklisting: boolean = this.currentArgv!.blocklist as boolean || false;
 
         const currentArgv: CLIOptions = {
-            accounts: accounts,
-            async: async,
-            balance: balance,
-            host: host,
-            network: network,
-            limits: limits,
-            devMode: devMode,
-            fullMode: fullMode,
-            multiNode: multiNode,
-            userCompose: userCompose,
-            userComposeDir: userComposeDir,
-            blocklisting: blocklisting
-        }
+            accounts,
+            async,
+            balance,
+            host,
+            network,
+            limits,
+            devMode,
+            fullMode,
+            multiNode,
+            userCompose,
+            userComposeDir,
+            blocklisting
+        };
         return currentArgv;
     }
 

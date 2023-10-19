@@ -7,7 +7,9 @@ import { IState } from './IState';
 
 export class ConfigurationState implements IState{
     private logger: LoggerService;
+
     private observer: IOBserver | undefined;
+
     private cliOptions: CLIOptions;
 
     constructor() {
@@ -22,9 +24,9 @@ export class ConfigurationState implements IState{
 
     onStart(): void {
         this.logger.trace('Configuration State Starting...');
-        this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? "on" : "off"} using ${this.cliOptions.fullMode? "full": "turbo"} mode in ${this.cliOptions.multiNode? "multi" : "single"} node configuration...`);
+        this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`);
 
-        this.logger.info(`Configuration was set succesfully.`)
+        this.logger.info('Configuration was set succesfully.');
         throw new Error('Method not implemented.');
     }
 
@@ -36,4 +38,4 @@ export class ConfigurationState implements IState{
         throw new Error('Method not implemented.');
     }
 }
-//this state changes all settings and files based on configurations
+// this state changes all settings and files based on configurations

@@ -10,6 +10,7 @@ export class DebugState implements IState{
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.logger.trace('Debug State Initialized!');
     }
+
     subscribe(observer: IOBserver): void {
         throw new Error('Method not implemented.');
     }
