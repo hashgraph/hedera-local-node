@@ -1,4 +1,9 @@
+import { AccountCreationState } from '../state/AccountCreationState';
+import { ConfigurationState } from '../state/ConfigurationState';
 import { InitState } from '../state/InitState';
+import { NetworkPrepState } from '../state/NetworkPrepState';
+import { StartState } from '../state/StartState';
+import { StopState } from '../state/StopState';
 import { SelectedStateConfiguration } from '../types/SelectedStateConfiguration';
 
 export class StateData {
@@ -21,6 +26,11 @@ export class StateData {
             'stateMachineName' : 'restart',
             'states' : [
                 new InitState(),
+                new ConfigurationState(),
+                new StopState(),
+                new StartState(),
+                new NetworkPrepState(),
+                new AccountCreationState()
             ]
         };
     }
@@ -30,6 +40,10 @@ export class StateData {
             'stateMachineName' : 'start',
             'states' : [
                 new InitState(),
+                new ConfigurationState(),
+                new StartState(),
+                new NetworkPrepState(),
+                new AccountCreationState()
             ]
         };
     }
@@ -39,6 +53,7 @@ export class StateData {
             'stateMachineName' : 'stop',
             'states' : [
                 new InitState(),
+                new StopState()
             ]
         };
     }

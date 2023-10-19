@@ -3,6 +3,8 @@ import { Bootstrapper } from "./services/Bootstrapper";
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { StateController } from "./controller/StateController";
+import { ServiceLocator } from "./services/ServiceLocator";
+import { CLIService } from "./services/CLIService";
 
 Bootstrapper.Initiailze();
 
@@ -10,10 +12,11 @@ yargs(hideBin(process.argv))
   .command(
     "start [accounts]",
     "Starts the local hedera network.",
-    (yargs) => {
-      //loadStartCliOptions(yargs);
+    (yargs: yargs.Argv<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).loadStartupOptions(yargs);
     },
-    async (argv) => {
+    async (argv: yargs.ArgumentsCamelCase<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
         await new StateController("start").startStateMachine();
     //   await NodeController.startLocalNode(argv);
     //   await main(
@@ -29,16 +32,19 @@ yargs(hideBin(process.argv))
     "stop",
     "Stops the local hedera network and delete all the existing data.",
     async () => {
+        await new StateController("stop").startStateMachine();
     //   await NodeController.stopLocalNode();
     }
   )
   .command(
     "restart [accounts]",
     "Restart the local hedera network.",
-    (yargs) => {
-      //loadStartCliOptions(yargs);
+    (yargs: yargs.Argv<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).loadStartupOptions(yargs);
     },
-    async (argv) => {
+    async (argv: yargs.ArgumentsCamelCase<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
+        await new StateController("restart").startStateMachine();
     //   await NodeController.stopLocalNode();
     //   await NodeController.startLocalNode(argv);
     //   await main(
@@ -53,12 +59,11 @@ yargs(hideBin(process.argv))
   .command(
     "generate-accounts [accounts]",
     "Generates the specified number of accounts [default: 10]",
-    (yargs) => {
-    //   CliOptions.addAccountsOption(yargs);
-    //   CliOptions.addBalanceOption(yargs);
-    //   CliOptions.addAsyncOption(yargs);
+    (yargs: yargs.Argv<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).loadAccountOptions(yargs);
     },
-    async (argv) => {
+    async (argv: yargs.ArgumentsCamelCase<{}>) => {
+        await new StateController("accountCreation").startStateMachine();
     //   await HederaUtils.prepareNode(
     //     argv.async,
     //     console,
@@ -71,10 +76,12 @@ yargs(hideBin(process.argv))
   .command(
     "debug [timestamp]",
     "Parses and prints the contents of the record file that has been created during the selected timestamp.",
-    (yargs) => {
-    //   CliOptions.addTimestampOption(yargs);
+    (yargs: yargs.Argv<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).loadDebugOptions(yargs);
     },
-    async (argv) => {
+    async (argv: yargs.ArgumentsCamelCase<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
+        await new StateController("debug").startStateMachine();
       //await HederaUtils.debug(console, argv.timestamp);
     }
   )

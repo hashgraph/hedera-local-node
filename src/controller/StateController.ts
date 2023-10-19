@@ -24,7 +24,7 @@ export class StateController {
 
     public async startStateMachine() {
         if (!this.stateConfiguration) {
-            this.logger.error("Something is wrong with state configuration!")
+            this.logger.error('Something is wrong with state configuration!');
             process.exit(1);
             // TODO: do something about this.
         }

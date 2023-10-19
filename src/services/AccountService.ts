@@ -14,7 +14,4 @@ export class AccountService implements IService{
         this.logger.trace('Account Service Initialized!');
     }
 
-    public number(): number {
-        return 5;
-    }
 }
