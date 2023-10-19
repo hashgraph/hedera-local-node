@@ -1,4 +1,4 @@
-import { NetworkType } from "../types/NetworkType";
+import { NetworkType } from '../types/NetworkType';
 
 export class ConfigurationData {
     public getSelectedConfigurationData(network: NetworkType) {
