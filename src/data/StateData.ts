@@ -1,3 +1,4 @@
+import { IOBserver } from '../controller/IObserver';
 import { AccountCreationState } from '../state/AccountCreationState';
 import { ConfigurationState } from '../state/ConfigurationState';
 import { InitState } from '../state/InitState';

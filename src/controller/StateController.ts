@@ -3,8 +3,9 @@ import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
 import { SelectedStateConfiguration } from '../types/SelectedStateConfiguration';
+import { IOBserver } from './IObserver';
 
-export class StateController {
+export class StateController implements IOBserver{
     private logger: LoggerService;
 
     private stateConfiguration: SelectedStateConfiguration | undefined;
@@ -30,6 +31,7 @@ export class StateController {
         }
 
         this.maxStateNum = this.stateConfiguration.states.length;
+        this.stateConfiguration!.states[this.currStateNum].subscribe(this);
         this.stateConfiguration.states[this.currStateNum].onStart();
     }
 
@@ -48,6 +50,7 @@ export class StateController {
             process.exit(0);
         }
         this.currStateNum+=1;
+        this.stateConfiguration!.states[this.currStateNum].subscribe(this);
         this.stateConfiguration!.states[this.currStateNum].onStart();
     }
 }

@@ -17,7 +17,7 @@ export class LoggerService implements IService{
                 },
               },
           });
-        this.logger.info('Logger Service Initialized!');
+        this.logger.trace('Logger Service Initialized!');
     }
 
     public info(msg: string): void {
