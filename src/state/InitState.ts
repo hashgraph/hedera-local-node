@@ -33,7 +33,7 @@ export class InitState implements IState{
 
     public onStart(): void {
         this.logger.trace('Initialization State Starting...');
-        console.log(this.cliOptions.network)
+        console.log(this.cliOptions.network);
         const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network);
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`);
 
@@ -59,7 +59,7 @@ export class InitState implements IState{
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
         const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
         const file = readFileSync(propertiesFilePath, 'utf-8');
-        let newProperties: string = "";
+        let newProperties = '';
         originalNodeConfiguration.bootsrapProperties.forEach(property => {
             newProperties = newProperties.concat(`${property.key}=${property.value}\n`);
         });
@@ -68,13 +68,13 @@ export class InitState implements IState{
             this.logger.trace('No additional node configuration needed.');
             return;
         }
-        console.log(nodeConfiguration)
+        console.log(nodeConfiguration);
         nodeConfiguration!.forEach(property => {
             newProperties = newProperties.concat(`${property.key}=${property.value}\n`);
             this.logger.trace(`Bootstrap property ${property.key} will be set to ${property.value}.`);
         });
 
-        writeFileSync(propertiesFilePath, newProperties, {flag: 'w'});
+        writeFileSync(propertiesFilePath, newProperties, { flag: 'w' });
 
         this.logger.info('Needed bootsrap properties were set for this configuration.');
     }

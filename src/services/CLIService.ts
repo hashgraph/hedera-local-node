@@ -208,7 +208,7 @@ export class CLIService implements IService{
     }
     
     private resolveNetwork(network: string): NetworkType {
-        console.log(network)
+        console.log(network);
         switch (network) {
             case 'local':
                 return NetworkType.LOCAL;
