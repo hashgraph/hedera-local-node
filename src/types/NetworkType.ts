@@ -1,6 +1,6 @@
 export enum NetworkType {
-    LOCAL,
-    MAINNET,
-    TESTNET,
-    PREVIEWNET
+    LOCAL = 'local',
+    MAINNET = 'mainnet',
+    TESTNET = 'testnet',
+    PREVIEWNET = 'previewnet'
 }

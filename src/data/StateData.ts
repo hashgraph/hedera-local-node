@@ -1,6 +1,4 @@
-import { IOBserver } from '../controller/IObserver';
 import { AccountCreationState } from '../state/AccountCreationState';
-import { ConfigurationState } from '../state/ConfigurationState';
 import { InitState } from '../state/InitState';
 import { NetworkPrepState } from '../state/NetworkPrepState';
 import { StartState } from '../state/StartState';
@@ -27,7 +25,6 @@ export class StateData {
             'stateMachineName' : 'restart',
             'states' : [
                 new InitState(),
-                new ConfigurationState(),
                 new StopState(),
                 new StartState(),
                 new NetworkPrepState(),
@@ -41,7 +38,6 @@ export class StateData {
             'stateMachineName' : 'start',
             'states' : [
                 new InitState(),
-                new ConfigurationState(),
                 new StartState(),
                 new NetworkPrepState(),
                 new AccountCreationState()

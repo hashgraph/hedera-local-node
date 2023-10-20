@@ -1,29 +1,37 @@
 {
-  "nodeImageTag": "0.43.0-alpha.4",
-  "mirrorImageTag": "0.89.0",
-  "relayImageTag": "0.32.0",
-  "mirrorNodeExplorerImageTag": "23.9.0",
-  "transactionMaxBytes": "30720",
-  "maxResults": "10",
-  "defaultLimit": "200",
-  "mirrorNodeRetries": "3",
-  "mirrorNodeRetryDelay": "250",
-  "tier1Limit": "100",
-  "tier2Limit": "800",
-  "tier3Limit": "1600",
-  "limitDuration": "60000",
-  "hbarLimit": "500000000000",
-  "hbarLimitDuration": "60000",
-  "blockRangeLimit": "2000",
-  "features": {
-    "atomicCryptoTransfer": true,
-    "eip2930": true,
-    "blocklistEnabled": true,
-    "blocklistPath": "data/config/evm-addresses-blocklist.csv"
+  "imageTagConfiguration": {
+    "nodeImageTag": "0.43.0-alpha.4",
+    "mirrorImageTag": "0.89.0",
+    "relayImageTag": "0.32.0",
+    "mirrorNodeExplorerImageTag": "23.9.0"
   },
-  "wsConnectionLimitPerIp": 10,
-  "wsConnectionLimit": 100,
-  "wsConnectionTTL": 300000,
-  "wsMultipleAddressesEnabled": false,
-  "wsSubscriptionsLimit": 100
+  "envConfiguration": [
+    {"key": "RELAY_FEE_HISTORY_MAX_RESULTS", "value": "10"},
+    {"key": "RELAY_DEFAULT_RATE_LIMIT", "value": "200"},
+    {"key": "RELAY_MIRROR_NODE_RETRIES", "value": "3"},
+    {"key": "RELAY_MIRROR_NODE_RETRY_DELAY", "value": "250"},
+    {"key": "RELAY_TIER_1_RATE_LIMIT", "value": "100"},
+    {"key": "RELAY_TIER_2_RATE_LIMIT", "value": "800"},
+    {"key": "RELAY_TIER_3_RATE_LIMIT", "value": "1600"},
+    {"key": "RELAY_LIMIT_DURATION", "value": "60000"},
+    {"key": "RELAY_HBAR_RATE_LIMIT_TINYBAR", "value": "500000000000"},
+    {"key": "RELAY_HBAR_RATE_LIMIT_DURATION", "value": "60000"},
+    {"key": "RELAY_ETH_GET_LOGS_BLOCK_RANGE_LIMIT", "value": "2000"},
+    {"key": "RELAY_WS_CONNECTION_LIMIT_PER_IP", "value": 10},
+    {"key": "RELAY_WS_CONNECTION_LIMIT", "value": 100},
+    {"key": "RELAY_WS_MAX_INACTIVITY_TTL", "value": 300000},
+    {"key": "RELAY_WS_MULTIPLE_ADDRESSES_ENABLED", "value": false},
+    {"key": "RELAY_WS_SUBSCRIPTION_LIMIT", "value": 100}
+],
+  "nodeConfiguration": {
+    "properties": [
+      {"key": "contracts.precompile.atomicCryptoTransfer.enabled", "value": true},
+      {"key": "hedera.transaction.eip2930.enabled", "value": true},
+      {"key": "accounts.blocklist.enabled", "value": true},
+      {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"}
+    ],
+    "settings": [
+      {"key": "transactionMaxBytes", "value": 30720}
+    ]
+  }
 }

@@ -26,8 +26,8 @@ export class StateController implements IOBserver{
     public async startStateMachine() {
         if (!this.stateConfiguration) {
             this.logger.error('Something is wrong with state configuration!');
+            // TODO: handle error
             process.exit(1);
-            // TODO: do something about this.
         }
 
         this.maxStateNum = this.stateConfiguration.states.length;
@@ -38,15 +38,14 @@ export class StateController implements IOBserver{
     public update(event: EventType): void {
         if (event === EventType.Finish) {
             this.transitionToNextState();
-            // TODO: do something on finish
         } else {
-            // TODO: do something on error
+            // TODO: handle error
         }
     }
 
     private transitionToNextState(): void {
         if (!(this.currStateNum < this.maxStateNum)) {
-            // TODO: end program
+            // TODO: handle end of program
             process.exit(0);
         }
         this.currStateNum+=1;

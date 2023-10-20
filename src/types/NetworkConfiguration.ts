@@ -1,29 +1,18 @@
 export interface NetworkConfiguration {
+    imageTagConfiguration: ImageTagConfiguration,
+    envConfiguration?: Array<Configuration>,
+    nodeConfiguration?: Array<Configuration>,
+    nodeSettings?: Array<Configuration>
+}
+
+export interface ImageTagConfiguration {
     consensusNodeImageTag: string,
     mirrorImageTag: string,
     relayImageTag: string,
-    mirrorNodeExplorerImageTag: string,
-    transactionMaxBytes: string,
-    maxResults: string,
-    defaultLimit: string,
-    mirrorNodeRetries: string,
-    mirrorNodeRetryDelay: string,
-    tier1Limit: string,
-    tier2Limit: string,
-    tier3Limit: string,
-    limitDuration: string,
-    hbarLimit: string,
-    hbarLimitDuration: string,
-    blockRangeLimit: string,
-    wsConnectionLimitPerIp: number,
-    wsConnectionLimit: number,
-    wsConnectionTTL: number,
-    wsMultipleAddressesEnabled: boolean,
-    wsSubscriptionsLimit: number,
-    features?: Array<Features>
+    mirrorNodeExplorerImageTag: string
 }
 
-export interface Features {
-    featureKey: string,
-    featureValue: any
+export interface Configuration {
+    key: string,
+    value: any
 }

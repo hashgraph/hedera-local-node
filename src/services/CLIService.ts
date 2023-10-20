@@ -3,6 +3,7 @@ import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import { CLIOptions } from '../types/CLIOptions';
+import { NetworkType } from '../types/NetworkType';
 
 
 export class CLIService implements IService{
@@ -47,7 +48,7 @@ export class CLIService implements IService{
         const async: boolean = this.currentArgv!.async as boolean || true;
         const balance: number = this.currentArgv!.balance as number || 10000;
         const host: string = this.currentArgv!.host as string || '127.0.0.1';
-        const network: string = this.currentArgv!.network as string || 'local';
+        const network: NetworkType = this.resolveNetwork(this.currentArgv!.network as string || 'local');
         const limits: boolean = this.currentArgv!.limits as boolean || false;
         const devMode: boolean = this.currentArgv!.dev as boolean || false;
         const fullMode: boolean = this.currentArgv!.full as boolean || false;
@@ -204,5 +205,20 @@ export class CLIService implements IService{
             demandOption: false,
             default: false
           });
+    }
+    
+    private resolveNetwork(network: string): NetworkType {
+        switch (network) {
+            case 'local':
+                return NetworkType.LOCAL;
+            case 'mainnet':
+                return NetworkType.MAINNET;
+            case 'testnet':
+                return NetworkType.TESTNET;
+            case 'previewnet':
+                return NetworkType.PREVIEWNET;
+            default:
+                return NetworkType.LOCAL;
+        }
     }
 }

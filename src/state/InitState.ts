@@ -5,6 +5,11 @@ import { CLIService } from '../services/CLIService';
 import { CLIOptions } from '../types/CLIOptions';
 import { IOBserver } from '../controller/IObserver';
 import { EventType } from '../types/EventType';
+import { ConfigurationData } from '../data/ConfigurationData';
+import { configDotenv } from 'dotenv';
+import path from 'path';
+import { Configuration } from '../types/NetworkConfiguration';
+configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
 export class InitState implements IState{
     private logger: LoggerService;
@@ -19,16 +24,30 @@ export class InitState implements IState{
         this.logger.trace('Initialization State Initialized!');
     }
 
-    subscribe(observer: IOBserver): void {
+    public subscribe(observer: IOBserver): void {
         this.observer = observer;
     }
 
-    onStart(): void {
+    public onStart(): void {
         this.logger.trace('Initialization State Starting...');
-        // do main action
-        // in case of error go to onError
-        // in case of finish go to onFinish
+        const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network)
+        this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`);
+
+        this.configureEnvVariables(configurationData.envConfiguration);
+
         this.observer!.update(EventType.Finish);
+    }
+
+    private configureEnvVariables(envConfiguration: Array<Configuration> | undefined): void {
+        if (!envConfiguration) {
+            this.logger.trace('No new environment variables were configured.');
+            return;
+        }
+
+        envConfiguration!.forEach(variable => {
+            process.env[variable.key] = variable.value;
+            this.logger.trace(`Environment variable ${variable.key} will be set to ${variable.value}.`);
+        });
     }
 
     onError(): void {

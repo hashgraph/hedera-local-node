@@ -1,12 +1,18 @@
 {
-  "nodeImageTag": "0.43.0-alpha.4",
-  "mirrorImageTag": "0.89.0",
-  "relayImageTag": "0.32.0",
-  "mirrorNodeExplorerImageTag": "23.9.0",
-  "transactionMaxBytes": "6144",
-  "features": {
-    "compressFilesOnCreation": true,
-    "compressOnCreation": true,
-    "maxNumWithHapiSigsAccess": "0"
+  "imageTagConfiguration": {
+    "nodeImageTag": "0.43.0-alpha.4",
+    "mirrorImageTag": "0.89.0",
+    "relayImageTag": "0.32.0",
+    "mirrorNodeExplorerImageTag": "23.9.0"
+  },
+  "nodeConfiguration": {
+    "properties": [
+      {"key": "hedera.recordStream.compressFilesOnCreation", "value": true},
+      {"key": "balances.compressOnCreation", "value": true},
+      {"key": "contracts.maxNumWithHapiSigsAccess", "value": 0}
+    ],
+    "settings": [
+      {"key": "transactionMaxBytes", "value": 6144}
+    ]
   }
 }
