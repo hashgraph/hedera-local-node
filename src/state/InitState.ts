@@ -1,3 +1,5 @@
+import { configDotenv } from 'dotenv';
+import path from 'path';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
@@ -6,9 +8,8 @@ import { CLIOptions } from '../types/CLIOptions';
 import { IOBserver } from '../controller/IObserver';
 import { EventType } from '../types/EventType';
 import { ConfigurationData } from '../data/ConfigurationData';
-import { configDotenv } from 'dotenv';
-import path from 'path';
 import { Configuration } from '../types/NetworkConfiguration';
+
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
 export class InitState implements IState{
@@ -30,7 +31,7 @@ export class InitState implements IState{
 
     public onStart(): void {
         this.logger.trace('Initialization State Starting...');
-        const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network)
+        const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network);
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`);
 
         this.configureEnvVariables(configurationData.envConfiguration);

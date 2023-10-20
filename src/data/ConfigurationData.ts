@@ -1,9 +1,10 @@
 import { NetworkConfiguration } from '../types/NetworkConfiguration';
 import { NetworkType } from '../types/NetworkType';
 import local from '../configuration/local.json';
-import mainnet from '../configuration/mainnet.json'
-import testnet from '../configuration/testnet.json'
-import previewnet from '../configuration/previewnet.json'
+import mainnet from '../configuration/mainnet.json';
+import testnet from '../configuration/testnet.json';
+import previewnet from '../configuration/previewnet.json';
+
 export class ConfigurationData {
     public getSelectedConfigurationData(network: NetworkType) {
         switch (network) {
@@ -33,9 +34,9 @@ export class ConfigurationData {
             },
             envConfiguration: relayConfiguration,
             nodeConfiguration: nodeProperties,
-            nodeSettings: nodeSettings
-        }
+            nodeSettings
+        };
 
-        return configuration
+        return configuration;
     }
 }
