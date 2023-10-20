@@ -27,4 +27,4 @@ export class StopState implements IState{
         throw new Error('Method not implemented.');
     }
 }
-// this state attempts to stop the network
+// this state attempts to stop the network and return to original state

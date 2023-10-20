@@ -5,6 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "test:readiness": "node --loader ts-node/esm src/utils/testNode.js",
+    "start": "node --loader ts-node/esm ./src/index.ts start",
+    "restart": "node --loader ts-node/esm ./src/index.ts restart",
+    "stop": "node --loader ts-node/esm ./src/index.ts stop",
     "test:smoke": "npm --prefix test/smoke run test",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
@@ -41,7 +44,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@types/find-config": "^1.0.3",
     "@types/pino": "^7.0.5",
     "dotenv": "^16.3.1",
     "pino": "^8.16.0",

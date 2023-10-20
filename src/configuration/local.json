@@ -25,9 +25,10 @@
 ],
   "nodeConfiguration": {
     "properties": [
+      {"key": "files.maxSizeKb", "value": "6144"},
       {"key": "contracts.precompile.atomicCryptoTransfer.enabled", "value": true},
       {"key": "hedera.transaction.eip2930.enabled", "value": true},
-      {"key": "accounts.blocklist.enabled", "value": true},
+      {"key": "accounts.blocklist.enabled", "value": false},
       {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"}
     ],
     "settings": [

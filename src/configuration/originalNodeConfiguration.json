@@ -1,0 +1,9 @@
+{
+    "bootsrapProperties": [
+        {"key": "ledger.id", "value": "0x01"},
+        {"key": "netty.mode", "value": "DEV"},
+        {"key": "contracts.chainId", "value": "298"},
+        {"key": "hedera.recordStream.logPeriod", "value": "1"},
+        {"key": "balances.exportPeriodSecs", "value": "400"}
+    ]
+}

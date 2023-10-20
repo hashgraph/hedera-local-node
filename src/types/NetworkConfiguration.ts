@@ -1,8 +1,12 @@
 export interface NetworkConfiguration {
     imageTagConfiguration: ImageTagConfiguration,
     envConfiguration?: Array<Configuration>,
-    nodeConfiguration?: Array<Configuration>,
-    nodeSettings?: Array<Configuration>
+    nodeConfiguration?: NodeConfiguration,
+}
+
+export interface NodeConfiguration {
+    properties: Array<Configuration>,
+    settings: Array<Configuration>
 }
 
 export interface ImageTagConfiguration {

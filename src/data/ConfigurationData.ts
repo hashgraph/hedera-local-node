@@ -23,8 +23,8 @@ export class ConfigurationData {
 
     private getNetworkConfiguration(jsonConfiguration: NetworkConfiguration) {
         const relayConfiguration = jsonConfiguration?.envConfiguration || undefined;
-        const nodeProperties = jsonConfiguration?.nodeConfiguration || undefined;
-        const nodeSettings = jsonConfiguration?.nodeSettings || undefined;
+        const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties || undefined;
+        const nodeSettings = jsonConfiguration?.nodeConfiguration!.settings || undefined;
         const configuration: NetworkConfiguration = {
             imageTagConfiguration: { 
                 consensusNodeImageTag: jsonConfiguration.imageTagConfiguration.consensusNodeImageTag,
@@ -33,8 +33,10 @@ export class ConfigurationData {
                 relayImageTag: jsonConfiguration.imageTagConfiguration.relayImageTag
             },
             envConfiguration: relayConfiguration,
-            nodeConfiguration: nodeProperties,
-            nodeSettings
+            nodeConfiguration: {
+                properties: nodeProperties,
+                settings: nodeSettings
+            }
         };
 
         return configuration;
