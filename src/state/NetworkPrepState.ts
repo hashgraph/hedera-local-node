@@ -6,29 +6,21 @@ import { IState } from './IState';
 export class NetworkPrepState implements IState{
     private logger: LoggerService;
 
+    private observer: IOBserver | undefined;
+
     constructor() {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.logger.trace('Initialization State Initialized!');
     }
 
-    subscribe(observer: IOBserver): void {
-        throw new Error('Method not implemented.');
+    public subscribe(observer: IOBserver): void {
+        this.observer = observer;
     }
 
     onStart(): void {
         // do main action
         // in case of error go to onError
         // in case of finish go to onFinish
-        throw new Error('Method not implemented.');
-    }
-
-    onError(): void {
-        // log last things and call onError event
-        throw new Error('Method not implemented.');
-    }
-
-    onFinish(): void {
-        // log last things and call onFinish event
         throw new Error('Method not implemented.');
     }
 }
