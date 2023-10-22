@@ -1,6 +1,7 @@
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
+import { EventType } from '../types/EventType';
 import { IState } from './IState';
 
 export class NetworkPrepState implements IState{
@@ -10,7 +11,7 @@ export class NetworkPrepState implements IState{
 
     constructor() {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Initialization State Initialized!');
+        this.logger.trace('Network Preparation State Initialized!');
     }
 
     public subscribe(observer: IOBserver): void {
@@ -18,10 +19,8 @@ export class NetworkPrepState implements IState{
     }
 
     onStart(): void {
-        // do main action
-        // in case of error go to onError
-        // in case of finish go to onFinish
-        throw new Error('Method not implemented.');
+        // what else ?
+        this.observer!.update(EventType.Finish);
     }
 }
 // this state waits for topics and uploads fees

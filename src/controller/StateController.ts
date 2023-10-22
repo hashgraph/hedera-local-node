@@ -49,7 +49,16 @@ export class StateController implements IOBserver{
             process.exit(0);
         }
         this.currStateNum+=1;
-        this.stateConfiguration!.states[this.currStateNum].subscribe(this);
-        this.stateConfiguration!.states[this.currStateNum].onStart();
+
+        try {
+            this.stateConfiguration!.states[this.currStateNum].subscribe(this);
+            this.stateConfiguration!.states[this.currStateNum].onStart();
+        } catch (error) {
+            if (error instanceof TypeError) {
+                // Ignore this error, it finds the methods and executes the code, but still results in TypeError
+            } else {
+                this.logger.error(`Trying to transition to next state was not possible. Error is: ${error}`);
+            }
+        }
     }
 }

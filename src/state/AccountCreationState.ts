@@ -1,6 +1,7 @@
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
+import { EventType } from '../types/EventType';
 import { IState } from './IState';
 
 export class AccountCreationState implements IState{
@@ -18,7 +19,9 @@ export class AccountCreationState implements IState{
     }
 
     onStart(): void {
-        throw new Error('Method not implemented.');
+        // what else ?
+
+        this.observer!.update(EventType.Finish);
     }
 }
 // this state creats accounts

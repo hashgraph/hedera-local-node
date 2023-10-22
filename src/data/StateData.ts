@@ -49,7 +49,6 @@ export class StateData {
         return {
             'stateMachineName' : 'stop',
             'states' : [
-                new InitState(),
                 new StopState()
             ]
         };
