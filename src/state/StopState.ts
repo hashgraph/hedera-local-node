@@ -1,6 +1,6 @@
-import { IOBserver } from '../controller/IObserver';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { IOBserver } from '../controller/IObserver';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -30,7 +30,7 @@ export class StopState implements IState{
     }
 
     private revertNodeProperties(): void {
-        this.logger.trace("Clean up unneeded bootstrap properties.");
+        this.logger.trace('Clean up unneeded bootstrap properties.');
         const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
 
         let originalProperties = '';
