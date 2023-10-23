@@ -21,7 +21,7 @@
 import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
-import { IS_WINDOWS } from '../constants';
+import { IS_WINDOWS, UNKNOWN_VERSION } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -101,5 +101,45 @@ export class DockerService implements IService{
           );
         }
         return false;
-      }
+    }
+
+    public async getContainerId (name: string) {
+        const docker = new Dockerode({ socketPath: this.dockerSocket });
+        const opts = {
+          limit: 1,
+          filters: { name: [`${name}`] }
+        };
+    
+        return new Promise((resolve, reject) => {
+          docker.listContainers(opts, function (err, containers) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(containers![0].Id);
+            }
+          });
+        });
+    }
+    
+    public async getContainerVersion (name: string) {
+        const docker = new Dockerode({ socketPath: this.dockerSocket });
+        const opts = {
+          limit: 1,
+          filters: { name: [`${name}`] }
+        };
+    
+        return new Promise((resolve, reject) => {
+          docker.listContainers(opts, function (err, containers) {
+            if (err) {
+              reject(err);
+            } else {
+              try {
+                resolve(containers![0].Image.split(':')[1]);
+              } catch (e) {
+                resolve(UNKNOWN_VERSION);
+              }
+            }
+          });
+        });
+    }
 }
