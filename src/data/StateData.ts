@@ -19,6 +19,7 @@
  */
 
 import { AccountCreationState } from '../state/AccountCreationState';
+import { CleanUpState } from '../state/CleanUpState';
 import { InitState } from '../state/InitState';
 import { NetworkPrepState } from '../state/NetworkPrepState';
 import { StartState } from '../state/StartState';
@@ -44,8 +45,9 @@ export class StateData {
         return {
             'stateMachineName' : 'restart',
             'states' : [
-                new InitState(),
+                new CleanUpState(),
                 new StopState(),
+                new InitState(),
                 new StartState(),
                 new NetworkPrepState(),
                 new AccountCreationState()
@@ -60,7 +62,8 @@ export class StateData {
                 new InitState(),
                 new StartState(),
                 new NetworkPrepState(),
-                new AccountCreationState()
+                new AccountCreationState(),
+                new CleanUpState()
             ]
         };
     }

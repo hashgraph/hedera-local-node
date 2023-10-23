@@ -37,7 +37,7 @@ export class DebugState implements IState{
         this.observer = observer;
     }
 
-    onStart(): void {
+    public async onStart(): Promise<void> {
         throw new Error('Method not implemented.');
     }
 }

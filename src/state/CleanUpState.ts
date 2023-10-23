@@ -27,14 +27,14 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { EventType } from '../types/EventType';
 
-export class StopState implements IState{
+export class CleanUpState implements IState{
     private logger: LoggerService;
 
     private observer: IOBserver | undefined;
 
     constructor() {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Stop State Initialized!');
+        this.logger.trace('Clean Up State Initialized!');
     }
 
     public subscribe(observer: IOBserver): void {
@@ -42,10 +42,26 @@ export class StopState implements IState{
     }
 
     public async onStart(): Promise<void> {
-        this.logger.info('Initiating stop procedure. Trying to clean up volumes and revert files unneeded changes...');
-        // clean volumes
+        this.logger.info('Initiating clean up procedure. Trying to revert unneeded changes to files...');
+        this.revertNodeProperties();
         
-        this.observer!.update(EventType.Finish);
+        if (this.observer) {
+            this.observer!.update(EventType.Finish);
+        }
     }
 
+    private revertNodeProperties(): void {
+        this.logger.trace('Clean up unneeded bootstrap properties.');
+        const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
+
+        let originalProperties = '';
+        originalNodeConfiguration.bootsrapProperties.forEach(property => {
+            originalProperties = originalProperties.concat(`${property.key}=${property.value}\n`);
+        });
+
+        writeFileSync(propertiesFilePath, originalProperties, { flag: 'w' });
+
+        this.logger.info('Clean up finished.');
+    }
 }
+// this state attempts to stop the network and return to original state

@@ -42,7 +42,7 @@ hedera:
               transferTypes:
                 - CRYPTO
             receiptPercent: 1
-            tps: 1
+            tps: 10
             type: CRYPTO_TRANSFER
       subscribe:
         grpc:

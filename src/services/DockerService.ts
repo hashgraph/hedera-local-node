@@ -1,0 +1,105 @@
+/*-
+ *
+ * Hedera Local Node
+ *
+ * Copyright (C) 2023 Hedera Hashgraph, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import Dockerode from 'dockerode';
+import shell from 'shelljs';
+import semver from'semver';
+import { IS_WINDOWS } from '../constants';
+import { IService } from './IService';
+import { LoggerService } from './LoggerService';
+import { ServiceLocator } from './ServiceLocator';
+
+export class DockerService implements IService{
+    private logger: LoggerService;
+
+    private serviceName: string;
+
+    private dockerSocket: string;
+
+    constructor() {
+        this.serviceName = LoggerService.name;
+        this.logger = ServiceLocator.Current.get<LoggerService>(this.serviceName);
+        this.logger.trace('Docker Service Initialized!');
+
+        const defaultSocketPath = IS_WINDOWS
+        ? '//./pipe/docker_engine'
+        : '/var/run/docker.sock';
+
+        this.dockerSocket = process.env.DOCKER_SOCKET || defaultSocketPath;
+    }
+
+    public getDockerSocket(): string {
+        return this.dockerSocket;
+    }
+
+    public async checkDocker (): Promise<boolean> {
+        let isRunning = false;
+    
+        const docker = new Dockerode({ socketPath: this.dockerSocket });
+        await docker
+          .info()
+          .then(() => {
+            this.logger.trace('Docker is running.');
+            isRunning = true;
+          })
+          .catch(() => {
+            this.logger.error('Docker is not running.');
+            isRunning = false;
+          });
+        return isRunning;
+    }
+
+    public async isCorrectDockerComposeVersion (): Promise<boolean> {
+        this.logger.trace('Checking docker compose version...');
+        // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
+        const resultFirstCommand = await shell.exec(
+          'docker compose version --short',
+          { silent: true }
+        );
+        const resultSecondCommand = await shell.exec(
+          'docker-compose version --short',
+          { silent: true }
+        );
+    
+        // Exit code is 127 when no docker installation is found
+        if (resultFirstCommand.code === 127 && resultSecondCommand.code === 127) {
+            this.logger.error('Please install docker compose V2.');
+        } else if (
+          resultFirstCommand.code === 127 &&
+          resultSecondCommand.code === 0
+        ) {
+            this.logger.error(
+            'Looks like you have docker-compose V1, but you need docker compose V2'
+          );
+        } else {
+          const version = resultFirstCommand.stdout
+            ? resultFirstCommand.stdout
+            : resultSecondCommand.stdout;
+          if (semver.gt(version, '2.12.2')) {
+            // Docker version is OK
+            return true;
+          }
+          this.logger.error(
+            'You are using docker compose version prior to 2.12.2, please upgrade'
+          );
+        }
+        return false;
+      }
+}

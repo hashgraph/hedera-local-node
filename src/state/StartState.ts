@@ -38,7 +38,7 @@ export class StartState implements IState{
         this.observer = observer;
     }
 
-    onStart(): void {
+    public async onStart(): Promise<void> {
         // what else ?
         
         this.observer!.update(EventType.Finish);

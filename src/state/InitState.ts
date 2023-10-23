@@ -31,6 +31,7 @@ import { EventType } from '../types/EventType';
 import { ConfigurationData } from '../data/ConfigurationData';
 import { Configuration } from '../types/NetworkConfiguration';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
+import { DockerService } from '../services/DockerService';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
@@ -41,9 +42,12 @@ export class InitState implements IState{
 
     private cliOptions: CLIOptions;
 
+    private dockerService: DockerService;
+
     constructor() {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
+        this.dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
         this.logger.trace('Initialization State Initialized!');
     }
 
@@ -51,9 +55,19 @@ export class InitState implements IState{
         this.observer = observer;
     }
 
-    public onStart(): void {
+    public async onStart(): Promise<void> {
         this.logger.trace('Initialization State Starting...');
         const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network);
+        this.logger.info("Making sure that Docker is started and it's correct version...");
+        // Check if docker is running and it's the correct version
+        const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
+        const isDockerStarted = await this.dockerService.checkDocker();
+
+        if (!(isCorrectDockerComposeVersion && isDockerStarted)) {
+            this.observer!.update(EventType.Error);
+            return;
+        }
+
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`);
 
         this.configureEnvVariables(configurationData.envConfiguration);

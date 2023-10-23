@@ -18,9 +18,26 @@
  *
  */
 
-import { IOBserver } from '../controller/IObserver';
+export const CONTAINERS = [
+    {
+        name: "Consensus Node",
+        label: "network-node",
+        port: 50211,
+    },
+    {
+        name: "Mirror Node",
+        label: "mirror-node-grpc",
+        port: 5600,
+    },
+    {
+        name: "Relay",
+        label: "json-rpc-relay",
+        port: 7546,
+    },
+];
 
-export interface IState {
-    onStart(): Promise<void>;
-    subscribe(observer: IOBserver): void;
-}
+export const CONSENSUS_NODE_LABEL = "network-node";
+export const MIRROR_NODE_LABEL = "mirror-node-rest";
+export const RELAY_LABEL = "json-rpc-relay";
+export const IS_WINDOWS = process.platform === "win32";
+export const UNKNOWN_VERSION = "Unknown";
