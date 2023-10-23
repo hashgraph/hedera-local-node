@@ -1,4 +1,24 @@
 #!/usr/bin/env node
+/*-
+ *
+ * Hedera Local Node
+ *
+ * Copyright (C) 2023 Hedera Hashgraph, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 import { Bootstrapper } from "./services/Bootstrapper";
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -18,14 +38,6 @@ yargs(hideBin(process.argv))
     async (argv: yargs.ArgumentsCamelCase<{}>) => {
         ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
         await new StateController("start").startStateMachine();
-    //   await NodeController.startLocalNode(argv);
-    //   await main(
-    //     argv.accounts,
-    //     argv.async,
-    //     argv.balance,
-    //     argv.detached,
-    //     argv.host
-    //   );
     }
   )
   .command(
@@ -33,7 +45,6 @@ yargs(hideBin(process.argv))
     "Stops the local hedera network and delete all the existing data.",
     async () => {
         await new StateController("stop").startStateMachine();
-    //   await NodeController.stopLocalNode();
     }
   )
   .command(
@@ -45,15 +56,6 @@ yargs(hideBin(process.argv))
     async (argv: yargs.ArgumentsCamelCase<{}>) => {
         ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
         await new StateController("restart").startStateMachine();
-    //   await NodeController.stopLocalNode();
-    //   await NodeController.startLocalNode(argv);
-    //   await main(
-    //     argv.accounts,
-    //     argv.async,
-    //     argv.balance,
-    //     argv.detached,
-    //     argv.host
-    //   );
     }
   )
   .command(
@@ -63,14 +65,8 @@ yargs(hideBin(process.argv))
         ServiceLocator.Current.get<CLIService>(CLIService.name).loadAccountOptions(yargs);
     },
     async (argv: yargs.ArgumentsCamelCase<{}>) => {
+        ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
         await new StateController("accountCreation").startStateMachine();
-    //   await HederaUtils.prepareNode(
-    //     argv.async,
-    //     console,
-    //     argv.balance,
-    //     argv.accounts
-    //   );
-    //   process.exit();
     }
   )
   .command(
@@ -82,7 +78,6 @@ yargs(hideBin(process.argv))
     async (argv: yargs.ArgumentsCamelCase<{}>) => {
         ServiceLocator.Current.get<CLIService>(CLIService.name).setCurrentArgv(argv);
         await new StateController("debug").startStateMachine();
-      //await HederaUtils.debug(console, argv.timestamp);
     }
   )
   .demandCommand()
@@ -108,3 +103,4 @@ Requirements:
       Disk Image Size: 64 GB`
   )
   .parse();
+  
