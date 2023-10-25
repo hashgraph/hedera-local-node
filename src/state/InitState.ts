@@ -96,6 +96,14 @@ export class InitState implements IState{
             process.env[variable.key] = variable.value;
             this.logger.trace(`Environment variable ${variable.key} will be set to ${variable.value}.`, this.stateName);
         });
+
+        const relayLimitsDisabled = !this.cliOptions.limits;
+        if (relayLimitsDisabled) {
+            process.env.RELAY_HBAR_RATE_LIMIT_TINYBAR = '0';
+            process.env.RELAY_HBAR_RATE_LIMIT_DURATION = '0';
+            process.env.RELAY_RATE_LIMIT_DISABLED = `${relayLimitsDisabled}`;
+            this.logger.info('Hedera JSON-RPC Relay rate limits were disabled.', this.stateName);
+        }
         this.logger.info('Needed environment variables were set for this configuration.', this.stateName);
     }
 
