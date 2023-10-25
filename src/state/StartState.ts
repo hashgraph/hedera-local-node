@@ -100,7 +100,6 @@ export class StartState implements IState{
           return files;
         } 
           return [];
-        
     }
 
     private getNullOutput () {

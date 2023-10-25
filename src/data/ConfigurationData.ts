@@ -45,12 +45,7 @@ export class ConfigurationData {
         const relayConfiguration = jsonConfiguration?.envConfiguration || undefined;
         const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties || undefined;
         const configuration: NetworkConfiguration = {
-            imageTagConfiguration: { 
-                consensusNodeImageTag: jsonConfiguration.imageTagConfiguration.consensusNodeImageTag,
-                mirrorImageTag: jsonConfiguration.imageTagConfiguration.mirrorImageTag,
-                mirrorNodeExplorerImageTag: jsonConfiguration.imageTagConfiguration.mirrorNodeExplorerImageTag,
-                relayImageTag: jsonConfiguration.imageTagConfiguration.relayImageTag
-            },
+            imageTagConfiguration: jsonConfiguration.imageTagConfiguration,
             envConfiguration: relayConfiguration,
             nodeConfiguration: {
                 properties: nodeProperties,

@@ -74,14 +74,19 @@ export class InitState implements IState{
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
 
-        this.configureEnvVariables(configurationData.envConfiguration);
+        this.configureEnvVariables(configurationData.imageTagConfiguration, configurationData.envConfiguration);
         this.configureNodeProperties(configurationData.nodeConfiguration?.properties);
         this.configureMirrorNodeProperties();
 
         this.observer!.update(EventType.Finish);
     }
 
-    private configureEnvVariables(envConfiguration: Array<Configuration> | undefined): void {
+    private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
+        imageTagConfiguration.forEach(variable => {
+            process.env[variable.key] = variable.value;
+            this.logger.trace(`Environment variable ${variable.key} will be set to ${variable.value}.`, this.stateName);
+        });
+
         if (!envConfiguration) {
             this.logger.trace('No new environment variables were configured.', this.stateName);
             return;

@@ -19,20 +19,13 @@
  */
 
 export interface NetworkConfiguration {
-    imageTagConfiguration: ImageTagConfiguration,
+    imageTagConfiguration: Array<Configuration>,
     envConfiguration?: Array<Configuration>,
     nodeConfiguration?: NodeConfiguration,
 }
 
 export interface NodeConfiguration {
     properties: Array<Configuration>,
-}
-
-export interface ImageTagConfiguration {
-    consensusNodeImageTag: string,
-    mirrorImageTag: string,
-    relayImageTag: string,
-    mirrorNodeExplorerImageTag: string
 }
 
 export interface Configuration {
