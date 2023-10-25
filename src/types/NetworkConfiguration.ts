@@ -26,7 +26,6 @@ export interface NetworkConfiguration {
 
 export interface NodeConfiguration {
     properties: Array<Configuration>,
-    settings: Array<Configuration>
 }
 
 export interface ImageTagConfiguration {

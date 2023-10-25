@@ -30,9 +30,6 @@
       {"key": "hedera.transaction.eip2930.enabled", "value": true},
       {"key": "accounts.blocklist.enabled", "value": false},
       {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"}
-    ],
-    "settings": [
-      {"key": "transactionMaxBytes", "value": 30720}
     ]
   }
 }

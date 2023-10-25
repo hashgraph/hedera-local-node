@@ -111,7 +111,7 @@ export class DockerService implements IService{
         };
     
         return new Promise((resolve, reject) => {
-          docker.listContainers(opts, function (err, containers) {
+          docker.listContainers(opts, (err, containers) => {
             if (err) {
               reject(err);
             } else {
@@ -129,7 +129,7 @@ export class DockerService implements IService{
         };
     
         return new Promise((resolve, reject) => {
-          docker.listContainers(opts, function (err, containers) {
+          docker.listContainers(opts, (err, containers) => {
             if (err) {
               reject(err);
             } else {
