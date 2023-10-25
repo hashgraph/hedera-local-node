@@ -34,9 +34,9 @@ export class CLIService implements IService{
     private currentArgv: ArgumentsCamelCase<{}> | undefined;
 
     constructor() {
-        this.serviceName = LoggerService.name;
-        this.logger = ServiceLocator.Current.get<LoggerService>(this.serviceName);
-        this.logger.trace('CLI Service Initialized!');
+        this.serviceName = CLIService.name;
+        this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
+        this.logger.trace('CLI Service Initialized!', this.serviceName);
     }
 
     public loadStartupOptions(yargs: Argv<{}>): void {

@@ -35,18 +35,21 @@ export class StateController implements IOBserver{
 
     private maxStateNum: number;
 
+    private controllerName: string;
+
     constructor(stateName: string) {
+        this.controllerName = StateController.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.stateConfiguration = new StateData().getSelectedStateConfiguration(stateName);
         this.currStateNum = 0;
         this.maxStateNum = 0;
-        this.logger.trace('State Controller Initialized!');
-        this.logger.info(`Starting ${stateName} procedure!`);
+        this.logger.trace('State Controller Initialized!', this.controllerName);
+        this.logger.info(`Starting ${stateName} procedure!`, this.controllerName);
     }
 
     public async startStateMachine() {
         if (!this.stateConfiguration) {
-            this.logger.error('Something is wrong with state configuration!');
+            this.logger.error('Something is wrong with state configuration!', this.controllerName);
             // TODO: handle error
             process.exit(1);
         }
@@ -84,7 +87,7 @@ export class StateController implements IOBserver{
             if (error instanceof TypeError) {
                 // Ignore this error, it finds the methods and executes the code, but still results in TypeError
             } else {
-                this.logger.error(`Trying to transition to next state was not possible. Error is: ${error}`);
+                this.logger.error(`Trying to transition to next state was not possible. Error is: ${error}`, this.controllerName);
             }
         }
     }

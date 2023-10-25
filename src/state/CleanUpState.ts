@@ -1,6 +1,3 @@
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-import { IOBserver } from '../controller/IObserver';
 /*-
  *
  * Hedera Local Node
@@ -21,6 +18,10 @@ import { IOBserver } from '../controller/IObserver';
  *
  */
 
+import { readFileSync, writeFileSync } from 'fs';
+import yaml from 'js-yaml';
+import { join } from 'path';
+import { IOBserver } from '../controller/IObserver';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -32,9 +33,12 @@ export class CleanUpState implements IState{
 
     private observer: IOBserver | undefined;
 
+    private stateName: string;
+    
     constructor() {
+        this.stateName = CleanUpState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Clean Up State Initialized!');
+        this.logger.trace('Clean Up State Initialized!', this.stateName);
     }
 
     public subscribe(observer: IOBserver): void {
@@ -42,16 +46,28 @@ export class CleanUpState implements IState{
     }
 
     public async onStart(): Promise<void> {
-        this.logger.info('Initiating clean up procedure. Trying to revert unneeded changes to files...');
+        this.logger.info('Initiating clean up procedure. Trying to revert unneeded changes to files...', this.stateName);
         this.revertNodeProperties();
-        
+        this.revertMirrorNodeProperties();
         if (this.observer) {
             this.observer!.update(EventType.Finish);
         }
     }
 
+    private revertMirrorNodeProperties() {
+        this.logger.trace('Clean up unneeded mirror node properties...', this.stateName);
+        const propertiesFilePath = join(__dirname, '../../compose-network/mirror-node/application.yml');
+        const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
+        delete application.hedera.mirror.importer.dataPath;
+        delete application.hedera.mirror.importer.downloader.sources;
+
+        application.hedera.mirror.monitor.nodes = originalNodeConfiguration.fullNodeProperties;
+        writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));
+        this.logger.info('Clean up of consensus node properties finished.', this.stateName);
+    }
+
     private revertNodeProperties(): void {
-        this.logger.trace('Clean up unneeded bootstrap properties.');
+        this.logger.trace('Clean up unneeded bootstrap properties.', this.stateName);
         const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
 
         let originalProperties = '';
@@ -61,7 +77,6 @@ export class CleanUpState implements IState{
 
         writeFileSync(propertiesFilePath, originalProperties, { flag: 'w' });
 
-        this.logger.info('Clean up finished.');
+        this.logger.info('Clean up of consensus node properties finished.', this.stateName);
     }
 }
-// this state attempts to stop the network and return to original state

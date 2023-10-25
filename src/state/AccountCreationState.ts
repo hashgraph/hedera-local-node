@@ -29,9 +29,12 @@ export class AccountCreationState implements IState{
 
     private observer: IOBserver | undefined;
 
+    private stateName: string;
+    
     constructor() {
+        this.stateName = AccountCreationState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Account Creaton State Initialized!');
+        this.logger.trace('Account Creaton State Initialized!', this.stateName);
     }
 
     public subscribe(observer: IOBserver): void {

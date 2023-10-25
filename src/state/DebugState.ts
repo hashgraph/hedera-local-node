@@ -27,10 +27,13 @@ export class DebugState implements IState{
     private logger: LoggerService;
     
     private observer: IOBserver | undefined;
+
+    private stateName: string;
     
     constructor() {
+        this.stateName = DebugState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Debug State Initialized!');
+        this.logger.trace('Debug State Initialized!', this.stateName);
     }
 
     public subscribe(observer: IOBserver): void {

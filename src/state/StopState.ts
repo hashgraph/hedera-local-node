@@ -1,6 +1,3 @@
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-import { IOBserver } from '../controller/IObserver';
 /*-
  *
  * Hedera Local Node
@@ -21,20 +18,25 @@ import { IOBserver } from '../controller/IObserver';
  *
  */
 
-import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
+import shell from 'shelljs';
+import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { EventType } from '../types/EventType';
+import { IS_WINDOWS } from '../constants';
 
 export class StopState implements IState{
     private logger: LoggerService;
 
     private observer: IOBserver | undefined;
 
+    private stateName: string;
+    
     constructor() {
+        this.stateName = StopState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Stop State Initialized!');
+        this.logger.trace('Stop State Initialized!', this.stateName);
     }
 
     public subscribe(observer: IOBserver): void {
@@ -42,10 +44,27 @@ export class StopState implements IState{
     }
 
     public async onStart(): Promise<void> {
-        this.logger.info('Initiating stop procedure. Trying to clean up volumes and revert files unneeded changes...');
-        // clean volumes
-        
+        this.logger.info('Initiating stop procedure. Trying to stop docker containers and clean up volumes...', this.stateName);
+
+        const nullOutput = this.getNullOutput();
+        const rootPath = process.cwd();
+
+        this.logger.info('Stopping the network...', this.stateName);
+        shell.cd(__dirname);
+        shell.cd('../../');
+        this.logger.trace('Stopping the docker containers...', this.stateName);
+        shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
+        shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
+        this.logger.trace('Cleaning the volumes and temp files...', this.stateName);
+        shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
+        shell.exec(`docker network prune -f 2>${nullOutput}`);
+        shell.cd(rootPath);
+        this.logger.info('Hedera Local Node was stopped successfully.', this.stateName);
         this.observer!.update(EventType.Finish);
     }
 
+    private getNullOutput () {
+        if (IS_WINDOWS) return 'null';
+        return '/dev/null';
+    }
 }

@@ -18,41 +18,29 @@
  *
  */
 
-import pino, { Logger } from 'pino';
 import { IService } from './IService';
 
 export class LoggerService implements IService{
 
-    private logger: Logger;
+    private logger: any;
+    
+    private serviceName: string;
 
     constructor() {
-        this.logger = pino({
-            name: 'hedera-local-node',
-            level: process.env.LOG_LEVEL || 'trace',
-            transport: {
-                target: 'pino-pretty',
-                options: {
-                  colorize: true,
-                  translateTime: true,
-                },
-              },
-          });
-        this.logger.trace('Logger Service Initialized!');
+        this.serviceName = LoggerService.name;
+        this.logger = console;
+        this.logger.log('Logger Service Initialized!', this.serviceName);
     }
 
-    public info(msg: string): void {
-        this.logger.info(msg);
+    public trace(msg: string, module: string = ''): void {
+        this.logger.log(`[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`);
     }
 
-    public debug(msg: string): void {
-        this.logger.debug(msg);
+    public info(msg: string, module: string = ''): void {
+        this.logger.log(`[Hedera-Local-Node]\x1b[32m INFO \x1b[0m(${module}) ${msg}`);
     }
 
-    public trace(msg: string): void {
-        this.logger.trace(msg);
-    }
-
-    public error(msg: string): void {
-        this.logger.error(msg);
+    public error(msg: string, module: string = ''): void {
+        this.logger.error(`[Hedera-Local-Node]\x1b[31m INFO \x1b[0m(${module}) ${msg}`);
     }
 }

@@ -32,6 +32,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/dockerode": "^3.3.21",
+    "@types/js-yaml": "^4.0.8",
     "@types/shelljs": "^0.8.14",
     "@types/yargs": "^17.0.28",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
@@ -49,8 +50,7 @@
     "@types/pino": "^7.0.5",
     "dockerode": "^4.0.0",
     "dotenv": "^16.3.1",
-    "pino": "^8.16.0",
-    "pino-pretty": "^10.2.3",
+    "js-yaml": "^4.1.0",
     "semver": "^7.5.4",
     "shelljs": "^0.8.5",
     "yargs": "^17.7.2"

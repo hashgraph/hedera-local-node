@@ -28,9 +28,9 @@ export class AccountService implements IService{
     private serviceName: string;
 
     constructor() {
-        this.serviceName = LoggerService.name;
-        this.logger = ServiceLocator.Current.get<LoggerService>(this.serviceName);
-        this.logger.trace('Account Service Initialized!');
+        this.serviceName = AccountService.name;
+        this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
+        this.logger.trace('Account Service Initialized!', this.serviceName);
     }
 
 }

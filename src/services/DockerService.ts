@@ -34,9 +34,9 @@ export class DockerService implements IService{
     private dockerSocket: string;
 
     constructor() {
-        this.serviceName = LoggerService.name;
-        this.logger = ServiceLocator.Current.get<LoggerService>(this.serviceName);
-        this.logger.trace('Docker Service Initialized!');
+        this.serviceName = DockerService.name;
+        this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
+        this.logger.trace('Docker Service Initialized!', this.serviceName);
 
         const defaultSocketPath = IS_WINDOWS
         ? '//./pipe/docker_engine'
@@ -56,18 +56,18 @@ export class DockerService implements IService{
         await docker
           .info()
           .then(() => {
-            this.logger.trace('Docker is running.');
+            this.logger.trace('Docker is running.', this.serviceName);
             isRunning = true;
           })
           .catch(() => {
-            this.logger.error('Docker is not running.');
+            this.logger.error('Docker is not running.', this.serviceName);
             isRunning = false;
           });
         return isRunning;
     }
 
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
-        this.logger.trace('Checking docker compose version...');
+        this.logger.trace('Checking docker compose version...', this.serviceName);
         // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
         const resultFirstCommand = await shell.exec(
           'docker compose version --short',
@@ -80,13 +80,14 @@ export class DockerService implements IService{
     
         // Exit code is 127 when no docker installation is found
         if (resultFirstCommand.code === 127 && resultSecondCommand.code === 127) {
-            this.logger.error('Please install docker compose V2.');
+            this.logger.error('Please install docker compose V2.', this.serviceName);
         } else if (
           resultFirstCommand.code === 127 &&
           resultSecondCommand.code === 0
         ) {
             this.logger.error(
-            'Looks like you have docker-compose V1, but you need docker compose V2'
+            'Looks like you have docker-compose V1, but you need docker compose V2',
+            this.serviceName
           );
         } else {
           const version = resultFirstCommand.stdout
@@ -97,7 +98,8 @@ export class DockerService implements IService{
             return true;
           }
           this.logger.error(
-            'You are using docker compose version prior to 2.12.2, please upgrade'
+            'You are using docker compose version prior to 2.12.2, please upgrade',
+            this.serviceName
           );
         }
         return false;

@@ -29,9 +29,12 @@ export class NetworkPrepState implements IState{
 
     private observer: IOBserver | undefined;
 
+    private stateName: string;
+    
     constructor() {
+        this.stateName = NetworkPrepState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Network Preparation State Initialized!');
+        this.logger.trace('Network Preparation State Initialized!', this.stateName);
     }
 
     public subscribe(observer: IOBserver): void {
