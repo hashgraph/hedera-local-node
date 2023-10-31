@@ -54,7 +54,7 @@ export class StateController implements IOBserver{
             process.exit(1);
         }
 
-        this.maxStateNum = this.stateConfiguration.states.length;
+        this.maxStateNum = this.stateConfiguration.states.length - 1;
         this.stateConfiguration!.states[this.currStateNum].subscribe(this);
         await this.stateConfiguration.states[this.currStateNum].onStart();
     }
@@ -74,6 +74,8 @@ export class StateController implements IOBserver{
     }
 
     private async transitionToNextState(): Promise<void> {
+        console.log(this.currStateNum)
+        console.log(this.maxStateNum)
         if (!(this.currStateNum < this.maxStateNum)) {
             // TODO: handle end of program
             process.exit(0);

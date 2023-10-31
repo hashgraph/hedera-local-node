@@ -24,24 +24,26 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import { CLIService } from './CLIService';
 import { CLIOptions } from '../types/CLIOptions';
+import { Errors } from '../Errors/LocalNodeErrors';
 
 export class ConnectionService implements IService{
     private logger: LoggerService;
 
     private serviceName: string;
 
-    private cliOptions: CLIOptions;
+    private cliService: CLIService;
 
     constructor() {
         this.serviceName = ConnectionService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
+        this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
         this.logger.trace('Connection Service Initialized!', this.serviceName);
     }
 
     public async waitForFiringUp(port: number) {
-        const { host } = this.cliOptions;
+        const { host } = this.cliService.getCurrentArgv();
         let isReady = false;
+        let retries = 100; // this means that we wait around 100 seconds, normal consensus node startup takes around 60 seconds
         while (!isReady) {
           net
             .createConnection(port, host)
@@ -55,12 +57,17 @@ export class ConnectionService implements IService{
               );
               this.logger.error(err.message, this.serviceName);
             });
+
+            retries--;
           await new Promise((r) => setTimeout(r, 100));
+          if (retries < 0) {
+            throw Errors.CONNECTION_ERROR(port);
+          }
         }
     }
 
     public checkConnection(port: number) {
-        const { host } = this.cliOptions;
+        const { host } = this.cliService.getCurrentArgv();
         return new Promise<void>((resolve, reject) => {
             const timeout = 3000;
             const timer = setTimeout(() => {

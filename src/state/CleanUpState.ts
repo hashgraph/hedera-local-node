@@ -63,7 +63,7 @@ export class CleanUpState implements IState{
 
         application.hedera.mirror.monitor.nodes = originalNodeConfiguration.fullNodeProperties;
         writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));
-        this.logger.info('Clean up of consensus node properties finished.', this.stateName);
+        this.logger.info('Clean up of mirror node properties finished.', this.stateName);
     }
 
     private revertNodeProperties(): void {

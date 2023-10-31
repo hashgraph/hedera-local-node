@@ -31,8 +31,7 @@ export class ServiceLocator {
 
     public get<T extends IService>(serviceName: string): T {
         if (!this.services.has(serviceName)) {
-          console.error(`${serviceName} not registered with ${this.constructor.name}`);
-          throw new Error();
+          throw new Error(`${serviceName} not registered with ${this.constructor.name}`);
         }
     
         return this.services.get(serviceName) as T;
@@ -41,8 +40,7 @@ export class ServiceLocator {
     public register<T extends IService>(service: T): void {
         const key: string = service.constructor.name;
         if (this.services.has(key)) {
-            console.error(`${key} not registered with ${this.constructor.name}`);
-            throw new Error();
+            throw new Error(`${key} not registered with ${this.constructor.name}`);
         }
 
         this.services.set(key, service);

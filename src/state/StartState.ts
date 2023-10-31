@@ -29,9 +29,13 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { CLIOptions } from '../types/CLIOptions';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
+import { ConnectionService } from '../services/ConnectionService';
+import { LocalNodeErrors } from '../Errors/LocalNodeErrors';
 
 export class StartState implements IState{
     private logger: LoggerService;
+
+    private connectionService: ConnectionService;
 
     private observer: IOBserver | undefined;
 
@@ -43,6 +47,7 @@ export class StartState implements IState{
         this.stateName = StartState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
+        this.connectionService = ServiceLocator.Current.get<ConnectionService>(ConnectionService.name);
         this.logger.trace('Start State Initialized!', this.stateName);
     }
 
@@ -62,7 +67,20 @@ export class StartState implements IState{
             // TODO: add fallback
         }
         shell.cd(rootPath);
-        
+        this.logger.info('Detecting network...', this.stateName);
+
+        try {
+            await this.connectionService.waitForFiringUp(5600);
+            await this.connectionService.waitForFiringUp(50211);
+        } catch (e: any) {
+            if (e instanceof LocalNodeErrors) {
+                this.logger.error(e.message, this.stateName);
+            }
+            this.observer!.update(EventType.Error);
+            return;
+        }
+
+        this.logger.info('Hedera Local Node successfully started!', this.stateName);
         this.observer!.update(EventType.Finish);
     }
 

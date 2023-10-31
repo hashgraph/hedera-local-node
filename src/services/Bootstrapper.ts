@@ -20,6 +20,7 @@
 
 import { AccountService } from './AccountService';
 import { CLIService } from './CLIService';
+import { ConnectionService } from './ConnectionService';
 import { DockerService } from './DockerService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -31,6 +32,7 @@ export class Bootstrapper {
         ServiceLocator.Current.register(new LoggerService());
         ServiceLocator.Current.register(new CLIService());
         ServiceLocator.Current.register(new DockerService());
+        ServiceLocator.Current.register(new ConnectionService());
         ServiceLocator.Current.register(new AccountService());
     }
 }
