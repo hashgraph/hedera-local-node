@@ -49,6 +49,11 @@ export class DockerService implements IService{
         return this.dockerSocket;
     }
 
+    public getNullOutput () {
+        if (IS_WINDOWS) return 'null';
+        return '/dev/null';
+    }
+
     public async checkDocker (): Promise<boolean> {
         let isRunning = false;
     

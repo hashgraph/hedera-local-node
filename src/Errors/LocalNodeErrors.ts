@@ -31,8 +31,13 @@ export class LocalNodeErrors extends Error{
     public IS_CONNECTION_ERROR(): boolean {
         return this.name == "Connection Error";
     }
+
+    public CLIENT_ERROR(): boolean {
+        return this.name == "Client Error";
+    }
 }
 
 export const Errors = {
-    CONNECTION_ERROR: (port?: number) => new LocalNodeErrors("Connection Error", `Something went wrong, while trying to connect ${port ? `to port ${port}` : `to local node`}`)
+    CONNECTION_ERROR: (port?: number) => new LocalNodeErrors("Connection Error", `Something went wrong, while trying to connect ${port ? `to port ${port}` : `to local node`}`),
+    CLEINT_ERROR: (msg?: string) => new LocalNodeErrors("Client Error", `Something went wrong, while trying to create SDK Client${msg ? `: ${msg}` : ``}`)
 }

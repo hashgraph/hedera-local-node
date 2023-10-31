@@ -31,11 +31,14 @@ import { EventType } from '../types/EventType';
 import { IState } from './IState';
 import { ConnectionService } from '../services/ConnectionService';
 import { LocalNodeErrors } from '../Errors/LocalNodeErrors';
+import { DockerService } from '../services/DockerService';
 
 export class StartState implements IState{
     private logger: LoggerService;
 
     private connectionService: ConnectionService;
+
+    private dockerService: DockerService;
 
     private observer: IOBserver | undefined;
 
@@ -47,6 +50,7 @@ export class StartState implements IState{
         this.stateName = StartState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
+        this.dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
         this.connectionService = ServiceLocator.Current.get<ConnectionService>(ConnectionService.name);
         this.logger.trace('Start State Initialized!', this.stateName);
     }
@@ -100,7 +104,7 @@ export class StartState implements IState{
         }
 
         return shell.exec(
-                  `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.getNullOutput()}`
+                  `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`
         );
     }
 
@@ -118,10 +122,5 @@ export class StartState implements IState{
           return files;
         } 
           return [];
-    }
-
-    private getNullOutput () {
-        if (IS_WINDOWS) return 'null';
-        return '/dev/null';
     }
 }
