@@ -18,9 +18,11 @@
  *
  */
 
+import { ethers } from 'ethers';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
+import { Hbar } from '@hashgraph/sdk';
 
 export class AccountService implements IService{
     private logger: LoggerService;
@@ -33,4 +35,51 @@ export class AccountService implements IService{
         this.logger.trace('Account Service Initialized!', this.serviceName);
     }
 
+    private logAccount (accountId: string, balance: number, privateKey: string) {
+    this.logger.info(`| ${accountId} - ${privateKey} - ${balance} |`);
+    }
+
+    private logAliasAccount (accountId: string, balance: number, wallet: ethers.Wallet) {
+    this.logger.info(
+        `| ${accountId} - ${wallet.address} - ${
+        wallet.signingKey.privateKey
+        } - ${new Hbar(balance)} |`
+    );
+    }
+
+    private logAccountTitle (accountType: string) {
+    this.logAccountDivider();
+    this.logger.info(
+        `|-----------------------------| Accounts list (${accountType} keys) |----------------------------|`
+    );
+    this.logAccountDivider();
+    this.logger.info(
+        '|    id    |                            private key                            |  balance |'
+    );
+    this.logAccountDivider();
+    }
+
+    private logAliasAccountTitle () {
+    this.logAliasAccountDivider();
+    this.logger.info(
+        '|------------------------------------------------| Accounts list (Alias ECDSA keys) |--------------------------------------------------|'
+    );
+    this.logAliasAccountDivider();
+    this.logger.info(
+        '|    id    |               public address               |                             private key                            | balance |'
+    );
+    this.logAliasAccountDivider();
+    }
+
+    private logAccountDivider () {
+    this.logger.info(
+        '|-----------------------------------------------------------------------------------------|'
+    );
+    }
+
+    private logAliasAccountDivider () {
+    this.logger.info(
+        '|--------------------------------------------------------------------------------------------------------------------------------------|'
+    );
+    }
 }
