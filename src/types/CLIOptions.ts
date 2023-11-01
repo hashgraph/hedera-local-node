@@ -32,5 +32,6 @@ export interface CLIOptions {
     multiNode: boolean,
     userCompose: boolean,
     userComposeDir: string,
-    blocklisting: boolean
+    blocklisting: boolean,
+    startup: boolean,
 }

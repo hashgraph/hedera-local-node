@@ -33,10 +33,13 @@ export class CLIService implements IService{
 
     private currentArgv: ArgumentsCamelCase<{}> | undefined;
 
+    private isStartup: boolean;
+
     constructor() {
         this.serviceName = CLIService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.logger.trace('CLI Service Initialized!', this.serviceName);
+        this.isStartup = true;
     }
 
     public loadStartupOptions(yargs: Argv<{}>): void {
@@ -51,31 +54,35 @@ export class CLIService implements IService{
         this.userComposeOption(yargs);
         this.userComposeDirOption(yargs);
         this.blocklistingOption(yargs);
+        this.isStartup = true;
     }
 
     public loadDebugOptions(yargs: Argv<{}>): void {
         this.timestampOption(yargs);
+        this.isStartup = false;
     }
 
     public loadAccountOptions(yargs: Argv<{}>): void {
         this.accountOption(yargs);
         this.asyncOption(yargs);
         this.balanceOption(yargs);
+        this.isStartup = false;
     }
 
     public getCurrentArgv(){
-        const accounts: number = this.currentArgv!.accounts as number || 10;
-        const async: boolean = this.currentArgv!.async as boolean || true;
-        const balance: number = this.currentArgv!.balance as number || 10000;
-        const host: string = this.currentArgv!.host as string || '127.0.0.1';
-        const network: NetworkType = this.resolveNetwork(this.currentArgv!.network as string || 'local');
-        const limits: boolean = this.currentArgv!.limits as boolean || false;
-        const devMode: boolean = this.currentArgv!.dev as boolean || false;
-        const fullMode: boolean = this.currentArgv!.full as boolean || false;
-        const multiNode: boolean = this.currentArgv!.multinode as boolean || false;
-        const userCompose: boolean = this.currentArgv!.usercompose as boolean || true;
-        const userComposeDir: string = this.currentArgv!.composedir as string || './overrides/';
-        const blocklisting: boolean = this.currentArgv!.blocklist as boolean || false;
+        const accounts: number = this.currentArgv!.accounts as number;
+        const async: any = this.currentArgv!.async as boolean;
+        const balance: number = this.currentArgv!.balance as number;
+        const host: string = this.currentArgv!.host as string;
+        const network: NetworkType = this.resolveNetwork(this.currentArgv!.network as string);
+        const limits: boolean = this.currentArgv!.limits as boolean;
+        const devMode: boolean = this.currentArgv!.dev as boolean;
+        const fullMode: boolean = this.currentArgv!.full as boolean;
+        const multiNode: boolean = this.currentArgv!.multinode as boolean;
+        const userCompose: boolean = this.currentArgv!.usercompose as boolean;
+        const userComposeDir: string = this.currentArgv!.composedir as string;
+        const blocklisting: boolean = this.currentArgv!.blocklist as boolean;
+        const startup: boolean = this.isStartup;
 
         const currentArgv: CLIOptions = {
             accounts,
@@ -89,8 +96,11 @@ export class CLIService implements IService{
             multiNode,
             userCompose,
             userComposeDir,
-            blocklisting
+            blocklisting,
+            startup
         };
+
+        console.log(currentArgv)
         return currentArgv;
     }
 
