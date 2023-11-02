@@ -8,6 +8,7 @@
     "start": "node --loader ts-node/esm ./src/index.ts start",
     "restart": "node --loader ts-node/esm ./src/index.ts restart",
     "stop": "node --loader ts-node/esm ./src/index.ts stop",
+    "generate-accounts": "node --loader ts-node/esm ./src/index.ts generate-accounts",
     "test:smoke": "npm --prefix test/smoke run test",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",

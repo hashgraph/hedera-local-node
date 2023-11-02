@@ -36,6 +36,8 @@ export class StateData {
                 return this.getRestartConfiguration();
             case 'stop':
                 return this.getStopConfiguration();
+            case 'accountCreation':
+                return this.getAccountCreationConfiguration();
             default:
                 return undefined;
         }
@@ -75,5 +77,14 @@ export class StateData {
                 new StopState()
             ]
         };
+    }
+
+    private getAccountCreationConfiguration(): StateConfiguration {
+        return {
+            'stateMachineName' : 'accountCreation',
+            'states' : [
+                new AccountCreationState()
+            ]
+        }
     }
 }

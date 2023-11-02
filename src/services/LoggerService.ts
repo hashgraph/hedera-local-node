@@ -43,4 +43,8 @@ export class LoggerService implements IService{
     public error(msg: string, module: string = ''): void {
         this.logger.error(`[Hedera-Local-Node]\x1b[31m ERROR \x1b[0m(${module}) ${msg}`);
     }
+
+    public emptyLine(): void{
+        this.logger.log('');
+    }
 }

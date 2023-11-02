@@ -18,7 +18,7 @@
  *
  */
 
-import { Client } from '@hashgraph/sdk';
+import { AccountId, Client } from '@hashgraph/sdk';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -48,11 +48,15 @@ export class ClientService implements IService{
         const { host } = this.cliService.getCurrentArgv();
 
         this.client = Client.forNetwork({
-            [`${host}:50211`]: '0.0.3'
-          }).setOperator(
+            [`${host}:50211`]: new AccountId(3)
+          })
+          .setMirrorNetwork(
+            `${host}:5600`
+          )
+          .setOperator(
             process.env.RELAY_OPERATOR_ID_MAIN,
             process.env.RELAY_OPERATOR_KEY_MAIN
-            );
+        );
     }
 
     public getClient(): Client {

@@ -13,18 +13,18 @@ const axios = require('axios');
 require("dotenv").config();
 
 async function main() {
-    const myAccountId = process.env.RELAY_OPERATOR_ID_MAIN;
-    const myPrivateKey = process.env.RELAY_OPERATOR_KEY_MAIN;
+    const myAccountId = "0.0.2";
+    const myPrivateKey = "302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137";
 
-    if (myAccountId == null || myPrivateKey == null) {
-      throw new Error(
-        "Environment variables myAccountId and myPrivateKey must be present"
-      );
-    }
+    // if (myAccountId == null || myPrivateKey == null) {
+    //   throw new Error(
+    //     "Environment variables myAccountId and myPrivateKey must be present"
+    //   );
+    // }
     const node = { "127.0.0.1:50211": new AccountId(3) };
     const client = Client.forNetwork(node).setMirrorNetwork("127.0.0.1:5600");
-    client.setOperator(myAccountId, myPrivateKey);
-
+    client.setOperator("0.0.2", "302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137");
+    console.log(client._operator)
     const newAccountId = await createAccount(client);
     await transferHbar(client, myAccountId, newAccountId);
 
