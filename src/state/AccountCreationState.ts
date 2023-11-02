@@ -72,7 +72,7 @@ export class AccountCreationState implements IState{
             this.logger.emptyLine();
             // await this.generateAliasECDSA(async, balance, accountNum);
             this.logger.emptyLine();
-            // await this.generateED25519(async, balance, accountNum);
+            await this.generateED25519(async, balance, accountNum);
         }
 
         this.observer!.update(EventType.Finish);
@@ -263,8 +263,6 @@ export class AccountCreationState implements IState{
 
     private async createAccount (async: boolean, accountNum: number, balance: number, wallet: Wallet, privateKey: PrivateKey): Promise<void | Account> {
         const client = this.clientService.getClient();
-        console.log(PublicKey.fromString(wallet.publicKey.toStringDer()))
-        console.log(new Hbar(balance))
         const tx = await new AccountCreateTransaction()
           .setKey(PublicKey.fromString(wallet.publicKey.toStringDer()))
           .setInitialBalance(new Hbar(balance))
@@ -273,7 +271,6 @@ export class AccountCreationState implements IState{
         
         if (!this.nodeStartup || async) {
           const getReceipt = await tx.getReceipt(client);
-          console.log(getReceipt)
           accountId = getReceipt.accountId!.toString();
         }
         if (async) {

@@ -47,9 +47,10 @@ export class ClientService implements IService{
         }
         const { host } = this.cliService.getCurrentArgv();
 
-        this.client = Client.forNetwork({
-            [`${host}:50211`]: new AccountId(3)
-          })
+        //TODO: FIX
+        this.client = Client.forNetwork(
+            { [`${host}:50211`]: new AccountId(3) }
+          )
           .setMirrorNetwork(
             `${host}:5600`
           )
