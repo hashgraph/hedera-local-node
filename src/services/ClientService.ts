@@ -46,14 +46,9 @@ export class ClientService implements IService{
             throw Errors.CLEINT_ERROR("Environment variables OPERATOR_ID, and OPERATOR_KEY are required.")
         }
         const { host } = this.cliService.getCurrentArgv();
-
-        //TODO: FIX
-        this.client = Client.forNetwork(
-            { [`${host}:50211`]: new AccountId(3) }
-          )
-          .setMirrorNetwork(
-            `${host}:5600`
-          )
+        this.client = Client.forNetwork({
+            [`${host}:50211`]: '0.0.3'
+          })
           .setOperator(
             process.env.RELAY_OPERATOR_ID_MAIN,
             process.env.RELAY_OPERATOR_KEY_MAIN

@@ -66,6 +66,7 @@ export class CLIService implements IService{
         this.accountOption(yargs);
         this.asyncOption(yargs);
         this.balanceOption(yargs);
+        this.hostOption(yargs);
         this.isStartup = false;
     }
 

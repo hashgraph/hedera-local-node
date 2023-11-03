@@ -68,9 +68,9 @@ export class AccountCreationState implements IState{
         if (async) {
             await this.generateAsync(balance, accountNum);
         } else {
-            // await this.generateECDSA(async, balance, accountNum);
+            await this.generateECDSA(async, balance, accountNum);
             this.logger.emptyLine();
-            // await this.generateAliasECDSA(async, balance, accountNum);
+            await this.generateAliasECDSA(async, balance, accountNum);
             this.logger.emptyLine();
             await this.generateED25519(async, balance, accountNum);
         }
@@ -87,7 +87,6 @@ export class AccountCreationState implements IState{
             const ecdsaResponses = allResponses[0];
             const aliasEcdsaResponses = allResponses[1];
             const ed25519Responses = allResponses[2];
-      
             this.logAccountTitle(' ECDSA ');
             ecdsaResponses!.forEach((account) => {
                 if (account) {
@@ -133,38 +132,34 @@ export class AccountCreationState implements IState{
         if (!async) this.logAccountTitle(' ECDSA ');
     
         for (let i = 0; i < accountNum; i++) {
-          privateKey = PrivateKey.generateECDSA();
-          let wallet = new Wallet(
+            privateKey = PrivateKey.generateECDSA();
+            let wallet = new Wallet(
             AccountId.fromString(ecdsaAccountNumCounter.toString()),
             privateKey
-          );
-          if (this.nodeStartup && privateKeysECDSA[i]) {
-            wallet = new Wallet(
-              AccountId.fromString(ecdsaAccountNumCounter.toString()),
-              privateKeysECDSA[i]
             );
-          }
-          if (async) {
-            accounts.push(
-              this.createAccount(
-                async,
+            if (this.nodeStartup && privateKeysECDSA[i]) {
+                wallet = new Wallet(
+                    AccountId.fromString(ecdsaAccountNumCounter.toString()),
+                    privateKeysECDSA[i]
+                );
+            }
+            if (async) {
+                accounts.push(
+                    this.createAccountAsync(
+                    ecdsaAccountNumCounter++,
+                    balance,
+                    wallet,
+                    privateKey
+                    )
+                );
+                continue;
+            }
+            await this.createAccount(
                 ecdsaAccountNumCounter++,
                 balance,
                 wallet,
                 privateKey
-              )
-            );
-            continue;
-          }
-          accounts.push(
-            await this.createAccount(
-              async,
-              ecdsaAccountNumCounter++,
-              balance,
-              wallet,
-              privateKey
             )
-          );
         }
         if (!async) {
           this.logAccountDivider();
@@ -173,7 +168,7 @@ export class AccountCreationState implements IState{
         }
     }
 
-    private async generateAliasECDSA(async: boolean, balance: number, accountNum: number): Promise<(void | Account)[] | undefined> {
+    private async generateAliasECDSA(async: boolean, balance: number, accountNum: number) {
         let aliasedAccountNumCounter = 1012;
         const accounts = [];
     
@@ -209,11 +204,13 @@ export class AccountCreationState implements IState{
             account.wallet as ethers.Wallet
           );
         }
-        if (async) return Promise.all(accounts);
+        if (async) {
+            return Promise.all(accounts);
+        }
         this.logAliasAccountDivider();
     }
 
-    private async generateED25519(async: boolean, balance: number, accountNum: number): Promise<(void | Account)[] | undefined> {
+    private async generateED25519(async: boolean, balance: number, accountNum: number) {
         let edAccountNumCounter = 1022;
         const accounts = [];
         let privateKey;
@@ -221,38 +218,34 @@ export class AccountCreationState implements IState{
         if (!async) this.logAccountTitle('ED25519');
     
         for (let i = 0; i < accountNum; i++) {
-          privateKey = PrivateKey.generateED25519();
-          let wallet = new Wallet(
+            privateKey = PrivateKey.generateED25519();
+            let wallet = new Wallet(
             AccountId.fromString(edAccountNumCounter.toString()),
             privateKey
-          );
-          if (this.nodeStartup && privateKeysED25519[i]) {
-            wallet = new Wallet(
-                AccountId.fromString(edAccountNumCounter.toString()),
-                privateKeysED25519[i]
             );
-          }
-          if (async) {
-            accounts.push(
-              this.createAccount(
-                async,
+            if (this.nodeStartup && privateKeysED25519[i]) {
+                wallet = new Wallet(
+                    AccountId.fromString(edAccountNumCounter.toString()),
+                    privateKeysED25519[i]
+                );
+            }
+            if (async) {
+                accounts.push(
+                    this.createAccountAsync(
+                    edAccountNumCounter++,
+                    balance,
+                    wallet,
+                    privateKey
+                    )
+                );
+                continue;
+            }
+            await this.createAccount(
                 edAccountNumCounter++,
                 balance,
                 wallet,
                 privateKey
-              )
-            );
-            continue;
-          }
-          accounts.push(
-            await this.createAccount(
-              async,
-              edAccountNumCounter++,
-              balance,
-              wallet,
-              privateKey
             )
-          );
         }
         if (!async) {
           this.logAccountDivider();
@@ -261,25 +254,39 @@ export class AccountCreationState implements IState{
         }
     }
 
-    private async createAccount (async: boolean, accountNum: number, balance: number, wallet: Wallet, privateKey: PrivateKey): Promise<void | Account> {
+    private async createAccountAsync (accountNum: number, balance: number, wallet: Wallet, privateKey: PrivateKey): Promise<Account> {
         const client = this.clientService.getClient();
         const tx = await new AccountCreateTransaction()
           .setKey(PublicKey.fromString(wallet.publicKey.toStringDer()))
           .setInitialBalance(new Hbar(balance))
           .execute(client);
         let accountId = `0.0.${accountNum}`;
-        
-        if (!this.nodeStartup || async) {
+
+        if (!this.nodeStartup) {
           const getReceipt = await tx.getReceipt(client);
           accountId = getReceipt.accountId!.toString();
         }
-        if (async) {
-          return {
+
+        return {
             accountId,
             wallet,
             balance: new Hbar(balance)
-          };
+        };
+    }
+
+    private async createAccount (accountNum: number, balance: number, wallet: Wallet, privateKey: PrivateKey) {
+        const client = this.clientService.getClient();
+        const tx = await new AccountCreateTransaction()
+          .setKey(PublicKey.fromString(wallet.publicKey.toStringDer()))
+          .setInitialBalance(new Hbar(balance))
+          .execute(client);
+        let accountId = `0.0.${accountNum}`;
+
+        if (!this.nodeStartup) {
+          const getReceipt = await tx.getReceipt(client);
+          accountId = getReceipt.accountId!.toString();
         }
+
         this.logAccount(
           accountId,
           new Hbar(balance),
