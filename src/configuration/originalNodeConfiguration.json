@@ -14,7 +14,7 @@
     ],
     "turboNodeProperties": {
         "dataPath": "file:///node/",
-        "sources": { "type": "LOCAL" }
+        "sources": [{ "type": "LOCAL" }]
     },
     "multiNodeProperties": [
         {
