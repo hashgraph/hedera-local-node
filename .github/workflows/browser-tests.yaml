@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Start the local node
-        run: node cli.js start -d
+        run: npm run start -- -d
 
       - name: Prepare and run the tests
         run: |
@@ -46,4 +46,4 @@ jobs:
           npm run test
 
       - name: Stop the local node
-        run: node cli.js stop
+        run: npm run stop
