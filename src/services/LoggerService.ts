@@ -56,7 +56,6 @@ export class LoggerService implements IService{
     }
 
     public trace(msg: string, module: string = ''): void {
-        this.logger.log(`[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`);
         const msgToLog = `[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`;
 
         const detached = this.getLogMode();
@@ -68,7 +67,6 @@ export class LoggerService implements IService{
     }
 
     public info(msg: string, module: string = ''): void {
-        this.logger.log(`[Hedera-Local-Node]\x1b[32m INFO \x1b[0m(${module}) ${msg}`);
         const msgToLog = `[Hedera-Local-Node]\x1b[32m INFO \x1b[0m(${module}) ${msg}`;
 
         const detached = this.getLogMode();
@@ -80,7 +78,6 @@ export class LoggerService implements IService{
     }
 
     public error(msg: string, module: string = ''): void {
-        this.logger.error(`[Hedera-Local-Node]\x1b[31m ERROR \x1b[0m(${module}) ${msg}`);
         const msgToLog = `[Hedera-Local-Node]\x1b[31m ERROR \x1b[0m(${module}) ${msg}`;
 
         const detached = this.getLogMode();
@@ -92,7 +89,6 @@ export class LoggerService implements IService{
     }
 
     public emptyLine(): void{
-        this.logger.log('');
         const detached = this.getLogMode();
         if (detached) {
             this.logger.log('');

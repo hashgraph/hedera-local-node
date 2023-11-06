@@ -69,9 +69,7 @@ export class AccountCreationState implements IState{
             await this.generateAsync(balance, accountNum);
         } else {
             await this.generateECDSA(async, balance, accountNum);
-            this.logger.emptyLine();
             await this.generateAliasECDSA(async, balance, accountNum);
-            this.logger.emptyLine();
             await this.generateED25519(async, balance, accountNum);
         }
 
