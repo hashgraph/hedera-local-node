@@ -24,6 +24,7 @@ export interface CLIOptions {
     accounts: number,
     async: boolean,
     balance: number,
+    detached: boolean,
     host: string,
     network: NetworkType,
     limits: boolean,

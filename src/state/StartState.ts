@@ -84,6 +84,7 @@ export class StartState implements IState{
             return;
         }
 
+        await this.logger.updateStatusBoard();
         this.logger.info('Hedera Local Node successfully started!', this.stateName);
         this.observer!.update(EventType.Finish);
     }

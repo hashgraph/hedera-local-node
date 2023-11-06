@@ -109,6 +109,14 @@ export class DockerService implements IService{
         }
         return false;
     }
+    
+    public async getContainer(containerLabel: string) {
+      const containerId = await this.getContainerId(containerLabel) as string;
+      const docker = new Dockerode({
+        socketPath: this.getDockerSocket(),
+      });
+      return docker.getContainer(containerId);
+    }
 
     public async getContainerId (name: string) {
         const docker = new Dockerode({ socketPath: this.dockerSocket });

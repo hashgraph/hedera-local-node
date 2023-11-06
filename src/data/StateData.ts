@@ -20,6 +20,7 @@
 
 import { AccountCreationState } from '../state/AccountCreationState';
 import { CleanUpState } from '../state/CleanUpState';
+import { AttachState } from '../state/AttachState';
 import { InitState } from '../state/InitState';
 import { NetworkPrepState } from '../state/NetworkPrepState';
 import { StartState } from '../state/StartState';
@@ -52,7 +53,9 @@ export class StateData {
                 new InitState(),
                 new StartState(),
                 new NetworkPrepState(),
-                new AccountCreationState()
+                new AccountCreationState(),
+                new CleanUpState(),
+                new AttachState()
             ]
         };
     }
@@ -65,7 +68,9 @@ export class StateData {
                 new StartState(),
                 new NetworkPrepState(),
                 new AccountCreationState(),
-                new CleanUpState()
+                new CleanUpState(),
+                new AttachState()
+                
             ]
         };
     }

@@ -74,6 +74,7 @@ export class CLIService implements IService{
         const accounts: number = this.currentArgv!.accounts as number;
         const async: any = this.currentArgv!.async as boolean;
         const balance: number = this.currentArgv!.balance as number;
+        const detached: boolean = this.currentArgv!.detached as boolean;
         const host: string = this.currentArgv!.host as string;
         const network: NetworkType = this.resolveNetwork(this.currentArgv!.network as string);
         const limits: boolean = this.currentArgv!.limits as boolean;
@@ -89,6 +90,7 @@ export class CLIService implements IService{
             accounts,
             async,
             balance,
+            detached,
             host,
             network,
             limits,
@@ -120,7 +122,8 @@ export class CLIService implements IService{
             alias: 'd',
             type: 'boolean',
             describe: 'Run the local node in detached mode',
-            demandOption: false
+            demandOption: false,
+            default: false
           });
     }
 
