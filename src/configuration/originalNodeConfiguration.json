@@ -1,0 +1,37 @@
+{
+    "bootsrapProperties": [
+        {"key": "ledger.id", "value": "0x01"},
+        {"key": "netty.mode", "value": "DEV"},
+        {"key": "contracts.chainId", "value": "298"},
+        {"key": "hedera.recordStream.logPeriod", "value": "1"},
+        {"key": "balances.exportPeriodSecs", "value": "400"}
+    ],
+    "fullNodeProperties": [
+        {
+          "accountId": "0.0.3",
+          "host": "network-node"
+        }
+    ],
+    "turboNodeProperties": {
+        "dataPath": "file:///node/",
+        "sources": [{ "type": "LOCAL" }]
+    },
+    "multiNodeProperties": [
+        {
+            "accountId": "0.0.3",
+            "host": "network-node"
+        },
+        {
+            "accountId": "0.0.4",
+            "host": "network-node-1"
+        },
+        {
+            "accountId": "0.0.5",
+            "host": "network-node-2"
+        },
+        {
+            "accountId": "0.0.6",
+            "host": "network-node-3"
+        }
+    ]
+}

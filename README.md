@@ -23,7 +23,7 @@ The Hedera Local Node project allows developers to set up their own local networ
 - **Ensure the `VirtioFS` file sharing implementation is enabled in the docker settings.**
 
 Note: The image may look different if you are on a different version
-![docker-compose-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/docker-compose-settings.png)
+![docker-compose-settings.png](.github/docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
   - **CPUs:** 6
@@ -32,7 +32,7 @@ Note: The image may look different if you are on a different version
   - **Disk Image Size:** 64 GB
 
 Note: The image may look different if you are on a different version
-![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/main/settings.png)
+![settings.png](.github/settings.png)
 
 # CLI Tool - @hashgraph/hedera-local
 
