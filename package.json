@@ -6,6 +6,7 @@
   "scripts": {
     "test:readiness": "node --loader ts-node/esm src/utils/testNode.js",
     "start": "node --loader ts-node/esm ./src/index.ts start",
+    "start:detached": "node --loader ts-node/esm ./src/index.ts start -d",
     "restart": "node --loader ts-node/esm ./src/index.ts restart",
     "stop": "node --loader ts-node/esm ./src/index.ts stop",
     "generate-accounts": "node --loader ts-node/esm ./src/index.ts generate-accounts",
@@ -32,6 +33,7 @@
   "author": "hashgraph",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/blessed": "^0.1.24",
     "@types/dockerode": "^3.3.21",
     "@types/js-yaml": "^4.0.8",
     "@types/shelljs": "^0.8.14",
@@ -49,7 +51,8 @@
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.37.0",
-    "@types/pino": "^7.0.5",
+    "blessed": "^0.1.81",
+    "blessed-terminal": "^0.1.22",
     "dockerode": "^4.0.0",
     "dotenv": "^16.3.1",
     "ethers": "^6.8.0",
