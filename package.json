@@ -5,22 +5,22 @@
   "main": "index.ts",
   "scripts": {
     "test:readiness": "node --loader ts-node/esm src/utils/testNode.js",
+    "build": "npx tsc",
     "start": "node --loader ts-node/esm ./src/index.ts start",
-    "start:detached": "node --loader ts-node/esm ./src/index.ts start -d",
     "restart": "node --loader ts-node/esm ./src/index.ts restart",
     "stop": "node --loader ts-node/esm ./src/index.ts stop",
     "generate-accounts": "node --loader ts-node/esm ./src/index.ts generate-accounts",
     "test:smoke": "npm --prefix test/smoke run test",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "lint": "eslint src/**/*.ts",
     "lint-fix": "eslint --fix src/**/*.ts",
     "pretty": "prettier --write 'src/**/*.ts'",
     "precommit": "npm run pretty",
-    "prepush": "npm run lint"
+    "prepush": "npm run lint",
+    "publish": "npm run build && npm publish"
   },
   "bin": {
-    "hedera": "node --loader ts-node/esm ./src/index.ts"
+    "hedera": "./dist/index.js"
   },
   "repository": {
     "type": "git",
