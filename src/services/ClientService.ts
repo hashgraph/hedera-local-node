@@ -18,7 +18,7 @@
  *
  */
 
-import { AccountId, Client } from '@hashgraph/sdk';
+import { Client } from '@hashgraph/sdk';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -59,6 +59,6 @@ export class ClientService implements IService{
         if (!this.client) {
             this.setupClient();
         }
-        return this.client!;
+        return this.client as Client;
     }
 }

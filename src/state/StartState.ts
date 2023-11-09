@@ -21,7 +21,6 @@
 import shell from 'shelljs';
 import path from 'path';
 import fs from 'fs';
-import { IS_WINDOWS } from '../constants';
 import { IOBserver } from '../controller/IObserver';
 import { CLIService } from '../services/CLIService';
 import { LoggerService } from '../services/LoggerService';

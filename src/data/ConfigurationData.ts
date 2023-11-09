@@ -42,8 +42,8 @@ export class ConfigurationData {
     }
 
     private getNetworkConfiguration(jsonConfiguration: NetworkConfiguration) {
-        const relayConfiguration = jsonConfiguration?.envConfiguration || undefined;
-        const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties || undefined;
+        const relayConfiguration = jsonConfiguration?.envConfiguration ?? undefined;
+        const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties ?? undefined;
         const configuration: NetworkConfiguration = {
             imageTagConfiguration: jsonConfiguration.imageTagConfiguration,
             envConfiguration: relayConfiguration,

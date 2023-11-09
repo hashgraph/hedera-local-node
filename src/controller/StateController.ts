@@ -74,8 +74,7 @@ export class StateController implements IOBserver{
     }
 
     private async transitionToNextState(): Promise<void> {
-        if (!(this.currStateNum < this.maxStateNum)) {
-            // TODO: handle end of program
+        if (this.currStateNum >= this.maxStateNum) {
             process.exit(0);
         }
         this.currStateNum+=1;

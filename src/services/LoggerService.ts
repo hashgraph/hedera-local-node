@@ -128,21 +128,23 @@ export class LoggerService implements IService{
         if (this.screen === undefined) {
             this.initiliazeTerminalUI();
         }
+        const consensusLog = this.consensusLog as terminal.Widgets.LogElement;
+        const accountBoard = this.accountBoard as terminal.Widgets.LogElement;
         switch (module) {
             case "InitState":
-                this.consensusLog!.log(msg);
+                consensusLog.log(msg);
                 break;
             case "NetworkPrepState":
-                this.consensusLog!.log(msg);
+                consensusLog.log(msg);
                 break;
             case "StartState":
-                this.consensusLog!.log(msg);
+                consensusLog.log(msg);
                 break;
             case "AccountCreationState":
-                this.accountBoard!.log(msg);
+                accountBoard.log(msg);
                 break;
             default:
-                this.consensusLog!.log(msg);
+                consensusLog.log(msg);
                 break;
         }
     }
@@ -252,6 +254,7 @@ export class LoggerService implements IService{
         const host = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv().host;
         const connectionCheckService = ServiceLocator.Current.get<ConnectionService>(ConnectionService.name);
         const dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
+        const status = this.status as terminal.Widgets.TableElement;
 
         let data: any[][] = [];
         await Promise.all(
@@ -276,11 +279,11 @@ export class LoggerService implements IService{
             data.push(row);
         })
         );
-        this.status!.setData({
+        status.setData({
         headers: ["Application", "Version", "Status", "Host", "Port"],
         data: data,
         });
-        this.screen!.render();
+        status.render();
     }
 
     private initiliazeConsensusLog(grid: terminal.grid): terminal.Widgets.LogElement {

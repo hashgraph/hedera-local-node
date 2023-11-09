@@ -18,7 +18,7 @@
  *
  */
 
-import { ArgumentsCamelCase, Argv, boolean } from 'yargs';
+import { ArgumentsCamelCase, Argv } from 'yargs';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -71,19 +71,20 @@ export class CLIService implements IService{
     }
 
     public getCurrentArgv(){
-        const accounts: number = this.currentArgv!.accounts as number;
-        const async: any = this.currentArgv!.async as boolean;
-        const balance: number = this.currentArgv!.balance as number;
-        const detached: boolean = this.currentArgv!.detached as boolean;
-        const host: string = this.currentArgv!.host as string;
-        const network: NetworkType = this.resolveNetwork(this.currentArgv!.network as string);
-        const limits: boolean = this.currentArgv!.limits as boolean;
-        const devMode: boolean = this.currentArgv!.dev as boolean;
-        const fullMode: boolean = this.currentArgv!.full as boolean;
-        const multiNode: boolean = this.currentArgv!.multinode as boolean;
-        const userCompose: boolean = this.currentArgv!.usercompose as boolean;
-        const userComposeDir: string = this.currentArgv!.composedir as string;
-        const blocklisting: boolean = this.currentArgv!.blocklist as boolean;
+        const argv = this.currentArgv as ArgumentsCamelCase<{}>;
+        const accounts: number = argv.accounts as number;
+        const async: any = argv.async as boolean;
+        const balance: number = argv.balance as number;
+        const detached: boolean = argv.detached as boolean;
+        const host: string = argv.host as string;
+        const network: NetworkType = this.resolveNetwork(argv.network as string);
+        const limits: boolean = argv.limits as boolean;
+        const devMode: boolean = argv.dev as boolean;
+        const fullMode: boolean = argv.full as boolean;
+        const multiNode: boolean = argv.multinode as boolean;
+        const userCompose: boolean = argv.usercompose as boolean;
+        const userComposeDir: string = argv.composedir as string;
+        const blocklisting: boolean = argv.blocklist as boolean;
         const startup: boolean = this.isStartup;
 
         const currentArgv: CLIOptions = {

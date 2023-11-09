@@ -23,7 +23,6 @@ import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import { CLIService } from './CLIService';
-import { CLIOptions } from '../types/CLIOptions';
 import { Errors } from '../Errors/LocalNodeErrors';
 
 export class ConnectionService implements IService{
