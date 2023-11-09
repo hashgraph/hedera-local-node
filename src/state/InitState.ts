@@ -68,7 +68,7 @@ export class InitState implements IState{
         const isDockerStarted = await this.dockerService.checkDocker();
 
         if (!(isCorrectDockerComposeVersion && isDockerStarted)) {
-            this.observer!.update(EventType.Error);
+            this.observer!.update(EventType.UnknownError);
             return;
         }
 
