@@ -20,5 +20,6 @@
 
 export enum EventType{
     Finish,
-    Error
+    DockerError,
+    UnknownError
 }

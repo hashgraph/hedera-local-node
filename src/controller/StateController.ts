@@ -22,6 +22,7 @@ import { StateData } from '../data/StateData';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { CleanUpState } from '../state/CleanUpState';
+import { RecoveryState } from '../state/RecoveryState';
 import { EventType } from '../types/EventType';
 import { StateConfiguration } from '../types/StateConfiguration';
 import { IOBserver } from './IObserver';
@@ -63,13 +64,12 @@ export class StateController implements IOBserver{
         if (event === EventType.Finish) {
             await this.transitionToNextState();
         } else {
-            // TODO: depending on the error, try to add recovery state, else clean up and end
-            const canRecover = false;
-            if (canRecover) {
-                // TODO: add recovery states based on error
+            if (event === EventType.UnknownError) {
+                await new CleanUpState().onStart();
+                process.exit(1);
+            } else {
+                await new RecoveryState(event).onStart();
             }
-            await new CleanUpState().onStart();
-            process.exit(1);
         }
     }
 

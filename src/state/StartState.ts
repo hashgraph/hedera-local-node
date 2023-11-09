@@ -68,7 +68,8 @@ export class StartState implements IState{
         shell.cd('../../');
         const output = await this.dockerComposeUp();
         if (output.code === 1) {
-            // TODO: add fallback
+            this.observer?.update(EventType.DockerError);
+            await this.dockerComposeUp();
         }
         shell.cd(rootPath);
         this.logger.info('Detecting network...', this.stateName);
@@ -80,7 +81,7 @@ export class StartState implements IState{
             if (e instanceof LocalNodeErrors) {
                 this.logger.error(e.message, this.stateName);
             }
-            this.observer!.update(EventType.Error);
+            this.observer!.update(EventType.UnknownError);
             return;
         }
 
