@@ -5,11 +5,11 @@
   "main": "index.ts",
   "scripts": {
     "test:readiness": "node --loader ts-node/esm src/utils/testNode.js",
-    "build": "npx tsc",
-    "start": "node --loader ts-node/esm ./src/index.ts start",
-    "restart": "node --loader ts-node/esm ./src/index.ts restart",
-    "stop": "node --loader ts-node/esm ./src/index.ts stop",
-    "generate-accounts": "node --loader ts-node/esm ./src/index.ts generate-accounts",
+    "build": "rimraf ./build && tsc",
+    "start": "npm run build && node ./build/index.js start",
+    "restart": "npm run build && node ./build/index.js restart",
+    "stop": "npm run build && node ./build/index.js stop",
+    "generate-accounts": "npm run build && node ./build/index.js generate-accounts",
     "test:smoke": "npm --prefix test/smoke run test",
     "prepare": "husky install",
     "lint": "eslint src/**/*.ts",
@@ -20,7 +20,7 @@
     "publish": "npm run build && npm publish"
   },
   "bin": {
-    "hedera": "./dist/index.js"
+    "hedera": "./build/index.js"
   },
   "repository": {
     "type": "git",
@@ -57,6 +57,7 @@
     "dotenv": "^16.3.1",
     "ethers": "^6.8.0",
     "js-yaml": "^4.1.0",
+    "rimraf": "^5.0.5",
     "semver": "^7.5.4",
     "shelljs": "^0.8.5",
     "yargs": "^17.7.2"
