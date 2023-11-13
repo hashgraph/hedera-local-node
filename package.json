@@ -16,8 +16,7 @@
     "lint-fix": "eslint --fix src/**/*.ts",
     "pretty": "prettier --write 'src/**/*.ts'",
     "precommit": "npm run pretty",
-    "prepush": "npm run lint",
-    "publish": "npm run build && npm publish"
+    "prepush": "npm run lint"
   },
   "bin": {
     "hedera": "./build/index.js"
