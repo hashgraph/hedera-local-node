@@ -1,0 +1,36 @@
+{
+  "imageTagConfiguration": [
+    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.44.0-alpha.2"},
+    {"key": "HAVEGED_IMAGE_TAG", "value": "0.44.0-alpha.2"},
+    {"key": "MIRROR_IMAGE_TAG", "value": "0.92.0"},
+    {"key": "RELAY_IMAGE_TAG", "value": "0.32.0"},
+    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "23.9.0"}
+  ],
+  "envConfiguration": [
+    {"key": "RELAY_FEE_HISTORY_MAX_RESULTS", "value": "10"},
+    {"key": "RELAY_DEFAULT_RATE_LIMIT", "value": "200"},
+    {"key": "RELAY_MIRROR_NODE_RETRIES", "value": "3"},
+    {"key": "RELAY_MIRROR_NODE_RETRY_DELAY", "value": "250"},
+    {"key": "RELAY_TIER_1_RATE_LIMIT", "value": "100"},
+    {"key": "RELAY_TIER_2_RATE_LIMIT", "value": "800"},
+    {"key": "RELAY_TIER_3_RATE_LIMIT", "value": "1600"},
+    {"key": "RELAY_LIMIT_DURATION", "value": "60000"},
+    {"key": "RELAY_HBAR_RATE_LIMIT_TINYBAR", "value": "500000000000"},
+    {"key": "RELAY_HBAR_RATE_LIMIT_DURATION", "value": "60000"},
+    {"key": "RELAY_ETH_GET_LOGS_BLOCK_RANGE_LIMIT", "value": "2000"},
+    {"key": "RELAY_WS_CONNECTION_LIMIT_PER_IP", "value": 10},
+    {"key": "RELAY_WS_CONNECTION_LIMIT", "value": 100},
+    {"key": "RELAY_WS_MAX_INACTIVITY_TTL", "value": 300000},
+    {"key": "RELAY_WS_MULTIPLE_ADDRESSES_ENABLED", "value": false},
+    {"key": "RELAY_WS_SUBSCRIPTION_LIMIT", "value": 100}
+],
+  "nodeConfiguration": {
+    "properties": [
+      {"key": "files.maxSizeKb", "value": "6144"},
+      {"key": "contracts.precompile.atomicCryptoTransfer.enabled", "value": true},
+      {"key": "hedera.transaction.eip2930.enabled", "value": true},
+      {"key": "accounts.blocklist.enabled", "value": false},
+      {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"}
+    ]
+  }
+}

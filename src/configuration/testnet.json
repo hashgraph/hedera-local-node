@@ -1,0 +1,14 @@
+{
+  "imageTagConfiguration": [
+    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.43.3"},
+    {"key": "HAVEGED_IMAGE_TAG", "value": "0.43.3"},
+    {"key": "MIRROR_IMAGE_TAG", "value": "0.91.0"},
+    {"key": "RELAY_IMAGE_TAG", "value": "0.35.2"},
+    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "23.9.0"}
+  ],
+  "nodeConfiguration": {
+    "properties": [
+      {"key": "contracts.maxNumWithHapiSigsAccess", "value": 0}
+    ]
+  }
+}

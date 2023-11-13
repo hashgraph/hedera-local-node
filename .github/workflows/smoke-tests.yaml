@@ -38,7 +38,7 @@ jobs:
           npm ci
 
       - name: Start the local node with ${{ matrix.network }} images
-        run: node cli.js start --network ${{ matrix.network }} -d
+        run: npm run start -- --network ${{ matrix.network }} -d
 
       - name: Run smoke test
         uses: nick-fields/retry@v2
@@ -48,4 +48,4 @@ jobs:
           command: npm run test:smoke
 
       - name: Stop the local node
-        run: node cli.js stop
+        run: npm run stop
