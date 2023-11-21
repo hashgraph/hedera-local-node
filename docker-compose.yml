@@ -302,6 +302,7 @@ services:
       - mirror-node
     environment:
       HEDERA_MIRROR_WEB3_DB_HOST: db
+      HEDERA_MIRROR_WEB3_EVM_NETWORK: OTHER
     ports:
       - "8545:8545"
     restart: unless-stopped
