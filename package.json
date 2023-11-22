@@ -1,5 +1,5 @@
 {
-  "name": "hedera-local-node",
+  "name": "@hashgraph/hedera-local",
   "version": "2.16.0",
   "description": "Developer tooling for running Local Hedera Network (Consensus + Mirror Nodes).",
   "main": "index.ts",
@@ -21,14 +21,12 @@
   "bin": {
     "hedera": "./build/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "github.com:hashgraph/hedera-local-node"
-  },
   "keywords": [
     "hedera",
     "hedera-local"
   ],
+  "homepage": "https://github.com/hashgraph/hedera-local-node",
+  "repository": "github.com:hashgraph/hedera-local-node",
   "author": "hashgraph",
   "license": "Apache-2.0",
   "devDependencies": {
