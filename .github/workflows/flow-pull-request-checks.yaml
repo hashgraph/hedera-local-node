@@ -22,6 +22,9 @@ on:
       - opened
       - reopened
       - synchronize
+  push:
+    branches:
+      - main
 
 defaults:
   run:
