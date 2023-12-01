@@ -25,6 +25,9 @@ import { NetworkType } from '../types/NetworkType';
 import { VerboseLevel } from '../types/VerboseLevel';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
+import { homedir } from 'os';
+import { join } from 'path';
+
 
 export class CLIService implements IService{
     private logger: LoggerService;
@@ -58,6 +61,8 @@ export class CLIService implements IService{
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
         CLIService.enableDebugOption(yargs);
+        CLIService.workingDirOption(yargs);
+
     }
 
     public static loadDebugOptions(yargs: Argv<{}>): void {
@@ -81,7 +86,7 @@ export class CLIService implements IService{
         CLIService.verboseLevelOption(yargs);
     }
 
-    public getCurrentArgv(){
+    public getCurrentArgv() {
         const argv = this.currentArgv as ArgumentsCamelCase<{}>;
         const accounts = argv.accounts as number;
         const async = argv.async as boolean;
@@ -100,6 +105,7 @@ export class CLIService implements IService{
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
         const timestamp = argv.timestamp as string;
         const enableDebug = argv.enableDebug as boolean;
+        const workingDir: string = argv.workdir as string;
 
         const currentArgv: CLIOptions = {
             accounts,
@@ -118,7 +124,8 @@ export class CLIService implements IService{
             startup,
             verbose,
             timestamp,
-            enableDebug
+            enableDebug,
+            workingDir,
         };
 
         return currentArgv;
@@ -164,7 +171,7 @@ export class CLIService implements IService{
             describe: 'Run the local node in detached mode',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     private static hostOption(yargs: Argv<{}>): void {
@@ -174,7 +181,7 @@ export class CLIService implements IService{
             describe: 'Run the local node with host',
             demandOption: false,
             default: '127.0.0.1'
-          });
+        });
     }
 
     private static networkOption(yargs: Argv<{}>): void {
@@ -182,10 +189,10 @@ export class CLIService implements IService{
             alias: 'n',
             type: 'string',
             describe:
-              "Select the network configuration. Pre-built configs: ['mainnet', 'previewnet', 'testnet', 'local']",
+                "Select the network configuration. Pre-built configs: ['mainnet', 'previewnet', 'testnet', 'local']",
             demandOption: false,
             default: 'local'
-          });
+        });
     }
 
     private static rateLimitOption(yargs: Argv<{}>): void {
@@ -195,7 +202,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable the rate limits in the JSON-RPC relay',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     private static timestampOption(yargs: Argv<{}>): void {
@@ -203,7 +210,7 @@ export class CLIService implements IService{
             type: 'string',
             describe: 'Record file timestamp',
             demandOption: true
-          });
+        });
     }
 
     private static devModeOption(yargs: Argv<{}>): void {
@@ -212,7 +219,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable developer mode',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     private static fullModeOption(yargs: Argv<{}>): void {
@@ -221,7 +228,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable full mode. Production local-node.',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     private static multiNodeOption(yargs: Argv<{}>): void {
@@ -230,7 +237,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable multi-node mode.',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     private static balanceOption(yargs: Argv<{}>): void {
@@ -239,7 +246,7 @@ export class CLIService implements IService{
             describe: 'Set starting balance of the created accounts in HBAR',
             demandOption: false,
             default: 10000
-          });
+        });
     }
 
     private static asyncOption(yargs: Argv<{}>): void {
@@ -249,7 +256,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable asynchronous creation of accounts',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     private static userComposeOption(yargs: Argv<{}>): void {
@@ -258,7 +265,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable user Compose configuration files',
             demandOption: false,
             default: true
-          });
+        });
     }
 
     private static userComposeDirOption(yargs: Argv<{}>): void {
@@ -267,7 +274,16 @@ export class CLIService implements IService{
             describe: 'Path to a directory with user Compose configuration files',
             demandOption: false,
             default: './overrides/'
-          });
+        });
+    }
+
+    private static workingDirOption(yargs: Argv<{}>): void {
+        yargs.option('workdir', {
+            type: 'string',
+            describe: 'Path to the working directory for local node',
+            demandOption: false,
+            default: CLIService.getPlatformSpecificAppDataPath('hedera-local')
+        });
     }
 
     private static blocklistingOption(yargs: Argv<{}>): void {
@@ -277,7 +293,7 @@ export class CLIService implements IService{
             describe: 'Enable or disable blocklisting accounts',
             demandOption: false,
             default: false
-          });
+        });
     }
 
     public static verboseLevelOption(yargs: Argv<{}>): void {
@@ -323,5 +339,17 @@ export class CLIService implements IService{
             default:
                 return VerboseLevel.INFO;
         }
+    }
+
+    private static getPlatformSpecificAppDataPath(name: string) {
+        if (process.platform === 'darwin') {
+            return join(homedir(), 'Library', 'Application Support', name);
+        }
+    
+        if (process.platform === 'win32') {
+            return join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), name);
+        }
+        // else it's Linux
+        return join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), name);
     }
 }
