@@ -9,6 +9,7 @@
   "envConfiguration": [
     {"key": "RELAY_FEE_HISTORY_MAX_RESULTS", "value": "10"},
     {"key": "RELAY_DEFAULT_RATE_LIMIT", "value": "200"},
+    {"key": "RELAY_DEV_MODE", "value": "true"},
     {"key": "RELAY_MIRROR_NODE_RETRIES", "value": "3"},
     {"key": "RELAY_MIRROR_NODE_RETRY_DELAY", "value": "250"},
     {"key": "RELAY_TIER_1_RATE_LIMIT", "value": "100"},
