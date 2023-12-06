@@ -127,19 +127,22 @@ export class AccountCreationState implements IState{
         let ecdsaAccountNumCounter = 1002;
         const accounts = [];
         let privateKey;
+        let wallet;
         if (!async) this.logAccountTitle(' ECDSA ');
     
         for (let i = 0; i < accountNum; i++) {
-            privateKey = PrivateKey.generateECDSA();
-            let wallet = new Wallet(
-            AccountId.fromString(ecdsaAccountNumCounter.toString()),
-            privateKey
-            );
-            if (this.nodeStartup && privateKeysECDSA[i]) {
+            if (this.nodeStartup) {
+                privateKey = PrivateKey.fromStringECDSA(privateKeysECDSA[i]);
                 wallet = new Wallet(
                     AccountId.fromString(ecdsaAccountNumCounter.toString()),
-                    privateKeysECDSA[i]
+                    privateKey
                 );
+            } else {
+                privateKey = PrivateKey.generateECDSA();
+                wallet = new Wallet(
+                    AccountId.fromString(ecdsaAccountNumCounter.toString()),
+                    privateKey
+                    );
             }
             if (async) {
                 accounts.push(
@@ -212,19 +215,24 @@ export class AccountCreationState implements IState{
         let edAccountNumCounter = 1022;
         const accounts = [];
         let privateKey;
-    
+        let wallet;
         if (!async) this.logAccountTitle('ED25519');
     
         for (let i = 0; i < accountNum; i++) {
-            privateKey = PrivateKey.generateED25519();
-            let wallet = new Wallet(
-            AccountId.fromString(edAccountNumCounter.toString()),
-            privateKey
-            );
-            if (this.nodeStartup && privateKeysED25519[i]) {
+
+            if (this.nodeStartup) {
+                privateKey = PrivateKey.fromStringED25519(privateKeysED25519[i]);
+                
                 wallet = new Wallet(
                     AccountId.fromString(edAccountNumCounter.toString()),
-                    privateKeysED25519[i]
+                    privateKey
+                );
+            } else {
+                privateKey = PrivateKey.generateED25519();
+
+                wallet = new Wallet(
+                AccountId.fromString(edAccountNumCounter.toString()),
+                privateKey
                 );
             }
             if (async) {
