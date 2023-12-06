@@ -47,12 +47,12 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@hashgraph/sdk": "^2.38.0",
+    "@hashgraph/sdk": "^2.39.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "dockerode": "^4.0.0",
     "dotenv": "^16.3.1",
-    "ethers": "^6.8.1",
+    "ethers": "^6.9.0",
     "js-yaml": "^4.1.0",
     "rimraf": "^5.0.5",
     "semver": "^7.5.4",
