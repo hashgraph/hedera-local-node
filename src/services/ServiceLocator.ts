@@ -23,10 +23,14 @@ import { IService } from './IService';
 export class ServiceLocator {
     private services: Map<string,IService> = new Map<string, IService>();
 
-    public static Current: ServiceLocator;
+    private static _Current: ServiceLocator;
 
-    public static Initiailze(): void {
-        this.Current = new ServiceLocator();
+    public static get Current(): ServiceLocator {
+        if (!ServiceLocator._Current) {
+            this._Current = new ServiceLocator();
+        }
+        
+        return this._Current
     }
 
     public get<T extends IService>(serviceName: string): T {
