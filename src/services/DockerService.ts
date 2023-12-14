@@ -36,7 +36,7 @@ export class DockerService implements IService{
     constructor() {
         this.serviceName = DockerService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Docker Service Initialized!', this.serviceName);
+        this.logger.info('Docker Service Initialized!', this.serviceName);
 
         const defaultSocketPath = IS_WINDOWS
         ? '//./pipe/docker_engine'

@@ -29,6 +29,8 @@ import { DockerService } from './DockerService';
 
 export class LoggerService implements IService{
 
+    private serviceLocator: ServiceLocator;
+
     private logger: any;
     
     private serviceName: string;
@@ -52,11 +54,17 @@ export class LoggerService implements IService{
     constructor() {
         this.serviceName = LoggerService.name;
         this.logger = console;
+        this.serviceLocator = ServiceLocator.Current;
         this.logger.log('Logger Service Initialized!', this.serviceName);
     }
 
     public trace(msg: string, module: string = ''): void {
         const msgToLog = `[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`;
+        const verboseLevel = this.serviceLocator.get<CLIService>(CLIService.name).getCurrentArgv().verbose;
+
+        if (verboseLevel <= 0) {
+            return;
+        }
 
         const detached = this.getLogMode();
         if (detached) {

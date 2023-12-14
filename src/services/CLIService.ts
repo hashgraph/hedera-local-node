@@ -24,6 +24,7 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import { CLIOptions } from '../types/CLIOptions';
 import { NetworkType } from '../types/NetworkType';
+import { VerboseLevel } from '../types/VerboseLevel';
 
 
 export class CLIService implements IService{
@@ -38,7 +39,7 @@ export class CLIService implements IService{
     constructor() {
         this.serviceName = CLIService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('CLI Service Initialized!', this.serviceName);
+        this.logger.info('CLI Service Initialized!', this.serviceName);
         this.isStartup = true;
     }
 
@@ -67,6 +68,7 @@ export class CLIService implements IService{
         this.asyncOption(yargs);
         this.balanceOption(yargs);
         this.hostOption(yargs);
+        this.verboseOption(yargs);
         this.isStartup = false;
     }
 
@@ -86,6 +88,7 @@ export class CLIService implements IService{
         const userComposeDir: string = argv.composedir as string;
         const blocklisting: boolean = argv.blocklist as boolean;
         const startup: boolean = this.isStartup;
+        const verbose: VerboseLevel = this.resolveVerboseLevel(argv.verbose as string);
 
         const currentArgv: CLIOptions = {
             accounts,
@@ -101,7 +104,8 @@ export class CLIService implements IService{
             userCompose,
             userComposeDir,
             blocklisting,
-            startup
+            startup,
+            verbose
         };
 
         return currentArgv;
@@ -109,6 +113,15 @@ export class CLIService implements IService{
 
     public setCurrentArgv(argv: ArgumentsCamelCase<{}>): void {
         this.currentArgv = argv;
+    }
+
+    private resolveVerboseLevel(verboseLevel: string) {
+        switch (verboseLevel) {
+            case "INFO":
+                return VerboseLevel.INFO;
+            default:
+                return VerboseLevel.TRACE
+        }
     }
 
     private accountOption(yargs: Argv<{}>): void {
@@ -238,6 +251,15 @@ export class CLIService implements IService{
             describe: 'Enable or disable blocklisting accounts',
             demandOption: false,
             default: false
+          });
+    }
+
+    private verboseOption(yargs: Argv<{}>): void {
+        yargs.option('verbose', {
+            type: 'string',
+            describe: 'Set verbose level',
+            demandOption: false,
+            default: "INFO"
           });
     }
     

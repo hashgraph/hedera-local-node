@@ -38,7 +38,7 @@ export class ClientService implements IService{
         this.serviceName = ClientService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
-        this.logger.trace('Client Service Initialized!', this.serviceName);
+        this.logger.info('Client Service Initialized!', this.serviceName);
     }
 
     private setupClient(): void {

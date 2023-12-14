@@ -36,7 +36,7 @@ export class ConnectionService implements IService{
         this.serviceName = ConnectionService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
-        this.logger.trace('Connection Service Initialized!', this.serviceName);
+        this.logger.info('Connection Service Initialized!', this.serviceName);
     }
 
     public async waitForFiringUp(port: number) {
