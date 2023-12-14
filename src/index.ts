@@ -27,9 +27,6 @@ import { StateController } from "./controller/StateController";
 import { CLIService } from "./services/CLIService";
 
 yargs(hideBin(process.argv))
-    .middleware(function (argv) {
-        Bootstrapper.Initiailze(argv);
-    })
     .command(
         "start [accounts]",
         "Starts the local hedera network.",
@@ -70,6 +67,10 @@ yargs(hideBin(process.argv))
         },
         async () => await new StateController("debug").startStateMachine()
     )
+    .middleware(function (argv) {
+        console.log('from middleware', argv)
+        Bootstrapper.Initiailze(argv);
+    })
     .demandCommand()
     .strictCommands()
     .recommendCommands()

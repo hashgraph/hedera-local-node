@@ -18,6 +18,6 @@
  *
  */
 export enum VerboseLevel {
-    TRACE = "trace",
-    INFO = "info",
+    INFO,
+    TRACE
 }

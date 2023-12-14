@@ -19,7 +19,6 @@
  */
 
 import { NetworkType } from "./NetworkType";
-import { VerboseLevel } from "./VerboseLevel";
 
 export interface CLIOptions {
     accounts: number,
@@ -36,5 +35,5 @@ export interface CLIOptions {
     userComposeDir: string,
     blocklisting: boolean,
     startup: boolean,
-    verboseLevel: VerboseLevel
+    verbose: number
 }

@@ -54,9 +54,9 @@ export class LoggerService implements IService{
 
     private infoBoard: terminal.Widgets.TableElement | undefined;
 
-    private verboseLevel: string;
+    private verboseLevel: number;
 
-    constructor(verboseLevel: string) {
+    constructor(verboseLevel: number) {
         this.serviceName = LoggerService.name;
         this.verboseLevel = verboseLevel;
         this.logger = console;

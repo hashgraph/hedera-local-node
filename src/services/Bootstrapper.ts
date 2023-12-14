@@ -28,7 +28,8 @@ import { ServiceLocator } from './ServiceLocator';
 
 export class Bootstrapper {
     public static async Initiailze(argv: yargs.ArgumentsCamelCase<{}>): Promise<void> {
-        ServiceLocator.Current.register(new LoggerService(argv.verboseLevel as string));
+        const verbose = CLIService.resolveVerboseLevel(argv.verbose as string)
+        ServiceLocator.Current.register(new LoggerService(verbose));
         ServiceLocator.Current.register(new CLIService(argv));
         ServiceLocator.Current.register(new DockerService());
         ServiceLocator.Current.register(new ConnectionService());

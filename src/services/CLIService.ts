@@ -33,8 +33,6 @@ export class CLIService implements IService{
     
     private currentArgv: ArgumentsCamelCase<{}> | undefined;
 
-    private isStartup = true;
-
     public get verboseLevel() : string {
         return this.currentArgv?.verboseLevel as string;
     }
@@ -84,21 +82,21 @@ export class CLIService implements IService{
 
     public getCurrentArgv(){
         const argv = this.currentArgv as ArgumentsCamelCase<{}>;
-        const accounts: number = argv.accounts as number;
-        const async: any = argv.async as boolean;
-        const balance: number = argv.balance as number;
-        const detached: boolean = argv.detached as boolean;
-        const host: string = argv.host as string;
-        const network: NetworkType = CLIService.resolveNetwork(argv.network as string);
-        const limits: boolean = argv.limits as boolean;
-        const devMode: boolean = argv.dev as boolean;
-        const fullMode: boolean = argv.full as boolean;
-        const multiNode: boolean = argv.multinode as boolean;
-        const userCompose: boolean = argv.usercompose as boolean;
-        const userComposeDir: string = argv.composedir as string;
-        const blocklisting: boolean = argv.blocklist as boolean;
-        const startup: boolean = this.isStartup;
-        const verboseLevel: VerboseLevel = CLIService.resolveVerboseLevel(argv.verboseLevel as string);
+        const accounts = argv.accounts as number;
+        const async = argv.async as boolean;
+        const balance = argv.balance as number;
+        const detached = argv.detached as boolean;
+        const host = argv.host as string;
+        const network = CLIService.resolveNetwork(argv.network as string);
+        const limits = argv.limits as boolean;
+        const devMode = argv.dev as boolean;
+        const fullMode = argv.full as boolean;
+        const multiNode = argv.multinode as boolean;
+        const userCompose = argv.usercompose as boolean;
+        const userComposeDir = argv.composedir as string;
+        const blocklisting = argv.blocklist as boolean;
+        const startup = true;
+        const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
 
         const currentArgv: CLIOptions = {
             accounts,
@@ -115,30 +113,34 @@ export class CLIService implements IService{
             userComposeDir,
             blocklisting,
             startup,
-            verboseLevel
+            verbose
         };
 
         return currentArgv;
     }
 
     public setCurrentArgv(argv: ArgumentsCamelCase<{}>): void {
+        const state = argv._[0] as string
         this.currentArgv = {
             ...argv,
-            detached: this.defIsStartup(argv)
+            detached: this.isStartup(state)
         };
     }
 
-    private defIsStartup(argv: yargs.ArgumentsCamelCase<{}>): boolean {
-        switch (argv._[0]) {
+    private isStartup(state: string): boolean {
+        switch (state) {
             case 'stop':
+                return true;
             case 'generate-accounts':
+                return true;
             case 'debug':
                 return true;
             case 'start':
+                return false;
             case 'restart':
                 return false;
             default:
-                return true;    
+                return true;   
         };
     }
 
@@ -273,13 +275,12 @@ export class CLIService implements IService{
     }
 
     public static verboseLevelOption(yargs: Argv<{}>): void {
-        yargs.option('verboseLevel', {
-            alias: 'vl',
+        yargs.option('verbose', {
             type: 'string',
             describe: 'Set the verbose level',
             demandOption: false,
             choices: ['info', 'trace'],
-            default: process.env.VERBOSE_LEVEL || VerboseLevel.INFO,
+            default: 'INFO',
           });
     }
     
@@ -298,7 +299,7 @@ export class CLIService implements IService{
         }
     }
 
-    private static resolveVerboseLevel(level: string): VerboseLevel {
+    public static resolveVerboseLevel(level: string): VerboseLevel {
         switch (level) {
             case 'info':
                 return VerboseLevel.INFO;
