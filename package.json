@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "test:readiness": "node --loader ts-node/esm src/utils/testNode.js",
-    "build": "rimraf ./build && tsc && npm run copy-assets",
+    "build": "rimraf ./build && tsc",
     "start": "npm run build && node ./build/index.js start",
     "restart": "npm run build && node ./build/index.js restart",
     "stop": "npm run build && node ./build/index.js stop",
@@ -16,8 +16,7 @@
     "lint-fix": "eslint --fix src/**/*.ts",
     "pretty": "prettier --write 'src/**/*.ts'",
     "precommit": "npm run pretty",
-    "prepush": "npm run lint",
-    "copy-assets": "cp compose-network/network-node/data/config/evm-addresses-blocklist.csv build/state"
+    "prepush": "npm run lint"
   },
   "bin": {
     "hedera": "./build/index.js"

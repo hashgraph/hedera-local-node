@@ -36,7 +36,8 @@ import { ClientService } from '../services/ClientService';
 import {
     privateKeysECDSA, privateKeysAliasECDSA, privateKeysED25519
 } from '../configuration/accountConfiguration.json';
-import { EVM_ADDRESSES_BLOCKLIST_FILE_NAME } from '../constants';
+import { EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH } from '../constants';
+import local from '../configuration/local.json';
 
 export class AccountCreationState implements IState{
     private logger: LoggerService;
@@ -70,7 +71,9 @@ export class AccountCreationState implements IState{
         const currentArgv = this.cliService.getCurrentArgv();
         const async = currentArgv.async;
         this.blacklistedAccountsCount = await this.getBlacklistedAccountsCount();
-        this.logger.info(`Starting Account Creation state in ${async ? `asynchronous` : `synchronous`} mode... with ${this.blacklistedAccountsCount} blacklisted accounts`, this.stateName);
+        this.logger.info(
+            `Starting Account Creation state in ${async ? `asynchronous` : `synchronous`} mode ${this.blacklistedAccountsCount > 0 ? `... with ${this.blacklistedAccountsCount} blacklisted accounts` : ''}`, this.stateName
+        );
         
         const balance = currentArgv.balance;
         const accountNum = currentArgv.accounts;
@@ -333,18 +336,27 @@ export class AccountCreationState implements IState{
         return { accountId: accountNum, wallet, balance };
     }
 
+    private blockListFileName(): string {
+        return local.nodeConfiguration.properties
+            .find((prop) => prop.key === 'accounts.blocklist.path')?.value as string
+    }
+
     private async getBlacklistedAccountsCount (): Promise<number> {
         return new Promise((resolve) => {
             let count = 0;
-            const filepath = path.join(__dirname, EVM_ADDRESSES_BLOCKLIST_FILE_NAME)
+            const filepath = path.join(
+                __dirname,
+                EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH,
+                this.blockListFileName()
+            );
             createReadStream(filepath)
                 .pipe(csvParser())
                 .on('data', (r: string) => {
-                    count++
+                    count++;
                 })
                 .on('end', () => {
-                    resolve(count)
-                })
+                    resolve(count);
+                });
         })
     }
 
