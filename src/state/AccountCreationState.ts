@@ -71,8 +71,10 @@ export class AccountCreationState implements IState{
         const currentArgv = this.cliService.getCurrentArgv();
         const async = currentArgv.async;
         this.blacklistedAccountsCount = await this.getBlacklistedAccountsCount();
+        const mode = async ? `asynchronous` : `synchronous`
+        const blackListedMessage = this.blacklistedAccountsCount > 0 ? `... with ${this.blacklistedAccountsCount} blacklisted accounts` : ''
         this.logger.info(
-            `Starting Account Creation state in ${async ? `asynchronous` : `synchronous`} mode ${this.blacklistedAccountsCount > 0 ? `... with ${this.blacklistedAccountsCount} blacklisted accounts` : ''}`, this.stateName
+            `Starting Account Creation state in ${mode} mode ${blackListedMessage}`, this.stateName
         );
         
         const balance = currentArgv.balance;
