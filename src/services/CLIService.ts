@@ -119,6 +119,8 @@ export class CLIService implements IService{
         switch (verboseLevel) {
             case "INFO":
                 return VerboseLevel.INFO;
+            case "TRACE":
+                return VerboseLevel.TRACE;
             default:
                 return VerboseLevel.TRACE
         }
