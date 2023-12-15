@@ -50,6 +50,7 @@
     "@hashgraph/sdk": "^2.39.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
+    "csv-parser": "^3.0.0",
     "dockerode": "^4.0.0",
     "dotenv": "^16.3.1",
     "ethers": "^6.9.0",

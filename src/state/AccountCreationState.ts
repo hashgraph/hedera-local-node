@@ -17,18 +17,27 @@
  * limitations under the License.
  *
  */
-
+import path from 'path';
+import { createReadStream } from 'fs';
+import csvParser from 'csv-parser';
 import { ethers } from 'ethers';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
-import { AccountCreateTransaction, AccountId, AccountInfoQuery, Hbar, PrivateKey, PublicKey, TransferTransaction, Wallet } from '@hashgraph/sdk';
+import {
+    AccountCreateTransaction, AccountId, AccountInfoQuery,
+    Hbar, PrivateKey, PublicKey, TransferTransaction, Wallet
+} from '@hashgraph/sdk';
 import { CLIService } from '../services/CLIService';
 import { Account } from '../types/AccountType';
 import { ClientService } from '../services/ClientService';
-import { privateKeysECDSA, privateKeysAliasECDSA, privateKeysED25519 } from '../configuration/accountConfiguration.json';
+import {
+    privateKeysECDSA, privateKeysAliasECDSA, privateKeysED25519
+} from '../configuration/accountConfiguration.json';
+import { EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH } from '../constants';
+import local from '../configuration/local.json';
 
 export class AccountCreationState implements IState{
     private logger: LoggerService;
@@ -42,6 +51,8 @@ export class AccountCreationState implements IState{
     private stateName: string;
 
     private nodeStartup: boolean;
+
+    private blacklistedAccountsCount: number = 0;
     
     constructor() {
         this.stateName = AccountCreationState.name;
@@ -59,8 +70,13 @@ export class AccountCreationState implements IState{
     public async onStart(): Promise<void> {
         const currentArgv = this.cliService.getCurrentArgv();
         const async = currentArgv.async;
-        this.logger.info(`Starting Account Creation state in ${async ? `asynchronous` : `synchronous`} mode...`, this.stateName);
-
+        this.blacklistedAccountsCount = await this.getBlacklistedAccountsCount();
+        const mode = async ? `asynchronous` : `synchronous`
+        const blackListedMessage = this.blacklistedAccountsCount > 0 ? `with ${this.blacklistedAccountsCount} blacklisted accounts` : ''
+        this.logger.info(
+            `Starting Account Creation state in ${mode} mode ${blackListedMessage}`, this.stateName
+        );
+        
         const balance = currentArgv.balance;
         const accountNum = currentArgv.accounts;
         this.nodeStartup = currentArgv.startup;
@@ -124,7 +140,7 @@ export class AccountCreationState implements IState{
     }
 
     private async generateECDSA(async: boolean, balance: number, accountNum: number) {
-        let ecdsaAccountNumCounter = 1002;
+        let ecdsaAccountNumCounter = 1002 + this.blacklistedAccountsCount;
         const accounts = [];
         let privateKey;
         let wallet;
@@ -170,7 +186,7 @@ export class AccountCreationState implements IState{
     }
 
     private async generateAliasECDSA(async: boolean, balance: number, accountNum: number) {
-        let aliasedAccountNumCounter = 1012;
+        let aliasedAccountNumCounter = 1012 + this.blacklistedAccountsCount;
         const accounts = [];
     
         if (!async) this.logAliasAccountTitle();
@@ -212,7 +228,7 @@ export class AccountCreationState implements IState{
     }
 
     private async generateED25519(async: boolean, balance: number, accountNum: number) {
-        let edAccountNumCounter = 1022;
+        let edAccountNumCounter = 1022 + this.blacklistedAccountsCount;
         const accounts = [];
         let privateKey;
         let wallet;
@@ -319,6 +335,30 @@ export class AccountCreationState implements IState{
           accountNum = accountInfo.accountId.toString();
         }
         return { accountId: accountNum, wallet, balance };
+    }
+
+    private blockListFileName(): string {
+        return local.nodeConfiguration.properties
+            .find((prop) => prop.key === 'accounts.blocklist.path')?.value as string
+    }
+
+    private async getBlacklistedAccountsCount (): Promise<number> {
+        return new Promise((resolve) => {
+            let count = 0;
+            const filepath = path.join(
+                __dirname,
+                EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH,
+                this.blockListFileName()
+            );
+            createReadStream(filepath)
+                .pipe(csvParser())
+                .on('data', (r: string) => {
+                    count++;
+                })
+                .on('end', () => {
+                    resolve(count);
+                });
+        })
     }
 
     private logAccount (accountId: string, balance: Hbar, privateKey: string) {
