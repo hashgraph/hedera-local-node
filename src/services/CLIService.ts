@@ -280,7 +280,7 @@ export class CLIService implements IService{
             describe: 'Set the verbose level',
             demandOption: false,
             choices: ['info', 'trace'],
-            default: 'INFO',
+            default: 'info',
           });
     }
     
