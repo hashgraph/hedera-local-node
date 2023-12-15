@@ -52,7 +52,7 @@ export class AccountCreationState implements IState{
 
     private nodeStartup: boolean;
 
-    private blacklistedAccountsCount: number = 0;
+    private blocklistedAccountsCount: number = 0;
     
     constructor() {
         this.stateName = AccountCreationState.name;
@@ -70,11 +70,11 @@ export class AccountCreationState implements IState{
     public async onStart(): Promise<void> {
         const currentArgv = this.cliService.getCurrentArgv();
         const async = currentArgv.async;
-        this.blacklistedAccountsCount = await this.getBlacklistedAccountsCount();
+        this.blocklistedAccountsCount = await this.getBlocklistedAccountsCount();
         const mode = async ? `asynchronous` : `synchronous`
-        const blackListedMessage = this.blacklistedAccountsCount > 0 ? `with ${this.blacklistedAccountsCount} blacklisted accounts` : ''
+        const blockListedMessage = this.blocklistedAccountsCount > 0 ? `with ${this.blocklistedAccountsCount} blocklisted accounts` : ''
         this.logger.info(
-            `Starting Account Creation state in ${mode} mode ${blackListedMessage}`, this.stateName
+            `Starting Account Creation state in ${mode} mode ${blockListedMessage}`, this.stateName
         );
         
         const balance = currentArgv.balance;
@@ -140,7 +140,7 @@ export class AccountCreationState implements IState{
     }
 
     private async generateECDSA(async: boolean, balance: number, accountNum: number) {
-        let ecdsaAccountNumCounter = 1002 + this.blacklistedAccountsCount;
+        let ecdsaAccountNumCounter = 1002 + this.blocklistedAccountsCount;
         const accounts = [];
         let privateKey;
         let wallet;
@@ -186,7 +186,7 @@ export class AccountCreationState implements IState{
     }
 
     private async generateAliasECDSA(async: boolean, balance: number, accountNum: number) {
-        let aliasedAccountNumCounter = 1012 + this.blacklistedAccountsCount;
+        let aliasedAccountNumCounter = 1012 + this.blocklistedAccountsCount;
         const accounts = [];
     
         if (!async) this.logAliasAccountTitle();
@@ -228,7 +228,7 @@ export class AccountCreationState implements IState{
     }
 
     private async generateED25519(async: boolean, balance: number, accountNum: number) {
-        let edAccountNumCounter = 1022 + this.blacklistedAccountsCount;
+        let edAccountNumCounter = 1022 + this.blocklistedAccountsCount;
         const accounts = [];
         let privateKey;
         let wallet;
@@ -342,7 +342,7 @@ export class AccountCreationState implements IState{
             .find((prop) => prop.key === 'accounts.blocklist.path')?.value as string
     }
 
-    private async getBlacklistedAccountsCount (): Promise<number> {
+    private async getBlocklistedAccountsCount (): Promise<number> {
         return new Promise((resolve) => {
             let count = 0;
             const filepath = path.join(
