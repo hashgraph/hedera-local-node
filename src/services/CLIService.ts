@@ -123,7 +123,7 @@ export class CLIService implements IService{
         const state = argv._[0] as string
         this.currentArgv = {
             ...argv,
-            detached: this.isStartup(state)
+            detached: this.isStartup(state) ? argv.detached : true,
         };
     }
 
