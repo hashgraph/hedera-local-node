@@ -17,23 +17,7 @@
  * limitations under the License.
  *
  */
-
-import { NetworkType } from "./NetworkType";
-
-export interface CLIOptions {
-    accounts: number,
-    async: boolean,
-    balance: number,
-    detached: boolean,
-    host: string,
-    network: NetworkType,
-    limits: boolean,
-    devMode: boolean,
-    fullMode: boolean,
-    multiNode: boolean,
-    userCompose: boolean,
-    userComposeDir: string,
-    blocklisting: boolean,
-    startup: boolean,
-    verbose: number
+export enum VerboseLevel {
+    INFO,
+    TRACE
 }

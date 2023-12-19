@@ -23,12 +23,17 @@ import terminal from 'blessed-terminal';
 import { IService } from './IService';
 import { ServiceLocator } from './ServiceLocator';
 import { CLIService } from './CLIService';
-import { CONSENSUS_NODE_LABEL, CONTAINERS, MIRROR_NODE_LABEL, RELAY_LABEL } from '../constants';
+import {
+    CONSENSUS_NODE_LABEL,
+    CONTAINERS,
+    MIRROR_NODE_LABEL,
+    RELAY_LABEL
+} from '../constants';
 import { ConnectionService } from './ConnectionService';
 import { DockerService } from './DockerService';
+import { VerboseLevel } from '../types/VerboseLevel';
 
 export class LoggerService implements IService{
-
     private logger: any;
     
     private serviceName: string;
@@ -49,43 +54,31 @@ export class LoggerService implements IService{
 
     private infoBoard: terminal.Widgets.TableElement | undefined;
 
-    constructor() {
+    private verboseLevel: number;
+
+    constructor(verboseLevel: number) {
         this.serviceName = LoggerService.name;
+        this.verboseLevel = verboseLevel;
         this.logger = console;
-        this.logger.log('Logger Service Initialized!', this.serviceName);
+        this.trace('Logger Service Initialized!', this.serviceName);
     }
 
     public trace(msg: string, module: string = ''): void {
-        const msgToLog = `[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`;
-
-        const detached = this.getLogMode();
-        if (detached) {
-            this.logger.log(msgToLog);
-        } else {
-            this.logToTUI(msgToLog, module);
+        if (this.verboseLevel === VerboseLevel.INFO) {
+            return;
         }
+        const msgToLog = `[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`;
+        this.writeToLog(msgToLog, module);
     }
 
     public info(msg: string, module: string = ''): void {
         const msgToLog = `[Hedera-Local-Node]\x1b[32m INFO \x1b[0m(${module}) ${msg}`;
-
-        const detached = this.getLogMode();
-        if (detached) {
-            this.logger.log(msgToLog);
-        } else {
-            this.logToTUI(msgToLog, module);
-        }
+        this.writeToLog(msgToLog, module);
     }
 
     public error(msg: string, module: string = ''): void {
         const msgToLog = `[Hedera-Local-Node]\x1b[31m ERROR \x1b[0m(${module}) ${msg}`;
-
-        const detached = this.getLogMode();
-        if (detached) {
-            this.logger.error(msgToLog);
-        } else {
-            this.logToTUI(msgToLog, module);
-        }
+        this.writeToLog(msgToLog, module);
     }
 
     public emptyLine(): void{
@@ -111,6 +104,15 @@ export class LoggerService implements IService{
             default:
                 this.consensusLog?.log(msg);
                 break;
+        }
+    }
+
+    private writeToLog(msg: string, module: string) {
+        const detached = this.getLogMode();
+        if (detached) {
+            this.logger.log(msg);
+        } else {
+            this.logToTUI(msg, module);
         }
     }
 

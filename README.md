@@ -100,6 +100,7 @@ Available commands:
     start - Starts the local hedera network.
         options:
             --d or --detached for starting in detached mode.
+            --verbose set the verbose level. Defaults to 'info' choices are "info" & "trace"
             --h or --host to override the default host.
             --n or --network to override the default configuration. Defaults to mainnet.
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.

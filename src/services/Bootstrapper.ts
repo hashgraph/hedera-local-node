@@ -18,6 +18,7 @@
  *
  */
 
+import yargs from 'yargs';
 import { CLIService } from './CLIService';
 import { ClientService } from './ClientService';
 import { ConnectionService } from './ConnectionService';
@@ -26,11 +27,10 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 
 export class Bootstrapper {
-    public static async Initiailze(): Promise<void> {
-        ServiceLocator.Initiailze();
-
-        ServiceLocator.Current.register(new LoggerService());
-        ServiceLocator.Current.register(new CLIService());
+    public static async Initiailze(argv: yargs.ArgumentsCamelCase<{}>): Promise<void> {
+        const verbose = CLIService.resolveVerboseLevel(argv.verbose as string)
+        ServiceLocator.Current.register(new LoggerService(verbose));
+        ServiceLocator.Current.register(new CLIService(argv));
         ServiceLocator.Current.register(new DockerService());
         ServiceLocator.Current.register(new ConnectionService());
         ServiceLocator.Current.register(new ClientService());
