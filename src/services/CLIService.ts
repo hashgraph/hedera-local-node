@@ -46,7 +46,7 @@ export class CLIService implements IService{
 
     public static loadStartupOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs)
-        CLIService.loadAccountOptions(yargs);
+        CLIService.loadAccountOptions(yargs, true);
         CLIService.detachedOption(yargs);
         CLIService.hostOption(yargs);
         CLIService.networkOption(yargs);
@@ -64,8 +64,8 @@ export class CLIService implements IService{
         CLIService.timestampOption(yargs);
     }
 
-    public static loadAccountOptions(yargs: Argv<{}>): void {
-        CLIService.loadCommonOptions(yargs)
+    public static loadAccountOptions(yargs: Argv<{}>, skipComman = false): void {
+        if(!skipComman) CLIService.loadCommonOptions(yargs)
         CLIService.accountOption(yargs);
         CLIService.asyncOption(yargs);
         CLIService.balanceOption(yargs);
