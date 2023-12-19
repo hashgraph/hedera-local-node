@@ -35,6 +35,6 @@
         }
     ],
     "local": {
-        "deleteAfterProcessing": true
+        "deleteAfterProcessing": false
     }
 }
