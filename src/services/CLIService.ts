@@ -57,6 +57,7 @@ export class CLIService implements IService{
         CLIService.userComposeOption(yargs);
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
+        CLIService.enableDebugOption(yargs);
     }
 
     public static loadDebugOptions(yargs: Argv<{}>): void {
@@ -97,6 +98,8 @@ export class CLIService implements IService{
         const blocklisting = argv.blocklist as boolean;
         const startup = argv.startup as boolean;
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
+        const timestamp = argv.timestamp as string;
+        const enableDebug = argv.enableDebug as boolean;
 
         const currentArgv: CLIOptions = {
             accounts,
@@ -113,7 +116,9 @@ export class CLIService implements IService{
             userComposeDir,
             blocklisting,
             startup,
-            verbose
+            verbose,
+            timestamp,
+            enableDebug
         };
 
         return currentArgv;
@@ -282,6 +287,15 @@ export class CLIService implements IService{
             demandOption: false,
             choices: ['info', 'trace'],
             default: 'info',
+        })
+    }
+    
+    private static enableDebugOption(yargs: Argv<{}>): void {
+        yargs.option('enable-debug', {
+            type: 'boolean',
+            describe: 'Enable or disable debugging of the local node',
+            demandOption: false,
+            default: false
           });
     }
     

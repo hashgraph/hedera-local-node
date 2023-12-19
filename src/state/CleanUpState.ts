@@ -60,6 +60,7 @@ export class CleanUpState implements IState{
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
         delete application.hedera.mirror.importer.dataPath;
         delete application.hedera.mirror.importer.downloader.sources;
+        delete application.hedera.mirror.importer.downloader.local
 
         application.hedera.mirror.monitor.nodes = originalNodeConfiguration.fullNodeProperties;
         writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));

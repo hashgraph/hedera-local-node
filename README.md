@@ -109,6 +109,7 @@ Available commands:
             --balance to set starting hbar balance of the created accounts.
             --async to enable or disable asynchronous creation of accounts.
             --b or --blocklist to enable or disable account blocklisting. Depending on how many private keys are blocklisted, this will affect the generated on startup accounts.
+            --enable-debug  Enable or disable debugging of the local node [boolean] [default: false]
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -116,6 +117,9 @@ Available commands:
             --h or --host to override the default host.
             --balance to set starting hbar balance of the created accounts.
             --async to enable or disable asynchronous creation of accounts.
+    debug [timestamp] - Parses and prints the contents of the record file that has been created
+                        during the selected timestamp.
+                        Important: Local node must be started with the -g, --enable-debug flag to enable this feature
 ```
 
 Note: Generated accounts are 3 types (ECDSA, Alias ECDSA and ED25519). All of them are usable via HederaSDK. Only Alias ECDSA accounts can be imported into wallet like Metamask or used in ethers.

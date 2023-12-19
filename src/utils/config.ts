@@ -17,25 +17,17 @@
  * limitations under the License.
  *
  */
+import { join } from 'path';
+import yaml from 'js-yaml';
+import { readFileSync } from 'fs';
+import { APPLICATION_YML_RELATIVE_PATH } from '../constants';
 
-import { NetworkType } from "./NetworkType";
+export default function readApplicationYML() {
+    const propertiesFilePath = join(__dirname, APPLICATION_YML_RELATIVE_PATH);
+    const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
 
-export interface CLIOptions {
-    accounts: number,
-    async: boolean,
-    balance: number,
-    detached: boolean,
-    host: string,
-    network: NetworkType,
-    limits: boolean,
-    devMode: boolean,
-    fullMode: boolean,
-    multiNode: boolean,
-    userCompose: boolean,
-    userComposeDir: string,
-    blocklisting: boolean,
-    startup: boolean,
-    verbose: number
-    timestamp: string,
-    enableDebug: boolean
+    return {
+        propertiesFilePath,
+        application
+    }
 }

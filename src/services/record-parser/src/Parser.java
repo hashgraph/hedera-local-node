@@ -1,4 +1,4 @@
-import static com.hedera.services.utils.forensics.RecordParsers.parseV6RecordStreamEntriesIn;
+import static com.hedera.node.app.service.mono.utils.forensics.RecordParsers.parseV6RecordStreamEntriesIn;
 public class Parser {
     public static void main(String[] args) {
         try {
