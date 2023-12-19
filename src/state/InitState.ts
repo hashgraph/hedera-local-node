@@ -75,12 +75,12 @@ export class InitState implements IState{
         await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
-        this.prepareWorkingDirectory();
-        const workingDirConfiguration = [
-            { key: "NETWORK_NODE_LOGS_ROOT_PATH", value: join(this.cliOptions.workingDir, "network-logs", "node") },
-            { key: "APPLICATION_CONFIG_PATH", value: join(this.cliOptions.workingDir, "compose-network","network-node","data","config") },
+        this.prepareWorkDirectory();
+        const workDirConfiguration = [
+            { key: "NETWORK_NODE_LOGS_ROOT_PATH", value: join(this.cliOptions.workDir, "network-logs", "node") },
+            { key: "APPLICATION_CONFIG_PATH", value: join(this.cliOptions.workDir, "compose-network","network-node","data","config") },
         ];
-        configurationData.envConfiguration = configurationData.envConfiguration?.concat(workingDirConfiguration);
+        configurationData.envConfiguration = configurationData.envConfiguration?.concat(workDirConfiguration);
         
         this.configureEnvVariables(configurationData.imageTagConfiguration, configurationData.envConfiguration);
         this.configureNodeProperties(configurationData.nodeConfiguration?.properties);
@@ -89,15 +89,15 @@ export class InitState implements IState{
         this.observer!.update(EventType.Finish);
     }
 
-   private prepareWorkingDirectory() {
-        this.logger.info(`Local Node Working directory set to ${this.cliOptions.workingDir}`,this.stateName);
-       this.ensureDirectoryExists(this.cliOptions.workingDir);
-       this.ensureDirectoryExists(join(this.cliOptions.workingDir, "network-logs","node"));
+   private prepareWorkDirectory() {
+        this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`,this.stateName);
+       this.ensureDirectoryExists(this.cliOptions.workDir);
+       this.ensureDirectoryExists(join(this.cliOptions.workDir, "network-logs","node"));
        const configDir = join(__dirname, '../../compose-network/network-node/data/config/');
        const configDirMirrorNode = join(__dirname, '../../compose-network/mirror-node/application.yml');
        const configFiles = {
-           [configDir]: `${this.cliOptions.workingDir}/compose-network/network-node/data/config`,
-           [configDirMirrorNode]: `${this.cliOptions.workingDir}/compose-network/mirror-node/application.yml`
+           [configDir]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
+           [configDirMirrorNode]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`
        }
        this.copyDirectories(configFiles);
         // throw new Error('Method not implemented.');
