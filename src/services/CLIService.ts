@@ -95,7 +95,7 @@ export class CLIService implements IService{
         const userCompose = argv.usercompose as boolean;
         const userComposeDir = argv.composedir as string;
         const blocklisting = argv.blocklist as boolean;
-        const startup = true;
+        const startup = argv.startup as boolean;
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
 
         const currentArgv: CLIOptions = {
@@ -123,24 +123,25 @@ export class CLIService implements IService{
         const state = argv._[0] as string
         this.currentArgv = {
             ...argv,
-            detached: this.isStartup(state) ? argv.detached : true,
+            detached: CLIService.isStartup(state) ? argv.detached : true,
+            startup: CLIService.isStartup(state)
         };
     }
 
-    private isStartup(state: string): boolean {
+    private static isStartup(state: string): boolean {
         switch (state) {
-            case 'stop':
-                return true;
-            case 'generate-accounts':
-                return true;
-            case 'debug':
-                return true;
             case 'start':
-                return false;
+                return true;
             case 'restart':
+                return true;
+            case 'stop':
+                return false;
+            case 'generate-accounts':
+                return false;
+            case 'debug':
                 return false;
             default:
-                return true;   
+                return true;
         };
     }
 
