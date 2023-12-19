@@ -61,7 +61,7 @@ export class CLIService implements IService{
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
         CLIService.enableDebugOption(yargs);
-        CLIService.workingDirOption(yargs);
+        CLIService.workDirOption(yargs);
 
     }
 
@@ -105,7 +105,7 @@ export class CLIService implements IService{
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
         const timestamp = argv.timestamp as string;
         const enableDebug = argv.enableDebug as boolean;
-        const workingDir: string = argv.workdir as string;
+        const workDir: string = argv.workdir as string;
 
         const currentArgv: CLIOptions = {
             accounts,
@@ -125,7 +125,7 @@ export class CLIService implements IService{
             verbose,
             timestamp,
             enableDebug,
-            workingDir,
+            workDir,
         };
 
         return currentArgv;
@@ -277,7 +277,7 @@ export class CLIService implements IService{
         });
     }
 
-    private static workingDirOption(yargs: Argv<{}>): void {
+    private static workDirOption(yargs: Argv<{}>): void {
         yargs.option('workdir', {
             type: 'string',
             describe: 'Path to the working directory for local node',

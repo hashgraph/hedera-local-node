@@ -38,5 +38,5 @@ export interface CLIOptions {
     verbose: number,
     timestamp: string,
     enableDebug: boolean,
-    workingDir: string,
+    workDir: string,
 }

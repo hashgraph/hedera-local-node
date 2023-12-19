@@ -74,7 +74,7 @@ export class InitState implements IState{
         await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
-        this.prepareWorkingDirectory();
+        this.prepareWorkDirectory();
         this.configureEnvVariables(configurationData.imageTagConfiguration, configurationData.envConfiguration);
         this.configureNodeProperties(configurationData.nodeConfiguration?.properties);
         this.configureMirrorNodeProperties();
@@ -82,8 +82,8 @@ export class InitState implements IState{
         this.observer!.update(EventType.Finish);
     }
 
-    prepareWorkingDirectory() {
-        this.logger.info(this.cliOptions.workingDir);
+    prepareWorkDirectory() {
+        this.logger.info(this.cliOptions.workDir);
         throw new Error('Method not implemented.');
     }
 
