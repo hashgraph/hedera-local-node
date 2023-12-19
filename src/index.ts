@@ -93,4 +93,3 @@ yargs(hideBin(process.argv))
         Disk Image Size: 64 GB`
   )
   .parse();
-  
