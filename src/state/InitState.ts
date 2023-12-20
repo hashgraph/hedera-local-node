@@ -47,7 +47,7 @@ export class InitState implements IState{
 
     private stateName: string;
 
-    private portsToCheck: number[] = [5551, 8545, 5600, 5433];
+    private portsToCheck: number[] = [5551, 8545, 5600, 5433, 7546];
     
     constructor() {
         this.stateName = InitState.name;
@@ -68,7 +68,7 @@ export class InitState implements IState{
         // Check if docker is running and it's the correct version
         const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
         const isDockerStarted = await this.dockerService.checkDocker();
-        this.dockerService.isPortInUse(this.portsToCheck)
+        await this.dockerService.isPortInUse(this.portsToCheck)
             .then((results) => {
                 results.forEach((result, index) => {
                     const port = this.portsToCheck[index];
@@ -82,11 +82,6 @@ export class InitState implements IState{
             .catch((error) => {
                 this.logger.error('Error checking ports:', error);
             });
-
-        if (!(isCorrectDockerComposeVersion && isDockerStarted)) {
-            this.observer!.update(EventType.UnknownError);
-            return;
-        }
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
 

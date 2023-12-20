@@ -25,6 +25,7 @@ import { IS_WINDOWS, UNKNOWN_VERSION } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
+import detectPort from 'detect-port';
 
 export class DockerService implements IService{
     private logger: LoggerService;
@@ -72,22 +73,12 @@ export class DockerService implements IService{
     }
 
     public async isPortInUse (portsToCheck: number[]): Promise<boolean[]> {
-      const promises = portsToCheck.map((port: number) => new Promise<boolean>((resolve, reject) => {
-        shell.exec(`lsof -i :${port}`, { silent: true }, (code, stdout, stderr) => {
-          if (stderr.length !== 0 && code !== 0) {
-            // Handle the error (e.g., reject the promise)
-            reject(stderr);
-            return;
-          }
-  
-          // Check if the output contains 'LISTEN'
-          const isPortUsed = stdout.includes('LISTEN');
-  
-          // Resolve the promise with the result
-          resolve(isPortUsed);
-        });
-      }));
-
+      const promises: Promise<boolean>[] = portsToCheck.map((port:number) => detectPort(port)
+        .then((available: number) => available !== port)
+        .catch((error: Error) => {
+          // Handle the error
+          throw error;
+        }));
       return Promise.all(promises);
     }
 
