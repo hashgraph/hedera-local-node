@@ -69,8 +69,11 @@ export class AccountCreationState implements IState{
 
     public async onStart(): Promise<void> {
         const currentArgv = this.cliService.getCurrentArgv();
-        const async = currentArgv.async;
-        this.blocklistedAccountsCount = await this.getBlocklistedAccountsCount();
+        const { async, blocklisting } = currentArgv;
+        if(blocklisting) {
+            this.blocklistedAccountsCount = await this.getBlocklistedAccountsCount();
+        }
+
         const mode = async ? `asynchronous` : `synchronous`
         const blockListedMessage = this.blocklistedAccountsCount > 0 ? `with ${this.blocklistedAccountsCount} blocklisted accounts` : ''
         this.logger.info(
