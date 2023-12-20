@@ -103,18 +103,21 @@ export class DebugState implements IState{
         // Copy the record file to a temp directory
           const files = readdirSync(recordFilesDirPath);
           const recordExt = `.${process.env.STREAM_EXTENSION}`;
-          for (const file of files) {
+          for (let i = 1; i < files.length; i++) {
+            const file = files[i];
             const recordFileName = file.replace(recordExt, '');
             const fileTimestamp = new Date(recordFileName.replace(/_/g, ':')).getTime();
+            
             if (fileTimestamp >= jsTimestampNum) {
-              if (file.endsWith(recordExt)) {
-                this.logger.trace(`Parsing record file [${file}]\n`);
+              const fileToShow = files[i - 2];
+              if (fileToShow.endsWith(recordExt)) {
+                this.logger.trace(`Parsing record file [${fileToShow}]\n`);
               }
 
               const sigFile = recordFileName + `.${process.env.STREAM_SIG_EXTENSION}`;
               copyFileSync(
-                resolve(recordFilesDirPath, file),
-                resolve(tmpDirPath, file)
+                resolve(recordFilesDirPath, fileToShow),
+                resolve(tmpDirPath, fileToShow)
               );
               copyFileSync(
                 resolve(recordFilesDirPath, sigFile),
