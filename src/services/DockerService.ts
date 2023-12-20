@@ -71,6 +71,26 @@ export class DockerService implements IService{
         return isRunning;
     }
 
+    public async isPortInUse (portsToCheck: number[]): Promise<boolean[]> {
+      const promises = portsToCheck.map((port: number) => new Promise<boolean>((resolve, reject) => {
+        shell.exec(`lsof -i :${port}`, { silent: true }, (code, stdout, stderr) => {
+          if (stderr.length !== 0 && code !== 0) {
+            // Handle the error (e.g., reject the promise)
+            reject(stderr);
+            return;
+          }
+  
+          // Check if the output contains 'LISTEN'
+          const isPortUsed = stdout.includes('LISTEN');
+  
+          // Resolve the promise with the result
+          resolve(isPortUsed);
+        });
+      }));
+
+      return Promise.all(promises);
+    }
+
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
         this.logger.trace('Checking docker compose version...', this.serviceName);
         // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
