@@ -72,14 +72,26 @@ export class DockerService implements IService{
         return isRunning;
     }
 
-    public async isPortInUse (portsToCheck: number[]): Promise<boolean[]> {
+    public async isPortInUse (portsToCheck: number[]): Promise<void> {
       const promises: Promise<boolean>[] = portsToCheck.map((port:number) => detectPort(port)
         .then((available: number) => available !== port)
         .catch((error: Error) => {
           // Handle the error
           throw error;
         }));
-      return Promise.all(promises);
+
+      const resolvedPromises: boolean[] = await Promise.all(promises);
+      resolvedPromises.forEach((result, index) => {
+        const port = portsToCheck[index];
+        if (result) {
+            this.logger.error(`Port ${port} is in use.`); 
+        }
+      });
+
+      if(!(resolvedPromises.every(value => value === false))) {
+        this.logger.info('Node cannot start properly because some ports are in use');
+        process.exit(1);
+      }
     }
 
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
