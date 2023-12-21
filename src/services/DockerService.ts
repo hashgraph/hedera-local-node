@@ -21,7 +21,7 @@
 import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
-import { IS_WINDOWS, UNKNOWN_VERSION } from '../constants';
+import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -83,13 +83,17 @@ export class DockerService implements IService{
       const resolvedPromises: boolean[] = await Promise.all(promises);
       resolvedPromises.forEach((result, index) => {
         const port = portsToCheck[index];
-        if (result) {
-            this.logger.error(`Port ${port} is in use.`); 
+        if (result && OPTIONAL_PORTS.includes(port)) {
+          this.logger.info(`Port ${port} is in use.`, this.serviceName); 
+        } else if (result && NECESSARY_PORTS.includes(port)) {
+          this.logger.error(`Port ${port} is in use.`, this.serviceName); 
         }
       });
 
-      if(!(resolvedPromises.every(value => value === false))) {
-        this.logger.info('Node cannot start properly because some ports are in use');
+      const resolvedPromisesNecessaryPortsOnly = resolvedPromises.slice(0, NECESSARY_PORTS.length);
+
+      if(!(resolvedPromisesNecessaryPortsOnly.every(value => value === false))) {
+        this.logger.error('Node cannot start properly because necessary ports are in use', this.serviceName);
         process.exit(1);
       }
     }
