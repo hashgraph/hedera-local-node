@@ -41,4 +41,6 @@ export const MIRROR_NODE_LABEL = "mirror-node-rest";
 export const RELAY_LABEL = "json-rpc-relay";
 export const IS_WINDOWS = process.platform === "win32";
 export const UNKNOWN_VERSION = "Unknown";
-export const EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH = '../../compose-network/network-node'
+export const EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH = '../../compose-network/network-node';
+export const NECESSARY_PORTS = [5551, 8545, 5600, 5433, 50211, 8082];
+export const OPTIONAL_PORTS = [7546, 8080, 6379, 3000];

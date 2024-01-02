@@ -33,6 +33,7 @@ import { ConfigurationData } from '../data/ConfigurationData';
 import { Configuration } from '../types/NetworkConfiguration';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { DockerService } from '../services/DockerService';
+import { NECESSARY_PORTS, OPTIONAL_PORTS } from '../constants';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
@@ -66,11 +67,7 @@ export class InitState implements IState{
         // Check if docker is running and it's the correct version
         const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
         const isDockerStarted = await this.dockerService.checkDocker();
-
-        if (!(isCorrectDockerComposeVersion && isDockerStarted)) {
-            this.observer!.update(EventType.UnknownError);
-            return;
-        }
+        await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
 

@@ -21,10 +21,11 @@
 import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
-import { IS_WINDOWS, UNKNOWN_VERSION } from '../constants';
+import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
+import detectPort from 'detect-port';
 
 export class DockerService implements IService{
     private logger: LoggerService;
@@ -69,6 +70,32 @@ export class DockerService implements IService{
             isRunning = false;
           });
         return isRunning;
+    }
+
+    public async isPortInUse (portsToCheck: number[]): Promise<void> {
+      const promises: Promise<boolean>[] = portsToCheck.map((port:number) => detectPort(port)
+        .then((available: number) => available !== port)
+        .catch((error: Error) => {
+          // Handle the error
+          throw error;
+        }));
+
+      const resolvedPromises: boolean[] = await Promise.all(promises);
+      resolvedPromises.forEach((result, index) => {
+        const port = portsToCheck[index];
+        if (result && OPTIONAL_PORTS.includes(port)) {
+          this.logger.info(`Port ${port} is in use.`, this.serviceName); 
+        } else if (result && NECESSARY_PORTS.includes(port)) {
+          this.logger.error(`Port ${port} is in use.`, this.serviceName); 
+        }
+      });
+
+      const resolvedPromisesNecessaryPortsOnly = resolvedPromises.slice(0, NECESSARY_PORTS.length);
+
+      if(!(resolvedPromisesNecessaryPortsOnly.every(value => value === false))) {
+        this.logger.error('Node cannot start properly because necessary ports are in use', this.serviceName);
+        process.exit(1);
+      }
     }
 
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
