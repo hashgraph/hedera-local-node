@@ -26,7 +26,6 @@ import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { CLIService } from '../services/CLIService';
-import readApplicationYML from '../utils/config';
 import { Errors } from '../Errors/LocalNodeErrors';
 import { RELATIVE_RECORDS_DIR_PATH, RELATIVE_TMP_DIR_PATH } from '../constants';
 
@@ -36,6 +35,9 @@ export class DebugState implements IState{
     private observer: IOBserver | undefined;
 
     private stateName: string;
+
+    private static readonly recordExt = `.${process.env.STREAM_EXTENSION}`;
+    private static readonly sigExt = `.${process.env.STREAM_SIG_EXTENSION}`;
     
     constructor() {
         this.stateName = DebugState.name;
@@ -77,14 +79,6 @@ export class DebugState implements IState{
         }
     }
 
-    private static checkForDebugMode(): void {
-        const { application } = readApplicationYML()
-        const { deleteAfterProcessing } = application.hedera.mirror.importer.downloader.local
-        if (deleteAfterProcessing) {
-          throw Errors.DEBUG_MODE_CHECK_ERROR();
-        }
-    }
-
     private static getAndValidateTimestamp(timestamp: string): number {
         const timestampRegEx = /^\d{10}[.-]\d{9}$/;
         if (!timestampRegEx.test(timestamp)) {          
@@ -102,32 +96,58 @@ export class DebugState implements IState{
     private findAndCopyRecordFileToTmpDir(jsTimestampNum: number, recordFilesDirPath: string, tmpDirPath: string): void {
         // Copy the record file to a temp directory
           const files = readdirSync(recordFilesDirPath);
-          const recordExt = `.${process.env.STREAM_EXTENSION}`;
+          
           for (let i = 1; i < files.length; i++) {
             const file = files[i];
-            const recordFileName = file.replace(recordExt, '');
+            const recordFileName = file.replace(DebugState.recordExt, '');
             const fileTimestamp = new Date(recordFileName.replace(/_/g, ':')).getTime();
-            
             if (fileTimestamp >= jsTimestampNum) {
-              const fileToShow = files[i - 2];
-              if (fileToShow.endsWith(recordExt)) {
-                this.logger.trace(`Parsing record file [${fileToShow}]\n`);
-              }
+              const fileToCopy = [
+                files[i - 2],
+                files[i]
+              ];
 
-              const sigFile = recordFileName + `.${process.env.STREAM_SIG_EXTENSION}`;
-              copyFileSync(
-                resolve(recordFilesDirPath, fileToShow),
-                resolve(tmpDirPath, fileToShow)
-              );
-              copyFileSync(
-                resolve(recordFilesDirPath, sigFile),
-                resolve(tmpDirPath, sigFile)
-              );
-
+              this.copyFilesToTmpDir(fileToCopy, tmpDirPath, recordFilesDirPath)
               return
             }
           }
             
           throw Errors.NO_RECORD_FILE_FOUND_ERROR();
+    }
+
+    private copyFilesToTmpDir(
+      filesToCopy: string | Array<string>,
+      tmpDirPath: string,
+      recordFilesDirPath: string
+    ): void {
+        if (Array.isArray(filesToCopy)) {
+          for (const file of filesToCopy) {
+            this.copyFileToDir(file, recordFilesDirPath, tmpDirPath)
+          }
+          return
+        }
+
+        this.copyFileToDir(filesToCopy, recordFilesDirPath, tmpDirPath)
+    }
+
+    private copyFileToDir(
+      fileToCopy: string,
+      srcPath: string,
+      destinationPath: string,
+    ): void {
+        if (fileToCopy.endsWith(DebugState.recordExt)) {
+          this.logger.trace(`Parsing record file [${fileToCopy}]\n`);
+        }
+        
+        const fileToCopyName = fileToCopy.replace(DebugState.recordExt, '');
+        const sigFile = fileToCopyName + DebugState.sigExt;
+        copyFileSync(
+          resolve(srcPath, fileToCopy),
+          resolve(destinationPath, fileToCopy)
+        );
+        copyFileSync(
+          resolve(srcPath, sigFile),
+          resolve(destinationPath, sigFile)
+        );
     }
 }
