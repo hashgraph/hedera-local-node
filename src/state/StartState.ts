@@ -91,13 +91,24 @@ export class StartState implements IState{
 
     // TODO: Add multi node option
     private async dockerComposeUp(): Promise<shell.ShellString> {
-        const composeFiles = ['docker-compose.yml'];
+        const composeFiles = [];
         const { fullMode } = this.cliOptions;
         const { userCompose } = this.cliOptions;
         const { userComposeDir } = this.cliOptions;
+        const { multiNode } = this.cliOptions;
 
-        if (!fullMode) {
+        if (!fullMode && !multiNode) {
             composeFiles.push('docker-compose.evm.yml');
+        }
+
+        if (!fullMode && multiNode) {
+            composeFiles.push('docker-compose.multinode.evm.yml');
+        }
+
+        if (multiNode) {
+            composeFiles.push('docker-compose.multinode.yml');
+        } else {
+            composeFiles.push('docker-compose.yml');
         }
 
         if (userCompose) {
@@ -105,7 +116,11 @@ export class StartState implements IState{
         }
 
         return shell.exec(
+<<<<<<< HEAD
             `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`
+=======
+                  `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`, 
+>>>>>>> 8de01c0 (Adds draft changes for enabling multinode)
         );
     }
 
