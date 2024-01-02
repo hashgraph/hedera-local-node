@@ -91,28 +91,26 @@ export class StartState implements IState{
 
     // TODO: Add multi node option
     private async dockerComposeUp(): Promise<shell.ShellString> {
-        const composeFiles = [];
+        const composeFiles = ['docker-compose.yml'];
         const { fullMode } = this.cliOptions;
         const { userCompose } = this.cliOptions;
         const { userComposeDir } = this.cliOptions;
         const { multiNode } = this.cliOptions;
 
-        if (!fullMode && !multiNode) {
+        if (!fullMode) {
             composeFiles.push('docker-compose.evm.yml');
         }
 
         if (!fullMode && multiNode) {
-            composeFiles.push('docker-compose.multinode.evm.yml');
-        }
-
-        if (multiNode) {
             composeFiles.push('docker-compose.multinode.yml');
-        } else {
-            composeFiles.push('docker-compose.yml');
         }
 
         if (userCompose) {
             composeFiles.push(...this.getUserComposeFiles(userComposeDir));
+        }
+
+        if(multiNode) {
+            composeFiles.push('docker-compose.multinode.evm.yml');
         }
 
         return shell.exec(
