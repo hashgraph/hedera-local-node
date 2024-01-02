@@ -130,6 +130,7 @@ export class InitState implements IState{
     private configureMirrorNodeProperties() {
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
         const turboMode = !this.cliOptions.fullMode;
+        const debugMode = this.cliOptions.enableDebug;
 
         // const multiNode = this.cliOptions.multiNode;
 
@@ -139,6 +140,10 @@ export class InitState implements IState{
         if (turboMode) {
             application.hedera.mirror.importer.dataPath = originalNodeConfiguration.turboNodeProperties.dataPath;
             application.hedera.mirror.importer.downloader.sources = originalNodeConfiguration.turboNodeProperties.sources;
+        }
+
+        if (debugMode) {
+            application.hedera.mirror.importer.downloader.local = originalNodeConfiguration.local
         }
 
         // if (multiNode) {

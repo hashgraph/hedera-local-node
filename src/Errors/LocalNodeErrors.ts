@@ -18,7 +18,7 @@
  *
  */
 
-export class LocalNodeErrors extends Error{
+export class LocalNodeErrors extends Error {
     public message: string;
     public name: string;
   
@@ -39,5 +39,8 @@ export class LocalNodeErrors extends Error{
 
 export const Errors = {
     CONNECTION_ERROR: (port?: number) => new LocalNodeErrors("Connection Error", `Something went wrong, while trying to connect ${port ? `to port ${port}` : `to local node`}`),
-    CLEINT_ERROR: (msg?: string) => new LocalNodeErrors("Client Error", `Something went wrong, while trying to create SDK Client${msg ? `: ${msg}` : ``}`)
+    CLEINT_ERROR: (msg?: string) => new LocalNodeErrors("Client Error", `Something went wrong, while trying to create SDK Client${msg ? `: ${msg}` : ``}`),
+    NO_RECORD_FILE_FOUND_ERROR: () => new LocalNodeErrors('No record file found Error', "This record file doesn't not exist, check if timestamp is correct and local-node was started in debug mode using --enable-debug option"),
+    INVALID_TIMESTAMP_ERROR: () => new LocalNodeErrors('Invalid Timestamp Error', 'Invalid timestamp string. Accepted formats are: 0000000000.000000000 and 0000000000-000000000'),
+    DEBUG_MODE_CHECK_ERROR: () => new LocalNodeErrors('Debug Mode check Error', 'Debug mode is not enabled to use this command. Please use the --enable-debug flag to enable it.'),
 }

@@ -105,7 +105,7 @@ export class StartState implements IState{
         }
 
         return shell.exec(
-                  `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`
+            `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`
         );
     }
 
