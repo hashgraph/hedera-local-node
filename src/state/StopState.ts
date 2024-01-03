@@ -30,14 +30,30 @@ import { CLIOptions } from '../types/CLIOptions';
 import { CLIService } from '../services/CLIService';
 
 export class StopState implements IState{
+    /**
+     * The logger service used for logging.
+     */
     private logger: LoggerService;
 
+    /**
+     * The observer for the StopState.
+     */
     private observer: IOBserver | undefined;
 
+    /**
+     * The CLI options for the StartState class.
+     */
     private cliOptions: CLIOptions;
 
+    /**
+     * The name of the state.
+     */
     private stateName: string;
-
+    
+    /**
+     * Creates an instance of StopState. 
+     * This class is responsible for initializing the StopState object.
+     */
     constructor() {
         this.stateName = StopState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -45,10 +61,22 @@ export class StopState implements IState{
         this.logger.trace('Stop State Initialized!', this.stateName);
     }
 
+    /**
+     * Subscribes an observer to the state.
+     * 
+     * @public
+     * @param {IOBserver} observer - The observer to subscribe.
+     */
     public subscribe(observer: IOBserver): void {
         this.observer = observer;
     }
 
+    /**
+     * Starts the stop procedure.
+     * Stops the network, docker containers, and cleans up volumes and temporary files.
+     * Notifies the observer when the procedure is finished.
+     * @returns {Promise<void>} A promise that resolves when the procedure is finished.
+     */
     public async onStart(): Promise<void> {
         this.logger.info('Initiating stop procedure. Trying to stop docker containers and clean up volumes...', this.stateName);
 
@@ -71,7 +99,13 @@ export class StopState implements IState{
         this.observer!.update(EventType.Finish);
     }
 
-    private getNullOutput () {
+    /**
+     * Returns the null output path based on the operating system.
+     * On Windows, it returns "null".
+     * On other operating systems, it returns "/dev/null".
+     * @returns {string}
+     */
+    private getNullOutput (): "null" | "/dev/null" {
         if (IS_WINDOWS) return 'null';
         return '/dev/null';
     }
