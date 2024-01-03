@@ -61,7 +61,6 @@ export class CLIService implements IService{
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
         CLIService.enableDebugOption(yargs);
-        CLIService.workDirOption(yargs);
 
     }
 
@@ -84,6 +83,7 @@ export class CLIService implements IService{
 
     private static loadCommonOptions(yargs: Argv<{}>): void {
         CLIService.verboseLevelOption(yargs);
+        CLIService.workDirOption(yargs);
     }
 
     public getCurrentArgv() {

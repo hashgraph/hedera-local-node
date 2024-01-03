@@ -63,7 +63,8 @@ export class StopState implements IState{
         shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
         this.logger.trace('Cleaning the volumes and temp files...', this.stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
-        shell.exec(`rm -rf ${join(this.cliOptions.workDir, "network-logs")} >${nullOutput} 2>&1`);
+        this.logger.trace(`Working dir is ${this.cliOptions.workDir}`, this.stateName);
+        shell.exec(`rm -rf "${join(this.cliOptions.workDir, "network-logs")}" 2>&1`);
         shell.exec(`docker network prune -f 2>${nullOutput}`);
         shell.cd(rootPath);
         this.logger.info('Hedera Local Node was stopped successfully.', this.stateName);
