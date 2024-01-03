@@ -34,7 +34,7 @@ import { ConfigurationData } from '../data/ConfigurationData';
 import { Configuration } from '../types/NetworkConfiguration';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { DockerService } from '../services/DockerService';
-import { NECESSARY_PORTS, OPTIONAL_PORTS } from '../constants';
+import { APPLICATION_YML_RELATIVE_PATH, NECESSARY_PORTS, OPTIONAL_PORTS } from '../constants';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
@@ -93,13 +93,13 @@ export class InitState implements IState{
         this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`,this.stateName);
         FileSystemUtils.ensureDirectoryExists(this.cliOptions.workDir);
         FileSystemUtils.ensureDirectoryExists(join(this.cliOptions.workDir, 'network-logs','node'));
-       const configDir = join(__dirname, '../../compose-network/network-node/data/config/');
-       const configDirMirrorNode = join(__dirname, '../../compose-network/mirror-node/application.yml');
-       const configFiles = {
-           [configDir]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
-           [configDirMirrorNode]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`
-       };
-       FileSystemUtils.copyPaths(configFiles);
+        const configDirSource = join(__dirname, '../../compose-network/network-node/data/config/');
+        const configPathMirrorNodeSource = join(__dirname, APPLICATION_YML_RELATIVE_PATH);
+        const configFiles = {
+            [configDirSource]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
+            [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`
+        };
+        FileSystemUtils.copyPaths(configFiles);
     }
 
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
@@ -129,7 +129,7 @@ export class InitState implements IState{
     }
 
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
-        const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
+        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
 
         let newProperties = '';
         originalNodeConfiguration.bootsrapProperties.forEach(property => {
@@ -158,7 +158,7 @@ export class InitState implements IState{
 
         // const multiNode = this.cliOptions.multiNode;
 
-        const propertiesFilePath = join(__dirname, '../../compose-network/mirror-node/application.yml');
+        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/mirror-node/application.yml');
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
 
         if (turboMode) {
