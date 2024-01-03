@@ -27,13 +27,34 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import detectPort from 'detect-port';
 
+/**
+ * DockerService is a service class that handles Docker-related operations.
+ * It implements the IService interface.
+ * It uses the 'dockerode' library to interact with Docker, 'shelljs' to execute shell commands, and 'semver' to compare semantic versioning numbers.
+ */
 export class DockerService implements IService{
+    /**
+     * The logger service used for logging.
+     * @private
+     */
     private logger: LoggerService;
 
+    /**
+     * The name of the service.
+     * @private
+     */
     private serviceName: string;
 
+    /**
+     * The Docker socket path.
+     * @private
+     */
     private dockerSocket: string;
 
+    /**
+     * Constructs a new instance of the DockerService.
+     * Initializes the logger and Docker socket path.
+     */
     constructor() {
         this.serviceName = DockerService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -46,15 +67,33 @@ export class DockerService implements IService{
         this.dockerSocket = process.env.DOCKER_SOCKET || defaultSocketPath;
     }
 
+    /**
+     * Returns the Docker socket path.
+     * 
+     * @public
+     * @returns {string} - The Docker socket path.
+     */
     public getDockerSocket(): string {
         return this.dockerSocket;
     }
 
+    /**
+     * Returns the null output path depending on the operating system.
+     * 
+     * @public
+     * @returns {string} - The null output path.
+     */
     public getNullOutput () {
         if (IS_WINDOWS) return 'null';
         return '/dev/null';
     }
 
+      /**
+     * Checks if Docker is running.
+     * 
+     * @public
+     * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether Docker is running.
+     */
     public async checkDocker (): Promise<boolean> {
         let isRunning = false;
     
@@ -72,6 +111,15 @@ export class DockerService implements IService{
         return isRunning;
     }
 
+    /**
+     * Checks if the provided ports are in use.
+     * If necessary ports are in use, it terminates the process.
+     * 
+     * @param {number[]} portsToCheck - The ports to check.
+     * @public
+     * @returns {Promise<void>} - A promise that resolves when the ports are checked.
+     * @throws If an error occurs during the port check.
+     */
     public async isPortInUse (portsToCheck: number[]): Promise<void> {
       const promises: Promise<boolean>[] = portsToCheck.map((port:number) => detectPort(port)
         .then((available: number) => available !== port)
@@ -98,6 +146,12 @@ export class DockerService implements IService{
       }
     }
 
+    /**
+     * Checks if the installed Docker Compose version is correct (greater than 2.12.2).
+     * 
+     * @public
+     * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the Docker Compose version is correct.
+     */
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
         this.logger.trace('Checking docker compose version...', this.serviceName);
         // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
@@ -137,7 +191,14 @@ export class DockerService implements IService{
         return false;
     }
     
-    public async getContainer(containerLabel: string) {
+    /**
+     * Returns a Docker container object for the given container label.
+     * 
+     * @param {string} containerLabel - The label of the container.
+     * @returns {Promise<Dockerode.Container>} - A promise that resolves to a Docker container object.
+     * @public
+     */
+    public async getContainer(containerLabel: string): Promise<Dockerode.Container> {
       const containerId = await this.getContainerId(containerLabel) as string;
       const docker = new Dockerode({
         socketPath: this.getDockerSocket(),
@@ -145,7 +206,14 @@ export class DockerService implements IService{
       return docker.getContainer(containerId);
     }
 
-    public async getContainerId (name: string) {
+    /**
+     * Returns the ID of the Docker container with the given name.
+     * 
+     * @param {string} name - The name of the container.
+     * @returns {Promise<string>} - A promise that resolves to the ID of the Docker container.
+     * @public
+     */
+    public async getContainerId (name: string): Promise<string> {
         const docker = new Dockerode({ socketPath: this.dockerSocket });
         const opts = {
           limit: 1,
@@ -163,7 +231,15 @@ export class DockerService implements IService{
         });
     }
     
-    public async getContainerVersion (name: string) {
+    /**
+     * Returns the version of the Docker container with the given name.
+     * 
+     * @param {string} name - The name of the container.
+     * @returns {Promise<string>} - A promise that resolves to the version of the Docker container.
+     * @public
+     * @async
+     */
+    public async getContainerVersion (name: string): Promise<string> {
         const docker = new Dockerode({ socketPath: this.dockerSocket });
         const opts = {
           limit: 1,
