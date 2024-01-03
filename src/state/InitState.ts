@@ -83,7 +83,7 @@ export class InitState implements IState{
             { key: 'MIRROR_NODE_CONFIG_PATH', value: this.cliOptions.workDir },
             { key: 'RECORD_PARSER_ROOT_PATH', value: join(this.cliOptions.workDir, 'services','record-parser') },
         ];
-        configurationData.envConfiguration = (configurationData.envConfiguration || []).concat(workDirConfiguration);
+        configurationData.envConfiguration = (configurationData.envConfiguration ?? []).concat(workDirConfiguration);
         
         this.configureEnvVariables(configurationData.imageTagConfiguration, configurationData.envConfiguration);
         this.configureNodeProperties(configurationData.nodeConfiguration?.properties);
