@@ -19,7 +19,7 @@
  */
 
 import { configDotenv } from 'dotenv';
-import  { readFileSync, writeFileSync, existsSync,mkdirSync,lstatSync,copyFileSync,readdirSync } from 'fs';
+import  { readFileSync, writeFileSync } from 'fs';
 import path, { join } from 'path';
 import yaml from 'js-yaml';
 import { LoggerService } from '../services/LoggerService';
