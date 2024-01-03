@@ -1,6 +1,6 @@
 import { homedir } from 'os';
 import { dirname, join } from 'path';
-import  { existsSync, mkdirSync, lstatSync, copyFileSync, readdirSync } from 'fs';
+import { existsSync, mkdirSync, lstatSync, copyFileSync, readdirSync } from 'fs';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 
