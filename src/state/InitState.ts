@@ -78,7 +78,9 @@ export class InitState implements IState{
         this.prepareWorkDirectory();
         const workDirConfiguration = [
             { key: 'NETWORK_NODE_LOGS_ROOT_PATH', value: join(this.cliOptions.workDir, 'network-logs', 'node') },
-            { key: 'APPLICATION_CONFIG_PATH', value: join(this.cliOptions.workDir, 'compose-network','network-node','data','config') },
+            { key: 'APPLICATION_CONFIG_PATH', value: join(this.cliOptions.workDir, 'compose-network', 'network-node', 'data', 'config') },
+            { key: 'MIRROR_NODE_CONFIG_PATH', value: this.cliOptions.workDir },
+            { key: 'RECORD_PARSER_ROOT_PATH', value: join(this.cliOptions.workDir, 'services','record-parser') },
         ];
         configurationData.envConfiguration = configurationData.envConfiguration?.concat(workDirConfiguration);
         
@@ -95,9 +97,12 @@ export class InitState implements IState{
         FileSystemUtils.ensureDirectoryExists(join(this.cliOptions.workDir, 'network-logs','node'));
         const configDirSource = join(__dirname, '../../compose-network/network-node/data/config/');
         const configPathMirrorNodeSource = join(__dirname, APPLICATION_YML_RELATIVE_PATH);
+        const recordParserSource = join(__dirname,'../../src/services/record-parser');
+
         const configFiles = {
             [configDirSource]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
-            [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`
+            [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`,
+            [recordParserSource]: `${this.cliOptions.workDir}/services/record-parser`
         };
         FileSystemUtils.copyPaths(configFiles);
     }
