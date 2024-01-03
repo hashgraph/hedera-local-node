@@ -94,11 +94,7 @@ export class InitState implements IState{
 
    private prepareWorkDirectory() {
         this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`, this.stateName);
-       
-        FileSystemUtils.ensureDirectoryExists(this.cliOptions.workDir);
-        FileSystemUtils.ensureDirectoryExists(join(this.cliOptions.workDir, 'network-logs', 'node', 'logs')); //creating those directories ensures we'll have permissions to delete them on cleanup
-        FileSystemUtils.ensureDirectoryExists(join(this.cliOptions.workDir, 'network-logs', 'node', 'recordStreams','record0.0.3','sidecar'));
-        
+        FileSystemUtils.createEphemeralDirectories(this.cliOptions.workDir);
         const configDirSource = join(__dirname, '../../compose-network/network-node/data/config/');
         const configPathMirrorNodeSource = join(__dirname, APPLICATION_YML_RELATIVE_PATH);
         const recordParserSource = join(__dirname,'../../src/services/record-parser');

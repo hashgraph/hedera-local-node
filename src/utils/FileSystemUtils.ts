@@ -68,4 +68,16 @@ export class FileSystemUtils{
         // else it's Linux
         return join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), name);
     }
+
+    public static createEphemeralDirectories(workDir: string) {
+        const directories = [
+            workDir,
+            join(workDir, 'network-logs', 'node', 'accountBalances', 'balance0.0.3'),
+            join(workDir, 'network-logs', 'node', 'recordStreams', 'record0.0.3', 'sidecar'),
+            join(workDir, 'network-logs', 'node', 'logs'),
+            join(workDir, 'network-logs', 'node', 'stats'),
+        ];
+        
+        directories.forEach(dir => FileSystemUtils.ensureDirectoryExists(dir)); //creating those directories ensures we'll have permissions to delete them on cleanup
+    }
 }
