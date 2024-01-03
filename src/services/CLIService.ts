@@ -19,15 +19,14 @@
  */
 
 import yargs, { ArgumentsCamelCase, Argv } from 'yargs';
+import { homedir } from 'os';
+import { join } from 'path';
 import { IService } from './IService';
 import { CLIOptions } from '../types/CLIOptions';
 import { NetworkType } from '../types/NetworkType';
 import { VerboseLevel } from '../types/VerboseLevel';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
-import { homedir } from 'os';
-import { join } from 'path';
-
 
 export class CLIService implements IService{
     private logger: LoggerService;
@@ -61,7 +60,6 @@ export class CLIService implements IService{
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
         CLIService.enableDebugOption(yargs);
-
     }
 
     public static loadDebugOptions(yargs: Argv<{}>): void {
