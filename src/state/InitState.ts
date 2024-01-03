@@ -19,7 +19,7 @@
  */
 
 import { configDotenv } from 'dotenv';
-import  { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import path, { join } from 'path';
 import yaml from 'js-yaml';
 import { LoggerService } from '../services/LoggerService';
@@ -75,6 +75,7 @@ export class InitState implements IState{
         await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
+
         this.prepareWorkDirectory();
         const workDirConfiguration = [
             { key: 'NETWORK_NODE_LOGS_ROOT_PATH', value: join(this.cliOptions.workDir, 'network-logs', 'node') },
