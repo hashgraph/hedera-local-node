@@ -29,14 +29,30 @@ import { IState } from './IState';
 import stream from 'stream';
 
 export class AttachState implements IState{
+    /**
+     * The logger service used for logging messages.
+     */
     private logger: LoggerService;
 
+    /**
+     * Represents the Docker service used by the AttachState class.
+     */
     private dockerService: DockerService;
     
+    /**
+     * The observer for the AttachState.
+     */
     private observer: IOBserver | undefined;
 
+    /**
+     * The name of the state.
+     */
     private stateName: string;
     
+    /**
+     * Represents the AttachState class.
+     * This class is responsible for initializing the AttachState object.
+     */
     constructor() {
         this.stateName = AttachState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -44,10 +60,23 @@ export class AttachState implements IState{
         this.logger.trace('Attach State Initialized!', this.stateName);
     }
 
+    /**
+     * Subscribes an observer to receive updates from this AttachState instance.
+     * @param {IOBserver} observer The observer to subscribe.
+     */
     public subscribe(observer: IOBserver): void {
         this.observer = observer;
     }
 
+    /**
+     * Starts the state.
+     * 
+     * This method checks if the state is detached, and if not, it attaches the logs of the consensus node, mirror node, and relay.
+     * It also continuously updates the status board every 10 seconds.
+     * 
+     * @public
+     * @returns {Promise<void>}
+     */
     public async onStart(): Promise<void> {
         const detached = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv().detached;
         if (detached) {
@@ -65,7 +94,17 @@ export class AttachState implements IState{
         }
     }
 
-    private async attachContainerLogs(containerLabel: string) {
+    /**
+     * Attaches the logs of a container.
+     * 
+     * This method gets the container with the specified label, creates a log stream, and attaches the container's logs to the log stream.
+     * It filters out lines that include "Transaction ID: 0.0.2-" and updates the TUI with the log lines.
+     * 
+     * @private
+     * @param {string} containerLabel - The label of the container.
+     * @returns {Promise<void>} A Promise that resolves when the logs have been attached.
+     */
+    private async attachContainerLogs(containerLabel: string): Promise<void> {
         const container = await this.dockerService.getContainer(containerLabel);
         const logger = this.logger;
         let logStream = new stream.PassThrough();
