@@ -542,7 +542,7 @@ These are the local network variables to interact with the consensus and mirror 
 3. `compose-network/grafana/datasources` folder contains the Grafana datasource definitions in YAML format which wil be automatically provisioned at startup.
 4. `network-logs` folder will be created at runtime in the working directory and will have all the log files generated after starting local node.
 
-The local node writes it's ephemeral data to a `working directory` which can be set using the `--workdir` flag, and has a default value dependant on the OS of the user
+The local node writes its ephemeral data to a `working directory` which can be set using the `--workdir` flag, and has a default value dependant on the OS of the user
 
 | OS      | Default Working Directory                    |
 |---------|----------------------------------------------|
