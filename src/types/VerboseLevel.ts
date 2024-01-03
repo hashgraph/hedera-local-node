@@ -17,6 +17,15 @@
  * limitations under the License.
  *
  */
+
+/**
+ * Represents the levels of verbosity that can be used.
+ * 
+ * @enum
+ * @public
+ * @property {VerboseLevel.INFO} INFO - Represents the info level of verbosity.
+ * @property {VerboseLevel.TRACE} TRACE - Represents the trace level of verbosity.
+ */
 export enum VerboseLevel {
     INFO,
     TRACE

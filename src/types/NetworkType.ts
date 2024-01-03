@@ -18,6 +18,16 @@
  *
  */
 
+/**
+ * Represents the types of networks that can be used.
+ * 
+ * @enum
+ * @public
+ * @property {NetworkType.LOCAL} LOCAL - Represents the local network.
+ * @property {NetworkType.MAINNET} MAINNET - Represents the main network.
+ * @property {NetworkType.TESTNET} TESTNET - Represents the test network.
+ * @property {NetworkType.PREVIEWNET} PREVIEWNET - Represents the preview network.
+ */
 export enum NetworkType {
     LOCAL = 'local',
     MAINNET = 'mainnet',

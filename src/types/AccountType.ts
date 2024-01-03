@@ -21,6 +21,15 @@
 import { Hbar, Wallet } from "@hashgraph/sdk";
 import { ethers } from "ethers";
 
+/**
+ * Represents an account in the Hedera network.
+ * 
+ * @interface
+ * @public
+ * @property {string} accountId - The ID of the account.
+ * @property {Wallet | ethers.Wallet} wallet - The wallet associated with the account. It can be a Hedera Wallet or an Ethers Wallet.
+ * @property {Hbar | number} balance - The balance of the account. It can be an instance of Hbar or a number.
+ */
 export interface Account {
     accountId: string,
     wallet: Wallet | ethers.Wallet
