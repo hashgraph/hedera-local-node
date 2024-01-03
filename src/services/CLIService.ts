@@ -19,14 +19,13 @@
  */
 
 import yargs, { ArgumentsCamelCase, Argv } from 'yargs';
-import { homedir } from 'os';
-import { join } from 'path';
 import { IService } from './IService';
 import { CLIOptions } from '../types/CLIOptions';
 import { NetworkType } from '../types/NetworkType';
 import { VerboseLevel } from '../types/VerboseLevel';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
+import { FileSystemUtils } from '../utils/FileSystemUtils';
 
 export class CLIService implements IService{
     private logger: LoggerService;
@@ -280,7 +279,7 @@ export class CLIService implements IService{
             type: 'string',
             describe: 'Path to the working directory for local node',
             demandOption: false,
-            default: CLIService.getPlatformSpecificAppDataPath('hedera-local')
+            default: FileSystemUtils.getPlatformSpecificAppDataPath('hedera-local')
         });
     }
 
@@ -337,17 +336,5 @@ export class CLIService implements IService{
             default:
                 return VerboseLevel.INFO;
         }
-    }
-
-    private static getPlatformSpecificAppDataPath(name: string) {
-        if (process.platform === 'darwin') {
-            return join(homedir(), 'Library', 'Application Support', name);
-        }
-    
-        if (process.platform === 'win32') {
-            return join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), name);
-        }
-        // else it's Linux
-        return join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), name);
     }
 }

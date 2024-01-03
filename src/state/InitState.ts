@@ -19,15 +19,15 @@
  */
 
 import { configDotenv } from 'dotenv';
-import { readFileSync, writeFileSync } from 'fs';
+import  { readFileSync, writeFileSync, existsSync,mkdirSync,lstatSync,copyFileSync,readdirSync } from 'fs';
 import path, { join } from 'path';
-import fs from 'fs';
 import yaml from 'js-yaml';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { CLIService } from '../services/CLIService';
 import { CLIOptions } from '../types/CLIOptions';
+import { FileSystemUtils } from '../utils/FileSystemUtils'
 import { IOBserver } from '../controller/IObserver';
 import { EventType } from '../types/EventType';
 import { ConfigurationData } from '../data/ConfigurationData';
@@ -77,8 +77,8 @@ export class InitState implements IState{
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
         this.prepareWorkDirectory();
         const workDirConfiguration = [
-            { key: "NETWORK_NODE_LOGS_ROOT_PATH", value: join(this.cliOptions.workDir, "network-logs", "node") },
-            { key: "APPLICATION_CONFIG_PATH", value: join(this.cliOptions.workDir, "compose-network","network-node","data","config") },
+            { key: 'NETWORK_NODE_LOGS_ROOT_PATH', value: join(this.cliOptions.workDir, 'network-logs', 'node') },
+            { key: 'APPLICATION_CONFIG_PATH', value: join(this.cliOptions.workDir, 'compose-network','network-node','data','config') },
         ];
         configurationData.envConfiguration = configurationData.envConfiguration?.concat(workDirConfiguration);
         
@@ -91,59 +91,16 @@ export class InitState implements IState{
 
    private prepareWorkDirectory() {
         this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`,this.stateName);
-       this.ensureDirectoryExists(this.cliOptions.workDir);
-       this.ensureDirectoryExists(join(this.cliOptions.workDir, "network-logs","node"));
+        FileSystemUtils.ensureDirectoryExists(this.cliOptions.workDir);
+        FileSystemUtils.ensureDirectoryExists(join(this.cliOptions.workDir, 'network-logs','node'));
        const configDir = join(__dirname, '../../compose-network/network-node/data/config/');
        const configDirMirrorNode = join(__dirname, '../../compose-network/mirror-node/application.yml');
        const configFiles = {
            [configDir]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
            [configDirMirrorNode]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`
-       }
-       this.copyDirectories(configFiles);
-        // throw new Error('Method not implemented.');
+       };
+       FileSystemUtils.copyPaths(configFiles);
     }
-
-
-   private ensureDirectoryExists(dirPath: string): void {
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
-            this.logger.trace(`Directory created: ${dirPath}`,this.stateName);
-
-        } else {
-            this.logger.trace(`Directory already exists: ${dirPath}`,this.stateName);
-        }
-    }
-
-    private copyDirectories(directories: { [source: string]: string }): void {
-        Object.entries(directories).forEach(([srcDir, destDir]) => {
-            if (fs.existsSync(srcDir)) {
-                if(fs.lstatSync(srcDir).isDirectory()){
-            this.ensureDirectoryExists(destDir);    
-            const entries = fs.readdirSync(srcDir, { withFileTypes: true });
-            
-                    for (const entry of entries) {
-                        const srcPath = path.join(srcDir, entry.name);
-                        const destPath = path.join(destDir, entry.name);
-            
-                        if (entry.isDirectory()) {
-                            this.ensureDirectoryExists(destPath);    
-
-                            // Recursive call with a new object for the subdirectory
-                            this.copyDirectories({ [srcPath]: destPath });
-                        } else {
-                            fs.copyFileSync(srcPath, destPath);
-                            this.logger.trace(`Copied file: ${destPath}`,this.stateName);
-
-                        }
-                    }
-                } else {
-                    this.ensureDirectoryExists(path.dirname((destDir)));
-                    fs.copyFileSync(srcDir, destDir);
-                    }
-           }
-        });
-    }
-
 
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
         imageTagConfiguration.forEach(variable => {
