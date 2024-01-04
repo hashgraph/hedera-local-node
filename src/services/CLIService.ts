@@ -102,7 +102,7 @@ export class CLIService implements IService{
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
         const timestamp = argv.timestamp as string;
         const enableDebug = argv.enableDebug as boolean;
-        const workDir: string = argv.workdir as string;
+        const workDir: string = FileSystemUtils.parseWorkDir(argv.workdir) as string;
 
         const currentArgv: CLIOptions = {
             accounts,

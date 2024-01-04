@@ -1,5 +1,5 @@
 import { homedir } from 'os';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { existsSync, mkdirSync, cpSync } from 'fs';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -55,5 +55,15 @@ export class FileSystemUtils{
         ];
         
         directories.forEach(dir => FileSystemUtils.ensureDirectoryExists(dir)); //creating those directories ensures we'll have permissions to delete them on cleanup
+    }
+
+    public static parseWorkDir(workdir: any): string {
+        if (workdir.startsWith('~')) {
+            workdir = join(homedir(), workdir.slice(1));
+        }
+        if (workdir !== this.getPlatformSpecificAppDataPath('hedera-local')) {
+            workdir = join(workdir, 'hedera-local');
+        }
+        return resolve(workdir);
     }
 }
