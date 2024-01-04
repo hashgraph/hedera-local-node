@@ -21,6 +21,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import yaml from 'js-yaml';
 import { join } from 'path';
+import { existsSync } from 'fs';
 import { IOBserver } from '../controller/IObserver';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { LoggerService } from '../services/LoggerService';
@@ -62,6 +63,10 @@ export class CleanUpState implements IState{
     private revertMirrorNodeProperties() {
         this.logger.trace('Clean up unneeded mirror node properties...', this.stateName);
         const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/mirror-node/application.yml');
+        if (!existsSync(propertiesFilePath)) {
+            this.logger.trace(`Mirror Node Properties File doesn't exist at path ${propertiesFilePath}`,this.stateName);
+            return;
+        }
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
         delete application.hedera.mirror.importer.dataPath;
         delete application.hedera.mirror.importer.downloader.sources;
@@ -75,7 +80,10 @@ export class CleanUpState implements IState{
     private revertNodeProperties(): void {
         this.logger.trace('Clean up unneeded bootstrap properties.', this.stateName);
         const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
-
+        if (!existsSync(propertiesFilePath)) {
+            this.logger.trace(`Node Properties File doesn't exist at path ${propertiesFilePath}`,this.stateName);
+            return;
+        }
         let originalProperties = '';
         originalNodeConfiguration.bootsrapProperties.forEach(property => {
             originalProperties = originalProperties.concat(`${property.key}=${property.value}\n`);
