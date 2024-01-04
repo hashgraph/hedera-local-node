@@ -10,7 +10,7 @@ export class FileSystemUtils{
 
         Object.entries(directories).forEach(([srcPath, destPath]) => {
             if (!existsSync(srcPath)) {
-                logger.error(`Path ${srcPath} doesn't exist`, FileSystemUtils.name)
+                logger.error(`Path ${srcPath} doesn't exist`, FileSystemUtils.name);
                 return;
             }
 
@@ -54,16 +54,17 @@ export class FileSystemUtils{
             join(workDir, 'network-logs', 'node', 'stats'),
         ];
         
-        directories.forEach(dir => FileSystemUtils.ensureDirectoryExists(dir)); //creating those directories ensures we'll have permissions to delete them on cleanup
+        directories.forEach(dir => FileSystemUtils.ensureDirectoryExists(dir)); // creating those directories ensures we'll have permissions to delete them on cleanup
     }
 
     public static parseWorkDir(workdir: any): string {
-        if (workdir.startsWith('~')) {
-            workdir = join(homedir(), workdir.slice(1));
+        let workdirPath = workdir;
+        if (workdirPath.startsWith('~')) {
+            workdirPath = join(homedir(), workdirPath.slice(1));
         }
-        if (workdir !== this.getPlatformSpecificAppDataPath('hedera-local')) {
-            workdir = join(workdir, 'hedera-local');
+        if (workdirPath !== this.getPlatformSpecificAppDataPath('hedera-local')) {
+            workdirPath = join(workdirPath, 'hedera-local');
         }
-        return resolve(workdir);
+        return resolve(workdirPath);
     }
 }

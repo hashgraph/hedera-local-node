@@ -18,10 +18,9 @@
  *
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import yaml from 'js-yaml';
 import { join } from 'path';
-import { existsSync } from 'fs';
 import { IOBserver } from '../controller/IObserver';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { LoggerService } from '../services/LoggerService';

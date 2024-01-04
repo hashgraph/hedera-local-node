@@ -27,7 +27,7 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { CLIService } from '../services/CLIService';
 import { CLIOptions } from '../types/CLIOptions';
-import { FileSystemUtils } from '../utils/FileSystemUtils'
+import { FileSystemUtils } from '../utils/FileSystemUtils';
 import { IOBserver } from '../controller/IObserver';
 import { EventType } from '../types/EventType';
 import { ConfigurationData } from '../data/ConfigurationData';
