@@ -1,51 +1,27 @@
 import { homedir } from 'os';
-import { dirname, join } from 'path';
-import { existsSync, mkdirSync, lstatSync, copyFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { existsSync, mkdirSync, cpSync } from 'fs';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 
 export class FileSystemUtils{
-
     public static copyPaths(directories: { [source: string]: string }): void {
-        Object.entries(directories).forEach(([srcDir, destDir]) => {
-            FileSystemUtils.copyPath(srcDir, destDir);
-        });
-    }
-    
-    public static copyPath(srcPath: string, destPath: string): void {
-        if (!existsSync(srcPath)) return;
-    
-        if (lstatSync(srcPath).isDirectory()) {
-            FileSystemUtils.copyDirectoryContents(srcPath, destPath);
-        } else {
-            FileSystemUtils.copyFile(srcPath, destPath);
-        }
-    }
-    
-    public static copyDirectoryContents(srcDir: string, destDir: string): void {
-        FileSystemUtils.ensureDirectoryExists(destDir);
-        const entries = readdirSync(srcDir, { withFileTypes: true });
-    
-        entries.forEach(entry => {
-            const srcPath = join(srcDir, entry.name);
-            const destPath = join(destDir, entry.name);
-    
-            if (entry.isDirectory()) {
-                FileSystemUtils.copyPaths({ [srcPath]: destPath });
-            } else {
-                FileSystemUtils.copyFile(srcPath, destPath);
+        const logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
+
+        Object.entries(directories).forEach(([srcPath, destPath]) => {
+            if (!existsSync(srcPath)) {
+                logger.error(`Path ${srcPath} doesn't exist`, FileSystemUtils.name)
+                return;
+            }
+
+            try {
+                cpSync(srcPath, destPath, { recursive: true });
+            } catch (error: any) {
+                logger.error(error.message);
             }
         });
     }
-    
-    public static copyFile(srcPath: string, destPath: string): void {
-        const logger=ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-
-        FileSystemUtils.ensureDirectoryExists(dirname(destPath));
-        copyFileSync(srcPath, destPath);
-        logger.trace(`Copied file: ${destPath}`, FileSystemUtils.name);
-    }
-
+        
     public static ensureDirectoryExists(dirPath: string): void {
         const logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         
