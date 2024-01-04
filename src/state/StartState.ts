@@ -97,28 +97,24 @@ export class StartState implements IState{
         const { userComposeDir } = this.cliOptions;
         const { multiNode } = this.cliOptions;
 
-        if (!fullMode) {
+        if (!fullMode && !multiNode) {
             composeFiles.push('docker-compose.evm.yml');
         }
 
-        if (!fullMode && multiNode) {
+        if (multiNode) {
             composeFiles.push('docker-compose.multinode.yml');
+        }
+
+        if (!fullMode && multiNode) {
+            composeFiles.push('docker-compose.multinode.evm.yml');
         }
 
         if (userCompose) {
             composeFiles.push(...this.getUserComposeFiles(userComposeDir));
         }
 
-        if(multiNode) {
-            composeFiles.push('docker-compose.multinode.evm.yml');
-        }
-
         return shell.exec(
-<<<<<<< HEAD
             `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`
-=======
-                  `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`, 
->>>>>>> 8de01c0 (Adds draft changes for enabling multinode)
         );
     }
 

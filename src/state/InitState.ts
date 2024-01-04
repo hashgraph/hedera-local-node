@@ -130,7 +130,6 @@ export class InitState implements IState{
         this.logger.info('Needed bootsrap properties were set for this configuration.', this.stateName);
     }
 
-    // TODO: finish off multi node
     private configureMirrorNodeProperties() {
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
         const turboMode = !this.cliOptions.fullMode;
