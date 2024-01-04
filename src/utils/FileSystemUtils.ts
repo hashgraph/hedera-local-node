@@ -57,7 +57,7 @@ export class FileSystemUtils{
         directories.forEach(dir => FileSystemUtils.ensureDirectoryExists(dir)); // creating those directories ensures we'll have permissions to delete them on cleanup
     }
 
-    public static parseWorkDir(workdir: any): string {
+    public static parseWorkDir(workdir: string): string {
         let workdirPath = workdir;
         if (workdirPath.startsWith('~')) {
             workdirPath = join(homedir(), workdirPath.slice(1));
