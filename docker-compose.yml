@@ -6,6 +6,7 @@ services:
     mem_swappiness: 0
     privileged: true
     network_mode: none
+    command: ["-d 16"]
 
   network-node:
     image: "${NETWORK_NODE_IMAGE_PREFIX}${NETWORK_NODE_IMAGE_NAME}:${NETWORK_NODE_IMAGE_TAG}"
