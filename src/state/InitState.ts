@@ -152,7 +152,6 @@ export class InitState implements IState{
      * Configures the environment variables based on the selected configuration.
      * @param {Array<Configuration>} imageTagConfiguration - The image tag configuration.
      * @param {Array<Configuration> | undefined} envConfiguration - The environment variable configuration.
-     * @returns {void}
      */
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
         imageTagConfiguration.forEach(variable => {
@@ -183,7 +182,6 @@ export class InitState implements IState{
     /**
      * Configures the node properties based on the selected configuration.
      * @param {Array<Configuration> | undefined} nodeConfiguration - The node configuration.
-     * @returns {void}
      */
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
         const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
@@ -211,7 +209,6 @@ export class InitState implements IState{
      * Configures the mirror node properties.
      * 
      * @private
-     * @returns {void}
      */
     // TODO: finish off multi node
     private configureMirrorNodeProperties(): void {

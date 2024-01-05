@@ -68,7 +68,6 @@ export class ClientService implements IService{
      * Sets up the client for communication with the network.
      * @throws {LocalNodeErrors} If the environment variables OPERATOR_ID and OPERATOR_KEY are not set.
      * @private
-     * @returns {void}
      */
     private setupClient(): void {
         if (process.env.RELAY_OPERATOR_ID_MAIN == null || process.env.RELAY_OPERATOR_KEY_MAIN == null) {

@@ -73,7 +73,6 @@ export class CleanUpState implements IState{
      * Subscribes an observer to the `CleanUpState`.
      * 
      * @param {IObserver} observer - The observer to subscribe.
-     * @returns {void}
      */
     public subscribe(observer: IOBserver): void {
         this.observer = observer;
@@ -100,7 +99,6 @@ export class CleanUpState implements IState{
      * 
      * This method cleans up unneeded mirror node properties and writes the updated properties back to the file.
      * @private
-     * @returns {void}
      */
     private revertMirrorNodeProperties() {
         this.logger.trace('Clean up unneeded mirror node properties...', this.stateName);
@@ -125,7 +123,6 @@ export class CleanUpState implements IState{
      * This method cleans up unneeded bootstrap properties and writes the original properties back to the file.
      * 
      * @private
-     * @returns {void}
      */
     private revertNodeProperties(): void {
         this.logger.trace('Clean up unneeded bootstrap properties.', this.stateName);

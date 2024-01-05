@@ -33,7 +33,6 @@ export interface IState {
     /**
      * Subscribes an observer to the state.
      * @param {IOBserver} observer - The observer to subscribe.
-     * @returns {void}
      */
     subscribe(observer: IOBserver): void;
 }

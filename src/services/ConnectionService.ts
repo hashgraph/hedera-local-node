@@ -69,7 +69,7 @@ export class ConnectionService implements IService{
      * 
      * @param {number} port - The port to connect to.
      * @throws CONNECTION_ERROR if the port is not ready after a certain number of retries.
-     * @returns A promise that resolves when the port is ready for connection.
+     * @returns {Promise<void>} A promise that resolves when the port is ready for connection.
      * @public
      */
     public async waitForFiringUp(port: number): Promise<void> {

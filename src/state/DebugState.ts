@@ -97,7 +97,6 @@ export class DebugState implements IState{
      * 
      * @static
      * @param {string} dirPath - The path to the directory to clean.
-     * @returns {void}
      */
     private static cleanTempDir(dirPath: string): void {
         for (const tempFile of readdirSync(dirPath)) {
@@ -141,7 +140,6 @@ export class DebugState implements IState{
      * @param {number} jsTimestampNum - The timestamp to compare against.
      * @param {string} recordFilesDirPath - The path to the directory containing the record files.
      * @param {string} tmpDirPath - The path to the temporary directory.
-     * @returns {void}
      * @throws {Error} Throws an error if no record file can be found.
      */
     private findAndCopyRecordFileToTmpDir(jsTimestampNum: number, recordFilesDirPath: string, tmpDirPath: string): void {
@@ -174,7 +172,6 @@ export class DebugState implements IState{
      * @param {string | Array<string>} filesToCopy - The file or files to copy.
      * @param {string} tmpDirPath - The path to the temporary directory.
      * @param {string} recordFilesDirPath - The path to the directory containing the record files.
-     * @returns {void}
      */
     private copyFilesToTmpDir(
       filesToCopy: string | Array<string>,
@@ -199,7 +196,6 @@ export class DebugState implements IState{
      * @param {string} fileToCopy - The name of the file to copy.
      * @param {string} srcPath - The source path of the file.
      * @param {string} destinationPath - The destination path where the file should be copied.
-     * @returns {void}
      */
     private copyFileToDir(
       fileToCopy: string,

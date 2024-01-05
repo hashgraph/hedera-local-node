@@ -72,7 +72,6 @@ export class CLIService implements IService{
     /**
      * Loads the startup options for the CLI service.
      * @param {yargs.Argv<{}>} yargs - The yargs instance.
-     * @returns {void}
      */
     public static loadStartupOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs)
@@ -93,7 +92,6 @@ export class CLIService implements IService{
     /**
      * Loads debug options for the CLI service.
      * @param {yargs.Argv<{}>} yargs - The yargs instance.
-     * @returns {void}
      */
     public static loadDebugOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs)
@@ -104,7 +102,6 @@ export class CLIService implements IService{
      * Loads the account options for the CLI.
      * @param {yargs.Argv<{}>} yargs - The yargs instance.
      * @param {boolean} skipCommon - Whether to skip loading common options.
-     * @returns {void}
      */
     public static loadAccountOptions(yargs: Argv<{}>, skipCommon = false): void {
         if(!skipCommon) CLIService.loadCommonOptions(yargs)
@@ -117,7 +114,6 @@ export class CLIService implements IService{
     /**
      * Loads the stop options for the CLI.
      * @param {yargs.Argv<{}>} yargs - The yargs instance.
-     * @returns {void}
      */
     public static loadStopOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs);
@@ -126,7 +122,6 @@ export class CLIService implements IService{
     /**
      * Loads the generate accounts options for the CLI.
      * @param {yargs.Argv<{}>} yargs - The yargs instance.
-     * @returns {void}
      */
     private static loadCommonOptions(yargs: Argv<{}>): void {
         CLIService.verboseLevelOption(yargs);
@@ -186,7 +181,6 @@ export class CLIService implements IService{
     /**
      * Set the current command line arguments.
      * @param {yargs.ArgumentsCamelCase<{}>} argv - The current command line arguments.
-     * @returns {void}
      * @public
      */
     public setCurrentArgv(argv: ArgumentsCamelCase<{}>): void {

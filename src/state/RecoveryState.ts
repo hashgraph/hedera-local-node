@@ -112,7 +112,7 @@ export class RecoveryState implements IState{
      * 
      * @returns {string} The output path for null.
      */
-    private getNullOutput () {
+    private getNullOutput (): string {
         if (IS_WINDOWS) return 'null';
         return '/dev/null';
     }
