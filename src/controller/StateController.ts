@@ -64,7 +64,7 @@ export class StateController implements IOBserver{
         if (event === EventType.Finish) {
             await this.transitionToNextState();
         } else {
-            if (event === EventType.UnknownError) {
+            if (event === EventType.UnknownError || event === EventType.UnresolvableError) {
                 await new CleanUpState().onStart();
                 process.exit(1);
             } else {
