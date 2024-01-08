@@ -153,7 +153,7 @@ export class DockerService implements IService{
      * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the Docker Compose version is correct.
      */
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
-        this.logger.trace('Checking docker compose version...', this.serviceName);
+        this.logger.info('Checking docker compose version...', this.serviceName);
         // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
         const resultFirstCommand = await shell.exec(
           'docker compose version --short',
@@ -189,6 +189,32 @@ export class DockerService implements IService{
           );
         }
         return false;
+    }
+
+    public async checkDockerResources() {
+      this.logger.info('Checking docker resources...', this.serviceName);
+      const resultDockerInfoCommand = await shell.exec(
+        'docker system info --format=json',
+        { silent: true }
+      );
+      
+      const systemInfoJson = JSON.parse(resultDockerInfoCommand.stdout);
+      const dockerMemory = Math.round(systemInfoJson['MemTotal'] / Math.pow(1024, 3));
+      const dockerCPUs = systemInfoJson['NCPU'];
+
+      if (dockerMemory >= 4 && dockerMemory < 8) {
+        this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least 8GB`, this.serviceName);
+      } else if (dockerMemory < 4) {
+        this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least 8GB`, this.serviceName);
+        process.exit(1);
+      }
+
+      if(dockerCPUs > 4 && dockerCPUs < 8) {
+        this.logger.warn(`Your docker CPU resources are ${dockerCPUs}, which may cause unstable behaviour. Set to at least 8 CPUs`, this.serviceName);
+      } else if (dockerCPUs < 4) {
+        this.logger.error(`Your docker CPU resources are set to ${dockerCPUs}. This is not enough, set to at least 8 CPUs`, this.serviceName);
+        process.exit(1);
+      }
     }
     
     /**

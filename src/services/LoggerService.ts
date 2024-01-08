@@ -150,6 +150,11 @@ export class LoggerService implements IService{
      * @param module - The module where the message originates.
      * @public
      */
+    public warn(msg: string, module: string = ''): void {
+        const msgToLog = `[Hedera-Local-Node]\x1b[33m WARN \x1b[0m(${module}) ${msg}`;
+        this.writeToLog(msgToLog, module);
+    }
+
     public error(msg: string, module: string = ''): void {
         const msgToLog = `[Hedera-Local-Node]\x1b[31m ERROR \x1b[0m(${module}) ${msg}`;
         this.writeToLog(msgToLog, module);
