@@ -130,13 +130,12 @@ export class InitState implements IState{
         this.logger.info('Needed bootsrap properties were set for this configuration.', this.stateName);
     }
 
-    // TODO: finish off multi node
     private configureMirrorNodeProperties() {
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
         const turboMode = !this.cliOptions.fullMode;
         const debugMode = this.cliOptions.enableDebug;
 
-        // const multiNode = this.cliOptions.multiNode;
+        const multiNode = this.cliOptions.multiNode;
 
         const propertiesFilePath = join(__dirname, '../../compose-network/mirror-node/application.yml');
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
@@ -150,9 +149,10 @@ export class InitState implements IState{
             application.hedera.mirror.importer.downloader.local = originalNodeConfiguration.local
         }
 
-        // if (multiNode) {
-        //     application['hedera']['mirror']['monitor']['nodes'] = originalNodeConfiguration.multiNodeProperties
-        // }
+        if (multiNode) {
+            application['hedera']['mirror']['monitor']['nodes'] = originalNodeConfiguration.multiNodeProperties;
+            process.env.RELAY_HEDERA_NETWORK = '{"network-node:50211":"0.0.3","network-node-1:50211":"0.0.4","network-node-2:50211":"0.0.5","network-node-3:50211":"0.0.6"}';
+        }
 
         writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));
         this.logger.info('Needed mirror node properties were set for this configuration.', this.stateName);

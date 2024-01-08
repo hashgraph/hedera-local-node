@@ -5,7 +5,8 @@ services:
         [
           "CMD",
           "grep",
-          "Now current platform status",
+          "-E",
+          "Now current platform status = ACTIVE|OBSERVING|CHECKING",
           "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
         ]
       interval: 30s
@@ -32,7 +33,8 @@ services:
         [
           "CMD",
           "grep",
-          "Now current platform status = ACTIVE",
+          "-E",
+          "Now current platform status = ACTIVE|OBSERVING|CHECKING",
           "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
         ]
       interval: 30s

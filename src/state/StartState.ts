@@ -95,9 +95,18 @@ export class StartState implements IState{
         const { fullMode } = this.cliOptions;
         const { userCompose } = this.cliOptions;
         const { userComposeDir } = this.cliOptions;
+        const { multiNode } = this.cliOptions;
 
         if (!fullMode) {
             composeFiles.push('docker-compose.evm.yml');
+        }
+
+        if (multiNode) {
+            composeFiles.push('docker-compose.multinode.yml');
+        }
+
+        if (!fullMode && multiNode) {
+            composeFiles.push('docker-compose.multinode.evm.yml');
         }
 
         if (userCompose) {
