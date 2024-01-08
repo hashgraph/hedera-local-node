@@ -26,6 +26,9 @@ import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import detectPort from 'detect-port';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * DockerService is a service class that handles Docker-related operations.
@@ -191,7 +194,7 @@ export class DockerService implements IService{
         return false;
     }
 
-    public async checkDockerResources() {
+    public async checkDockerResources(isMultiNodeMode: boolean) {
       this.logger.info('Checking docker resources...', this.serviceName);
       const resultDockerInfoCommand = await shell.exec(
         'docker system info --format=json',
@@ -202,19 +205,40 @@ export class DockerService implements IService{
       const dockerMemory = Math.round(systemInfoJson['MemTotal'] / Math.pow(1024, 3));
       const dockerCPUs = systemInfoJson['NCPU'];
 
-      if (dockerMemory >= 4 && dockerMemory < 8) {
-        this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least 8GB`, this.serviceName);
-      } else if (dockerMemory < 4) {
-        this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least 8GB`, this.serviceName);
-        process.exit(1);
-      }
+      this.checkMemoryResources(dockerMemory, isMultiNodeMode);
+      this.checkCPUResources(dockerCPUs);
+    }
 
-      if(dockerCPUs > 4 && dockerCPUs < 8) {
-        this.logger.warn(`Your docker CPU resources are ${dockerCPUs}, which may cause unstable behaviour. Set to at least 8 CPUs`, this.serviceName);
-      } else if (dockerCPUs < 4) {
-        this.logger.error(`Your docker CPU resources are set to ${dockerCPUs}. This is not enough, set to at least 8 CPUs`, this.serviceName);
+    private checkMemoryResources(dockerMemory: number, isMultiNodeMode: boolean) {
+      const MIN_MEMORY_SINGLE_MODE = 4;
+      const MIN_MEMORY_MULTI_MODE = 14;
+      const RECOMMENDED_MEMORY_SINGLE_MODE = 8;
+
+      if (dockerMemory >= MIN_MEMORY_SINGLE_MODE && dockerMemory < RECOMMENDED_MEMORY_SINGLE_MODE && !isMultiNodeMode) {
+        this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least 8GB`, this.serviceName);
+      } else if (dockerMemory < MIN_MEMORY_SINGLE_MODE && !isMultiNodeMode) {
+        this.handleMemoryError(dockerMemory, isMultiNodeMode);
+      } else if(dockerMemory < MIN_MEMORY_MULTI_MODE && isMultiNodeMode) {
+        this.handleMemoryError(dockerMemory, isMultiNodeMode);
+      }
+    }
+
+    private checkCPUResources(dockerCPUs: number) {
+      const MIN_CPUS = 4;
+      const RECOMMENDED_CPUS = 6;
+
+      if(dockerCPUs >= MIN_CPUS && dockerCPUs < RECOMMENDED_CPUS && (process.env.CI === 'false' || process.env.CI === undefined)) {
+        this.logger.warn(`Your docker CPU resources are set to ${dockerCPUs}, which may cause unstable behaviour. Set to at least 6 CPUs`, this.serviceName);
+      } else if (dockerCPUs < MIN_CPUS && (process.env.CI === 'false' || process.env.CI === undefined)) {
+        this.logger.error(`Your docker CPU resources are set to ${dockerCPUs}. This is not enough, set to at least 6 CPUs`, this.serviceName);
         process.exit(1);
       }
+    }
+
+    private handleMemoryError(dockerMemory: number, isMultiNodeMode: boolean) {
+      const recommendedMemory = isMultiNodeMode ? 14 : 8;
+      this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least ${recommendedMemory}GB`, this.serviceName);
+      process.exit(1);
     }
     
     /**
