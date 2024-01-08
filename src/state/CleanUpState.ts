@@ -18,7 +18,7 @@
  *
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import yaml from 'js-yaml';
 import { join } from 'path';
 import { IOBserver } from '../controller/IObserver';
@@ -26,6 +26,8 @@ import originalNodeConfiguration from '../configuration/originalNodeConfiguratio
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
+import { CLIService } from '../services/CLIService';
+import { CLIOptions } from '../types/CLIOptions';
 import { EventType } from '../types/EventType';
 
 export class CleanUpState implements IState{
@@ -33,10 +35,13 @@ export class CleanUpState implements IState{
 
     private observer: IOBserver | undefined;
 
+    private cliOptions: CLIOptions;
+
     private stateName: string;
     
     constructor() {
         this.stateName = CleanUpState.name;
+        this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.logger.trace('Clean Up State Initialized!', this.stateName);
     }
@@ -56,7 +61,11 @@ export class CleanUpState implements IState{
 
     private revertMirrorNodeProperties() {
         this.logger.trace('Clean up unneeded mirror node properties...', this.stateName);
-        const propertiesFilePath = join(__dirname, '../../compose-network/mirror-node/application.yml');
+        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/mirror-node/application.yml');
+        if (!existsSync(propertiesFilePath)) {
+            this.logger.trace(`Mirror Node Properties File doesn't exist at path ${propertiesFilePath}`,this.stateName);
+            return;
+        }
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
         delete application.hedera.mirror.importer.dataPath;
         delete application.hedera.mirror.importer.downloader.sources;
@@ -69,8 +78,11 @@ export class CleanUpState implements IState{
 
     private revertNodeProperties(): void {
         this.logger.trace('Clean up unneeded bootstrap properties.', this.stateName);
-        const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
-
+        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
+        if (!existsSync(propertiesFilePath)) {
+            this.logger.trace(`Node Properties File doesn't exist at path ${propertiesFilePath}`,this.stateName);
+            return;
+        }
         let originalProperties = '';
         originalNodeConfiguration.bootsrapProperties.forEach(property => {
             originalProperties = originalProperties.concat(`${property.key}=${property.value}\n`);

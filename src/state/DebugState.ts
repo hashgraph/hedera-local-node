@@ -51,13 +51,13 @@ export class DebugState implements IState{
 
     public async onStart(): Promise<void> {
         try {
-            const { timestamp } = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
+            const { timestamp, workDir } = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
             // DebugState.checkForDebugMode();
             this.logger.trace('Debug State Starting...', this.stateName);
             const jsTimestampNum = DebugState.getAndValidateTimestamp(timestamp)
 
-            const tempDir = resolve(__dirname, RELATIVE_TMP_DIR_PATH);
-            const recordFilesDirPath = resolve(__dirname, RELATIVE_RECORDS_DIR_PATH);
+            const tempDir = resolve(workDir, RELATIVE_TMP_DIR_PATH);
+            const recordFilesDirPath = resolve(workDir, RELATIVE_RECORDS_DIR_PATH);
             this.findAndCopyRecordFileToTmpDir(jsTimestampNum, recordFilesDirPath, tempDir)
             // Perform the parsing
             await shell.exec(

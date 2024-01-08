@@ -110,6 +110,7 @@ Available commands:
             --async to enable or disable asynchronous creation of accounts.
             --b or --blocklist to enable or disable account blocklisting. Depending on how many private keys are blocklisted, this will affect the generated on startup accounts.
             --enable-debug  Enable or disable debugging of the local node [boolean] [default: false]
+            --workdir       Path to the working directory for local node [string] [default: "[USER APP DATA]/hedera-local"]
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
@@ -539,7 +540,15 @@ These are the local network variables to interact with the consensus and mirror 
 1. `compose-network` folder has the static files needed for starting Local network.
 2. `compose-network/grafana/dashboards` folder contains the Grafana dashboard definitions in JSON format which will be automatically provisioned at startup.
 3. `compose-network/grafana/datasources` folder contains the Grafana datasource definitions in YAML format which wil be automatically provisioned at startup.
-4. `network-logs` folder will be created at runtime and will have all the log files generated after starting local node.
+4. `network-logs` folder will be created at runtime in the working directory and will have all the log files generated after starting local node.
+
+The local node writes its ephemeral data to a `working directory` which can be set using the `--workdir` flag, and has a default value dependant on the OS of the user
+
+| OS      | Default Working Directory                    |
+|---------|----------------------------------------------|
+| MacOS   | `~/Library/Application Support/hedera-local` |
+| Linux   | `~/.local/share/hedera-local`                |
+| Windows | `%USERPROFILE%\AppData\Local\hedera-local`   |
 
 ## Steps to change the memory limits, properties and other configurations
 

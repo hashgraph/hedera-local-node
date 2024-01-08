@@ -35,7 +35,8 @@ export interface CLIOptions {
     userComposeDir: string,
     blocklisting: boolean,
     startup: boolean,
-    verbose: number
+    verbose: number,
     timestamp: string,
-    enableDebug: boolean
+    enableDebug: boolean,
+    workDir: string,
 }

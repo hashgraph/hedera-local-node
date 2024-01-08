@@ -234,7 +234,7 @@ services:
     ports:
       - "5600:5600"
     volumes:
-      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-grpc/application.yml
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-grpc/application.yml"
 
   importer:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-importer:${MIRROR_IMAGE_TAG}"
@@ -255,7 +255,7 @@ services:
       - cloud-storage
       - mirror-node
     volumes:
-      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml"
       - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
   rest:
@@ -332,7 +332,7 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml"
 
   relay:
     image: "${RELAY_IMAGE_PREFIX}hedera-json-rpc-relay:${RELAY_IMAGE_TAG}"

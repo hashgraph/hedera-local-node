@@ -27,13 +27,14 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { CLIService } from '../services/CLIService';
 import { CLIOptions } from '../types/CLIOptions';
+import { FileSystemUtils } from '../utils/FileSystemUtils';
 import { IOBserver } from '../controller/IObserver';
 import { EventType } from '../types/EventType';
 import { ConfigurationData } from '../data/ConfigurationData';
 import { Configuration } from '../types/NetworkConfiguration';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { DockerService } from '../services/DockerService';
-import { NECESSARY_PORTS, OPTIONAL_PORTS } from '../constants';
+import { APPLICATION_YML_RELATIVE_PATH, NECESSARY_PORTS, OPTIONAL_PORTS } from '../constants';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
@@ -75,11 +76,35 @@ export class InitState implements IState{
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
 
+        this.prepareWorkDirectory();
+        const workDirConfiguration = [
+            { key: 'NETWORK_NODE_LOGS_ROOT_PATH', value: join(this.cliOptions.workDir, 'network-logs', 'node') },
+            { key: 'APPLICATION_CONFIG_PATH', value: join(this.cliOptions.workDir, 'compose-network', 'network-node', 'data', 'config') },
+            { key: 'MIRROR_NODE_CONFIG_PATH', value: this.cliOptions.workDir },
+            { key: 'RECORD_PARSER_ROOT_PATH', value: join(this.cliOptions.workDir, 'services','record-parser') },
+        ];
+        configurationData.envConfiguration = (configurationData.envConfiguration ?? []).concat(workDirConfiguration);
+        
         this.configureEnvVariables(configurationData.imageTagConfiguration, configurationData.envConfiguration);
         this.configureNodeProperties(configurationData.nodeConfiguration?.properties);
         this.configureMirrorNodeProperties();
 
         this.observer!.update(EventType.Finish);
+    }
+
+   private prepareWorkDirectory() {
+        this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`, this.stateName);
+        FileSystemUtils.createEphemeralDirectories(this.cliOptions.workDir);
+        const configDirSource = join(__dirname, '../../compose-network/network-node/data/config/');
+        const configPathMirrorNodeSource = join(__dirname, APPLICATION_YML_RELATIVE_PATH);
+        const recordParserSource = join(__dirname,'../../src/services/record-parser');
+
+        const configFiles = {
+            [configDirSource]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
+            [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`,
+            [recordParserSource]: `${this.cliOptions.workDir}/services/record-parser`
+        };
+        FileSystemUtils.copyPaths(configFiles);
     }
 
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
@@ -109,7 +134,7 @@ export class InitState implements IState{
     }
 
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
-        const propertiesFilePath = join(__dirname, '../../compose-network/network-node/data/config/bootstrap.properties');
+        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
 
         let newProperties = '';
         originalNodeConfiguration.bootsrapProperties.forEach(property => {
@@ -137,7 +162,7 @@ export class InitState implements IState{
 
         const multiNode = this.cliOptions.multiNode;
 
-        const propertiesFilePath = join(__dirname, '../../compose-network/mirror-node/application.yml');
+        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/mirror-node/application.yml');
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
 
         if (turboMode) {

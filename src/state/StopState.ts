@@ -19,23 +19,29 @@
  */
 
 import shell from 'shelljs';
+import { join } from 'path';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { EventType } from '../types/EventType';
 import { IS_WINDOWS } from '../constants';
+import { CLIOptions } from '../types/CLIOptions';
+import { CLIService } from '../services/CLIService';
 
 export class StopState implements IState{
     private logger: LoggerService;
 
     private observer: IOBserver | undefined;
 
+    private cliOptions: CLIOptions;
+
     private stateName: string;
-    
+
     constructor() {
         this.stateName = StopState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
+        this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
         this.logger.trace('Stop State Initialized!', this.stateName);
     }
 
@@ -57,6 +63,8 @@ export class StopState implements IState{
         shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
         this.logger.trace('Cleaning the volumes and temp files...', this.stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
+        this.logger.trace(`Working dir is ${this.cliOptions.workDir}`, this.stateName);
+        shell.exec(`rm -rf "${join(this.cliOptions.workDir, 'network-logs')}" >${nullOutput} 2>&1`);
         shell.exec(`docker network prune -f 2>${nullOutput}`);
         shell.cd(rootPath);
         this.logger.info('Hedera Local Node was stopped successfully.', this.stateName);
