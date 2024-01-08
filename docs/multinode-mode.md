@@ -1,0 +1,81 @@
+# Summary
+
+Local Node supports single node mode (which is the default) and multinode mode `--multinode`, for testing more complex use-cases and different scenarios with healthy/unhealthy nodes and node catchup when going out of sync.
+<br><br>
+
+# Requirements
+
+Running Local Node in multinode mode requires more resources and has a bigger memory footprint than running in single-node mode. If using Docker Desktop some changes to its settings need to be made.
+
+### Note:
+
+- Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
+  - **CPUs:** 6
+  - **Memory:** 14 GB
+  - **Swap:** 1 GB
+  - **Disk Image Size:** 64 GB
+
+# Using Multinode mode
+To start Hedera Local Node in multinode mode use the `--multinode` flag togerther with your start command, for example.
+
+```bash
+hedera start -d --multinode
+```
+You can confirm that multinode mode has been started sucessfully, by checking either the output of `docker ps` or your Docker Desktop dashboard.  
+You should see 4 nodes runnning
+```
+network-node
+network-node-1
+network-node-2
+network-node-3
+```
+
+## Stopping/Starting nodes
+You can start or stop individual nodes to test different aspects of consensus, sync and node selection logic or for whatever use case you need by utilizing standard docker management commands.  
+For example:
+```bash
+# To stop an individual node you can use
+docker stop network-node-3
+# To start it back 
+docker start network-node-3
+# You can check logs of the individual node by calling
+docker logs network-node-3 -f
+```
+
+# Modes
+
+When running the Local Node in mutlinode mode both **Full Mode** `--full` and **Turbo Mode** are supported.
+
+# Diagrams
+
+
+## Multinode mode diagram
+
+```mermaid
+graph TD
+    subgraph consensus_network
+       A["Network Node \n(hedera-services)"]
+       A1["Network Node 1"]
+       A2["Network Node 2"]
+       A3["Network Node 3"]
+       A<-->A1
+       A<-->A2
+       A<-->A3
+       A1<-->A2
+       A1<-->A3
+       A2<-->A3
+    end
+ consensus_network --"record streams"----> B((("Local directory")))
+        B--"pull"-->G1[["'downloader'\npart of importer\n Hedera-Mirror-Importer"]]
+        G1---G["importer\nHedera-Mirror-Importer"]
+        G-->H[(db\n postgres)]
+        H---I["rest\nHedera-Mirror-Rest"]
+        H---J["grpc\nHedera-Mirror-Grpc"]
+        H---K["web3\nHedera-Mirror-Web3"]
+        L["monitor\nHedera-Mirror-Monitor"]
+        J<----L
+        I<----L
+        L--sends crypto transfers-->consensus_network
+        R[relay\nHedera Json-Rpc Relay]--makes requests-->I
+        R[relay\nHedera Json-Rpc Relay]--makes requests-->consensus_network
+```
