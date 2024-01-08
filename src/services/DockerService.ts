@@ -227,9 +227,9 @@ export class DockerService implements IService{
       const MIN_CPUS = 4;
       const RECOMMENDED_CPUS = 6;
 
-      if(dockerCPUs >= MIN_CPUS && dockerCPUs < RECOMMENDED_CPUS && (process.env.CI === 'false' || process.env.CI === undefined)) {
+      if(dockerCPUs >= MIN_CPUS && dockerCPUs < RECOMMENDED_CPUS && !process.env.CI) {
         this.logger.warn(`Your docker CPU resources are set to ${dockerCPUs}, which may cause unstable behaviour. Set to at least 6 CPUs`, this.serviceName);
-      } else if (dockerCPUs < MIN_CPUS && (process.env.CI === 'false' || process.env.CI === undefined)) {
+      } else if (dockerCPUs < MIN_CPUS && !process.env.CI) {
         this.logger.error(`Your docker CPU resources are set to ${dockerCPUs}. This is not enough, set to at least 6 CPUs`, this.serviceName);
         process.exit(1);
       }
