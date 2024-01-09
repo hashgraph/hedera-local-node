@@ -207,27 +207,35 @@ export class DockerService implements IService{
       const dockerMemory = Math.round(systemInfoJson['MemTotal'] / Math.pow(1024, 3));
       const dockerCPUs = systemInfoJson['NCPU'];
 
-      this.checkMemoryResources(dockerMemory, isMultiNodeMode);
+      return this.checkMemoryResources(dockerMemory, isMultiNodeMode) &&
       this.checkCPUResources(dockerCPUs);
     }
 
     private checkMemoryResources(dockerMemory: number, isMultiNodeMode: boolean) {
       if (dockerMemory >= MIN_MEMORY_SINGLE_MODE && dockerMemory < RECOMMENDED_MEMORY_SINGLE_MODE && !isMultiNodeMode) {
         this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least ${RECOMMENDED_MEMORY_SINGLE_MODE}GB`, this.serviceName);
+        return true;
       } else if (dockerMemory < MIN_MEMORY_SINGLE_MODE && !isMultiNodeMode) {
         this.handleMemoryError(dockerMemory, isMultiNodeMode);
+        return false;
       } else if(dockerMemory < MIN_MEMORY_MULTI_MODE && isMultiNodeMode) {
         this.handleMemoryError(dockerMemory, isMultiNodeMode);
+        return false;
       }
+
+      return true;
     }
 
     private checkCPUResources(dockerCPUs: number) {
       if(dockerCPUs >= MIN_CPUS && dockerCPUs < RECOMMENDED_CPUS && !process.env.CI) {
         this.logger.warn(`Your docker CPU resources are set to ${dockerCPUs}, which may cause unstable behaviour. Set to at least ${RECOMMENDED_CPUS} CPUs`, this.serviceName);
+        return true;
       } else if (dockerCPUs < MIN_CPUS && !process.env.CI) {
         this.logger.error(`Your docker CPU resources are set to ${dockerCPUs}. This is not enough, set to at least ${RECOMMENDED_CPUS} CPUs`, this.serviceName);
-        process.exit(1);
+        return false;
       }
+
+      return true;
     }
 
     private handleMemoryError(dockerMemory: number, isMultiNodeMode: boolean) {
