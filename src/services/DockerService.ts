@@ -21,7 +21,9 @@
 import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
-import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS } from '../constants';
+import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, 
+         MIN_CPUS, MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE,
+         RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -210,10 +212,6 @@ export class DockerService implements IService{
     }
 
     private checkMemoryResources(dockerMemory: number, isMultiNodeMode: boolean) {
-      const MIN_MEMORY_SINGLE_MODE = 4;
-      const MIN_MEMORY_MULTI_MODE = 14;
-      const RECOMMENDED_MEMORY_SINGLE_MODE = 8;
-
       if (dockerMemory >= MIN_MEMORY_SINGLE_MODE && dockerMemory < RECOMMENDED_MEMORY_SINGLE_MODE && !isMultiNodeMode) {
         this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least 8GB`, this.serviceName);
       } else if (dockerMemory < MIN_MEMORY_SINGLE_MODE && !isMultiNodeMode) {
@@ -224,9 +222,6 @@ export class DockerService implements IService{
     }
 
     private checkCPUResources(dockerCPUs: number) {
-      const MIN_CPUS = 4;
-      const RECOMMENDED_CPUS = 6;
-
       if(dockerCPUs >= MIN_CPUS && dockerCPUs < RECOMMENDED_CPUS && !process.env.CI) {
         this.logger.warn(`Your docker CPU resources are set to ${dockerCPUs}, which may cause unstable behaviour. Set to at least 6 CPUs`, this.serviceName);
       } else if (dockerCPUs < MIN_CPUS && !process.env.CI) {
@@ -236,7 +231,7 @@ export class DockerService implements IService{
     }
 
     private handleMemoryError(dockerMemory: number, isMultiNodeMode: boolean) {
-      const recommendedMemory = isMultiNodeMode ? 14 : 8;
+      const recommendedMemory = isMultiNodeMode ? MIN_MEMORY_MULTI_MODE : MIN_MEMORY_SINGLE_MODE;
       this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least ${recommendedMemory}GB`, this.serviceName);
       process.exit(1);
     }
