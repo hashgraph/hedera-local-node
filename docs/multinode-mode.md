@@ -1,11 +1,13 @@
 # Summary
 
-Local Node supports single node mode (which is the default) and multinode mode `--multinode`, for testing more complex use-cases and different scenarios with healthy/unhealthy nodes and node catchup when going out of sync.
+Local Node's default mode is the single node mode. In addition to that it also supports multinode mode `--multinode`, for testing more complex use-cases and different scenarios with healthy/unhealthy nodes and node catchup when going out of sync. In this mode multiple instances of the Hedera network node are run on the same machine. A decentralized setup where each node runs on a separate machine is **not** supported by Local Node.   
+Generally speaking multinode mode is an advanced mode, that should be used only for specific use cases that require multiple consensus nodes. Due to it's increased resource requirements and complexity it is not recommended for day to day use.
 <br><br>
 
 # Requirements
 
-Running Local Node in multinode mode requires more resources and has a bigger memory footprint than running in single-node mode. If using Docker Desktop some changes to its settings need to be made.
+Running Local Node in multinode mode requires more resources and has a bigger memory footprint than running in single-node mode. Ensure that local node works properly in the default single node mode, before trying to run it in multinode. To run the multinode mode it's required that at least 14 GB of memory are available to Docker.  
+ If using Docker Desktop some changes to its settings need to be made.
 
 ### Note:
 
@@ -42,11 +44,13 @@ docker start network-node-3
 docker logs network-node-3 -f
 ```
 
-# Modes
+To keep the network operational in multinode mode at least 3 nodes need to be healthy at the same time. If less than 3 nodes are healthy the netowrk will stop working.
 
-When running the Local Node in mutlinode mode both **Full Mode** `--full` and **Turbo Mode** are supported.
+# Full and Turbo Modes
 
-# Diagrams
+When running the Local Node in mutlinode mode both **Full Mode** `--full` and **Turbo Mode** are supported. When running in full mode each node's record stream files are uploaded to it's own directory in the `minio` bucket by the correpsonding uploader containers (`record-streams-uploader-N`, `account-balances-uploader-N`,`record-sidecar-uploader-N`). When running in turbo mode (the default) they are read from the corresponding local directory.
+
+# Diagram
 
 
 ## Multinode mode diagram
