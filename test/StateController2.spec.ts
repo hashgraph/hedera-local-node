@@ -1,0 +1,53 @@
+import { assert } from 'chai';
+import sinon from 'sinon';
+import { StateController } from '../src/controller/StateController';
+import { EventType } from '../src/types/EventType';
+import { LoggerService } from '../src/services/LoggerService';
+import { ServiceLocator } from '../src/services/ServiceLocator';
+import { StateData } from '../src/data/StateData';
+import { CleanUpState } from '../src/state/CleanUpState';
+
+
+describe('StateController2', () => {
+  let stateController: StateController;
+  let serviceLocatorStub: sinon.SinonStub;
+  let cleanUpStateStub: sinon.SinonStubbedInstance<CleanUpState>;
+  let getStartConfigurationStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    // Create a stub for the ServiceLocator
+    const loggerServiceStub = sinon.createStubInstance(LoggerService);
+    serviceLocatorStub = sinon.stub(ServiceLocator.Current, 'get').returns(loggerServiceStub);
+
+    cleanUpStateStub = sinon.createStubInstance(CleanUpState);
+    cleanUpStateStub.onStart.resolves();
+
+    //cleanUpStateStub = sinon.stub(CleanUpState.prototype, <any>"onStart").resolves();
+
+    getStartConfigurationStub = sinon.stub(StateData.prototype, <any>"getStartConfiguration").returns({
+        'stateMachineName' : 'start',
+        'states' : []
+    });
+    stateController = new StateController('start');
+  });
+
+  afterEach(() => {
+    // Restore the original ServiceLocator after each test
+    cleanUpStateStub.onStart.restore();
+    serviceLocatorStub.restore();
+    getStartConfigurationStub.restore();
+  });
+
+
+  it('should handle other events correctly', async () => {
+    // Arrange
+    // Stub process.exit
+    const processExitStub = sinon.stub(process, 'exit');
+    // Act
+    await stateController.update(EventType.UnresolvableError);
+
+    // Assert
+    assert.isTrue(cleanUpStateStub.onStart.calledOnce);
+    assert.isTrue(processExitStub.calledWith(1));
+  });
+});
