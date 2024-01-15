@@ -58,6 +58,9 @@ export class FileSystemUtils{
     }
 
     public static parseWorkDir(workdir: string): string {
+        if (!workdir) {
+            workdir = FileSystemUtils.getPlatformSpecificAppDataPath('hedera-local');
+        }
         let workdirPath = workdir;
         if (workdirPath.startsWith('~')) {
             workdirPath = join(homedir(), workdirPath.slice(1));

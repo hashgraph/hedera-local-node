@@ -18,7 +18,7 @@
     "precommit": "npm run pretty",
     "prepush": "npm run lint",
     "prepublishOnly": "npm run build",
-    "test": "mocha"
+    "test": "ts-mocha ./test/StateController2.spec.ts"
   },
   "bin": {
     "hedera": "./build/index.js"
