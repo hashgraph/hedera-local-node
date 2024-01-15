@@ -138,7 +138,7 @@ export class CLIService implements IService{
         const accounts = argv.accounts as number;
         const async = argv.async as boolean;
         const balance = argv.balance as number;
-        const detached = argv.detached as boolean;
+        const detached = argv.detached as boolean || true;
         const host = argv.host as string;
         const network = CLIService.resolveNetwork(argv.network as string);
         const limits = argv.limits as boolean;

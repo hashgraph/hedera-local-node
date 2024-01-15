@@ -6,22 +6,21 @@ import { LoggerService } from '../src/services/LoggerService';
 import { ServiceLocator } from '../src/services/ServiceLocator';
 import { StateData } from '../src/data/StateData';
 import { CleanUpState } from '../src/state/CleanUpState';
-
+import { CLIService } from '../src/services/CLIService';
 
 describe('StateController2', () => {
   let stateController: StateController;
-  let serviceLocatorStub: sinon.SinonStub;
   let cleanUpStateStub: sinon.SinonStubbedInstance<CleanUpState>;
   let getStartConfigurationStub: sinon.SinonStub;
-
+  before(() => {
+    const loggerServce = new LoggerService(1);
+    ServiceLocator.Current.register(loggerServce);
+    const cliService = new CLIService({ "$0": '' , _: ['start'] })
+    ServiceLocator.Current.register(cliService);
+  });
   beforeEach(() => {
-    // Create a stub for the ServiceLocator
-    const loggerServiceStub = sinon.createStubInstance(LoggerService);
-    serviceLocatorStub = sinon.stub(ServiceLocator.Current, 'get').returns(loggerServiceStub);
-
-    cleanUpStateStub = sinon.createStubInstance(CleanUpState);
-    cleanUpStateStub.onStart.resolves();
-
+    // cleanUpStateStub = sinon.createStubInstance(CleanUpState);
+    // cleanUpStateStub.onStart.resolves();
     //cleanUpStateStub = sinon.stub(CleanUpState.prototype, <any>"onStart").resolves();
 
     getStartConfigurationStub = sinon.stub(StateData.prototype, <any>"getStartConfiguration").returns({
@@ -33,9 +32,9 @@ describe('StateController2', () => {
 
   afterEach(() => {
     // Restore the original ServiceLocator after each test
-    cleanUpStateStub.onStart.restore();
-    serviceLocatorStub.restore();
-    getStartConfigurationStub.restore();
+    // cleanUpStateStub.onStart.restore();
+    // serviceLocatorStub.restore();
+    // getStartConfigurationStub.restore();
   });
 
 
@@ -43,11 +42,13 @@ describe('StateController2', () => {
     // Arrange
     // Stub process.exit
     const processExitStub = sinon.stub(process, 'exit');
+    const cleanUpState = sinon.stub(CleanUpState.prototype, 'onStart');
     // Act
+
     await stateController.update(EventType.UnresolvableError);
 
     // Assert
-    assert.isTrue(cleanUpStateStub.onStart.calledOnce);
+    assert.isTrue(cleanUpState.calledOnce);
     assert.isTrue(processExitStub.calledWith(1));
   });
 });
