@@ -27,17 +27,41 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import { FileSystemUtils } from '../utils/FileSystemUtils';
 
+/**
+ * Class representing the CLI service.
+ * @implements {IService}
+ */
 export class CLIService implements IService{
+    /**
+     * The logger service.
+     * @private
+     */
     private logger: LoggerService;
-    
+        
+    /**
+     * The name of the service.
+     * @private
+     */
     private serviceName: string;
-    
+        
+    /**
+     * The current command line arguments.
+     * @private
+     */
     private currentArgv: ArgumentsCamelCase<{}> | undefined;
 
+    /**
+     * Get the verbose level.
+     * @returns {string} The verbose level.
+     */
     public get verboseLevel() : string {
         return this.currentArgv?.verboseLevel as string;
     }
     
+    /**
+     * Create a CLI service.
+     * @param {yargs.ArgumentsCamelCase<{}>} argv - The command line arguments.
+     */
     constructor(argv: yargs.ArgumentsCamelCase<{}>) {
         this.serviceName = CLIService.name;
         this.setCurrentArgv(argv);
@@ -45,6 +69,10 @@ export class CLIService implements IService{
         this.logger.trace('CLI Service Initialized!', this.serviceName);
     }
 
+    /**
+     * Loads the startup options for the CLI service.
+     * @param {yargs.Argv<{}>} yargs - The yargs instance.
+     */
     public static loadStartupOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs)
         CLIService.loadAccountOptions(yargs, true);
@@ -61,11 +89,20 @@ export class CLIService implements IService{
         CLIService.enableDebugOption(yargs);
     }
 
+    /**
+     * Loads debug options for the CLI service.
+     * @param {yargs.Argv<{}>} yargs - The yargs instance.
+     */
     public static loadDebugOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs)
         CLIService.timestampOption(yargs);
     }
 
+    /**
+     * Loads the account options for the CLI.
+     * @param {yargs.Argv<{}>} yargs - The yargs instance.
+     * @param {boolean} skipCommon - Whether to skip loading common options.
+     */
     public static loadAccountOptions(yargs: Argv<{}>, skipCommon = false): void {
         if(!skipCommon) CLIService.loadCommonOptions(yargs)
         CLIService.accountOption(yargs);
@@ -74,15 +111,28 @@ export class CLIService implements IService{
         CLIService.hostOption(yargs);
     }
 
+    /**
+     * Loads the stop options for the CLI.
+     * @param {yargs.Argv<{}>} yargs - The yargs instance.
+     */
     public static loadStopOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs);
     }
 
+    /**
+     * Loads the generate accounts options for the CLI.
+     * @param {yargs.Argv<{}>} yargs - The yargs instance.
+     */
     private static loadCommonOptions(yargs: Argv<{}>): void {
         CLIService.verboseLevelOption(yargs);
         CLIService.workDirOption(yargs);
     }
 
+    /**
+     * Get the current command line arguments.
+     * @returns {CLIOptions} The current command line arguments.
+     * @public
+     */
     public getCurrentArgv() {
         const argv = this.currentArgv as ArgumentsCamelCase<{}>;
         const accounts = argv.accounts as number;
@@ -128,6 +178,11 @@ export class CLIService implements IService{
         return currentArgv;
     }
 
+    /**
+     * Set the current command line arguments.
+     * @param {yargs.ArgumentsCamelCase<{}>} argv - The current command line arguments.
+     * @public
+     */
     public setCurrentArgv(argv: ArgumentsCamelCase<{}>): void {
         const state = argv._[0] as string
         this.currentArgv = {
@@ -137,6 +192,12 @@ export class CLIService implements IService{
         };
     }
 
+    /**
+     * Checks if the given state represents a startup operation.
+     * @param {string} state - The state to check.
+     * @returns {boolean} True if the state represents a startup operation, false otherwise.
+     * @private
+     */
     private static isStartup(state: string): boolean {
         switch (state) {
             case 'start':
@@ -154,6 +215,15 @@ export class CLIService implements IService{
         };
     }
 
+    /**
+     * Adds the 'accounts' option to the command line arguments.
+     * This option specifies the number of generated accounts of each type.
+     * It defaults to 10.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static accountOption(yargs: Argv<{}>): void {
         yargs.positional('accounts', {
             describe: 'Generated accounts of each type.',
@@ -161,6 +231,16 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'detached' option to the command line arguments.
+     * This option is a boolean that specifies whether to run the local node in detached mode.
+     * It is not required and defaults to false.
+     * The option can also be set using the alias 'd'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static detachedOption(yargs: Argv<{}>): void {
         yargs.option('detached', {
             alias: 'd',
@@ -171,6 +251,16 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'host' option to the command line arguments.
+     * This option is a string that specifies the host to run the local node with.
+     * It is not required and defaults to '127.0.0.1'.
+     * The option can also be set using the alias 'h'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static hostOption(yargs: Argv<{}>): void {
         yargs.option('host', {
             alias: 'h',
@@ -181,6 +271,17 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'network' option to the command line arguments.
+     * This option is a string that selects the network configuration.
+     * Pre-built configs include 'mainnet', 'previewnet', 'testnet', and 'local'.
+     * It is not required and defaults to 'local'.
+     * The option can also be set using the alias 'n'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static networkOption(yargs: Argv<{}>): void {
         yargs.option('network', {
             alias: 'n',
@@ -192,6 +293,16 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'limits' option to the command line arguments.
+     * This option is a boolean that enables or disables the rate limits in the JSON-RPC relay.
+     * It is not required and defaults to false.
+     * The option can also be set using the alias 'l'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static rateLimitOption(yargs: Argv<{}>): void {
         yargs.option('limits', {
             alias: 'l',
@@ -202,6 +313,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'timestamp' option to the command line arguments.
+     * This option is a string that records the file timestamp.
+     * It is required.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static timestampOption(yargs: Argv<{}>): void {
         yargs.option('timestamp', {
             type: 'string',
@@ -210,6 +330,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'dev' option to the command line arguments.
+     * This option is a boolean that enables or disables developer mode.
+     * It is not required and defaults to false.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static devModeOption(yargs: Argv<{}>): void {
         yargs.option('dev', {
             type: 'boolean',
@@ -219,6 +348,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'full' option to the command line arguments.
+     * This option is a boolean that enables or disables full mode for a production local-node.
+     * It is not required and defaults to false.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static fullModeOption(yargs: Argv<{}>): void {
         yargs.option('full', {
             type: 'boolean',
@@ -228,6 +366,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'multinode' option to the command line arguments.
+     * This option is a boolean that enables or disables multi-node mode.
+     * It is not required and defaults to false.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static multiNodeOption(yargs: Argv<{}>): void {
         yargs.option('multinode', {
             type: 'boolean',
@@ -237,6 +384,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'balance' option to the command line arguments.
+     * This option is a number that sets the starting balance of the created accounts in HBAR.
+     * It is not required and defaults to 10000.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static balanceOption(yargs: Argv<{}>): void {
         yargs.option('balance', {
             type: 'number',
@@ -246,6 +402,16 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'async' option to the command line arguments.
+     * This option is a boolean that enables or disables asynchronous creation of accounts.
+     * It is not required and defaults to false.
+     * The option can also be set using the alias 'a'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static asyncOption(yargs: Argv<{}>): void {
         yargs.option('async', {
             alias: 'a',
@@ -256,6 +422,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'usercompose' option to the command line arguments.
+     * This option is a boolean that enables or disables user Compose configuration files.
+     * It is not required and defaults to true.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static userComposeOption(yargs: Argv<{}>): void {
         yargs.option('usercompose', {
             type: 'boolean',
@@ -265,6 +440,15 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'composedir' option to the command line arguments.
+     * This option is a string that specifies the path to a directory with user Compose configuration files.
+     * It is not required and defaults to './overrides/'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static userComposeDirOption(yargs: Argv<{}>): void {
         yargs.option('composedir', {
             type: 'string',
@@ -283,6 +467,16 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'blocklist' option to the command line arguments.
+     * This option is a boolean that enables or disables blocklisting of accounts.
+     * It is not required and defaults to false.
+     * The option can also be set using the alias 'b'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static blocklistingOption(yargs: Argv<{}>): void {
         yargs.option('blocklist', {
             alias: 'b',
@@ -293,6 +487,16 @@ export class CLIService implements IService{
         });
     }
 
+    /**
+     * Adds the 'verbose' option to the command line arguments.
+     * This option is a string that sets the verbose level.
+     * It is not required and defaults to 'info'.
+     * The valid choices for this option are 'info' and 'trace'.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @public
+     * @static
+     */
     public static verboseLevelOption(yargs: Argv<{}>): void {
         yargs.option('verbose', {
             type: 'string',
@@ -303,6 +507,15 @@ export class CLIService implements IService{
         })
     }
     
+    /**
+     * Adds the 'enable-debug' option to the command line arguments.
+     * This option is a boolean that enables or disables debugging of the local node.
+     * It is not required and defaults to false.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
     private static enableDebugOption(yargs: Argv<{}>): void {
         yargs.option('enable-debug', {
             type: 'boolean',
@@ -312,6 +525,12 @@ export class CLIService implements IService{
           });
     }
     
+    /**
+     * Resolve the network type from a string.
+     * @param {string} network - The network type as a string.
+     * @returns {NetworkType} The network type.
+     * @private
+     */
     private static resolveNetwork(network: string): NetworkType {
         switch (network) {
             case 'local':
@@ -327,6 +546,12 @@ export class CLIService implements IService{
         }
     }
 
+    /**
+     * Resolve the verbose level from a string.
+     * @param {string} level - The verbose level as a string.
+     * @returns {VerboseLevel} The verbose level.
+     * @public
+     */
     public static resolveVerboseLevel(level: string): VerboseLevel {
         switch (level) {
             case 'info':

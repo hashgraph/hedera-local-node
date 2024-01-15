@@ -28,17 +28,40 @@ import { EventType } from '../types/EventType';
 import { IState } from './IState';
 import { DockerService } from '../services/DockerService';
 
-export class NetworkPrepState implements IState{
+/**
+ * Represents the network preparation state of the Hedera Local Node.
+ * @implements {IState}
+ */
+export class NetworkPrepState implements IState {
+    /**
+     * The logger service used for logging messages.
+     */
     private logger: LoggerService;
 
+    /**
+     * The client service used in the network preparation state.
+     */
     private clientService: ClientService;
 
+    /**
+     * Represents the Docker service used for network preparation.
+     */
     private dockerService: DockerService;
 
+    /**
+     * The observer for the network preparation state.
+     */
     private observer: IOBserver | undefined;
 
+    /**
+     * The name of the state.
+     */
     private stateName: string;
     
+    /**
+     * Represents the NetworkPrepState class.
+     * This class is responsible for initializing the network preparation state.
+     */
     constructor() {
         this.stateName = NetworkPrepState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -47,10 +70,18 @@ export class NetworkPrepState implements IState{
         this.logger.trace('Network Preparation State Initialized!', this.stateName);
     }
 
+    /**
+     * Subscribes an observer to receive updates from the network preparation state.
+     * @param {IOBserver} observer - The observer to subscribe.
+     */
     public subscribe(observer: IOBserver): void {
         this.observer = observer;
     }
 
+    /**
+     * Starts the network preparation process.
+     * @returns {Promise<void>} A promise that resolves when the network preparation is complete.
+     */
     public async onStart(): Promise<void> {
         this.logger.info('Starting Network Preparation State...', this.stateName);
         const client = this.clientService.getClient();
@@ -61,6 +92,11 @@ export class NetworkPrepState implements IState{
         this.observer!.update(EventType.Finish);
     }
 
+    /**
+     * Imports fees and exchange rates into the network.
+     * @param {Client} client - The Hedera client.
+     * @returns {Promise<void>} A promise that resolves when the import is complete.
+     */
     private async importFees(client: Client): Promise<void> {
         this.logger.trace('Starting Fees import...', this.stateName);
 
@@ -97,6 +133,7 @@ export class NetworkPrepState implements IState{
      * Mirror Node Monitor creates a Topic Entity. 
      * If that happens during the account generation step all consecutive AccountIds 
      * get shifted by 1 and the private keys no longer correspond to the expected AccountIds.
+     *  @returns {Promise<void>}
      */
     private async waitForTopicCreation(): Promise<void> {
         this.logger.trace('Waiting for topic creation...', this.stateName);

@@ -26,6 +26,10 @@ import { hideBin } from 'yargs/helpers';
 import { StateController } from "./controller/StateController";
 import { CLIService } from "./services/CLIService";
 
+/**
+ * This script is the entry point for the Hedera Local Node CLI.
+ * It provides several commands to manage the local Hedera network.
+ */
 yargs(hideBin(process.argv))
     .command(
         "start [accounts]",

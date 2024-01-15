@@ -26,7 +26,15 @@ import { DockerService } from './DockerService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 
+/**
+ * Class responsible for initializing the application.
+ */
 export class Bootstrapper {
+    /**
+     * Initialize the application.
+     * @param {yargs.ArgumentsCamelCase<{}>} argv - The command line arguments.
+     * @returns {Promise<void>} A promise that resolves when the initialization is complete.
+     */
     public static async Initiailze(argv: yargs.ArgumentsCamelCase<{}>): Promise<void> {
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string)
         ServiceLocator.Current.register(new LoggerService(verbose));

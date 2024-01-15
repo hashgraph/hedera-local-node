@@ -25,13 +25,37 @@ import { ServiceLocator } from './ServiceLocator';
 import { CLIService } from './CLIService';
 import { Errors } from '../Errors/LocalNodeErrors';
 
+/**
+ * ConnectionService is a service class that handles network connections.
+ * It implements the IService interface.
+ * It uses the 'net' module to create connections and check their status.
+ * 
+ * @class
+ * @public
+ */
 export class ConnectionService implements IService{
+    /**
+     * The logger service used for logging.
+     * @private
+     */
     private logger: LoggerService;
 
+    /**
+     * The name of the service.
+     * @private
+     */
     private serviceName: string;
 
+    /**
+     * The CLI service used for command line interface operations.
+     * @private
+     */
     private cliService: CLIService;
 
+    /**
+     * Constructs a new instance of the ConnectionService.
+     * Initializes the logger and CLI service, and logs the initialization of the connection service.
+     */
     constructor() {
         this.serviceName = ConnectionService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -39,10 +63,20 @@ export class ConnectionService implements IService{
         this.logger.trace('Connection Service Initialized!', this.serviceName);
     }
 
-    public async waitForFiringUp(port: number) {
+    /**
+     * Waits for the local node to fire up by continuously trying to establish a connection.
+     * If the connection is not ready after 100 retries, it throws a CONNECTION_ERROR.
+     * 
+     * @param {number} port - The port to connect to.
+     * @throws CONNECTION_ERROR if the port is not ready after a certain number of retries.
+     * @returns {Promise<void>} A promise that resolves when the port is ready for connection.
+     * @public
+     */
+    public async waitForFiringUp(port: number): Promise<void> {
         const { host } = this.cliService.getCurrentArgv();
         let isReady = false;
-        let retries = 100; // this means that we wait around 100 seconds, normal consensus node startup takes around 60 seconds
+        // this means that we wait around 100 seconds, normal consensus node startup takes around 60 seconds
+        let retries = 100;
         while (!isReady) {
           net
             .createConnection(port, host)
@@ -65,7 +99,17 @@ export class ConnectionService implements IService{
         }
     }
 
-    public checkConnection(port: number) {
+    /**
+     * Checks the connection to the local node.
+     * If the connection is not established within a timeout of 3000ms, it rejects the promise with 'timeout'.
+     * If the connection is established, it resolves the promise and ends the socket.
+     * If there is an error during the connection, it rejects the promise with the error.
+     * 
+     * @param {number} port - The port to connect to.
+     * @public
+     * @returns {Promise<void>} - A promise that resolves when the connection is established, and rejects when there is an error or timeout.
+     */
+    public checkConnection(port: number): Promise<void> {
         const { host } = this.cliService.getCurrentArgv();
         return new Promise<void>((resolve, reject) => {
             const timeout = 3000;

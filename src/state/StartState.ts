@@ -33,18 +33,41 @@ import { LocalNodeErrors } from '../Errors/LocalNodeErrors';
 import { DockerService } from '../services/DockerService';
 
 export class StartState implements IState{
+    /**
+     * The logger service used for logging messages.
+     */
     private logger: LoggerService;
 
+    /**
+     * The connection service used for establishing and managing connections.
+     */
     private connectionService: ConnectionService;
 
+    /**
+     * Represents the Docker service used by the StartState class.
+     */
     private dockerService: DockerService;
 
+    /**
+     * The observer for the StartState.
+     */
     private observer: IOBserver | undefined;
 
+    /**
+     * The CLI options for the StartState class.
+     */
     private cliOptions: CLIOptions;
 
+    /**
+     * The name of the state.
+     */
     private stateName: string;
     
+    /**
+     * Creates an instance of StartState.
+     * 
+     * @constructor
+     */
     constructor() {
         this.stateName = StartState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -54,10 +77,22 @@ export class StartState implements IState{
         this.logger.trace('Start State Initialized!', this.stateName);
     }
 
+    /**
+     * Subscribes an observer to the state.
+     * 
+     * @public
+     * @param {IOBserver} observer - The observer to subscribe.
+     */
     public subscribe(observer: IOBserver): void {
         this.observer = observer;
     }
 
+    /**
+     * Starts the Hedera Local Node.
+     * 
+     * @public
+     * @returns {Promise<void>} A Promise that resolves when the Hedera Local Node is successfully started.
+     */
     public async onStart(): Promise<void> {
         this.logger.info('Starting Hedera Local Node...', this.stateName);
 
@@ -89,8 +124,14 @@ export class StartState implements IState{
         this.observer!.update(EventType.Finish);
     }
 
-    // TODO: Add multi node option
+    /**
+     * Executes the docker compose up command.
+     * 
+     * @private
+     * @returns {Promise<shell.ShellString>} A promise that resolves with the output of the command.
+     */
     private async dockerComposeUp(): Promise<shell.ShellString> {
+        // TODO: Add multi node option
         const composeFiles = ['docker-compose.yml'];
         const { fullMode } = this.cliOptions;
         const { userCompose } = this.cliOptions;
@@ -118,6 +159,13 @@ export class StartState implements IState{
         );
     }
 
+    /**
+     *  Retrieves an array of user compose files from the specified directory.
+     * 
+     * @private
+     * @param {string} userComposeDir - The directory path where the user compose files are located. Defaults to './overrides/'.
+     * @returns {Array<string>} An array of user compose file paths.
+     */
     private getUserComposeFiles(userComposeDir: string = './overrides/'): Array<string> {
         let dirPath = path.normalize(userComposeDir);
         if (!dirPath.endsWith(path.sep)) {

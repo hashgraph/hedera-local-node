@@ -25,8 +25,16 @@ import mainnet from '../configuration/mainnet.json';
 import testnet from '../configuration/testnet.json';
 import previewnet from '../configuration/previewnet.json';
 
+/**
+ * Class representing a configuration data.
+ */
 export class ConfigurationData {
-    public getSelectedConfigurationData(network: NetworkType) {
+    /**
+     * Get the selected configuration data based on the network type.
+     * @param {NetworkType} network - The type of the network.
+     * @returns {NetworkConfiguration} The configuration data for the selected network.
+     */
+    public getSelectedConfigurationData(network: NetworkType): NetworkConfiguration {
         switch (network) {
             case NetworkType.LOCAL:
                 return this.getNetworkConfiguration(local as any);
@@ -41,7 +49,12 @@ export class ConfigurationData {
         }
     }
 
-    private getNetworkConfiguration(jsonConfiguration: NetworkConfiguration) {
+    /**
+     * Get the network configuration from the JSON configuration.
+     * @param {NetworkConfiguration} jsonConfiguration - The JSON configuration.
+     * @returns The network configuration.
+     */
+    private getNetworkConfiguration(jsonConfiguration: NetworkConfiguration): NetworkConfiguration {
         const relayConfiguration = jsonConfiguration?.envConfiguration ?? undefined;
         const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties ?? undefined;
         const configuration: NetworkConfiguration = {

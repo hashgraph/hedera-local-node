@@ -38,17 +38,40 @@ import { APPLICATION_YML_RELATIVE_PATH, NECESSARY_PORTS, OPTIONAL_PORTS } from '
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
+/**
+ * Represents the initialization state of the application.
+ * This state is responsible for setting up the necessary environment variables,
+ * configuring node properties, and mirror node properties based on the selected configuration.
+ */
 export class InitState implements IState{
+    /**
+     * The logger service used for logging messages.
+     */
     private logger: LoggerService;
 
+    /**
+     * The observer for the InitState.
+     */
     private observer: IOBserver | undefined;
 
+    /**
+     * The CLI options for the initialization state.
+     */
     private cliOptions: CLIOptions;
 
+    /**
+     * Represents the Docker service used by the InitState class.
+     */
     private dockerService: DockerService;
 
+    /**
+     * The name of the state.
+     */
     private stateName: string;
     
+    /**
+     * Initializes a new instance of the InitState class.
+     */
     constructor() {
         this.stateName = InitState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
@@ -57,10 +80,19 @@ export class InitState implements IState{
         this.logger.trace('Initialization State Initialized!', this.stateName);
     }
 
+    /**
+     * Subscribes an observer to the state.
+     * 
+     * @param {IOBserver} observer - The observer to subscribe.
+     */
     public subscribe(observer: IOBserver): void {
         this.observer = observer;
     }
 
+    /**
+     * Called when the state is started.
+     * @returns {Promise<void>} A promise that resolves when the state has started.
+     */
     public async onStart(): Promise<void> {
         this.logger.trace('Initialization State Starting...', this.stateName);
         const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network);
@@ -92,7 +124,16 @@ export class InitState implements IState{
         this.observer!.update(EventType.Finish);
     }
 
-   private prepareWorkDirectory() {
+    /**
+     * Prepares the work directory.
+     * 
+     * This method logs the path to the work directory, creates ephemeral directories in the work directory, and defines the source paths for the config directory, the mirror node application YAML file, and the record parser.
+     * It creates a map of the source paths to the destination paths in the work directory and copies the files from the source paths to the destination paths.
+     * 
+     * @private
+     * @returns {void}
+    */
+    private prepareWorkDirectory() {
         this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`, this.stateName);
         FileSystemUtils.createEphemeralDirectories(this.cliOptions.workDir);
         const configDirSource = join(__dirname, '../../compose-network/network-node/data/config/');
@@ -107,6 +148,11 @@ export class InitState implements IState{
         FileSystemUtils.copyPaths(configFiles);
     }
 
+    /**
+     * Configures the environment variables based on the selected configuration.
+     * @param {Array<Configuration>} imageTagConfiguration - The image tag configuration.
+     * @param {Array<Configuration> | undefined} envConfiguration - The environment variable configuration.
+     */
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
         imageTagConfiguration.forEach(variable => {
             process.env[variable.key] = variable.value;
@@ -133,6 +179,10 @@ export class InitState implements IState{
         this.logger.info('Needed environment variables were set for this configuration.', this.stateName);
     }
 
+    /**
+     * Configures the node properties based on the selected configuration.
+     * @param {Array<Configuration> | undefined} nodeConfiguration - The node configuration.
+     */
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
         const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
 
@@ -155,7 +205,13 @@ export class InitState implements IState{
         this.logger.info('Needed bootsrap properties were set for this configuration.', this.stateName);
     }
 
-    private configureMirrorNodeProperties() {
+    /**
+     * Configures the mirror node properties.
+     * 
+     * @private
+     */
+    // TODO: finish off multi node
+    private configureMirrorNodeProperties(): void {
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
         const turboMode = !this.cliOptions.fullMode;
         const debugMode = this.cliOptions.enableDebug;
