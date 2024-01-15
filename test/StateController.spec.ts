@@ -19,22 +19,8 @@ describe('StateController', () => {
   let serviceLocatorStub: sinon.SinonStub;
   let stateDataStub: sinon.SinonStub;
   let cleanUpStateStub: sinon.SinonStubbedInstance<CleanUpState>;
-  let cleanUpStateStub2 : sinon.SinonStubbedInstance<CleanUpState>;
+  let cleanUpStateStub2 : sinon.SinonStub;
   let getStartConfigurationStub: sinon.SinonStub;
-  //let serviceLocatorStub;
-  // const stubbedServiceLocator = sinon.createStubInstance(ServiceLocator);
-  // const loggerServiceStub = sinon.createStubInstance(LoggerService);
-  //
-  // stubbedServiceLocator.get.callsFake(function() {
-  //   return loggerServiceStub;
-  // });
-  //
-  // sinon.stub(ServiceLocator, 'Current').callsFake(function () {
-  //   return stubbedServiceLocator;
-  // });
-  //
-  // stateController = new StateController('start');
-  // process.exit(1);
 
   beforeEach(() => {
     // Create a stub for the ServiceLocator
@@ -43,21 +29,16 @@ describe('StateController', () => {
     const stubbedNetworkPrepState = sinon.createStubInstance(NetworkPrepState);
     const stubbedAccountCreationState = sinon.createStubInstance(AccountCreationState);
     cleanUpStateStub = sinon.createStubInstance(CleanUpState);
-    cleanUpStateStub2 = sinon.createStubInstance(CleanUpState);
-    cleanUpStateStub2.onStart.resolves();
+    // cleanUpStateStub2 = sinon.createStubInstance(CleanUpState);
+    // cleanUpStateStub2.onStart.resolves();
+    cleanUpStateStub2 = sinon.stub(CleanUpState.prototype, 'onStart').resolves();
+
+    // Stubbing the CleanUpState constructor
+    //sinon.stub(CleanUpState.prototype, 'constructor').returns(cleanUpStateStub2);
     const stubbedAttachState = sinon.createStubInstance(AttachState);
     const loggerServiceStub = sinon.createStubInstance(LoggerService);
-    const stubbedConfiguration: StateConfiguration = {
-      'stateMachineName': 'stubbed',
-      'states': [
-          { subscribe: sinon.stub(), onStart: sinon.stub() },
-          // Add more stubbed states as needed
-      ]
-    };
 
     serviceLocatorStub = sinon.stub(ServiceLocator.Current, 'get').returns(loggerServiceStub);
-
-    //stateDataStub = sinon.stub(StateData.prototype, <any>'getSelectedStateConfiguration').returns(undefined);
 
     getStartConfigurationStub = sinon.stub(StateData.prototype, <any>"getStartConfiguration").returns({
         'stateMachineName' : 'start',
@@ -76,6 +57,7 @@ describe('StateController', () => {
   afterEach(() => {
     // Restore the original ServiceLocator after each test
     cleanUpStateStub.onStart.restore();
+    cleanUpStateStub2.restore();
     serviceLocatorStub.restore();
     getStartConfigurationStub.restore();
     //stateDataStub.getSelectedStateConfiguration.restore();
@@ -99,7 +81,6 @@ describe('StateController', () => {
     // Stub process.exit
     const processExitStub = sinon.stub(process, 'exit');
     // Act
-    // await stateController.update(EventType.UnknownError);
     await stateController.update(EventType.UnresolvableError);
 
     // Assert
