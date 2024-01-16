@@ -1,17 +1,17 @@
 import { expect, assert } from 'chai';
 import sinon from 'sinon';
-import { StateController } from '../src/controller/StateController';
-import { EventType } from '../src/types/EventType';
-import { LoggerService } from '../src/services/LoggerService';
-import { ServiceLocator } from '../src/services/ServiceLocator';
-import { StateData } from '../src/data/StateData';
-import { InitState } from '../src/state/InitState';
-import { StartState } from '../src/state/StartState';
-import { NetworkPrepState } from '../src/state/NetworkPrepState';
-import { AccountCreationState } from '../src/state/AccountCreationState';
-import { AttachState } from '../src/state/AttachState';
-import { CleanUpState } from '../src/state/CleanUpState';
-import { CLIService } from '../src/services/CLIService';
+import { StateController } from '../../../src/controller/StateController';
+import { EventType } from '../../../src/types/EventType';
+import { LoggerService } from '../../../src/services/LoggerService';
+import { ServiceLocator } from '../../../src/services/ServiceLocator';
+import { StateData } from '../../../src/data/StateData';
+import { InitState } from '../../../src/state/InitState';
+import { StartState } from '../../../src/state/StartState';
+import { NetworkPrepState } from '../../../src/state/NetworkPrepState';
+import { AccountCreationState } from '../../../src/state/AccountCreationState';
+import { AttachState } from '../../../src/state/AttachState';
+import { CleanUpState } from '../../../src/state/CleanUpState';
+import { CLIService } from '../../../src/services/CLIService';
 
 describe('StateController', () => {
 
