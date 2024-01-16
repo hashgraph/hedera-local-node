@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*-
  *
  * Hedera Local Node
@@ -18,6 +19,8 @@
  *
  */
 
+=======
+>>>>>>> 0595d78 (Fixes compilation and moves test to appropriate folder)
 import { expect, assert } from 'chai';
 import sinon from 'sinon';
 import { StateController } from '../../../src/controller/StateController';
@@ -92,6 +95,7 @@ describe('StateController', () => {
     let getStartConfigurationStub: sinon.SinonStub;
 
     before(() => {
+<<<<<<< HEAD
       const loggerServiceStub = sinon.createStubInstance(LoggerService);
       const cliServiceStub = sinon.createStubInstance(CLIService);
       
@@ -100,6 +104,12 @@ describe('StateController', () => {
       getStub1.onFirstCall().returns(loggerServiceStub);
       getStub1.onSecondCall().returns(cliServiceStub);
       getStub1.onThirdCall().returns(loggerServiceStub);
+=======
+      const loggerServce = new LoggerService(1);
+      ServiceLocator.Current.register(loggerServce);
+      const cliService = new CLIService({ "$0": '' , _: ['start'] });
+      ServiceLocator.Current.register(cliService);
+>>>>>>> 0595d78 (Fixes compilation and moves test to appropriate folder)
 
       getStartConfigurationStub = sinon.stub(StateData.prototype, <any>"getStartConfiguration").returns({
         'stateMachineName' : 'start',
