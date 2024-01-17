@@ -59,7 +59,7 @@ export class FileSystemUtils{
 
     public static parseWorkDir(workdir: string): string {
         if (!workdir) {
-            workdir = FileSystemUtils.getPlatformSpecificAppDataPath('hedera-local');
+            return workdir;
         }
         let workdirPath = workdir;
         if (workdirPath.startsWith('~')) {
