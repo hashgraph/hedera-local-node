@@ -241,7 +241,6 @@ export class DockerService implements IService{
     private handleMemoryError(dockerMemory: number, isMultiNodeMode: boolean) {
       const recommendedMemory = isMultiNodeMode ? MIN_MEMORY_MULTI_MODE : MIN_MEMORY_SINGLE_MODE;
       this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least ${recommendedMemory}GB`, this.serviceName);
-      process.exit(1);
     }
     
     /**
