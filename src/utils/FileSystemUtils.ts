@@ -78,9 +78,6 @@ export class FileSystemUtils{
     }
 
     public static parseWorkDir(workdir: string): string {
-        if (!workdir) {
-            return workdir;
-        }
         let workdirPath = workdir;
         if (workdirPath.startsWith('~')) {
             workdirPath = join(homedir(), workdirPath.slice(1));
