@@ -21,11 +21,16 @@
 import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
-import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS } from '../constants';
+import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, 
+         MIN_CPUS, MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE,
+         RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import detectPort from 'detect-port';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * DockerService is a service class that handles Docker-related operations.
@@ -153,7 +158,7 @@ export class DockerService implements IService{
      * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the Docker Compose version is correct.
      */
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
-        this.logger.trace('Checking docker compose version...', this.serviceName);
+        this.logger.info('Checking docker compose version...', this.serviceName);
         // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
         const resultFirstCommand = await shell.exec(
           'docker compose version --short',
@@ -189,6 +194,54 @@ export class DockerService implements IService{
           );
         }
         return false;
+    }
+
+    public async checkDockerResources(isMultiNodeMode: boolean) {
+      this.logger.info('Checking docker resources...', this.serviceName);
+      const resultDockerInfoCommand = await shell.exec(
+        'docker system info --format=json',
+        { silent: true }
+      );
+      
+      const systemInfoJson = JSON.parse(resultDockerInfoCommand.stdout);
+      const dockerMemory = Math.round(systemInfoJson['MemTotal'] / Math.pow(1024, 3));
+      const dockerCPUs = systemInfoJson['NCPU'];
+
+      return this.checkMemoryResources(dockerMemory, isMultiNodeMode) &&
+      this.checkCPUResources(dockerCPUs);
+    }
+
+    private checkMemoryResources(dockerMemory: number, isMultiNodeMode: boolean) {
+      if ((dockerMemory >= MIN_MEMORY_SINGLE_MODE && dockerMemory < RECOMMENDED_MEMORY_SINGLE_MODE && !isMultiNodeMode) ||
+          (dockerMemory < MIN_MEMORY_SINGLE_MODE && !isMultiNodeMode) ||
+          (dockerMemory < MIN_MEMORY_MULTI_MODE && isMultiNodeMode))
+        {
+          if (dockerMemory < MIN_MEMORY_SINGLE_MODE) {
+              this.handleMemoryError(dockerMemory, isMultiNodeMode);
+          } else {
+              this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least ${isMultiNodeMode ? MIN_MEMORY_MULTI_MODE : RECOMMENDED_MEMORY_SINGLE_MODE}GB`, this.serviceName);
+          }
+          return false;
+        }
+
+      return true;
+    }
+
+    private checkCPUResources(dockerCPUs: number) {
+      if(dockerCPUs >= MIN_CPUS && dockerCPUs < RECOMMENDED_CPUS && !process.env.CI) {
+        this.logger.warn(`Your docker CPU resources are set to ${dockerCPUs}, which may cause unstable behaviour. Set to at least ${RECOMMENDED_CPUS} CPUs`, this.serviceName);
+        return true;
+      } else if (dockerCPUs < MIN_CPUS && !process.env.CI) {
+        this.logger.error(`Your docker CPU resources are set to ${dockerCPUs}. This is not enough, set to at least ${RECOMMENDED_CPUS} CPUs`, this.serviceName);
+        return false;
+      }
+
+      return true;
+    }
+
+    private handleMemoryError(dockerMemory: number, isMultiNodeMode: boolean) {
+      const recommendedMemory = isMultiNodeMode ? MIN_MEMORY_MULTI_MODE : MIN_MEMORY_SINGLE_MODE;
+      this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least ${recommendedMemory}GB`, this.serviceName);
     }
     
     /**

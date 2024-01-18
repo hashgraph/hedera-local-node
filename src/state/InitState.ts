@@ -100,10 +100,14 @@ export class InitState implements IState{
         // Check if docker is running and it's the correct version
         const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
         const isDockerStarted = await this.dockerService.checkDocker();
-        if (!(isCorrectDockerComposeVersion && isDockerStarted)) {
+
+        const dockerHasEnoughResources = await this.dockerService.checkDockerResources(this.cliOptions.multiNode);
+
+        if (!(isCorrectDockerComposeVersion && isDockerStarted && dockerHasEnoughResources)) {
             this.observer!.update(EventType.UnresolvableError);
             return;
         }
+
         await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
         this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
