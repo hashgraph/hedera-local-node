@@ -148,9 +148,8 @@ describe('StateController', () => {
 
       // Stub the first call to ServiceLocator.Current.get
       const getStub1 = sinon.stub(ServiceLocator.Current, 'get');
-      getStub1.onFirstCall().returns(loggerServiceStub);
-      getStub1.onSecondCall().returns(cliServiceStub);
-      getStub1.onThirdCall().returns(loggerServiceStub);
+      getStub1.withArgs('LoggerService').returns(loggerServiceStub);
+      getStub1.withArgs('CLIService').returns(cliServiceStub);
 
       getStartConfigurationStub = sinon.stub(StateData.prototype, <any>"getStartConfiguration").returns({
         'stateMachineName' : 'start',
