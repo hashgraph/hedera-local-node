@@ -87,11 +87,11 @@ export class StateController implements IOBserver{
             this.logger.error('Something is wrong with state configuration!', this.controllerName);
             // TODO: handle error
             process.exit(1);
+        } else {
+            this.maxStateNum = this.stateConfiguration.states.length - 1;
+            this.stateConfiguration.states[this.currStateNum].subscribe(this);
+            await this.stateConfiguration.states[this.currStateNum].onStart();
         }
-
-        this.maxStateNum = this.stateConfiguration.states.length - 1;
-        this.stateConfiguration!.states[this.currStateNum].subscribe(this);
-        await this.stateConfiguration.states[this.currStateNum].onStart();
     }
 
     /**
