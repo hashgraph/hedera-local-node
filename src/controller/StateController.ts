@@ -89,7 +89,7 @@ export class StateController implements IOBserver{
             process.exit(1);
         } else {
             this.maxStateNum = this.stateConfiguration.states.length - 1;
-            this.stateConfiguration!.states[this.currStateNum].subscribe(this);
+            this.stateConfiguration.states[this.currStateNum].subscribe(this);
             await this.stateConfiguration.states[this.currStateNum].onStart();
         }
     }
