@@ -1,7 +1,14 @@
 # Summary
 
-Local Node's default mode is the single node mode. In addition to that it also supports multinode mode `--multinode`, for testing more complex use-cases and different scenarios with healthy/unhealthy nodes and node catchup when going out of sync. In this mode multiple instances of the Hedera network node are run on the same machine. A decentralized setup where each node runs on a separate machine is **not** supported by Local Node.   
-Generally speaking multinode mode is an advanced mode, that should be used only for specific use cases that require multiple consensus nodes. Due to it's increased resource requirements and complexity it is not recommended for day to day use.
+Local Node's default mode is the single node mode. In addition to that it also supports multinode mode `--multinode`.
+
+You can invoke it for such cases as:
+- testing more complex use-cases
+- different scenarios with healthy/unhealthy nodes
+- node catchup when going out of sync.
+
+In this mode multiple instances of the Hedera network node are run on the same machine. A decentralized setup where each node runs on a separate machine is **not** supported by Local Node.  
+Generally speaking multinode mode is an advanced mode, that should be used only for specific use cases that require multiple consensus nodes. Due to its increased resource requirements and complexity it is not recommended for day to day use.
 <br><br>
 
 # Requirements
@@ -23,7 +30,7 @@ To start Hedera Local Node in multinode mode use the `--multinode` flag togerthe
 ```bash
 hedera start -d --multinode
 ```
-You can confirm that multinode mode has been started sucessfully, by checking either the output of `docker ps` or your Docker Desktop dashboard.  
+You can confirm that multinode mode has been started sucessfully, by checking either the output of `docker ps --format "table {{.Names}}" | grep network` or your Docker Desktop dashboard.  
 You should see 4 nodes runnning
 ```
 network-node
@@ -44,7 +51,7 @@ docker start network-node-3
 docker logs network-node-3 -f
 ```
 
-To keep the network operational in multinode mode at least 3 nodes need to be healthy at the same time. If less than 3 nodes are healthy the netowrk will stop working.
+In mutlinode mode you need at least 3 healthy nodes for operational network.
 
 # Full and Turbo Modes
 
