@@ -55,7 +55,9 @@ export const RECOMMENDED_CPUS = 6;
 
 //Logger Colors for the terminal logging
 // reset / black
-export const PURE_MESSAGE_COLOR = '\x1b[0m'
+export const COLOR_RESET = '\x1b[0m'
+// bright / white
+export const COLOR_DIM = '\x1b[2m'
 // red
 export const ERROR_COLOR = '\x1b[31m'
 // yellow

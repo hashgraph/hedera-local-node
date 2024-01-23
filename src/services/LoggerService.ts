@@ -30,10 +30,11 @@ import {
     ERROR_COLOR,
     INFO_COLOR,
     MIRROR_NODE_LABEL,
-    PURE_MESSAGE_COLOR,
+    COLOR_RESET,
     RELAY_LABEL,
     TRACE_COLOR,
-    WARNING_COLOR
+    WARNING_COLOR,
+    COLOR_DIM
 } from '../constants';
 import { ConnectionService } from './ConnectionService';
 import { DockerService } from './DockerService';
@@ -125,8 +126,14 @@ export class LoggerService implements IService{
         this.trace('Logger Service Initialized!', this.serviceName);
     }
 
-    private static pickVerbocityColor(verboseLevel: VerboseLevel): string {
-        switch (verboseLevel) {
+    /**
+     * Returns the color for the message written on the terminal
+     * @param verboseLevel - The level of verbosity for the logger service. 
+     * @returns {string} The name of the service.
+     * @public
+     */
+    private static pickVerbosityColor(verboseLevel: VerboseLevel): string {
+        switch (verboseLevel) { 
             case VerboseLevel.ERROR:
                 return ERROR_COLOR;
             case VerboseLevel.WARNING:
@@ -142,8 +149,16 @@ export class LoggerService implements IService{
         }
     }
 
+    /**
+     * Builds the message to log.
+     * @param msg - The message to log.
+     * @param module - The module where the message originates.
+     * @param verboseLevel - The level of verbosity for the logger service.
+     * @returns {string} The message to log.
+     * @private
+     */
     private static messageCompute(msg: string, module: string, verboseLevel: VerboseLevel): string {
-        return `[Hedera-Local-Node]${LoggerService.pickVerbocityColor(verboseLevel)} ${verboseLevel} ${PURE_MESSAGE_COLOR}(${module}) ${msg}`;
+        return `${COLOR_DIM}[Hedera-Local-Node]${COLOR_RESET}${LoggerService.pickVerbosityColor(verboseLevel)} ${VerboseLevel[verboseLevel]} ${COLOR_RESET}${COLOR_DIM}(${module})${COLOR_RESET} ${msg}`;
     }
 
     /**
