@@ -27,6 +27,9 @@
  * @property {VerboseLevel.TRACE} TRACE - Represents the trace level of verbosity.
  */
 export enum VerboseLevel {
-    INFO,
-    TRACE
+    ERROR, // Logs only errors.
+    WARNING, // Logs errors and warnings.
+    INFO, // Logs errors, warnings, and informational messages.
+    DEBUG, // Logs errors, warnings, informational messages, and debug information.
+    TRACE, // Logs errors, warnings, informational messages, debug and trace messages.
 }
