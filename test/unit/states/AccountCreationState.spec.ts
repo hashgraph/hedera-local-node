@@ -101,8 +101,6 @@ describe('AccountCreationState', () => {
       sinon.assert.called(getBlocklistedAccountsCountStub);
       getBlocklistedAccountsCountStub.restore();
     });
-
-    // Add more test cases as needed
   });
 
   describe('subscribe', () => {
@@ -175,7 +173,7 @@ describe('AccountCreationState', () => {
     });
   });
 
-  describe('generateAlisECDSA', () => {
+  describe('generateAliasECDSA', () => {
     let generateECDSA: sinon.SinonStub;
     let generateED25519: sinon.SinonStub;
     let createAliasAccountStub: sinon.SinonStub;
@@ -344,7 +342,5 @@ describe('AccountCreationState', () => {
       sinon.assert.called(stateControllerStub.update);
     });
   });
-
-  // Add more test cases for other methods of the AccountCreationState class if needed
 });
 
