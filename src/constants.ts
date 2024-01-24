@@ -68,3 +68,13 @@ export const INFO_COLOR = '\x1b[32m'
 export const DEBUG_COLOR = '\x1b[36m'
 // white
 export const TRACE_COLOR = '\x1b[37m'
+
+// Stop State
+export const STOP_STATE_INIT_MESSAGE = 'Stop State Initialized!';
+export const STOP_STATE_ON_START_MESSAGE = 'Initiating stop procedure. Trying to stop docker containers and clean up volumes...';
+export const STOP_STATE_STOPPING_MESSAGE = 'Stopping the network...';
+export const STOP_STATE_STOPPED_MESSAGE = 'Hedera Local Node was stopped successfully.';
+
+// Docker commands
+export const DOCKER_STOPPING_CONTAINERS_MESSAGE = 'Stopping the docker containers...';
+export const DOCKER_CLEANING_VALUMES_MESSAGE = 'Cleaning the volumes and temp files...';

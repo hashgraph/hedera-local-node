@@ -25,11 +25,19 @@ import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { EventType } from '../types/EventType';
-import { IS_WINDOWS } from '../constants';
+import {
+    DOCKER_CLEANING_VALUMES_MESSAGE,
+    DOCKER_STOPPING_CONTAINERS_MESSAGE,
+    IS_WINDOWS,
+    STOP_STATE_INIT_MESSAGE,
+    STOP_STATE_ON_START_MESSAGE,
+    STOP_STATE_STOPPED_MESSAGE,
+    STOP_STATE_STOPPING_MESSAGE
+} from '../constants';
 import { CLIOptions } from '../types/CLIOptions';
 import { CLIService } from '../services/CLIService';
 
-export class StopState implements IState{
+export class StopState implements IState {
     /**
      * The logger service used for logging.
      */
@@ -58,7 +66,7 @@ export class StopState implements IState{
         this.stateName = StopState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
-        this.logger.trace('Stop State Initialized!', this.stateName);
+        this.logger.trace(STOP_STATE_INIT_MESSAGE, this.stateName);
     }
 
     /**
@@ -78,24 +86,24 @@ export class StopState implements IState{
      * @returns {Promise<void>} A promise that resolves when the procedure is finished.
      */
     public async onStart(): Promise<void> {
-        this.logger.info('Initiating stop procedure. Trying to stop docker containers and clean up volumes...', this.stateName);
+        this.logger.info(STOP_STATE_ON_START_MESSAGE, this.stateName);
 
         const nullOutput = this.getNullOutput();
         const rootPath = process.cwd();
 
-        this.logger.info('Stopping the network...', this.stateName);
+        this.logger.info(STOP_STATE_STOPPING_MESSAGE, this.stateName);
         shell.cd(__dirname);
         shell.cd('../../');
-        this.logger.trace('Stopping the docker containers...', this.stateName);
+        this.logger.trace(DOCKER_STOPPING_CONTAINERS_MESSAGE, this.stateName);
         shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
         shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
-        this.logger.trace('Cleaning the volumes and temp files...', this.stateName);
+        this.logger.trace(DOCKER_CLEANING_VALUMES_MESSAGE, this.stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
         this.logger.trace(`Working dir is ${this.cliOptions.workDir}`, this.stateName);
         shell.exec(`rm -rf "${join(this.cliOptions.workDir, 'network-logs')}" >${nullOutput} 2>&1`);
         shell.exec(`docker network prune -f 2>${nullOutput}`);
         shell.cd(rootPath);
-        this.logger.info('Hedera Local Node was stopped successfully.', this.stateName);
+        this.logger.info(STOP_STATE_STOPPED_MESSAGE, this.stateName);
         this.observer!.update(EventType.Finish);
     }
 
@@ -105,8 +113,9 @@ export class StopState implements IState{
      * On other operating systems, it returns "/dev/null".
      * @returns {string}
      */
-    private getNullOutput (): "null" | "/dev/null" {
+    private getNullOutput(): "null" | "/dev/null" {
         if (IS_WINDOWS) return 'null';
         return '/dev/null';
     }
+
 }
