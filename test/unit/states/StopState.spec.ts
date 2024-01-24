@@ -39,19 +39,29 @@ describe('StopState tests', () => {
     let stopState: StopState,
         testSandbox: sinon.SinonSandbox, 
         loggerService: sinon.SinonStubbedInstance<LoggerService>,
-        serviceLocator: sinon.SinonStub<any[], any>;
+        serviceLocator: sinon.SinonStub,
+        processTest: {[key: string]: sinon.SinonStub},
+        shellTest: {[key: string]: sinon.SinonStub};
 
     const TEST_DIR_MESSAGE = `Working dir is testDir`;
     const stateDir = path.resolve(__dirname, '../../../src/state');
 
     before(() => {
-      let { sandbox, loggerServiceStub, serviceLocatorStub } = getTestBed({
+      let {
+        sandbox,
+        loggerServiceStub,
+        serviceLocatorStub,
+        proccesStubs,
+        shellStubs
+      } = getTestBed({
         workDir: 'testDir',
       });
 
       testSandbox = sandbox
       loggerService = loggerServiceStub
       serviceLocator = serviceLocatorStub
+      processTest = proccesStubs
+      shellTest = shellStubs
 
       loggerServiceStub.trace.resetHistory();
       stopState = new StopState();
@@ -70,11 +80,8 @@ describe('StopState tests', () => {
     })
 
     it('should execute onStart properly', async () => {
-        const processStub = sinon.stub(process, 'cwd').returns('testDir');
-        sinon.stub(process, 'platform').returns('test');
-        const shellCDStub = sinon.stub(shell, 'cd');
-        const shellExecStub = sinon.stub(shell, 'exec');
-        stopState.onStart();
+        const { shellCDStub, shellExecStub }= shellTest;
+        await stopState.onStart();
 
         // loggin messages
         testSandbox.assert.calledWith(loggerService.info, STOP_STATE_ON_START_MESSAGE, StopState.name);
@@ -97,7 +104,7 @@ describe('StopState tests', () => {
         testSandbox.assert.calledWith(shellExecStub, 'rm -rf "testDir/network-logs" >/dev/null 2>&1');
         testSandbox.assert.calledWith(shellExecStub, 'docker network prune -f 2>/dev/null');
 
-        expect(processStub.calledOnce).to.be.true;
+        expect(processTest.processCWDStub.calledOnce).to.be.true;
     })
 
 });
