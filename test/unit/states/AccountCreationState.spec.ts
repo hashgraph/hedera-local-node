@@ -25,7 +25,6 @@ import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService'
 import { ClientService } from '../../../src/services/ClientService';
 import { ServiceLocator } from '../../../src/services/ServiceLocator';
-import { StateController } from '../../../src/controller/StateController';
 import { PrivateKey } from '@hashgraph/sdk';
 
 describe('AccountCreationState', () => {
