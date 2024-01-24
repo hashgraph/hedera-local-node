@@ -110,6 +110,7 @@ describe('AccountCreationState', () => {
     let logAliasAccountStub: sinon.SinonStub;
     let logAliasAccountTitleStub: sinon.SinonStub;
     let logAccountDividerStub: sinon.SinonStub;
+    let createAccountAsyncStub: sinon.SinonStub;
 
     beforeEach(() => {
       logAccountTitleStub = sinon.stub(AccountCreationState.prototype, <any>'logAccountTitle').resolves();
@@ -117,6 +118,7 @@ describe('AccountCreationState', () => {
       logAliasAccountStub = sinon.stub(AccountCreationState.prototype, <any>'logAliasAccount').resolves();
       logAliasAccountTitleStub = sinon.stub(AccountCreationState.prototype, <any>'logAliasAccountTitle').resolves();
       logAccountDividerStub = sinon.stub(AccountCreationState.prototype, <any>'logAccountDivider').resolves();
+      createAccountAsyncStub = sinon.stub(AccountCreationState.prototype, <any>'createAccountAsync');
     })
 
     afterEach(() => {
@@ -125,6 +127,7 @@ describe('AccountCreationState', () => {
       logAliasAccountStub.restore();
       logAliasAccountTitleStub.restore();
       logAccountDividerStub.restore();
+      createAccountAsyncStub.restore();
     })
 
     describe('generateECDSA', () => {
@@ -145,6 +148,27 @@ describe('AccountCreationState', () => {
       })
   
       it('should generate ECDSA accounts synchronously and log the title and divider', async () => {
+        cliServiceStub.getCurrentArgv.returns({
+          async: true,
+          blocklisting: false,
+          balance: 1000,
+          accounts: 5,
+          startup: false,
+        } as any);
+        await accountCreationState.subscribe(observer);
+        await accountCreationState.onStart();
+
+        sinon.assert.calledWith(loggerServiceStub.info, 'Starting Account Creation state in asynchronous mode ', 'AccountCreationState');
+        sinon.assert.called(generateAliasECDSA);
+        sinon.assert.called(generateED25519);
+        sinon.assert.callCount(privateKeyStub, 5);
+        sinon.assert.calledOnce(logAccountTitleStub);
+        sinon.assert.called(observer.update);
+        sinon.assert.called(logAccountDividerStub);
+        sinon.assert.callCount(createAccountAsyncStub, 5);
+      });
+
+      it('should generate ECDSA accounts аsynchronously and log the title and divider', async () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
@@ -192,6 +216,24 @@ describe('AccountCreationState', () => {
         sinon.assert.calledOnce(logAliasAccountTitleStub);
         sinon.assert.called(observer.update);
       });
+
+      it('should generate ECDSA accounts asynchronously and log the title and divider', async () => {
+        cliServiceStub.getCurrentArgv.returns({
+          async: true,
+          blocklisting: false,
+          balance: 1000,
+          accounts: 6,
+          startup: false,
+        } as any);
+        await accountCreationState.subscribe(observer);
+        await accountCreationState.onStart();
+
+        sinon.assert.calledWith(loggerServiceStub.info, 'Starting Account Creation state in asynchronous mode ', 'AccountCreationState');
+        sinon.assert.called(generateECDSA);
+        sinon.assert.called(generateED25519);
+        sinon.assert.callCount(createAliasAccountStub, 6);
+        sinon.assert.called(observer.update);
+      });
     });
   
     describe('generateED25519', () => {
@@ -211,7 +253,7 @@ describe('AccountCreationState', () => {
         privateKeyStub.restore();
       })
   
-      it('should generate ECDSA accounts synchronously and log the title and divider', async () => {
+      it('should generate ED25519 accounts synchronously and log the title and divider', async () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
@@ -223,13 +265,31 @@ describe('AccountCreationState', () => {
         sinon.assert.calledOnceWithExactly(logAccountTitleStub, 'ED25519');
         sinon.assert.called(observer.update);
       });
+
+      it('should generate ED25519 accounts asynchronously and log the title and divider', async () => {
+        cliServiceStub.getCurrentArgv.returns({
+          async: true,
+          blocklisting: false,
+          balance: 1000,
+          accounts: 6,
+          startup: false,
+        } as any);
+        await accountCreationState.subscribe(observer);
+        await accountCreationState.onStart();
+
+        sinon.assert.calledWith(loggerServiceStub.info, 'Starting Account Creation state in asynchronous mode ', 'AccountCreationState');
+        sinon.assert.called(generateAliasECDSA);
+        sinon.assert.called(generateECDSA);
+        sinon.assert.callCount(privateKeyStub, 6);
+        sinon.assert.callCount(createAccountAsyncStub, 6);
+        sinon.assert.called(observer.update);
+      });
     });
   
     describe('generateAsync', () => {
       let generateAliasECDSA: sinon.SinonStub;
       let generateECDSA: sinon.SinonStub;
       let generateED25519: sinon.SinonStub;
-      let stateControllerStub: sinon.SinonStubbedInstance<StateController>;
       let logAccountStub: sinon.SinonStub;
   
       beforeEach(() => {
