@@ -26,8 +26,15 @@ import { CLIService } from './CLIService';
 import {
     CONSENSUS_NODE_LABEL,
     CONTAINERS,
+    DEBUG_COLOR,
+    ERROR_COLOR,
+    INFO_COLOR,
     MIRROR_NODE_LABEL,
-    RELAY_LABEL
+    COLOR_RESET,
+    RELAY_LABEL,
+    TRACE_COLOR,
+    WARNING_COLOR,
+    COLOR_DIM
 } from '../constants';
 import { ConnectionService } from './ConnectionService';
 import { DockerService } from './DockerService';
@@ -120,16 +127,51 @@ export class LoggerService implements IService{
     }
 
     /**
+     * Returns the color for the message written on the terminal
+     * @param verboseLevel - The level of verbosity for the logger service. 
+     * @returns {string} The name of the service.
+     * @public
+     */
+    private static pickVerbosityColor(verboseLevel: VerboseLevel): string {
+        switch (verboseLevel) { 
+            case VerboseLevel.ERROR:
+                return ERROR_COLOR;
+            case VerboseLevel.WARNING:
+                return WARNING_COLOR;
+            case VerboseLevel.INFO:
+                return INFO_COLOR;
+            case VerboseLevel.DEBUG:
+                return DEBUG_COLOR;
+            case VerboseLevel.TRACE:
+                return TRACE_COLOR;
+            default:
+                return INFO_COLOR;
+        }
+    }
+
+    /**
+     * Builds the message to log.
+     * @param msg - The message to log.
+     * @param module - The module where the message originates.
+     * @param verboseLevel - The level of verbosity for the logger service.
+     * @returns {string} The message to log.
+     * @private
+     */
+    private static messageCompute(msg: string, module: string, verboseLevel: VerboseLevel): string {
+        return `${COLOR_DIM}[Hedera-Local-Node]${COLOR_RESET}${LoggerService.pickVerbosityColor(verboseLevel)} ${VerboseLevel[verboseLevel]} ${COLOR_RESET}${COLOR_DIM}(${module})${COLOR_RESET} ${msg}`;
+    }
+
+    /**
      * Logs a trace message.
      * @param msg - The message to log.
      * @param module - The module where the message originates.
      * @public
      */
     public trace(msg: string, module: string = ''): void {
-        if (this.verboseLevel === VerboseLevel.INFO) {
+        if (this.verboseLevel < VerboseLevel.TRACE) {
             return;
         }
-        const msgToLog = `[Hedera-Local-Node]\x1b[37m TRACE \x1b[0m(${module}) ${msg}`;
+        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.TRACE);
         this.writeToLog(msgToLog, module);
     }
 
@@ -140,7 +182,10 @@ export class LoggerService implements IService{
      * @public
      */
     public info(msg: string, module: string = ''): void {
-        const msgToLog = `[Hedera-Local-Node]\x1b[32m INFO \x1b[0m(${module}) ${msg}`;
+        if (this.verboseLevel < VerboseLevel.INFO) {
+            return;
+        }
+        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.INFO);
         this.writeToLog(msgToLog, module);
     }
 
@@ -151,12 +196,38 @@ export class LoggerService implements IService{
      * @public
      */
     public warn(msg: string, module: string = ''): void {
-        const msgToLog = `[Hedera-Local-Node]\x1b[33m WARN \x1b[0m(${module}) ${msg}`;
+        if (this.verboseLevel < VerboseLevel.WARNING) {
+            return;
+        }
+        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.WARNING);
         this.writeToLog(msgToLog, module);
     }
 
+    /**
+     * 
+     * @param msg - The message to log.
+     * @param module - The module where the message originates.
+     * @public
+     */
     public error(msg: string, module: string = ''): void {
-        const msgToLog = `[Hedera-Local-Node]\x1b[31m ERROR \x1b[0m(${module}) ${msg}`;
+        if (this.verboseLevel < VerboseLevel.ERROR) {
+            return;
+        }
+        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.ERROR);
+        this.writeToLog(msgToLog, module);
+    }
+
+    /**
+     * 
+     * @param msg - The message to log.
+     * @param module - The module where the message originates.
+     * @public
+     */
+    public debug(msg: string, module: string = ''): void {
+        if (this.verboseLevel < VerboseLevel.DEBUG) {
+            return;
+        }
+        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.DEBUG);
         this.writeToLog(msgToLog, module);
     }
 

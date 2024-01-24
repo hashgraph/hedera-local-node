@@ -52,3 +52,19 @@ export const MIN_MEMORY_MULTI_MODE = 14;
 export const RECOMMENDED_MEMORY_SINGLE_MODE = 8;
 export const MIN_CPUS = 4;
 export const RECOMMENDED_CPUS = 6;
+
+//Logger Colors for the terminal logging
+// reset / black
+export const COLOR_RESET = '\x1b[0m'
+// bright / white
+export const COLOR_DIM = '\x1b[2m'
+// red
+export const ERROR_COLOR = '\x1b[31m'
+// yellow
+export const WARNING_COLOR = '\x1b[33m'
+// green
+export const INFO_COLOR = '\x1b[32m'
+// cyan
+export const DEBUG_COLOR = '\x1b[36m'
+// white
+export const TRACE_COLOR = '\x1b[37m'

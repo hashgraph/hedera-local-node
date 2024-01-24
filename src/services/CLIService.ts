@@ -502,7 +502,7 @@ export class CLIService implements IService{
             type: 'string',
             describe: 'Set the verbose level',
             demandOption: false,
-            choices: ['info', 'trace'],
+            choices: ['silent', 'error', 'warning', 'info', 'debug', 'trace'],
             default: 'info',
         })
     }
@@ -554,8 +554,16 @@ export class CLIService implements IService{
      */
     public static resolveVerboseLevel(level: string): VerboseLevel {
         switch (level) {
+            case 'silent':
+                return VerboseLevel.SILENT;
+            case 'error':
+                return VerboseLevel.ERROR;
+            case 'warning':
+                return VerboseLevel.WARNING;
             case 'info':
                 return VerboseLevel.INFO;
+            case 'debug':
+                return VerboseLevel.DEBUG;
             case 'trace':
                 return VerboseLevel.TRACE;
             default:
