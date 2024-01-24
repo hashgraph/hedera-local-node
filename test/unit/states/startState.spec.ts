@@ -132,6 +132,17 @@ describe('StartState tests', () => {
     })
 
     it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
+        dockerService.dockerComposeUp.resolves({code: 1} as ShellString);
+
+        await startState.onStart();
+
+        testSandbox.assert.calledTwice(dockerService.dockerComposeUp);
+        testSandbox.assert.match(observerSpy.callCount, 2);
+        testSandbox.assert.match(observerSpy.args[0], EventType.DockerError);
+        testSandbox.assert.match(observerSpy.args[1], EventType.Finish);
+    })
+
+    it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
         connectionService.waitForFiringUp.throws(new LocalNodeErrors('test error', 'message'));
         dockerService.dockerComposeUp.resolves({code: 0} as ShellString);
 
