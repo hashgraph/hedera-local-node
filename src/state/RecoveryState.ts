@@ -18,13 +18,13 @@
  *
  */
 
-import shell from 'shelljs';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
-import { IS_WINDOWS } from '../constants';
+import { DockerService } from '../services/DockerService';
+import { RECOVERY_STATE_INIT_MESSAGE, RECOVERY_STATE_STARTING_MESSAGE } from '../constants';
 
 /**
  * Represents the recovery state of the Hedera Local Node.
@@ -51,6 +51,11 @@ export class RecoveryState implements IState{
     private stateName: string;
 
     /**
+     * Represents the Docker service used by the StartState class.
+     */
+    private dockerService: DockerService;
+
+    /**
      * The type of event associated with the recovery state.
      */
     private eventType: EventType;
@@ -62,7 +67,8 @@ export class RecoveryState implements IState{
     constructor(eventType: EventType) {
         this.stateName = RecoveryState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Recovery State Initialized!', this.stateName);
+        this.dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
+        this.logger.trace(RECOVERY_STATE_INIT_MESSAGE, this.stateName);
         this.eventType = eventType;
     }
 
@@ -79,41 +85,14 @@ export class RecoveryState implements IState{
      * @returns {Promise<void>} A promise that resolves when the recovery state has started.
      */
     public async onStart(): Promise<void> {
-        this.logger.info("Starting Recovery State...", this.stateName);
+        this.logger.info(RECOVERY_STATE_STARTING_MESSAGE, this.stateName);
 
         switch (this.eventType) {
             case EventType.DockerError:
-                await this.tryDockerRecovery();
+                await this.dockerService.tryDockerRecovery(this.stateName);
             default:
                 this.observer?.update(EventType.UnknownError);
                 break;
         }
-    }
-
-    /**
-     * Tries to recover the state by performing Docker recovery steps.
-     * Stops the docker containers, cleans volumes and temp files, and tries to startup again.
-     * @returns {Promise<void>} A promise that resolves when the recovery steps have completed.
-     */
-    private async tryDockerRecovery(): Promise<void> {
-        const nullOutput = this.getNullOutput();
-        this.logger.trace('Stopping the docker containers...', this.stateName);
-        shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
-        shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
-        this.logger.trace('Cleaning the volumes and temp files...', this.stateName);
-        shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
-        shell.exec(`docker network prune -f 2>${nullOutput}`);
-        this.logger.info('Trying to startup again...', this.stateName);
-    }
-
-    /**
-     * Returns the appropriate output path for null based on the operating system.
-     * On Windows, it returns 'null'. On other operating systems, it returns '/dev/null'.
-     * 
-     * @returns {string} The output path for null.
-     */
-    private getNullOutput (): string {
-        if (IS_WINDOWS) return 'null';
-        return '/dev/null';
     }
 }

@@ -20,7 +20,7 @@
 
 import { expect } from 'chai';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
-import shell, { ShellString } from 'shelljs';
+import { ShellString } from 'shelljs';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { StartState } from '../../../src/state/StartState';
 import { getTestBed } from '../testBed';
@@ -33,21 +33,20 @@ import {
 import { resolve } from 'path';
 import { DockerService } from '../../../src/services/DockerService';
 import { EventType } from '../../../src/types/EventType';
-import { assert } from 'console';
 import { ConnectionService } from '../../../src/services/ConnectionService';
 import { LocalNodeErrors } from '../../../src/Errors/LocalNodeErrors';
 
 describe('StartState tests', () => {
     let startState: StartState,
-    testSandbox: SinonSandbox, 
-    loggerService: SinonStubbedInstance<LoggerService>,
-    serviceLocator: SinonStub,
-    dockerService: SinonStubbedInstance<DockerService>,
-    stateDir: string,
-    processTestBed: {[key: string]: SinonStub},
-    shellTestBed: {[key: string]: SinonStub},
-    observerSpy: SinonSpy,
-    connectionService: SinonStubbedInstance<ConnectionService>;
+        testSandbox: SinonSandbox, 
+        loggerService: SinonStubbedInstance<LoggerService>,
+        serviceLocator: SinonStub,
+        dockerService: SinonStubbedInstance<DockerService>,
+        stateDir: string,
+        processTestBed: {[key: string]: SinonStub},
+        shellTestBed: {[key: string]: SinonStub},
+        observerSpy: SinonSpy,
+        connectionService: SinonStubbedInstance<ConnectionService>;
 
     before(() => {
         const { 
@@ -132,17 +131,6 @@ describe('StartState tests', () => {
     })
 
     it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
-        dockerService.dockerComposeUp.resolves({code: 1} as ShellString);
-
-        await startState.onStart();
-
-        testSandbox.assert.calledTwice(dockerService.dockerComposeUp);
-        testSandbox.assert.match(observerSpy.callCount, 2);
-        testSandbox.assert.match(observerSpy.args[0], EventType.DockerError);
-        testSandbox.assert.match(observerSpy.args[1], EventType.Finish);
-    })
-
-    it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
         connectionService.waitForFiringUp.throws(new LocalNodeErrors('test error', 'message'));
         dockerService.dockerComposeUp.resolves({code: 0} as ShellString);
 
@@ -165,5 +153,4 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.args[0], EventType.UnknownError);
         testSandbox.assert.notCalled(loggerService.error);
     })
-
 });

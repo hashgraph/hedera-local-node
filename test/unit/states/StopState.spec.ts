@@ -1,4 +1,3 @@
-
 /*-
  *
  * Hedera Local Node
@@ -22,7 +21,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { StopState } from '../../../src/state/StopState';
-import shell from 'shelljs';
 import {
   DOCKER_CLEANING_VALUMES_MESSAGE,
   DOCKER_STOPPING_CONTAINERS_MESSAGE,
