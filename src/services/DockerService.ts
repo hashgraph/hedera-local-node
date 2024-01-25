@@ -317,10 +317,6 @@ export class DockerService implements IService{
         });
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 49af61f (feat: Create unit test for StartState #510)
     /**
      * Executes the docker compose up command.
      * 
