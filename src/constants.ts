@@ -89,3 +89,11 @@ export const DOCKER_CLEANING_VALUMES_MESSAGE = 'Cleaning the volumes and temp fi
 // Recovery state
 export const RECOVERY_STATE_INIT_MESSAGE = 'Recovery State Initialized!';
 export const RECOVERY_STATE_STARTING_MESSAGE = "Starting Recovery State...";
+
+// Network Prep State
+export const NETWORK_PREP_STATE_INIT_MESSAGE = 'Network Preparation State Initialized!'
+export const NETWORK_PREP_STATE_STARTING_MESSAGE = 'Starting Network Preparation State...';
+export const NETWORK_PREP_STATE_IMPORT_FEES_START = 'Starting Fees import...';
+export const NETWORK_PREP_STATE_IMPORT_FEES_END = 'Imported fees successfully';
+export const NETWORK_PREP_STATE_WAITING_TOPIC_CREATION = 'Waiting for topic creation...';
+export const NETWORK_PREP_STATE_TOPIC_CREATED = 'Topic was created!';

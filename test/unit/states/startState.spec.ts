@@ -81,7 +81,7 @@ describe('StartState tests', () => {
     afterEach(() => {
         testSandbox.resetHistory();
         observerSpy.resetHistory();
-        dockerService.dockerComposeUp.reset()
+        dockerService.dockerComposeUp.reset();
     });
 
     it('should initialize the Start State', async () => {
