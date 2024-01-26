@@ -136,8 +136,18 @@ describe('StateController', () => {
   describe('update', () => {
     let stateController: StateController;
     let getStartConfigurationStub: sinon.SinonStub;
+    let getStub1;
 
     before(() => {
+      const loggerServiceStub = sinon.createStubInstance(LoggerService);
+      const cliServiceStub = sinon.createStubInstance(CLIService);
+      
+      // Stub the first call to ServiceLocator.Current.get
+      getStub1 = sinon.stub(ServiceLocator.Current, 'get');
+      getStub1.onFirstCall().returns(loggerServiceStub);
+      getStub1.onSecondCall().returns(cliServiceStub);
+      getStub1.onThirdCall().returns(loggerServiceStub);
+
       getStartConfigurationStub = sinon.stub(StateData.prototype, <any>"getStartConfiguration").returns({
         'stateMachineName' : 'start',
         'states' : []
@@ -147,6 +157,7 @@ describe('StateController', () => {
 
     after(() => {
       getStartConfigurationStub.restore();
+      getStub1.restore();
     });
 
     it('should handle other events correctly', async () => {
