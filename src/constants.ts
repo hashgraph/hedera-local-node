@@ -85,3 +85,7 @@ export const STOP_STATE_STOPPED_MESSAGE = 'Hedera Local Node was stopped success
 // Docker commands
 export const DOCKER_STOPPING_CONTAINERS_MESSAGE = 'Stopping the docker containers...';
 export const DOCKER_CLEANING_VALUMES_MESSAGE = 'Cleaning the volumes and temp files...';
+
+// Recovery state
+export const RECOVERY_STATE_INIT_MESSAGE = 'Recovery State Initialized!';
+export const RECOVERY_STATE_STARTING_MESSAGE = "Starting Recovery State...";
