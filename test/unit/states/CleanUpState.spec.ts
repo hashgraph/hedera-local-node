@@ -188,7 +188,7 @@ describe('CleanUpState', () => {
   describe('revertNodeProperties', () => {
     it('should revert node properties', () => {
       // Arrange
-      const revertMirrorNodePropertiesStub = sinon.stub(CleanUpState.prototype, <any>'revertMirrorNodeProperties');
+      sinon.stub(CleanUpState.prototype, <any>'revertMirrorNodeProperties');
       const writeFileSyncStub = sinon.stub(fs, 'writeFileSync');
       const existsSyncStub = sinon.stub(fs, 'existsSync').returns(true);
       const filePath = 'compose-network/mirror-node/application.yml';
