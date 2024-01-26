@@ -31,6 +31,7 @@ import { IState } from './IState';
 import { ConnectionService } from '../services/ConnectionService';
 import { LocalNodeErrors } from '../Errors/LocalNodeErrors';
 import { DockerService } from '../services/DockerService';
+import { START_STATE_INIT_MESSAGE, START_STATE_STARTED_DETECTING, START_STATE_STARTED_MESSAGE, START_STATE_STARTING_MESSAGE } from '../constants';
 
 export class StartState implements IState{
     /**
@@ -74,7 +75,7 @@ export class StartState implements IState{
         this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
         this.dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
         this.connectionService = ServiceLocator.Current.get<ConnectionService>(ConnectionService.name);
-        this.logger.trace('Start State Initialized!', this.stateName);
+        this.logger.trace(START_STATE_INIT_MESSAGE, this.stateName);
     }
 
     /**
@@ -94,19 +95,20 @@ export class StartState implements IState{
      * @returns {Promise<void>} A Promise that resolves when the Hedera Local Node is successfully started.
      */
     public async onStart(): Promise<void> {
-        this.logger.info('Starting Hedera Local Node...', this.stateName);
+        this.logger.info(START_STATE_STARTING_MESSAGE, this.stateName);
 
         const rootPath = process.cwd();
 
         shell.cd(__dirname);
         shell.cd('../../');
-        const output = await this.dockerComposeUp();
+        const output = await this.dockerService.dockerComposeUp(this.cliOptions);
+        
         if (output.code === 1) {
             this.observer?.update(EventType.DockerError);
-            await this.dockerComposeUp();
+            await this.dockerService.dockerComposeUp(this.cliOptions);
         }
         shell.cd(rootPath);
-        this.logger.info('Detecting network...', this.stateName);
+        this.logger.info(START_STATE_STARTED_DETECTING, this.stateName);
 
         try {
             await this.connectionService.waitForFiringUp(5600);
@@ -120,65 +122,7 @@ export class StartState implements IState{
         }
 
         await this.logger.updateStatusBoard();
-        this.logger.info('Hedera Local Node successfully started!', this.stateName);
-        this.observer!.update(EventType.Finish);
-    }
-
-    /**
-     * Executes the docker compose up command.
-     * 
-     * @private
-     * @returns {Promise<shell.ShellString>} A promise that resolves with the output of the command.
-     */
-    private async dockerComposeUp(): Promise<shell.ShellString> {
-        // TODO: Add multi node option
-        const composeFiles = ['docker-compose.yml'];
-        const { fullMode } = this.cliOptions;
-        const { userCompose } = this.cliOptions;
-        const { userComposeDir } = this.cliOptions;
-        const { multiNode } = this.cliOptions;
-
-        if (!fullMode) {
-            composeFiles.push('docker-compose.evm.yml');
-        }
-
-        if (multiNode) {
-            composeFiles.push('docker-compose.multinode.yml');
-        }
-
-        if (!fullMode && multiNode) {
-            composeFiles.push('docker-compose.multinode.evm.yml');
-        }
-
-        if (userCompose) {
-            composeFiles.push(...this.getUserComposeFiles(userComposeDir));
-        }
-
-        return shell.exec(
-            `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.dockerService.getNullOutput()}`
-        );
-    }
-
-    /**
-     *  Retrieves an array of user compose files from the specified directory.
-     * 
-     * @private
-     * @param {string} userComposeDir - The directory path where the user compose files are located. Defaults to './overrides/'.
-     * @returns {Array<string>} An array of user compose file paths.
-     */
-    private getUserComposeFiles(userComposeDir: string = './overrides/'): Array<string> {
-        let dirPath = path.normalize(userComposeDir);
-        if (!dirPath.endsWith(path.sep)) {
-          dirPath += path.sep;
-        }
-        if (fs.existsSync(dirPath)) {
-          const files = fs
-            .readdirSync(dirPath)
-            .filter((file) => path.extname(file).toLowerCase() === '.yml')
-            .sort()
-            .map((file) => dirPath.concat(file));
-          return files;
-        } 
-          return [];
+        this.logger.info(START_STATE_STARTED_MESSAGE, this.stateName);
+        this.observer?.update(EventType.Finish);
     }
 }

@@ -21,6 +21,7 @@
 import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
+import fs from 'fs';
 import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, 
          MIN_CPUS, MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE,
          RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE } from '../constants';
@@ -29,6 +30,8 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import detectPort from 'detect-port';
 import * as dotenv from 'dotenv';
+import { CLIOptions } from '../types/CLIOptions';
+import path from 'path';
 
 dotenv.config();
 
@@ -312,5 +315,64 @@ export class DockerService implements IService{
             }
           });
         });
+    }
+
+
+    /**
+     * Executes the docker compose up command.
+     * 
+     * @private
+     * @returns {Promise<shell.ShellString>} A promise that resolves with the output of the command.
+     */
+    public async dockerComposeUp(cliOptions: CLIOptions): Promise<shell.ShellString> {
+      // TODO: Add multi node option
+      const composeFiles = ['docker-compose.yml'];
+      const { fullMode } = cliOptions;
+      const { userCompose } = cliOptions;
+      const { userComposeDir } = cliOptions;
+      const { multiNode } = cliOptions;
+
+      if (!fullMode) {
+          composeFiles.push('docker-compose.evm.yml');
+      }
+
+      if (multiNode) {
+          composeFiles.push('docker-compose.multinode.yml');
+      }
+
+      if (!fullMode && multiNode) {
+          composeFiles.push('docker-compose.multinode.evm.yml');
+      }
+
+      if (userCompose) {
+          composeFiles.push(...this.getUserComposeFiles(userComposeDir));
+      }
+
+      return shell.exec(
+          `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.getNullOutput()}`
+      );
+    }
+
+    /**
+     *  Retrieves an array of user compose files from the specified directory.
+     * 
+     * @private
+     * @param {string} userComposeDir - The directory path where the user compose files are located. Defaults to './overrides/'.
+     * @returns {Array<string>} An array of user compose file paths.
+     */
+    private getUserComposeFiles(userComposeDir: string = './overrides/'): Array<string> {
+        let dirPath = path.normalize(userComposeDir);
+        if (!dirPath.endsWith(path.sep)) {
+          dirPath += path.sep;
+        }
+        if (fs.existsSync(dirPath)) {
+          const files = fs
+            .readdirSync(dirPath)
+            .filter((file) => path.extname(file).toLowerCase() === '.yml')
+            .sort()
+            .map((file) => dirPath.concat(file));
+          return files;
+        } 
+          return [];
     }
 }

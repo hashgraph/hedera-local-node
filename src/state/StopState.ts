@@ -104,7 +104,7 @@ export class StopState implements IState {
         shell.exec(`docker network prune -f 2>${nullOutput}`);
         shell.cd(rootPath);
         this.logger.info(STOP_STATE_STOPPED_MESSAGE, this.stateName);
-        this.observer!.update(EventType.Finish);
+        this.observer?.update(EventType.Finish);
     }
 
     /**

@@ -69,6 +69,13 @@ export const DEBUG_COLOR = '\x1b[36m'
 // white
 export const TRACE_COLOR = '\x1b[37m'
 
+// Start State
+export const START_STATE_INIT_MESSAGE = 'Start State Initialized!';
+export const START_STATE_STARTING_MESSAGE = 'Starting Hedera Local Node...';
+export const START_STATE_ON_START_MESSAGE = 'Initiating start procedure. Trying to start docker containers...';
+export const START_STATE_STARTED_DETECTING = 'Detecting network...';
+export const START_STATE_STARTED_MESSAGE = 'Hedera Local Node successfully started!';
+
 // Stop State
 export const STOP_STATE_INIT_MESSAGE = 'Stop State Initialized!';
 export const STOP_STATE_ON_START_MESSAGE = 'Initiating stop procedure. Trying to stop docker containers and clean up volumes...';
