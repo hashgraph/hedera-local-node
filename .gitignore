@@ -156,3 +156,6 @@ network-logs/minio-server/data/**
 
 
 .vscode
+
+### nyc cache
+.nyc_output
