@@ -61,5 +61,8 @@ export interface CLIOptions {
     verbose: number,
     timestamp: string,
     enableDebug: boolean,
+    networkTag: string,
+    mirrorTag: string,
+    relayTag: string,
     workDir: string,
 }
