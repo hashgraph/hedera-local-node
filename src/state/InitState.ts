@@ -161,11 +161,11 @@ export class InitState implements IState{
         imageTagConfiguration.forEach(variable => {
             const node = variable.key;
             let tag = variable.value;
-            if (this.cliOptions.networkTag !== 'default' && (node === "NETWORK_NODE_IMAGE_TAG" || node === "HAVEGED_IMAGE_TAG")) {
+            if (this.cliOptions.networkTag && (node === "NETWORK_NODE_IMAGE_TAG" || node === "HAVEGED_IMAGE_TAG")) {
                 tag = this.cliOptions.networkTag;
-            } else if(this.cliOptions.mirrorTag !== 'default' && node === "MIRROR_IMAGE_TAG") {
+            } else if(this.cliOptions.mirrorTag && node === "MIRROR_IMAGE_TAG") {
                 tag = this.cliOptions.mirrorTag;
-            } else if(this.cliOptions.relayTag !== 'default' && node === "RELAY_IMAGE_TAG") {
+            } else if(this.cliOptions.relayTag && node === "RELAY_IMAGE_TAG") {
                 tag = this.cliOptions.relayTag;
             }
 

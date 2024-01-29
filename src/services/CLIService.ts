@@ -547,7 +547,7 @@ export class CLIService implements IService{
             type: 'string',
             describe: 'Select custom network node tag',
             demandOption: false,
-            default: 'default'
+            default: ''
         });
     }
 
@@ -565,7 +565,7 @@ export class CLIService implements IService{
             type: 'string',
             describe: 'Select custom mirror-node tag',
             demandOption: false,
-            default: 'default'
+            default: ''
         });
     }
 
@@ -583,7 +583,7 @@ export class CLIService implements IService{
             type: 'string',
             describe: 'Select custom hedera-json-rpc relay tag',
             demandOption: false,
-            default: 'default'
+            default: ''
         });
     }
     
