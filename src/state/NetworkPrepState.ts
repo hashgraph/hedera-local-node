@@ -27,6 +27,14 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
 import { DockerService } from '../services/DockerService';
+import {
+    NETWORK_PREP_STATE_IMPORT_FEES_END,
+    NETWORK_PREP_STATE_IMPORT_FEES_START,
+    NETWORK_PREP_STATE_INIT_MESSAGE,
+    NETWORK_PREP_STATE_STARTING_MESSAGE,
+    NETWORK_PREP_STATE_TOPIC_CREATED,
+    NETWORK_PREP_STATE_WAITING_TOPIC_CREATION
+  } from '../constants';
 
 /**
  * Represents the network preparation state of the Hedera Local Node.
@@ -67,7 +75,7 @@ export class NetworkPrepState implements IState {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.clientService = ServiceLocator.Current.get<ClientService>(ClientService.name);
         this.dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
-        this.logger.trace('Network Preparation State Initialized!', this.stateName);
+        this.logger.trace(NETWORK_PREP_STATE_INIT_MESSAGE, this.stateName);
     }
 
     /**
@@ -83,7 +91,7 @@ export class NetworkPrepState implements IState {
      * @returns {Promise<void>} A promise that resolves when the network preparation is complete.
      */
     public async onStart(): Promise<void> {
-        this.logger.info('Starting Network Preparation State...', this.stateName);
+        this.logger.info(NETWORK_PREP_STATE_STARTING_MESSAGE, this.stateName);
         const client = this.clientService.getClient();
 
         await this.importFees(client);
@@ -98,7 +106,7 @@ export class NetworkPrepState implements IState {
      * @returns {Promise<void>} A promise that resolves when the import is complete.
      */
     private async importFees(client: Client): Promise<void> {
-        this.logger.trace('Starting Fees import...', this.stateName);
+        this.logger.trace(NETWORK_PREP_STATE_IMPORT_FEES_START, this.stateName);
 
         const feesFileId = 111;
         const exchangeRatesFileId = 112;
@@ -106,9 +114,7 @@ export class NetworkPrepState implements IState {
         const timestamp = Date.now();
         const nullOutput = this.dockerService.getNullOutput();
 
-        const queryFees = new FileContentsQuery().setFileId(
-          `0.0.${feesFileId}`
-        );
+        const queryFees = this.buildQueryFees(feesFileId);
         const fees = Buffer.from(await queryFees.execute(client)).toString('hex');
         await shell.exec(
           `docker exec mirror-node-db psql mirror_node -U mirror_node -c "INSERT INTO public.file_data(file_data, consensus_timestamp, entity_id, transaction_type) VALUES (decode('${fees}', 'hex'), ${
@@ -116,9 +122,7 @@ export class NetworkPrepState implements IState {
           }, ${feesFileId}, 17);" >> ${nullOutput}`
         );
     
-        const queryExchangeRates = new FileContentsQuery().setFileId(
-          `0.0.${exchangeRatesFileId}`
-        );
+        const queryExchangeRates = this.buildQueryFees(exchangeRatesFileId);
         const exchangeRates = Buffer.from(await queryExchangeRates.execute(client)).toString('hex');
         await shell.exec(
           `docker exec mirror-node-db psql mirror_node -U mirror_node -c "INSERT INTO public.file_data(file_data, consensus_timestamp, entity_id, transaction_type) VALUES (decode('${exchangeRates}', 'hex'), ${
@@ -126,7 +130,18 @@ export class NetworkPrepState implements IState {
           }, ${exchangeRatesFileId}, 17);" >> ${nullOutput}`
         );
 
-        this.logger.info('Imported fees successfully', this.stateName);
+        this.logger.info(NETWORK_PREP_STATE_IMPORT_FEES_END, this.stateName);
+    }
+
+    /**
+     * Builds a query for the fees file.
+     * @param {number} feesFileId - The fees file ID.
+     * @returns {FileContentsQuery} The query for the fees file.
+     */
+    private buildQueryFees(feesFileId: number): FileContentsQuery {
+        return new FileContentsQuery().setFileId(
+            `0.0.${feesFileId}`
+        )
     }
 
     /**
@@ -136,7 +151,7 @@ export class NetworkPrepState implements IState {
      *  @returns {Promise<void>}
      */
     private async waitForTopicCreation(): Promise<void> {
-        this.logger.trace('Waiting for topic creation...', this.stateName);
+        this.logger.trace(NETWORK_PREP_STATE_WAITING_TOPIC_CREATION, this.stateName);
         const LOG_SEARCH_TEXT = 'Created TOPIC entity';
 
         return new Promise((resolve, reject) => {
@@ -148,7 +163,7 @@ export class NetworkPrepState implements IState {
             if (data.indexOf(LOG_SEARCH_TEXT) !== -1) {
               command.kill('SIGINT');
               command.stdout!.destroy();
-              this.logger.info('Topic was created!', this.stateName);
+              this.logger.info(NETWORK_PREP_STATE_TOPIC_CREATED, this.stateName);
               resolve();
             }
           });

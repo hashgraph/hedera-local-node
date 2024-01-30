@@ -1,4 +1,3 @@
-
 /*-
  *
  * Hedera Local Node
@@ -25,6 +24,7 @@ import { CLIService } from "../../src/services/CLIService";
 import { ServiceLocator } from "../../src/services/ServiceLocator";
 import { DockerService } from "../../src/services/DockerService";
 import { ConnectionService } from "../../src/services/ConnectionService";
+import { ClientService } from "../../src/services/ClientService";
 
 export interface LocalNodeTestBed {
     sandbox: sinon.SinonSandbox;
@@ -32,6 +32,7 @@ export interface LocalNodeTestBed {
     cliServiceStub: sinon.SinonStubbedInstance<CLIService>;
     dockerServiceStub: sinon.SinonStubbedInstance<DockerService>;
     connectionServiceStub: sinon.SinonStubbedInstance<ConnectionService>;
+    clientServiceStub: sinon.SinonStubbedInstance<ClientService>;
     serviceLocatorStub: sinon.SinonStub;
     proccesStubs: {
         processCWDStub: sinon.SinonStub;
@@ -72,6 +73,7 @@ function generateLocalNodeStubs(sandbox:sinon.SinonSandbox, cliServiceArgs?: any
     const dockerServiceStub = sandbox.createStubInstance(DockerService);
     const connectionServiceStub = sandbox.createStubInstance(ConnectionService);
     const loggerServiceStub = sandbox.createStubInstance(LoggerService);
+    const clientServiceStub = sandbox.createStubInstance(ClientService);
     const cliServiceStub = sandbox.createStubInstance(CLIService, {
       getCurrentArgv: {
         ...cliServiceArgs,
@@ -83,12 +85,14 @@ function generateLocalNodeStubs(sandbox:sinon.SinonSandbox, cliServiceArgs?: any
     getStub.withArgs(CLIService.name).returns(cliServiceStub);
     getStub.withArgs(DockerService.name).returns(dockerServiceStub);
     getStub.withArgs(ConnectionService.name).returns(connectionServiceStub);
+    getStub.withArgs(ClientService.name).returns(clientServiceStub);
 
     sandbox.replaceGetter(ServiceLocator, 'Current', () => sandbox.createStubInstance(ServiceLocator, {
         get: getStub
     }));
 
     return {
+        clientServiceStub,
         connectionServiceStub,
         dockerServiceStub,
         loggerServiceStub,
