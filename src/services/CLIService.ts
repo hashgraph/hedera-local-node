@@ -87,6 +87,9 @@ export class CLIService implements IService{
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
         CLIService.enableDebugOption(yargs);
+        CLIService.selectNetworkTag(yargs);
+        CLIService.selectMirrorTag(yargs);
+        CLIService.selectRelayTag(yargs);
     }
 
     /**
@@ -152,8 +155,10 @@ export class CLIService implements IService{
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
         const timestamp = argv.timestamp as string;
         const enableDebug = argv.enableDebug as boolean;
+        const networkTag = argv.networkTag as string;
+        const mirrorTag = argv.mirrorTag as string;
+        const relayTag = argv.relayTag as string;
         const workDir = FileSystemUtils.parseWorkDir(argv.workdir as string);
-
         const currentArgv: CLIOptions = {
             accounts,
             async,
@@ -172,6 +177,9 @@ export class CLIService implements IService{
             verbose,
             timestamp,
             enableDebug,
+            networkTag,
+            mirrorTag,
+            relayTag,
             workDir,
         };
 
@@ -522,7 +530,61 @@ export class CLIService implements IService{
             describe: 'Enable or disable debugging of the local node',
             demandOption: false,
             default: false
-          });
+        });
+    }
+
+    /**
+     * Adds the 'network-tag' option to the command line arguments.
+     * This option is a string that enables usage of custom network tag.
+     * It is not required and defaults to predefined configuration.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
+    private static selectNetworkTag(yargs: Argv<{}>): void {
+        yargs.option('network-tag', {
+            type: 'string',
+            describe: 'Select custom network node tag',
+            demandOption: false,
+            default: ''
+        });
+    }
+
+    /**
+     * Adds the 'mirror-tag' option to the command line arguments.
+     * This option is a string that enables usage of custom mirror-node tag.
+     * It is not required and defaults to predefined configuration.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
+    private static selectMirrorTag(yargs: Argv<{}>): void {
+        yargs.option('mirror-tag', {
+            type: 'string',
+            describe: 'Select custom mirror-node tag',
+            demandOption: false,
+            default: ''
+        });
+    }
+
+    /**
+     * Adds the 'mirror-tag' option to the command line arguments.
+     * This option is a string that enables usage of custom mirror-node tag.
+     * It is not required and defaults to predefined configuration.
+     * 
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
+    private static selectRelayTag(yargs: Argv<{}>): void {
+        yargs.option('relay-tag', {
+            type: 'string',
+            describe: 'Select custom hedera-json-rpc relay tag',
+            demandOption: false,
+            default: ''
+        });
     }
     
     /**

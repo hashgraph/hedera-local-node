@@ -111,6 +111,9 @@ Available commands:
             --async to enable or disable asynchronous creation of accounts.
             --b or --blocklist to enable or disable account blocklisting. Depending on how many private keys are blocklisted, this will affect the generated on startup accounts.
             --enable-debug  Enable or disable debugging of the local node [boolean] [default: false]
+            --network-tag Select custom network node tag [string] [defaults: predefined selected configuration]
+            --mirror-tag Select custom mirror node tag [string] [defaults: predefined selected configuration]
+            --relay-tag Select custom hedera-json-rpc relay tag [string] [defaults: predefined selected configuration]
             --workdir       Path to the working directory for local node [string] [default: "[USER APP DATA]/hedera-local"]
     stop - Stops the local hedera network and delete all the existing data.
     restart - Restart the local hedera network.

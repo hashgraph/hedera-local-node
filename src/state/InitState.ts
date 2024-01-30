@@ -159,8 +159,18 @@ export class InitState implements IState{
      */
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
         imageTagConfiguration.forEach(variable => {
-            process.env[variable.key] = variable.value;
-            this.logger.trace(`Environment variable ${variable.key} will be set to ${variable.value}.`, this.stateName);
+            const node = variable.key;
+            let tag = variable.value;
+            if (this.cliOptions.networkTag && (node === "NETWORK_NODE_IMAGE_TAG" || node === "HAVEGED_IMAGE_TAG")) {
+                tag = this.cliOptions.networkTag;
+            } else if(this.cliOptions.mirrorTag && node === "MIRROR_IMAGE_TAG") {
+                tag = this.cliOptions.mirrorTag;
+            } else if(this.cliOptions.relayTag && node === "RELAY_IMAGE_TAG") {
+                tag = this.cliOptions.relayTag;
+            }
+
+            this.logger.trace(`Environment variable ${node} will be set to ${tag}.`, this.stateName);
+            process.env[node] = tag;
         });
 
         if (!envConfiguration) {
