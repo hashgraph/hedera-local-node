@@ -101,9 +101,14 @@ export class InitState implements IState{
         const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
         const isDockerStarted = await this.dockerService.checkDocker();
 
+        if (!(isCorrectDockerComposeVersion && isDockerStarted)) {
+            this.observer!.update(EventType.UnresolvableError);
+            return;
+        }
+
         const dockerHasEnoughResources = await this.dockerService.checkDockerResources(this.cliOptions.multiNode);
 
-        if (!(isCorrectDockerComposeVersion && isDockerStarted && dockerHasEnoughResources)) {
+        if (dockerHasEnoughResources) {
             this.observer!.update(EventType.UnresolvableError);
             return;
         }
