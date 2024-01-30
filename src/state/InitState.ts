@@ -34,7 +34,22 @@ import { ConfigurationData } from '../data/ConfigurationData';
 import { Configuration } from '../types/NetworkConfiguration';
 import originalNodeConfiguration from '../configuration/originalNodeConfiguration.json';
 import { DockerService } from '../services/DockerService';
-import { APPLICATION_YML_RELATIVE_PATH, NECESSARY_PORTS, OPTIONAL_PORTS } from '../constants';
+import {
+    APPLICATION_YML_RELATIVE_PATH,
+    INIT_STATE_BOOTSTRAPPED_PROP_SET,
+    INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
+    INIT_STATE_INIT_MESSAGE,
+    INIT_STATE_MIRROR_PROP_SET,
+    INIT_STATE_NO_ENV_VAR_CONFIGURED,
+    INIT_STATE_NO_NODE_CONF_NEEDED,
+    INIT_STATE_RELAY_LIMITS_DISABLED,
+    INIT_STATE_STARTING_MESSAGE,
+    INIT_STATE_START_DOCKER_CHECK,
+    NECESSARY_PORTS,
+    NETWORK_NODE_CONFIG_DIR_PATH,
+    OPTIONAL_PORTS,
+    RECORD_PARSER_SOURCE_REL_PATH
+} from '../constants';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
 
@@ -77,7 +92,7 @@ export class InitState implements IState{
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliOptions = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
         this.dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
-        this.logger.trace('Initialization State Initialized!', this.stateName);
+        this.logger.trace(INIT_STATE_INIT_MESSAGE, this.stateName);
     }
 
     /**
@@ -94,13 +109,13 @@ export class InitState implements IState{
      * @returns {Promise<void>} A promise that resolves when the state has started.
      */
     public async onStart(): Promise<void> {
-        this.logger.trace('Initialization State Starting...', this.stateName);
-        const configurationData = new ConfigurationData().getSelectedConfigurationData(this.cliOptions.network);
-        this.logger.info("Making sure that Docker is started and it's correct version...", this.stateName);
+        this.logger.trace(INIT_STATE_STARTING_MESSAGE, this.stateName);
+        const configurationData = ConfigurationData.getSelectedConfigurationData(this.cliOptions.network);
+
         // Check if docker is running and it's the correct version
+        this.logger.info(INIT_STATE_START_DOCKER_CHECK, this.stateName);
         const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
         const isDockerStarted = await this.dockerService.checkDocker();
-
         const dockerHasEnoughResources = await this.dockerService.checkDockerResources(this.cliOptions.multiNode);
 
         if (!(isCorrectDockerComposeVersion && isDockerStarted && dockerHasEnoughResources)) {
@@ -140,13 +155,13 @@ export class InitState implements IState{
     private prepareWorkDirectory() {
         this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`, this.stateName);
         FileSystemUtils.createEphemeralDirectories(this.cliOptions.workDir);
-        const configDirSource = join(__dirname, '../../compose-network/network-node/data/config/');
-        const configPathMirrorNodeSource = join(__dirname, APPLICATION_YML_RELATIVE_PATH);
-        const recordParserSource = join(__dirname,'../../src/services/record-parser');
+        const configDirSource = join(__dirname, `../../${NETWORK_NODE_CONFIG_DIR_PATH}`);
+        const configPathMirrorNodeSource = join(__dirname, `../../${APPLICATION_YML_RELATIVE_PATH}`);
+        const recordParserSource = join(__dirname, RECORD_PARSER_SOURCE_REL_PATH);
 
         const configFiles = {
-            [configDirSource]: `${this.cliOptions.workDir}/compose-network/network-node/data/config`,
-            [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/compose-network/mirror-node/application.yml`,
+            [configDirSource]: `${this.cliOptions.workDir}/${NETWORK_NODE_CONFIG_DIR_PATH}`,
+            [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/${APPLICATION_YML_RELATIVE_PATH}`,
             [recordParserSource]: `${this.cliOptions.workDir}/services/record-parser`
         };
         FileSystemUtils.copyPaths(configFiles);
@@ -159,22 +174,13 @@ export class InitState implements IState{
      */
     private configureEnvVariables(imageTagConfiguration: Array<Configuration>, envConfiguration: Array<Configuration> | undefined): void {
         imageTagConfiguration.forEach(variable => {
-            const node = variable.key;
-            let tag = variable.value;
-            if (this.cliOptions.networkTag && (node === "NETWORK_NODE_IMAGE_TAG" || node === "HAVEGED_IMAGE_TAG")) {
-                tag = this.cliOptions.networkTag;
-            } else if(this.cliOptions.mirrorTag && node === "MIRROR_IMAGE_TAG") {
-                tag = this.cliOptions.mirrorTag;
-            } else if(this.cliOptions.relayTag && node === "RELAY_IMAGE_TAG") {
-                tag = this.cliOptions.relayTag;
-            }
-
+            const { tag, node } = this.extractImageTag(variable);
             this.logger.trace(`Environment variable ${node} will be set to ${tag}.`, this.stateName);
             process.env[node] = tag;
         });
 
         if (!envConfiguration) {
-            this.logger.trace('No new environment variables were configured.', this.stateName);
+            this.logger.trace(INIT_STATE_NO_ENV_VAR_CONFIGURED, this.stateName);
             return;
         }
 
@@ -188,9 +194,36 @@ export class InitState implements IState{
             process.env.RELAY_HBAR_RATE_LIMIT_TINYBAR = '0';
             process.env.RELAY_HBAR_RATE_LIMIT_DURATION = '0';
             process.env.RELAY_RATE_LIMIT_DISABLED = `${relayLimitsDisabled}`;
-            this.logger.info('Hedera JSON-RPC Relay rate limits were disabled.', this.stateName);
+            this.logger.info(INIT_STATE_RELAY_LIMITS_DISABLED, this.stateName);
         }
-        this.logger.info('Needed environment variables were set for this configuration.', this.stateName);
+        this.logger.info(INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH, this.stateName);
+    }
+
+    /**
+     * Extracts the image tag from the configuration.
+     * 
+     * @private
+     * @param {Configuration} variable - The configuration.
+     * @returns {string} The extracted image tag.
+     */
+    private extractImageTag(variable: Configuration): {
+        tag: string,
+        node: string
+    } {
+        const node = variable.key;
+        let tag = variable.value;
+        if (this.cliOptions.networkTag && (node === "NETWORK_NODE_IMAGE_TAG" || node === "HAVEGED_IMAGE_TAG")) {
+            tag = this.cliOptions.networkTag;
+        } else if(this.cliOptions.mirrorTag && node === "MIRROR_IMAGE_TAG") {
+            tag = this.cliOptions.mirrorTag;
+        } else if(this.cliOptions.relayTag && node === "RELAY_IMAGE_TAG") {
+            tag = this.cliOptions.relayTag;
+        }
+
+        return { 
+            tag,
+            node
+        }
     }
 
     /**
@@ -198,7 +231,7 @@ export class InitState implements IState{
      * @param {Array<Configuration> | undefined} nodeConfiguration - The node configuration.
      */
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
-        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/network-node/data/config/bootstrap.properties');
+        const propertiesFilePath = join(this.cliOptions.workDir, NETWORK_NODE_CONFIG_DIR_PATH, 'bootstrap.properties');
 
         let newProperties = '';
         originalNodeConfiguration.bootsrapProperties.forEach(property => {
@@ -206,7 +239,7 @@ export class InitState implements IState{
         });
 
         if (!nodeConfiguration) {
-            this.logger.trace('No additional node configuration needed.', this.stateName);
+            this.logger.trace(INIT_STATE_NO_NODE_CONF_NEEDED, this.stateName);
             return;
         }
         nodeConfiguration!.forEach(property => {
@@ -216,7 +249,7 @@ export class InitState implements IState{
 
         writeFileSync(propertiesFilePath, newProperties, { flag: 'w' });
 
-        this.logger.info('Needed bootsrap properties were set for this configuration.', this.stateName);
+        this.logger.info(INIT_STATE_BOOTSTRAPPED_PROP_SET, this.stateName);
     }
 
     /**
@@ -229,7 +262,6 @@ export class InitState implements IState{
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
         const turboMode = !this.cliOptions.fullMode;
         const debugMode = this.cliOptions.enableDebug;
-
         const multiNode = this.cliOptions.multiNode;
 
         const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/mirror-node/application.yml');
@@ -250,6 +282,6 @@ export class InitState implements IState{
         }
 
         writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));
-        this.logger.info('Needed mirror node properties were set for this configuration.', this.stateName);
+        this.logger.info(INIT_STATE_MIRROR_PROP_SET, this.stateName);
     }
 }
