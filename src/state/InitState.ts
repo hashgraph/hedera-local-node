@@ -108,7 +108,7 @@ export class InitState implements IState{
 
         const dockerHasEnoughResources = await this.dockerService.checkDockerResources(this.cliOptions.multiNode);
 
-        if (dockerHasEnoughResources) {
+        if (!dockerHasEnoughResources) {
             this.observer!.update(EventType.UnresolvableError);
             return;
         }
