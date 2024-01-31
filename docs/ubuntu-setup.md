@@ -1,5 +1,5 @@
 
-# Ubuntu
+# Ubuntu setup instructions 
 
 ---
 **NOTE**
@@ -8,7 +8,7 @@ Please first review the main [README](https://github.com/hashgraph/hedera-local-
 
 ---
 
-This is guide shows example steps for setting up Ubuntu and running Hedera Local Node on it. They are assuming clean install of Ubuntu 22.04. 
+This guide shows example steps for setting up Ubuntu and running Hedera Local Node on it. We are assuming clean install of Ubuntu 22.04. 
 
 ## Getting Started
 
