@@ -46,7 +46,9 @@ export const OPTIONAL_PORTS = [7546, 8080, 6379, 3000];
 export const EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH = '../../compose-network/network-node'
 export const RELATIVE_TMP_DIR_PATH = 'services/record-parser/temp';
 export const RELATIVE_RECORDS_DIR_PATH = 'network-logs/node/recordStreams/record0.0.3';
-export const APPLICATION_YML_RELATIVE_PATH = '../../compose-network/mirror-node/application.yml';
+export const RECORD_PARSER_SOURCE_REL_PATH = '../../src/services/record-parser';
+export const NETWORK_NODE_CONFIG_DIR_PATH = 'compose-network/network-node/data/config';
+export const APPLICATION_YML_RELATIVE_PATH = 'compose-network/mirror-node/application.yml';
 export const MIN_MEMORY_SINGLE_MODE = 4;
 export const MIN_MEMORY_MULTI_MODE = 14;
 export const RECOMMENDED_MEMORY_SINGLE_MODE = 8;
@@ -97,3 +99,14 @@ export const NETWORK_PREP_STATE_IMPORT_FEES_START = 'Starting Fees import...';
 export const NETWORK_PREP_STATE_IMPORT_FEES_END = 'Imported fees successfully';
 export const NETWORK_PREP_STATE_WAITING_TOPIC_CREATION = 'Waiting for topic creation...';
 export const NETWORK_PREP_STATE_TOPIC_CREATED = 'Topic was created!';
+
+// Init state
+export const INIT_STATE_INIT_MESSAGE = 'Initialization State Initialized!';
+export const INIT_STATE_STARTING_MESSAGE = "Initialization State Starting...";
+export const INIT_STATE_START_DOCKER_CHECK = "Making sure that Docker is started and it's correct version...";
+export const INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH = 'Needed environment variables were set for this configuration.';
+export const INIT_STATE_RELAY_LIMITS_DISABLED = 'Hedera JSON-RPC Relay rate limits were disabled.';
+export const INIT_STATE_BOOTSTRAPPED_PROP_SET = 'Needed bootsrap properties were set for this configuration.';
+export const INIT_STATE_MIRROR_PROP_SET = 'Needed mirror node properties were set for this configuration.';
+export const INIT_STATE_NO_NODE_CONF_NEEDED = 'No additional node configuration needed.';
+export const INIT_STATE_NO_ENV_VAR_CONFIGURED = 'No new environment variables were configured.';

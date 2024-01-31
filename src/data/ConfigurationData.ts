@@ -34,18 +34,18 @@ export class ConfigurationData {
      * @param {NetworkType} network - The type of the network.
      * @returns {NetworkConfiguration} The configuration data for the selected network.
      */
-    public getSelectedConfigurationData(network: NetworkType): NetworkConfiguration {
+    public static getSelectedConfigurationData(network: NetworkType): NetworkConfiguration {
         switch (network) {
             case NetworkType.LOCAL:
-                return this.getNetworkConfiguration(local as any);
+                return ConfigurationData.getNetworkConfiguration(local as any);
             case NetworkType.MAINNET:
-                return this.getNetworkConfiguration(mainnet as any);
+                return ConfigurationData.getNetworkConfiguration(mainnet as any);
             case NetworkType.TESTNET:
-                return this.getNetworkConfiguration(testnet as any);
+                return ConfigurationData.getNetworkConfiguration(testnet as any);
             case NetworkType.PREVIEWNET:
-                return this.getNetworkConfiguration(previewnet as any);
+                return ConfigurationData.getNetworkConfiguration(previewnet as any);
             default:
-                return this.getNetworkConfiguration(local as any);
+                return ConfigurationData.getNetworkConfiguration(local as any);
         }
     }
 
@@ -54,7 +54,7 @@ export class ConfigurationData {
      * @param {NetworkConfiguration} jsonConfiguration - The JSON configuration.
      * @returns The network configuration.
      */
-    private getNetworkConfiguration(jsonConfiguration: NetworkConfiguration): NetworkConfiguration {
+    private static getNetworkConfiguration(jsonConfiguration: NetworkConfiguration): NetworkConfiguration {
         const relayConfiguration = jsonConfiguration?.envConfiguration ?? undefined;
         const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties ?? undefined;
         const configuration: NetworkConfiguration = {
