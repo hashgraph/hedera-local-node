@@ -169,23 +169,18 @@ export class DebugState implements IState{
      * 
      * This method takes a list of files or a single file and copies them from the record files directory to the temporary directory.
      * 
-     * @param {string | Array<string>} filesToCopy - The file or files to copy.
+     * @param {Array<string>} filesToCopy - The file or files to copy.
      * @param {string} tmpDirPath - The path to the temporary directory.
      * @param {string} recordFilesDirPath - The path to the directory containing the record files.
      */
     private copyFilesToTmpDir(
-      filesToCopy: string | Array<string>,
+      filesToCopy: Array<string>,
       tmpDirPath: string,
       recordFilesDirPath: string
     ): void {
-        if (Array.isArray(filesToCopy)) {
-          for (const file of filesToCopy) {
-            this.copyFileToDir(file, recordFilesDirPath, tmpDirPath)
-          }
-          return;
-        }
-
-        this.copyFileToDir(filesToCopy, recordFilesDirPath, tmpDirPath)
+       for (const file of filesToCopy) {
+         this.copyFileToDir(file, recordFilesDirPath, tmpDirPath)
+       }
     }
 
     /**

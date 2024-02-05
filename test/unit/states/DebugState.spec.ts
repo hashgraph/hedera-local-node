@@ -20,7 +20,7 @@
 
 import { expect } from 'chai';
 import fs from 'fs';
-import Sinon, { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
+import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService';
 import { DebugState } from '../../../src/state/DebugState';
@@ -32,45 +32,32 @@ import {
     RELATIVE_RECORDS_DIR_PATH
 } from '../../../src/constants';
 import { resolve } from 'path';
-import { DockerService } from '../../../src/services/DockerService';
-import { ConnectionService } from '../../../src/services/ConnectionService';
 import { Errors } from '../../../src/Errors/LocalNodeErrors';
 
-describe('StartState tests', () => {
+describe('DebugState tests', () => {
     let debugState: DebugState,
         testSandbox: SinonSandbox, 
         loggerService: SinonStubbedInstance<LoggerService>,
         serviceLocator: SinonStub,
-        dockerService: SinonStubbedInstance<DockerService>,
-        stateDir: string,
-        processTestBed: {[key: string]: SinonStub},
         shellTestBed: {[key: string]: SinonStub},
-        cliService: SinonStubbedInstance<CLIService>,
-        connectionService: SinonStubbedInstance<ConnectionService>;
+        cliService: SinonStubbedInstance<CLIService>;
 
     before(() => {
         const { 
             sandbox,
             loggerServiceStub,
             serviceLocatorStub,
-            proccesStubs,
             shellStubs,
-            dockerServiceStub,
-            connectionServiceStub,
             cliServiceStub
         } = getTestBed({
             workDir: 'testDir',
             timestamp: '1234567890.987654321'
         });
-        stateDir = resolve(__dirname, '../../../src/state');
     
         testSandbox = sandbox
-        dockerService = dockerServiceStub
         loggerService = loggerServiceStub
         serviceLocator = serviceLocatorStub
-        processTestBed = proccesStubs
         shellTestBed = shellStubs
-        connectionService = connectionServiceStub
         cliService = cliServiceStub
 
         debugState = new DebugState();
