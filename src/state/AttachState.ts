@@ -84,11 +84,11 @@ export class AttachState implements IState{
         }
 
         await this.attachContainerLogs(CONSENSUS_NODE_LABEL);
-        await this.attachContainerLogs(MIRROR_NODE_LABEL)
+        await this.attachContainerLogs(MIRROR_NODE_LABEL);
         await this.attachContainerLogs(RELAY_LABEL);
 
         let i = 0;
-        while (i++ < Number.MAX_VALUE) {
+        while (i++ < this.loopIterations()) {
           await this.logger.updateStatusBoard();
           await new Promise((resolve) => setTimeout(resolve, 10000));
         }
@@ -132,5 +132,9 @@ export class AttachState implements IState{
             });
           }
         );
+    }
+
+    private loopIterations(): number {
+      return Number.MAX_VALUE;
     }
 }
