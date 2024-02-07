@@ -102,7 +102,7 @@ export const NETWORK_PREP_STATE_TOPIC_CREATED = 'Topic was created!';
 
 // Init state
 export const INIT_STATE_INIT_MESSAGE = 'Initialization State Initialized!';
-export const INIT_STATE_STARTING_MESSAGE = "Initialization State Starting...";
+export const INIT_STATE_STARTING_MESSAGE = 'Initialization State Starting...';
 export const INIT_STATE_START_DOCKER_CHECK = "Making sure that Docker is started and it's correct version...";
 export const INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH = 'Needed environment variables were set for this configuration.';
 export const INIT_STATE_RELAY_LIMITS_DISABLED = 'Hedera JSON-RPC Relay rate limits were disabled.';
@@ -111,6 +111,19 @@ export const INIT_STATE_MIRROR_PROP_SET = 'Needed mirror node properties were se
 export const INIT_STATE_NO_NODE_CONF_NEEDED = 'No additional node configuration needed.';
 export const INIT_STATE_NO_ENV_VAR_CONFIGURED = 'No new environment variables were configured.';
 
+<<<<<<< HEAD
 // Debug state
 export const DEBUG_STATE_INIT_MESSAGE = 'Debug State Initialized!';
 export const DEBUG_STATE_STARTING_MESSAGE = 'Debug State Starting...';
+=======
+// StateController
+export const STATE_CONTROLLER_MISSING_STATE_CONFIG_ERROR = 'Something is wrong with state configuration!';
+
+
+// Account Creation State
+
+export const ACCOUNT_CREATION_STATE_INIT_MESSAGE = 'Account Creaton State Initialized!';
+export const ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE = 'Starting Account Creation state in synchronous mode ';
+export const ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE ='Starting Account Creation state in asynchronous mode ';
+export const ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE = 'Starting Account Creation state in asynchronous mode with 1 blocklisted accounts';
+>>>>>>> 215e4aa (Fixes test flow)
