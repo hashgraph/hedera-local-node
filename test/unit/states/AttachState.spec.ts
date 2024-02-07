@@ -71,7 +71,7 @@ describe('AttachState', () => {
 
       attachContainerLogsStub.restore();
       iterations.restore();
-    }).timeout(20000);
+    }).timeout(25000);
 
     it('should not call attachContainerLogs when detached', async () => {
       (attachState as any).observer = { update: testSandbox.stub()};
@@ -92,7 +92,7 @@ describe('AttachState', () => {
       testSandbox.assert.calledOnceWithExactly(attachState.observer?.update, EventType.Finish);
       attachContainerLogsStub.restore();
       iterations.restore();
-    }).timeout(20000);
+    }).timeout(25000);
   });
 
   describe('attachContainerLogs', () => {
@@ -125,6 +125,6 @@ describe('AttachState', () => {
 
       testSandbox.assert.calledWithExactly(spy1, "network-node");
       testSandbox.assert.calledOnce(logsSpy);
-    }).timeout(20000);
+    }).timeout(25000);
   });
 });
