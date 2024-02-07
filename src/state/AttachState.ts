@@ -87,11 +87,7 @@ export class AttachState implements IState{
         await this.attachContainerLogs(MIRROR_NODE_LABEL);
         await this.attachContainerLogs(RELAY_LABEL);
 
-        let i = 0;
-        while (i++ < this.loopIterations()) {
-          await this.logger.updateStatusBoard();
-          await new Promise((resolve) => setTimeout(resolve, 10000));
-        }
+        await this.continuouslyUpdateStatusBoard();
     }
 
     /**
@@ -132,6 +128,14 @@ export class AttachState implements IState{
             });
           }
         );
+    }
+
+    private async continuouslyUpdateStatusBoard(): Promise<void> {
+      let i = 0;
+      while (i++ < this.loopIterations()) {
+        await this.logger.updateStatusBoard();
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+      }
     }
 
     private loopIterations(): number {
