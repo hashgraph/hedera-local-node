@@ -110,3 +110,7 @@ export const INIT_STATE_BOOTSTRAPPED_PROP_SET = 'Needed bootsrap properties were
 export const INIT_STATE_MIRROR_PROP_SET = 'Needed mirror node properties were set for this configuration.';
 export const INIT_STATE_NO_NODE_CONF_NEEDED = 'No additional node configuration needed.';
 export const INIT_STATE_NO_ENV_VAR_CONFIGURED = 'No new environment variables were configured.';
+
+// Debug state
+export const DEBUG_STATE_INIT_MESSAGE = 'Debug State Initialized!';
+export const DEBUG_STATE_STARTING_MESSAGE = 'Debug State Starting...';
