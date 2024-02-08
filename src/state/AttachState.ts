@@ -48,6 +48,11 @@ export class AttachState implements IState{
      * The name of the state.
      */
     private stateName: string;
+
+    /**
+     * Timeout for updateStatusBoard
+     */
+    private timeOut: number = 10000;
     
     /**
      * Represents the AttachState class.
@@ -134,7 +139,7 @@ export class AttachState implements IState{
       let i = 0;
       while (i++ < this.loopIterations()) {
         await this.logger.updateStatusBoard();
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await new Promise((resolve) => setTimeout(resolve, this.timeOut));
       }
     }
 

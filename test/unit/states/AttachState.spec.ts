@@ -4,6 +4,7 @@ import { AttachState } from '../../../src/state/AttachState';
 import { IOBserver } from '../../../src/controller/IObserver';
 import { CLIService } from '../../../src/services/CLIService';
 import { DockerService } from '../../../src/services/DockerService';
+import { LoggerService } from '../../../src/services/LoggerService';
 import { EventType } from '../../../src/types/EventType';
 import { getTestBed } from '../testBed';
 
@@ -12,13 +13,15 @@ describe('AttachState', () => {
       dockerService: SinonStubbedInstance<DockerService>,
       cliService: SinonStubbedInstance<CLIService>,
       testSandbox: SinonSandbox,
-      continuouslyUpdateStatusBoardStub: SinonStub;;
+      loggerService: SinonStubbedInstance<LoggerService>,
+      continuouslyUpdateStatusBoardStub: SinonStub;
 
   before(() => {
     const {
         sandbox,
         dockerServiceStub,
-        cliServiceStub
+        cliServiceStub,
+        loggerServiceStub
     } = getTestBed({
         workDir: 'testDir',
     });
@@ -26,6 +29,7 @@ describe('AttachState', () => {
     dockerService = dockerServiceStub
     cliService = cliServiceStub
     testSandbox = sandbox
+    loggerService = loggerServiceStub
 
     continuouslyUpdateStatusBoardStub = testSandbox.stub(AttachState.prototype, <any>'continuouslyUpdateStatusBoard');
 
@@ -117,6 +121,34 @@ describe('AttachState', () => {
       testSandbox.assert.called(continuouslyUpdateStatusBoardStub);
       testSandbox.assert.calledWithExactly(spy1, "network-node");
       testSandbox.assert.calledOnce(logsSpy);
+
+      continuouslyUpdateStatusBoardStub.restore();
+      attachContainerLogsStub.restore();
+    });
+  });
+
+  describe('continuouslyUpdateStatusBoard', () => {
+    it('should updateStatusBoard every 2 seconds', async () => {
+      continuouslyUpdateStatusBoardStub.restore();
+      const continuouslyUpdateStatusBoardSpy = testSandbox.spy(AttachState.prototype, <any>'continuouslyUpdateStatusBoard');
+      cliService.getCurrentArgv.returns({
+        async: false,
+        blocklisting: false,
+        balance: 1000,
+        accounts: 10,
+        startup: false,
+        detached: false
+      } as any);
+      const attachContainerLogsStub = testSandbox.stub(AttachState.prototype, <any>'attachContainerLogs');
+      (attachState as any).timeOut = 2;
+      const iterations = testSandbox.stub(AttachState.prototype, <any>'loopIterations');
+      iterations.returns(2);
+
+      await attachState.onStart();
+
+      testSandbox.assert.called(continuouslyUpdateStatusBoardSpy);
+      testSandbox.assert.calledTwice(loggerService.updateStatusBoard);
+      testSandbox.assert.calledThrice(attachContainerLogsStub);
     });
   });
 });
