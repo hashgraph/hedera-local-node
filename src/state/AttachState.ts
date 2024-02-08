@@ -48,6 +48,11 @@ export class AttachState implements IState{
      * The name of the state.
      */
     private stateName: string;
+
+    /**
+     * Timeout for updateStatusBoard
+     */
+    private timeOut: number = 10000;
     
     /**
      * Represents the AttachState class.
@@ -87,11 +92,7 @@ export class AttachState implements IState{
         await this.attachContainerLogs(MIRROR_NODE_LABEL);
         await this.attachContainerLogs(RELAY_LABEL);
 
-        let i = 0;
-        while (i++ < this.loopIterations()) {
-          await this.logger.updateStatusBoard();
-          await new Promise((resolve) => setTimeout(resolve, 10000));
-        }
+        await this.continuouslyUpdateStatusBoard();
     }
 
     /**
@@ -132,6 +133,14 @@ export class AttachState implements IState{
             });
           }
         );
+    }
+
+    private async continuouslyUpdateStatusBoard(): Promise<void> {
+      let i = 0;
+      while (i++ < this.loopIterations()) {
+        await this.logger.updateStatusBoard();
+        await new Promise((resolve) => setTimeout(resolve, this.timeOut));
+      }
     }
 
     private loopIterations(): number {
