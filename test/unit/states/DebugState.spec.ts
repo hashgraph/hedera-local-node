@@ -20,7 +20,7 @@
 
 import { expect } from 'chai';
 import fs from 'fs';
-import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
+import Sinon, { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService';
 import { DebugState } from '../../../src/state/DebugState';
@@ -63,7 +63,7 @@ describe('DebugState tests', () => {
         debugState = new DebugState();
     });
 
-    afterEach(() => {
+    after(() => {
         testSandbox.resetHistory();
     });
 
@@ -79,22 +79,38 @@ describe('DebugState tests', () => {
     })
 
     describe('onStart', () => {
+        //let getAndValidateTimestampStub: SinonStub;
+        let findAndCopyRecordFileToTmpDirStub: SinonStub;
+        let cleanTempDirStub: SinonStub;
+
+        before(() => {
+            //getAndValidateTimestampStub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
+            findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
+            cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
+        })
+
+        after(() => {
+            //getAndValidateTimestampStub.restore();
+            findAndCopyRecordFileToTmpDirStub.restore();
+            cleanTempDirStub.restore();
+        })
+
         it('should execute onStart properly', async () => {
             const { shellExecStub } = shellTestBed;
             const shellCommand = 'docker exec network-node bash /opt/hgcapp/recordParser/parse.sh';
             const getAndValidateTimestampSub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
-            const findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
-            const cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
+            //const findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
+            //const cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
 
             await debugState.onStart();
             
             testSandbox.assert.calledWith(shellExecStub, shellCommand);
-            testSandbox.assert.calledOnce(loggerService.trace)
+            testSandbox.assert.calledTwice(loggerService.trace)
             testSandbox.assert.calledWith(loggerService.trace, DEBUG_STATE_STARTING_MESSAGE, DebugState.name);
 
-            getAndValidateTimestampSub.restore();
-            findAndCopyRecordFileToTmpDirStub.restore();
-            cleanTempDirStub.restore();
+            getAndValidateTimestampSub.reset();
+            //findAndCopyRecordFileToTmpDirStub.restore();
+            //cleanTempDirStub.restore();
         })
     })
 
@@ -108,12 +124,13 @@ describe('DebugState tests', () => {
             recordFilesDirPath: string;
 
         beforeEach(() => {
+            const workDir = cliService.getCurrentArgv().workDir;
             unlinkSyncStub = testSandbox.stub(fs, <any>'unlinkSync');
             getAndValidateTimestampStub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
             findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
             readdirSyncStub = testSandbox.stub(fs, <any>'readdirSync');
-            tempDir = resolve(cliService.getCurrentArgv().workDir, RELATIVE_TMP_DIR_PATH);
-            recordFilesDirPath = resolve(cliService.getCurrentArgv().workDir, RELATIVE_RECORDS_DIR_PATH);
+            tempDir = resolve(workDir, RELATIVE_TMP_DIR_PATH);
+            recordFilesDirPath = resolve(workDir, RELATIVE_RECORDS_DIR_PATH);
             cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
         })
         
