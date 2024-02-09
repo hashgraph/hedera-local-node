@@ -20,7 +20,7 @@
 
 import { expect } from 'chai';
 import fs from 'fs';
-import Sinon, { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
+import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService';
 import { DebugState } from '../../../src/state/DebugState';
@@ -40,7 +40,8 @@ describe('DebugState tests', () => {
         loggerService: SinonStubbedInstance<LoggerService>,
         serviceLocator: SinonStub,
         shellTestBed: {[key: string]: SinonStub},
-        cliService: SinonStubbedInstance<CLIService>;
+        cliService: SinonStubbedInstance<CLIService>,
+        resolveStub: SinonStub;
 
     before(() => {
         const { 
@@ -48,7 +49,8 @@ describe('DebugState tests', () => {
             loggerServiceStub,
             serviceLocatorStub,
             shellStubs,
-            cliServiceStub
+            cliServiceStub,
+            pathStubs
         } = getTestBed({
             workDir: 'testDir',
             timestamp: '1234567890.987654321'
@@ -59,6 +61,7 @@ describe('DebugState tests', () => {
         serviceLocator = serviceLocatorStub
         shellTestBed = shellStubs
         cliService = cliServiceStub
+        resolveStub = pathStubs.resolveStub
 
         debugState = new DebugState();
     });
@@ -86,7 +89,9 @@ describe('DebugState tests', () => {
         before(() => {
             //getAndValidateTimestampStub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
             findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
+            findAndCopyRecordFileToTmpDirStub.returns({})
             cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
+            resolveStub.returns('testDir');
         })
 
         after(() => {
@@ -108,7 +113,7 @@ describe('DebugState tests', () => {
             testSandbox.assert.calledTwice(loggerService.trace)
             testSandbox.assert.calledWith(loggerService.trace, DEBUG_STATE_STARTING_MESSAGE, DebugState.name);
 
-            getAndValidateTimestampSub.reset();
+            getAndValidateTimestampSub.restore();
             //findAndCopyRecordFileToTmpDirStub.restore();
             //cleanTempDirStub.restore();
         })
@@ -167,13 +172,13 @@ describe('DebugState tests', () => {
 
         it('should test getAndValidateTimestamp', async () => {
             getAndValidateTimestampStub.restore();
-            const errorStub = testSandbox.stub(Errors, 'INVALID_TIMESTAMP_ERROR');
+            const errorSpy = testSandbox.spy(Errors, 'INVALID_TIMESTAMP_ERROR');
 
-            await debugState.onStart();
+            await (DebugState as any).getAndValidateTimestamp("1234567890.987654321");
 
-            testSandbox.assert.notCalled(errorStub);
+            testSandbox.assert.notCalled(errorSpy);
 
-            errorStub.restore();
+            errorSpy.restore();
         })
 
         it('should test getAndValidateTimestamp with wrong timestamp', async () => {

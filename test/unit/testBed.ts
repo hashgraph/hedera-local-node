@@ -19,6 +19,7 @@
  */
 import sinon from "sinon";
 import shell from 'shelljs';
+import path from 'path';
 import { LoggerService } from "../../src/services/LoggerService";
 import { CLIService } from "../../src/services/CLIService";
 import { ServiceLocator } from "../../src/services/ServiceLocator";
@@ -41,7 +42,10 @@ export interface LocalNodeTestBed {
     shellStubs: {
         shellCDStub: sinon.SinonStub;
         shellExecStub: sinon.SinonStub;
-    }
+    },
+    pathStubs: {
+        resolveStub: sinon.SinonStub;
+    };
 }
 
 let testBed: LocalNodeTestBed;
@@ -57,6 +61,7 @@ export function getTestBed(cliServiceArgs?: any) {
     const sandbox = sinon.createSandbox();
     testBed = {
         sandbox,
+        ...generatePathStubs(sandbox),
         ...generateProccessStub(sandbox),
         ...generateShellStubs(sandbox),
         ...generateLocalNodeStubs(sandbox, cliServiceArgs),
@@ -120,5 +125,14 @@ function generateShellStubs(sandbox: sinon.SinonSandbox) {
         shellStubs :{
             shellCDStub,
             shellExecStub
+    }}
+}
+
+function generatePathStubs(sandbox: sinon.SinonSandbox) {
+    const resolveStub = sandbox.stub(path, 'resolve');
+
+    return {
+        pathStubs :{
+            resolveStub,
     }}
 }
