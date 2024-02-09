@@ -40,8 +40,7 @@ describe('DebugState tests', () => {
         loggerService: SinonStubbedInstance<LoggerService>,
         serviceLocator: SinonStub,
         shellTestBed: {[key: string]: SinonStub},
-        cliService: SinonStubbedInstance<CLIService>,
-        resolveStub: SinonStub;
+        cliService: SinonStubbedInstance<CLIService>;
 
     before(() => {
         const { 
@@ -50,7 +49,6 @@ describe('DebugState tests', () => {
             serviceLocatorStub,
             shellStubs,
             cliServiceStub,
-            pathStubs
         } = getTestBed({
             workDir: 'testDir',
             timestamp: '1234567890.987654321'
@@ -61,7 +59,6 @@ describe('DebugState tests', () => {
         serviceLocator = serviceLocatorStub
         shellTestBed = shellStubs
         cliService = cliServiceStub
-        resolveStub = pathStubs.resolveStub
 
         debugState = new DebugState();
     });
@@ -91,7 +88,6 @@ describe('DebugState tests', () => {
             findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
             findAndCopyRecordFileToTmpDirStub.returns({})
             cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
-            resolveStub.returns('testDir');
         })
 
         after(() => {

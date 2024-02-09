@@ -218,6 +218,7 @@ describe('CleanUpState', () => {
 
       writeFileSyncStub.restore();
       existsSyncStub.restore();
+      joinStub.restore();
 
     });
   });
