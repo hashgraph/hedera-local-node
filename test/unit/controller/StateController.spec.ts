@@ -29,7 +29,6 @@ import { NetworkPrepState } from '../../../src/state/NetworkPrepState';
 import { AccountCreationState } from '../../../src/state/AccountCreationState';
 import { AttachState } from '../../../src/state/AttachState';
 import { CleanUpState } from '../../../src/state/CleanUpState';
-import { CLIService } from '../../../src/services/CLIService';
 import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { getTestBed } from '../testBed';
 import { STATE_CONTROLLER_MISSING_STATE_CONFIG_ERROR } from '../../../src/constants';
@@ -43,16 +42,12 @@ describe('StateController', () => {
         cleanUpStateStub: SinonStubbedInstance<CleanUpState>,
         stubbedAttachState: SinonStubbedInstance<AttachState>,
         testSandbox: SinonSandbox, 
-        loggerService: SinonStubbedInstance<LoggerService>,
-        serviceLocator: SinonStub,
-        cliService: SinonStubbedInstance<CLIService>;
+        loggerService: SinonStubbedInstance<LoggerService>;
 
     before(() => {
       const { 
         sandbox,
-        loggerServiceStub,
-        serviceLocatorStub,
-        cliServiceStub
+        loggerServiceStub
       } = getTestBed({
         workDir: 'testDir',
         async: false
@@ -66,8 +61,6 @@ describe('StateController', () => {
       stubbedAccountCreationState = testSandbox.createStubInstance(AccountCreationState);
       cleanUpStateStub = testSandbox.createStubInstance(CleanUpState);
       stubbedAttachState = testSandbox.createStubInstance(AttachState);
-      cliService = cliServiceStub;
-      serviceLocator = serviceLocatorStub;
     });
 
     after(() => {

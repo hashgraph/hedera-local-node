@@ -19,39 +19,25 @@
  */
 
 import { expect } from 'chai';
-import sinon from 'sinon';
 import { CleanUpState } from '../../../src/state/CleanUpState';
 import { LoggerService } from '../../../src/services/LoggerService';
-import { ServiceLocator } from '../../../src/services/ServiceLocator';
-import { CLIService } from '../../../src/services/CLIService';
 import { EventType } from '../../../src/types/EventType';
 import yaml from 'js-yaml';
 import fs from 'fs';
 import path from 'path';
 import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { getTestBed } from '../testBed';
-import { ClientService } from '../../../src/services/ClientService';
 
 describe('CleanUpState', () => {
   let cleanUpState: CleanUpState;
   let observerStub: SinonStub;
-  let serviceLocatorStub: SinonStub;
-  let cliServiceStub: SinonStubbedInstance<CLIService>;
   let testSandbox: SinonSandbox, 
-      loggerService: SinonStubbedInstance<LoggerService>,
-      serviceLocator: SinonStub,
-      shellTestBed: {[key: string]: SinonStub},
-      cliService: SinonStubbedInstance<CLIService>,
-      clientService: SinonStubbedInstance<ClientService>,
-      observer;
+      loggerService: SinonStubbedInstance<LoggerService>;
 
   beforeEach(() => {
     const { 
       sandbox,
       loggerServiceStub,
-      serviceLocatorStub,
-      cliServiceStub,
-      clientServiceStub
     } = getTestBed({
       workDir: 'testDir',
       async: false
@@ -60,8 +46,6 @@ describe('CleanUpState', () => {
     // Mock dependencies
     observerStub = testSandbox.stub();
     loggerService = loggerServiceStub;
-    cliService = cliServiceStub;
-    serviceLocator = serviceLocatorStub;
 
     // Create an instance of CleanUpState
     cleanUpState = new CleanUpState();

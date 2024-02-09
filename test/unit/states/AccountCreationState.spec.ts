@@ -19,7 +19,6 @@
  */
 
 import { expect } from 'chai';
-import sinon from 'sinon';
 import { AccountCreationState } from '../../../src/state/AccountCreationState';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService'
@@ -36,9 +35,7 @@ describe('AccountCreationState', () => {
       testSandbox: SinonSandbox, 
       loggerService: SinonStubbedInstance<LoggerService>,
       serviceLocator: SinonStub,
-      shellTestBed: {[key: string]: SinonStub},
       cliService: SinonStubbedInstance<CLIService>,
-      clientService: SinonStubbedInstance<ClientService>,
       observer;
 
   before(() => {
@@ -46,8 +43,7 @@ describe('AccountCreationState', () => {
       sandbox,
       loggerServiceStub,
       serviceLocatorStub,
-      cliServiceStub,
-      clientServiceStub
+      cliServiceStub
     } = getTestBed({
       workDir: 'testDir',
       async: false,
@@ -56,7 +52,6 @@ describe('AccountCreationState', () => {
 
     loggerService = loggerServiceStub;
     cliService = cliServiceStub;
-    clientService = clientServiceStub;
     serviceLocator = serviceLocatorStub;
     testSandbox = sandbox;
     observer = { update: testSandbox.stub() };

@@ -79,19 +79,16 @@ describe('DebugState tests', () => {
     })
 
     describe('onStart', () => {
-        //let getAndValidateTimestampStub: SinonStub;
         let findAndCopyRecordFileToTmpDirStub: SinonStub;
         let cleanTempDirStub: SinonStub;
 
         before(() => {
-            //getAndValidateTimestampStub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
             findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
             findAndCopyRecordFileToTmpDirStub.returns({})
             cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
         })
 
         after(() => {
-            //getAndValidateTimestampStub.restore();
             findAndCopyRecordFileToTmpDirStub.restore();
             cleanTempDirStub.restore();
         })
@@ -100,8 +97,6 @@ describe('DebugState tests', () => {
             const { shellExecStub } = shellTestBed;
             const shellCommand = 'docker exec network-node bash /opt/hgcapp/recordParser/parse.sh';
             const getAndValidateTimestampSub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
-            //const findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
-            //const cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
 
             await debugState.onStart();
             
@@ -110,8 +105,6 @@ describe('DebugState tests', () => {
             testSandbox.assert.calledWith(loggerService.trace, DEBUG_STATE_STARTING_MESSAGE, DebugState.name);
 
             getAndValidateTimestampSub.restore();
-            //findAndCopyRecordFileToTmpDirStub.restore();
-            //cleanTempDirStub.restore();
         })
     })
 
