@@ -4,7 +4,7 @@
     {"key": "HAVEGED_IMAGE_TAG", "value": "0.47.0-alpha.4"},
     {"key": "MIRROR_IMAGE_TAG", "value": "0.97.0"},
     {"key": "RELAY_IMAGE_TAG", "value": "0.40.0"},
-    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "23.9.0"}
+    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "23.11.0"}
   ],
   "nodeConfiguration": {
     "properties": [
