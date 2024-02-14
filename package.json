@@ -18,7 +18,7 @@
     "precommit": "npm run pretty",
     "prepush": "npm run lint",
     "prepublishOnly": "npm run build",
-    "test": "nyc ts-mocha ./test/**/*.spec.ts"
+    "test": "nyc ts-mocha ./test/unit/**/*.spec.ts"
   },
   "bin": {
     "hedera": "./build/index.js"

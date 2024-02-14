@@ -48,7 +48,7 @@ describe('DebugState tests', () => {
             loggerServiceStub,
             serviceLocatorStub,
             shellStubs,
-            cliServiceStub
+            cliServiceStub,
         } = getTestBed({
             workDir: 'testDir',
             timestamp: '1234567890.987654321'
@@ -63,7 +63,7 @@ describe('DebugState tests', () => {
         debugState = new DebugState();
     });
 
-    afterEach(() => {
+    after(() => {
         testSandbox.resetHistory();
     });
 
@@ -79,22 +79,32 @@ describe('DebugState tests', () => {
     })
 
     describe('onStart', () => {
+        let findAndCopyRecordFileToTmpDirStub: SinonStub;
+        let cleanTempDirStub: SinonStub;
+
+        before(() => {
+            findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
+            findAndCopyRecordFileToTmpDirStub.returns({})
+            cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
+        })
+
+        after(() => {
+            findAndCopyRecordFileToTmpDirStub.restore();
+            cleanTempDirStub.restore();
+        })
+
         it('should execute onStart properly', async () => {
             const { shellExecStub } = shellTestBed;
             const shellCommand = 'docker exec network-node bash /opt/hgcapp/recordParser/parse.sh';
             const getAndValidateTimestampSub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
-            const findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
-            const cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
 
             await debugState.onStart();
             
             testSandbox.assert.calledWith(shellExecStub, shellCommand);
-            testSandbox.assert.calledOnce(loggerService.trace)
+            testSandbox.assert.calledTwice(loggerService.trace)
             testSandbox.assert.calledWith(loggerService.trace, DEBUG_STATE_STARTING_MESSAGE, DebugState.name);
 
             getAndValidateTimestampSub.restore();
-            findAndCopyRecordFileToTmpDirStub.restore();
-            cleanTempDirStub.restore();
         })
     })
 
@@ -108,12 +118,13 @@ describe('DebugState tests', () => {
             recordFilesDirPath: string;
 
         beforeEach(() => {
+            const workDir = cliService.getCurrentArgv().workDir;
             unlinkSyncStub = testSandbox.stub(fs, <any>'unlinkSync');
             getAndValidateTimestampStub = testSandbox.stub(DebugState, <any>'getAndValidateTimestamp');
             findAndCopyRecordFileToTmpDirStub = testSandbox.stub(DebugState.prototype, <any>'findAndCopyRecordFileToTmpDir');
             readdirSyncStub = testSandbox.stub(fs, <any>'readdirSync');
-            tempDir = resolve(cliService.getCurrentArgv().workDir, RELATIVE_TMP_DIR_PATH);
-            recordFilesDirPath = resolve(cliService.getCurrentArgv().workDir, RELATIVE_RECORDS_DIR_PATH);
+            tempDir = resolve(workDir, RELATIVE_TMP_DIR_PATH);
+            recordFilesDirPath = resolve(workDir, RELATIVE_RECORDS_DIR_PATH);
             cleanTempDirStub = testSandbox.stub(DebugState, <any>'cleanTempDir');
         })
         
@@ -150,13 +161,13 @@ describe('DebugState tests', () => {
 
         it('should test getAndValidateTimestamp', async () => {
             getAndValidateTimestampStub.restore();
-            const errorStub = testSandbox.stub(Errors, 'INVALID_TIMESTAMP_ERROR');
+            const errorSpy = testSandbox.spy(Errors, 'INVALID_TIMESTAMP_ERROR');
 
-            await debugState.onStart();
+            await (DebugState as any).getAndValidateTimestamp("1234567890.987654321");
 
-            testSandbox.assert.notCalled(errorStub);
+            testSandbox.assert.notCalled(errorSpy);
 
-            errorStub.restore();
+            errorSpy.restore();
         })
 
         it('should test getAndValidateTimestamp with wrong timestamp', async () => {

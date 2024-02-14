@@ -49,6 +49,12 @@ let testBed: LocalNodeTestBed;
 export function getTestBed(cliServiceArgs?: any) {
     if (testBed) {
         resetTestBedHistory(testBed)
+        if (cliServiceArgs) {
+            testBed.cliServiceStub.getCurrentArgv.returns({
+                ...cliServiceArgs
+            })
+        }
+        
         return {
             ...testBed
         };
