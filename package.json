@@ -71,5 +71,15 @@
     "shelljs": "^0.8.5",
     "ts-mocha": "^9.0.0",
     "yargs": "^17.7.2"
+  },
+  "nyc": {
+    "check-coverage": false,
+    "reporter": [
+      "html",
+      "lcov",
+      "text",
+      "text-summary"
+  ],
+  "report-dir": "coverage"
   }
 }

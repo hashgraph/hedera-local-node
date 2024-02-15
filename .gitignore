@@ -159,3 +159,6 @@ network-logs/minio-server/data/**
 
 ### nyc cache
 .nyc_output
+
+### Codecov coverage report files directory
+coverage
