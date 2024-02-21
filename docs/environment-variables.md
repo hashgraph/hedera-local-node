@@ -81,6 +81,7 @@ JAVA settings for the Consensus node
 - `RELAY_RATE_LIMIT_DISABLED`: If set to `true` the relay will not perform any rate limiting.
 - `RELAY_INPUT_SIZE_LIMIT`: The function input size limit in mb. Defaults to 1.
 - `DEV_MODE`: Allows the asserting of contract call revert messages
+- `MIRROR_NODE_GET_CONTRACT_RESULTS_RETRIES`: Number of retries for `contracts/results/` endpoint. Defaults to 20
 
 ### JSON RPC Relay Websocket settings
 
