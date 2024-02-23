@@ -22,7 +22,8 @@
     {"key": "RELAY_WS_CONNECTION_LIMIT", "value": 100},
     {"key": "RELAY_WS_MAX_INACTIVITY_TTL", "value": 300000},
     {"key": "RELAY_WS_MULTIPLE_ADDRESSES_ENABLED", "value": false},
-    {"key": "RELAY_WS_SUBSCRIPTION_LIMIT", "value": 100}
+    {"key": "RELAY_WS_SUBSCRIPTION_LIMIT", "value": 100},
+    {"key": "RELAY_MIRROR_NODE_GET_CONTRACT_RESULTS_RETRIES", "value": "20"}
 ],
   "nodeConfiguration": {
     "properties": [
