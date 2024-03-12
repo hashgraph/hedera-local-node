@@ -1,0 +1,27 @@
+tasks:
+  - name: Run Hedera Local Node
+    init: >
+        sudo apt-get update &&
+        sudo apt-get install npm -y &&
+        npm install &&
+        npm run build &&
+        sudo npm install -g
+    command: hedera start -d
+
+ports:
+  - name: Consensus Node Endpoint
+    port: 50211
+  - name: Mirror Node GRPC Endpoint
+    port: 5600
+  - name: Mirror Node REST API Endpoint
+    port: 5551
+  - name: JSON RPC Relay Endpoint
+    port: 7546
+  - name: JSON RPC Relay Websocket Endpoint
+    port: 8546
+  - name: Mirror Node Explorer
+    port: 8080
+  - name: Grafana UI
+    port: 3000
+  - name: Prometheus UI
+    port: 9090
