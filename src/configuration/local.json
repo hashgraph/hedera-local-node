@@ -4,7 +4,7 @@
     {"key": "HAVEGED_IMAGE_TAG", "value": "0.47.1"},
     {"key": "MIRROR_IMAGE_TAG", "value": "0.99.0-rc2"},
     {"key": "RELAY_IMAGE_TAG", "value": "0.42.0"},
-    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "23.11.0"}
+    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "24.3.0"}
   ],
   "envConfiguration": [
     {"key": "RELAY_FEE_HISTORY_MAX_RESULTS", "value": "10"},
