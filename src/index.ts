@@ -71,9 +71,7 @@ yargs(hideBin(process.argv))
         },
         async () => await new StateController("debug").startStateMachine()
     )
-    .middleware(function (argv) {
-        Bootstrapper.Initiailze(argv);
-    })
+    .middleware(Bootstrapper.initialize)
     .demandCommand()
     .strictCommands()
     .recommendCommands()

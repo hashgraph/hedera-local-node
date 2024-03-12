@@ -31,11 +31,10 @@ import { ServiceLocator } from './ServiceLocator';
  */
 export class Bootstrapper {
     /**
-     * Initialize the application.
+     * Initializes all the services and registers them in the service locator.
      * @param {yargs.ArgumentsCamelCase<{}>} argv - The command line arguments.
-     * @returns {Promise<void>} A promise that resolves when the initialization is complete.
      */
-    public static async Initiailze(argv: yargs.ArgumentsCamelCase<{}>): Promise<void> {
+    public static initialize(argv: yargs.ArgumentsCamelCase<{}>): void {
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string)
         ServiceLocator.Current.register(new LoggerService(verbose));
         ServiceLocator.Current.register(new CLIService(argv));
