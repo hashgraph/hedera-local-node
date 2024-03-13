@@ -19,22 +19,22 @@
  */
 
 import { expect } from 'chai';
-import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
+import { resolve } from 'path';
 import { ShellString } from 'shelljs';
-import { LoggerService } from '../../../src/services/LoggerService';
-import { StartState } from '../../../src/state/StartState';
-import { getTestBed } from '../testBed';
+import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
+import { LocalNodeErrors } from '../../../src/Errors/LocalNodeErrors';
 import {
     START_STATE_INIT_MESSAGE,
     START_STATE_STARTED_DETECTING,
     START_STATE_STARTED_MESSAGE,
     START_STATE_STARTING_MESSAGE
 } from '../../../src/constants';
-import { resolve } from 'path';
-import { DockerService } from '../../../src/services/DockerService';
-import { EventType } from '../../../src/types/EventType';
 import { ConnectionService } from '../../../src/services/ConnectionService';
-import { LocalNodeErrors } from '../../../src/Errors/LocalNodeErrors';
+import { DockerService } from '../../../src/services/DockerService';
+import { LoggerService } from '../../../src/services/LoggerService';
+import { StartState } from '../../../src/state/StartState';
+import { EventType } from '../../../src/types/EventType';
+import { getTestBed } from '../testBed';
 
 describe('StartState tests', () => {
     let startState: StartState,
@@ -117,6 +117,8 @@ describe('StartState tests', () => {
 
         testSandbox.assert.calledOnce(processTestBed.processCWDStub);
         testSandbox.assert.calledWith(observerSpy, EventType.Finish);
+
+        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and send DockerError event (when dockerComposeUp status code eq 1)', async () => {
@@ -128,6 +130,8 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.callCount, 2);
         testSandbox.assert.match(observerSpy.args[0], EventType.DockerError);
         testSandbox.assert.match(observerSpy.args[1], EventType.Finish);
+
+        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
@@ -140,6 +144,8 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.callCount, 1);
         testSandbox.assert.match(observerSpy.args[0], EventType.UnknownError);
         testSandbox.assert.calledWith(loggerService.error, 'message', StartState.name);
+
+        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and handle connectionService error (generic error)', async () => {
@@ -152,5 +158,7 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.callCount, 1);
         testSandbox.assert.match(observerSpy.args[0], EventType.UnknownError);
         testSandbox.assert.notCalled(loggerService.error);
+
+        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 });
