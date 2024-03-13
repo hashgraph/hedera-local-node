@@ -159,6 +159,19 @@ export class LoggerService implements IService{
     }
 
     /**
+     * Get the log board based on the given module (service class name).
+     * @param module - The module where the message originates.
+     * @returns The {@link LogBoard} where the message should be printed.
+     */
+    private static getLogLocation(module: string): LogBoard {
+        if (module === AccountCreationState.name) {
+            return LogBoard.ACCOUNT;
+        } else {
+            return LogBoard.CONSENSUS;
+        }
+    }
+
+    /**
      * Builds the message to log.
      * @param msg - The message to log.
      * @param module - The module where the message originates.
@@ -273,17 +286,8 @@ export class LoggerService implements IService{
         if (detached) {
             this.logger.log(msg);
         } else {
-            const logBoard = this.getLogLocation(module);
+            const logBoard = LoggerService.getLogLocation(module);
             this.logToTUI(msg, logBoard);
-        }
-    }
-
-    private getLogLocation(module: string): LogBoard {
-        switch (module) {
-            case AccountCreationState.name:
-                return LogBoard.ACCOUNT;
-            default:
-                return LogBoard.CONSENSUS;
         }
     }
 
@@ -313,16 +317,16 @@ export class LoggerService implements IService{
 
         switch (logBoard) {
             case LogBoard.ACCOUNT:
-                this.accountBoard!.log(msg);
+                this.accountBoard?.log(msg);
                 break;
             case LogBoard.RELAY:
-                this.relayLog!.log(msg);
+                this.relayLog?.log(msg);
                 break;
             case LogBoard.MIRROR:
-                this.mirrorLog!.log(msg);
+                this.mirrorLog?.log(msg);
                 break;
             case LogBoard.CONSENSUS:
-                this.consensusLog!.log(msg);
+                this.consensusLog?.log(msg);
                 break;
         }
     }
