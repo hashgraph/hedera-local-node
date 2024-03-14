@@ -21,10 +21,8 @@
 import { expect } from 'chai';
 import fs from 'fs';
 import yaml from 'js-yaml';
+import { join } from 'path';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
-import { LoggerService } from '../../../src/services/LoggerService';
-import { InitState } from '../../../src/state/InitState';
-import { getTestBed } from '../testBed';
 import {
     APPLICATION_YML_RELATIVE_PATH,
     INIT_STATE_BOOTSTRAPPED_PROP_SET,
@@ -41,12 +39,14 @@ import {
     OPTIONAL_PORTS,
     RECORD_PARSER_SOURCE_REL_PATH,
 } from '../../../src/constants';
-import { DockerService } from '../../../src/services/DockerService';
-import { EventType } from '../../../src/types/EventType';
-import { CLIService } from '../../../src/services/CLIService';
 import { ConfigurationData } from '../../../src/data/ConfigurationData';
+import { CLIService } from '../../../src/services/CLIService';
+import { DockerService } from '../../../src/services/DockerService';
+import { LoggerService } from '../../../src/services/LoggerService';
+import { InitState } from '../../../src/state/InitState';
+import { EventType } from '../../../src/types/EventType';
 import { FileSystemUtils } from '../../../src/utils/FileSystemUtils';
-import { join } from 'path';
+import { getTestBed } from '../testBed';
 
 describe('InitState tests', () => {
     let initState: InitState,
@@ -159,6 +159,8 @@ describe('InitState tests', () => {
         testSandbox.assert.calledOnce(configureEnvVariablesStub);
         testSandbox.assert.calledOnce(configureNodePropertiesStub);
         testSandbox.assert.calledOnce(configureMirrorNodePropertiesStub);
+
+        testSandbox.assert.notCalled(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and finish with UnresolvableError on docker checks (Compose Version, Docker Running, Resources)', async () => {
@@ -176,6 +178,7 @@ describe('InitState tests', () => {
         testSandbox.assert.calledWith(observerSpy, EventType.UnresolvableError);
         
         testSandbox.assert.notCalled(dockerService.isPortInUse);
+        testSandbox.assert.notCalled(loggerService.initializeTerminalUI);
     })
 
     describe('private functions', () => {

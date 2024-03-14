@@ -19,19 +19,17 @@
  */
 
 import shell from 'shelljs';
-import path from 'path';
-import fs from 'fs';
+import { LocalNodeErrors } from '../Errors/LocalNodeErrors';
+import { START_STATE_INIT_MESSAGE, START_STATE_STARTED_DETECTING, START_STATE_STARTED_MESSAGE, START_STATE_STARTING_MESSAGE } from '../constants';
 import { IOBserver } from '../controller/IObserver';
 import { CLIService } from '../services/CLIService';
+import { ConnectionService } from '../services/ConnectionService';
+import { DockerService } from '../services/DockerService';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { CLIOptions } from '../types/CLIOptions';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
-import { ConnectionService } from '../services/ConnectionService';
-import { LocalNodeErrors } from '../Errors/LocalNodeErrors';
-import { DockerService } from '../services/DockerService';
-import { START_STATE_INIT_MESSAGE, START_STATE_STARTED_DETECTING, START_STATE_STARTED_MESSAGE, START_STATE_STARTING_MESSAGE } from '../constants';
 
 export class StartState implements IState{
     /**
@@ -96,6 +94,7 @@ export class StartState implements IState{
      */
     public async onStart(): Promise<void> {
         this.logger.info(START_STATE_STARTING_MESSAGE, this.stateName);
+        this.logger.initializeTerminalUI();
 
         const rootPath = process.cwd();
 

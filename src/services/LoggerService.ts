@@ -18,27 +18,36 @@
  *
  */
 
-import { Widgets, screen, log } from 'blessed';
+import { Widgets, log, screen } from 'blessed';
 import terminal from 'blessed-terminal';
-import { IService } from './IService';
-import { ServiceLocator } from './ServiceLocator';
-import { CLIService } from './CLIService';
 import {
+    COLOR_DIM,
+    COLOR_RESET,
     CONSENSUS_NODE_LABEL,
     CONTAINERS,
     DEBUG_COLOR,
     ERROR_COLOR,
     INFO_COLOR,
     MIRROR_NODE_LABEL,
-    COLOR_RESET,
     RELAY_LABEL,
     TRACE_COLOR,
-    WARNING_COLOR,
-    COLOR_DIM
+    WARNING_COLOR
 } from '../constants';
+import { AccountCreationState } from '../state/AccountCreationState';
+import { VerboseLevel } from '../types/VerboseLevel';
+import { CLIService } from './CLIService';
 import { ConnectionService } from './ConnectionService';
 import { DockerService } from './DockerService';
-import { VerboseLevel } from '../types/VerboseLevel';
+import { IService } from './IService';
+import { ServiceLocator } from './ServiceLocator';
+
+
+export enum LogBoard {
+    CONSENSUS = 'CONSENSUS',
+    MIRROR = 'MIRROR',
+    RELAY = 'RELAY',
+    ACCOUNT = 'ACCOUNT'
+}
 
 /**
  * LoggerService is a service class that handles logging.
@@ -150,6 +159,19 @@ export class LoggerService implements IService{
     }
 
     /**
+     * Get the log board based on the given module (service class name).
+     * @param module - The module where the message originates.
+     * @returns The {@link LogBoard} where the message should be printed.
+     */
+    private static getLogLocation(module: string): LogBoard {
+        if (module === AccountCreationState.name) {
+            return LogBoard.ACCOUNT;
+        } else {
+            return LogBoard.CONSENSUS;
+        }
+    }
+
+    /**
      * Builds the message to log.
      * @param msg - The message to log.
      * @param module - The module where the message originates.
@@ -232,18 +254,6 @@ export class LoggerService implements IService{
     }
 
     /**
-     * Logs an empty line.
-     */
-    public emptyLine(): void {
-        const detached = this.getLogMode();
-        if (detached) {
-            this.logger.log('');
-        } else {
-            this.logToTUI('', '');
-        }
-    }
-
-    /**
      * Attaches a terminal user interface to the logger.
      * @param msg - The message to log.
      * @param containerLabel - The container label.
@@ -272,19 +282,19 @@ export class LoggerService implements IService{
      * @param module - The module where the message originates.
      */
     private writeToLog(msg: string, module: string): void {
-        const detached = this.getLogMode();
+        const detached = this.isDetachedMode();
         if (detached) {
             this.logger.log(msg);
         } else {
-            this.logToTUI(msg, module);
+            const logBoard = LoggerService.getLogLocation(module);
+            this.logToTUI(msg, logBoard);
         }
     }
 
     /**
-     * Returns the log mode.
      * @returns {boolean} True if the log mode is detached, false otherwise.
      */
-    private getLogMode(): boolean {
+    private isDetachedMode(): boolean {
         let isDetached = true;
         try {
             isDetached = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv().detached;
@@ -297,29 +307,26 @@ export class LoggerService implements IService{
     /**
      * Logs a message to the terminal user interface.
      * @param msg - The message to log.
-     * @param module - The module where the message originates.
+     * @param logBoard - The log board where the message should be printed.
      */
-    private logToTUI(msg: string, module: string): void {
-        if (this.screen === undefined) {
-            this.initiliazeTerminalUI();
+    private logToTUI(msg: string, logBoard: LogBoard): void {
+        if (!this.isTerminalUIInitialized()) {
+            this.logger.log(msg);
+            return;
         }
-        const consensusLog = this.consensusLog as terminal.Widgets.LogElement;
-        const accountBoard = this.accountBoard as terminal.Widgets.LogElement;
-        switch (module) {
-            case "InitState":
-                consensusLog.log(msg);
+
+        switch (logBoard) {
+            case LogBoard.ACCOUNT:
+                this.accountBoard?.log(msg);
                 break;
-            case "NetworkPrepState":
-                consensusLog.log(msg);
+            case LogBoard.RELAY:
+                this.relayLog?.log(msg);
                 break;
-            case "StartState":
-                consensusLog.log(msg);
+            case LogBoard.MIRROR:
+                this.mirrorLog?.log(msg);
                 break;
-            case "AccountCreationState":
-                accountBoard.log(msg);
-                break;
-            default:
-                consensusLog.log(msg);
+            case LogBoard.CONSENSUS:
+                this.consensusLog?.log(msg);
                 break;
         }
     }
@@ -327,7 +334,11 @@ export class LoggerService implements IService{
     /**
      * Initializes the terminal user interface.
      */
-    private initiliazeTerminalUI(): void {
+    public initializeTerminalUI(): void {
+        if (this.isDetachedMode() || this.isTerminalUIInitialized()) {
+            return;
+        }
+        
         const window: Widgets.Screen = screen({
             smartCSR: true,
         });
@@ -385,6 +396,13 @@ export class LoggerService implements IService{
         this.mirrorLog = mirrorLog;
         this.relayLog = relayLog;
         this.accountBoard = accountBoard;
+    }
+
+    /**
+     * @returns true if the terminal user interface is initialized.
+     */
+    private isTerminalUIInitialized(): boolean {
+        return !!this.screen;
     }
 
     /**
