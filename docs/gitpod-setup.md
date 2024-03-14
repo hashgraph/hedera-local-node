@@ -1,16 +1,22 @@
 
-# Gitpod setup instructions 
+# Gitpod Setup Instructions
 
----
-**NOTE**
+Gitpod provides Cloud Development Environments (CDEs),
+and allows developer to work from any device without the need to maintain
+static and brittle local development environments.
 
-Please review first the [Getting started](https://www.gitpod.io/docs/introduction/getting-started) guide.
+These instructions walk you through how to run `hedera-local-node`
+via Gitpod.
 
-In order Mirror Node Web Explorer to work, please use [Desktop Editor](https://www.gitpod.io/docs/references/ides-and-editors/vscode)
+## Before You Start
 
----
-
-Gitpod is an open source development platform for teams to efficiently and securely develop software together. Born in the cloud, Gitpod’s Cloud Development Environments (CDEs) help developers to be always ready-to-code from any device, from anywhere. It brings developers back to flow and removes the manual setup and maintenance of static and brittle local development environments.
+- Ensure that you have a Github account,
+  and you are signed into in in your browser.
+- If this is your first time using Gitpod, please follow their
+  [getting started](https://www.gitpod.io/docs/introduction/getting-started) guide.
+- The Mirror Node Web Explorer requires
+  [VS Code Desktop](https://www.gitpod.io/docs/references/ides-and-editors/vscode)
+  to be installed.
 
 ## Getting Started
 
@@ -55,7 +61,7 @@ They will be redirect automatically on the localhost of your computer if you are
 ### Config file
 `.gitpod.yml` is the configuration file for Gitpod [.gitpod.yml](https://www.gitpod.io/docs/references/gitpod-yml)
 
-## Referenced Documents  
+## Referenced Documents
 
 * [Getting started](https://www.gitpod.io/docs/introduction/getting-started)
 * [Learn Gitpod](https://www.gitpod.io/docs/introduction/learn-gitpod)
