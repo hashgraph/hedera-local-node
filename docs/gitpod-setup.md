@@ -1,4 +1,3 @@
-
 # Gitpod Setup Instructions
 
 Gitpod provides Cloud Development Environments (CDEs),
@@ -16,7 +15,8 @@ via Gitpod.
   [Gitpod getting started](https://www.gitpod.io/docs/introduction/getting-started) guide.
 - The Mirror Node Web Explorer requires
   [VS Code Desktop](https://www.gitpod.io/docs/references/ides-and-editors/vscode)
-  to be installed.
+  to be installed, as [VS Code Browser](https://www.gitpod.io/docs/references/ides-and-editors/vscode-browser)
+  has limitations related to communicating with local ports, e.g. `http://127.0.0.1:5551/`.
 
 ## Getting Started
 
@@ -35,9 +35,9 @@ Gitpod has both free and paid plans:
 Enable `public_repo` permission for Github provider:
 [Gitpod Git Providers](https://gitpod.io/user/integrations)
 
-![GitPod Git Providers Table](gitpod-git-providers-table.png)
+![GitPod Git Providers Table](img/gitpod-git-providers-table.png)
 
-![GitPod Git Providers Edit Permissions Dialog](gitpod-git-providers-edit-permissions-dialog.png)
+![GitPod Git Providers Edit Permissions Dialog](img/gitpod-git-providers-edit-permissions-dialog.png)
 
 ### Install Browser extension
 
@@ -58,11 +58,11 @@ which makes it easy to run it within a workspace on Gitpod.
 
 ### Open via Gitpod
 
-Open the [Hedela Local Node repo](https://github.com/hashgraph/hedera-local-node).
+Open the [Hedera Local Node repo](https://github.com/hashgraph/hedera-local-node).
 
 Click on the Gitpod `Open` button.
 
-![Github Repo with Gitpod Open button](gitpod-button-github-repo.png)
+![Github Repo with Gitpod Open button](img/gitpod-button-github-repo.png)
 
 The Gitpod browser extension modifies the Github UI to add this button.
 
@@ -73,7 +73,7 @@ from your IDE (e.g. within VS Code Desktop).
 
 ### Services
 
-Various services are run wtihin `hedera-local-node`.
+Various services are run within `hedera-local-node`.
 These are the endpoints for each service:
 
 | Type                              | Endpoint                                         |
@@ -103,7 +103,7 @@ curl "http://localhost:5551/api/v1/accounts" \
 ```
 
 See the [Mirror Node interact API docs](https://testnet.mirrornode.hedera.com/api/v1/docs/)
-for a full list of avalable APIs.
+for a full list of available APIs.
 
 #### JSON RPC Relay
 
@@ -123,7 +123,7 @@ in `hedera-json-rpc-relay` for a full list of available RPCs.
 
 Simply visit the URL in your browser.
 
-Esnure that `LOCALNET` is seelcted, as this will show you
+Ensure that `LOCALNET` is selected, as this will show you
 the Hedera network running within your Gitpod,
 and not one of the public nodes.
 
@@ -133,7 +133,7 @@ Note that Gitpod usage is billed by the hour on paid plans,
 and hours are limited on the free plans.
 Therefore, once completed, do remember to stop the Gitpod workspace.
 
-![Gitpod Stop Workspace](gitpod-stop-workspace.png)
+![Gitpod Stop Workspace](img/gitpod-stop-workspace.png)
 
 ## Config file
 
