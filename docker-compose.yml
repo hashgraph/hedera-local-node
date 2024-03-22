@@ -286,10 +286,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./networks-config.json:/app/networks-config.json #workaround to https://github.com/hashgraph/hedera-mirror-node-explorer/issues/933
-    # environment:
-    #   DOCKER_LOCAL_MIRROR_NODE_MENU_NAME: ${DOCKER_LOCAL_MIRROR_NODE_MENU_NAME}
-    #   DOCKER_LOCAL_MIRROR_NODE_URL: ${DOCKER_LOCAL_MIRROR_NODE_URL}
+      - ./networks-config.json:/app/networks-config.json
 
   web3:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_IMAGE_TAG}"
