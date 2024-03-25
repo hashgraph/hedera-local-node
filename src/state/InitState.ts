@@ -231,25 +231,28 @@ export class InitState implements IState{
      * @param {Array<Configuration> | undefined} nodeConfiguration - The node configuration.
      */
     private configureNodeProperties(nodeConfiguration: Array<Configuration> | undefined): void {
-        const propertiesFilePath = join(this.cliOptions.workDir, NETWORK_NODE_CONFIG_DIR_PATH, 'bootstrap.properties');
+        const propertiesFiles = ['bootstrap.properties', 'application.properties']
+        for (let index = 0; index < propertiesFiles.length; index++) {
+            const propertiesFilePath = join(this.cliOptions.workDir, NETWORK_NODE_CONFIG_DIR_PATH, propertiesFiles[index]);
 
-        let newProperties = '';
-        originalNodeConfiguration.bootsrapProperties.forEach(property => {
-            newProperties = newProperties.concat(`${property.key}=${property.value}\n`);
-        });
+            let newProperties = '';
+            originalNodeConfiguration.bootsrapProperties.forEach(property => {
+                newProperties = newProperties.concat(`${property.key}=${property.value}\n`);
+            });
 
-        if (!nodeConfiguration) {
-            this.logger.trace(INIT_STATE_NO_NODE_CONF_NEEDED, this.stateName);
-            return;
+            if (!nodeConfiguration) {
+                this.logger.trace(INIT_STATE_NO_NODE_CONF_NEEDED, this.stateName);
+                return;
+            }
+            nodeConfiguration!.forEach(property => {
+                newProperties = newProperties.concat(`${property.key}=${property.value}\n`);
+                this.logger.trace(`Bootstrap property ${property.key} will be set to ${property.value}.`, this.stateName);
+            });
+
+            writeFileSync(propertiesFilePath, newProperties, { flag: 'w' });
+
+            this.logger.info(INIT_STATE_BOOTSTRAPPED_PROP_SET, this.stateName);
         }
-        nodeConfiguration!.forEach(property => {
-            newProperties = newProperties.concat(`${property.key}=${property.value}\n`);
-            this.logger.trace(`Bootstrap property ${property.key} will be set to ${property.value}.`, this.stateName);
-        });
-
-        writeFileSync(propertiesFilePath, newProperties, { flag: 'w' });
-
-        this.logger.info(INIT_STATE_BOOTSTRAPPED_PROP_SET, this.stateName);
     }
 
     /**
