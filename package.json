@@ -1,6 +1,6 @@
 {
   "name": "@hashgraph/hedera-local",
-  "version": "2.19.1",
+  "version": "2.19.2",
   "description": "Developer tooling for running Local Hedera Network (Consensus + Mirror Nodes).",
   "main": "index.ts",
   "scripts": {
@@ -57,13 +57,13 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@hashgraph/sdk": "^2.41.0",
+    "@hashgraph/sdk": "^2.43.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "csv-parser": "^3.0.0",
     "detect-port": "^1.5.1",
     "dockerode": "^4.0.2",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "ethers": "^6.11.1",
     "js-yaml": "^4.1.0",
     "rimraf": "^5.0.5",
