@@ -1,0 +1,54 @@
+[
+    {
+      "name": "mainnet",
+      "displayName": "MAINNET",
+      "url": "https://mainnet-public.mirrornode.hedera.com/",
+      "ledgerID": "00",
+      "sourcifySetup": {
+        "activate": true,
+        "repoURL": "https://repository.local/contracts/",
+        "serverURL": "https://localhost/server/",
+        "verifierURL": "https://localhost/#/",
+        "chainID": 295
+      }
+    },
+    {
+      "name": "testnet",
+      "displayName": "TESTNET",
+      "url": "https://testnet.mirrornode.hedera.com/",
+      "ledgerID": "01",
+      "sourcifySetup": {
+        "activate": true,
+        "repoURL": "https://repository.local/contracts/",
+        "serverURL": "https://localhost/server/",
+        "verifierURL": "https://localhost/#/",
+        "chainID": 296
+      }
+    },
+    {
+      "name": "previewnet",
+      "displayName": "PREVIEWNET",
+      "url": "https://previewnet.mirrornode.hedera.com/",
+      "ledgerID": "02",
+      "sourcifySetup": {
+        "activate": true,
+        "repoURL": "https://repository.local/contracts/",
+        "serverURL": "https://localhost/server/",
+        "verifierURL": "https://localhost/#/",
+        "chainID": 297
+      }
+    },
+    {
+        "name": "local",
+        "displayName": "LOCALNET",
+        "url": "http://localhost:5551/",
+        "ledgerID": "03",
+        "sourcifySetup": {
+          "activate": true,
+          "repoURL": "http://localhost:10000/",
+          "serverURL": "http://localhost:5002/",
+          "verifierURL": "http://localhost:1234/#/",
+          "chainID": 298
+        }
+      }
+  ]
