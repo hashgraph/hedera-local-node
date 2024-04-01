@@ -3,7 +3,7 @@
     {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.47.3"},
     {"key": "HAVEGED_IMAGE_TAG", "value": "0.47.3"},
     {"key": "MIRROR_IMAGE_TAG", "value": "0.100.0"},
-    {"key": "RELAY_IMAGE_TAG", "value": "0.44.1"},
+    {"key": "RELAY_IMAGE_TAG", "value": "0.44.2"},
     {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "24.3.0"}
   ],
   "nodeConfiguration": {
