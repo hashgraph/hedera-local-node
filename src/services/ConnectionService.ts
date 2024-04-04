@@ -93,12 +93,8 @@ export class ConnectionService implements IService{
               isReady = true;
             })
             .on('error', (err: any) => {
-              this.logger.trace(
-                `Waiting for the containers at ${host}:${port}, retrying in 0.1 seconds...`,
-                this.serviceName
-              );
               if (err.code === 'ECONNREFUSED') {
-                  this.debouncedErrorLog(`${serviceName} not yet available at port: ${port}. Retrying...`);
+                  this.debouncedErrorLog(`${serviceName} not yet available at: ${host}:${port}. Retrying...`);
               }
               else {
                   this.logger.error(err.message, this.serviceName);
