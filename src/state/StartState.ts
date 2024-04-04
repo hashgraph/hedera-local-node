@@ -110,8 +110,8 @@ export class StartState implements IState{
         this.logger.info(START_STATE_STARTED_DETECTING, this.stateName);
 
         try {
-            await this.connectionService.waitForFiringUp(5600);
-            await this.connectionService.waitForFiringUp(50211);
+            await this.connectionService.waitForFiringUp(5600, 'Mirror Node GRPC');
+            await this.connectionService.waitForFiringUp(50211, 'Network Node');
         } catch (e: any) {
             if (e instanceof LocalNodeErrors) {
                 this.logger.error(e.message, this.stateName);
