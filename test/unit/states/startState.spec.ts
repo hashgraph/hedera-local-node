@@ -135,7 +135,7 @@ describe('StartState tests', () => {
     })
 
     it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
-        // connectionService.waitForFiringUp.throws(new LocalNodeErrors('test error', 'message'));
+        connectionService.waitForFiringUp.throws(new LocalNodeErrors('test error', 'message'));
         dockerService.dockerComposeUp.resolves({code: 0} as ShellString);
 
         await startState.onStart();
@@ -149,7 +149,7 @@ describe('StartState tests', () => {
     })
 
     it('should execute onStart and handle connectionService error (generic error)', async () => {
-        // connectionService.waitForFiringUp.throws(new Error('test error'));
+        connectionService.waitForFiringUp.throws(new Error('test error'));
         dockerService.dockerComposeUp.resolves({code: 0} as ShellString);
 
         await startState.onStart();
