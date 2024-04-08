@@ -223,6 +223,7 @@ export class DockerService implements IService{
               this.handleMemoryError(dockerMemory, isMultiNodeMode);
           } else {
               this.logger.warn(`Your docker memory resources are ${dockerMemory.toFixed(2)}GB, which may cause unstable behaviour. Set to at least ${isMultiNodeMode ? MIN_MEMORY_MULTI_MODE : RECOMMENDED_MEMORY_SINGLE_MODE}GB`, this.serviceName);
+              return true;
           }
           return false;
         }
