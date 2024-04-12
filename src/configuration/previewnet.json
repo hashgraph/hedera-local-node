@@ -1,9 +1,9 @@
 {
   "imageTagConfiguration": [
-    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.48.0-alpha.3"},
-    {"key": "HAVEGED_IMAGE_TAG", "value": "0.48.0-alpha.3"},
-    {"key": "MIRROR_IMAGE_TAG", "value": "0.101.0-rc3"},
-    {"key": "RELAY_IMAGE_TAG", "value": "0.44.2"},
+    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.49.0-alpha.3"},
+    {"key": "HAVEGED_IMAGE_TAG", "value": "0.49.0-alpha.3"},
+    {"key": "MIRROR_IMAGE_TAG", "value": "0.102.0"},
+    {"key": "RELAY_IMAGE_TAG", "value": "0.45.0"},
     {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "24.3.0"}
   ],
   "nodeConfiguration": {
