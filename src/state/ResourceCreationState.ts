@@ -31,15 +31,15 @@ import {
     TokenSupplyType,
     TokenType,
     TransferTransaction
-} from "@hashgraph/sdk";
-import { IOBserver } from "../controller/IObserver";
-import { LoggerService } from "../services/LoggerService";
-import { ServiceLocator } from "../services/ServiceLocator";
-import { IState } from "./IState";
-import { CLIService } from "../services/CLIService";
-import { ClientService } from "../services/ClientService";
-import { accounts, tokens } from "../configuration/initialResources.json";
-import { EventType } from "../types/EventType";
+} from '@hashgraph/sdk';
+import { IOBserver } from '../controller/IObserver';
+import { LoggerService } from '../services/LoggerService';
+import { ServiceLocator } from '../services/ServiceLocator';
+import { IState } from './IState';
+import { CLIService } from '../services/CLIService';
+import { ClientService } from '../services/ClientService';
+import { accounts, tokens } from '../configuration/initialResources.json';
+import { EventType } from '../types/EventType';
 
 export interface AccountProps {
     privateKeyAliasECDSA: string;

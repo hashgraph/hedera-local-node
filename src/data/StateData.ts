@@ -18,16 +18,16 @@
  *
  */
 
-import { AccountCreationState } from "../state/AccountCreationState";
-import { CleanUpState } from "../state/CleanUpState";
-import { AttachState } from "../state/AttachState";
-import { InitState } from "../state/InitState";
-import { NetworkPrepState } from "../state/NetworkPrepState";
-import { StartState } from "../state/StartState";
-import { StopState } from "../state/StopState";
-import { StateConfiguration } from "../types/StateConfiguration";
-import { DebugState } from "../state/DebugState";
-import { ResourceCreationState } from "../state/ResourceCreationState";
+import { AccountCreationState } from '../state/AccountCreationState';
+import { CleanUpState } from '../state/CleanUpState';
+import { AttachState } from '../state/AttachState';
+import { InitState } from '../state/InitState';
+import { NetworkPrepState } from '../state/NetworkPrepState';
+import { StartState } from '../state/StartState';
+import { StopState } from '../state/StopState';
+import { StateConfiguration } from '../types/StateConfiguration';
+import { DebugState } from '../state/DebugState';
+import { ResourceCreationState } from '../state/ResourceCreationState';
 
 /**
  * Class representing the state data.

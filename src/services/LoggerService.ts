@@ -18,8 +18,8 @@
  *
  */
 
-import { log, screen, Widgets } from "blessed";
-import terminal from "blessed-terminal";
+import { log, screen, Widgets } from 'blessed';
+import terminal from 'blessed-terminal';
 import {
     COLOR_DIM,
     COLOR_RESET,
@@ -32,15 +32,15 @@ import {
     RELAY_LABEL,
     TRACE_COLOR,
     WARNING_COLOR
-} from "../constants";
-import { AccountCreationState } from "../state/AccountCreationState";
-import { VerboseLevel } from "../types/VerboseLevel";
-import { CLIService } from "./CLIService";
-import { ConnectionService } from "./ConnectionService";
-import { DockerService } from "./DockerService";
-import { IService } from "./IService";
-import { ServiceLocator } from "./ServiceLocator";
-import { ResourceCreationState } from "../state/ResourceCreationState";
+} from '../constants';
+import { AccountCreationState } from '../state/AccountCreationState';
+import { VerboseLevel } from '../types/VerboseLevel';
+import { CLIService } from './CLIService';
+import { ConnectionService } from './ConnectionService';
+import { DockerService } from './DockerService';
+import { IService } from './IService';
+import { ServiceLocator } from './ServiceLocator';
+import { ResourceCreationState } from '../state/ResourceCreationState';
 
 
 export enum LogBoard {
