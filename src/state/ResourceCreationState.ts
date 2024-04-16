@@ -52,11 +52,11 @@ export interface TokenProps {
     tokenSymbol: string;
     tokenType: string;
     supplyType: string;
-    decimals: number | Long;
-    treasuryPrivateKeyECDSA: string;
+    decimals?: number | Long;
     initialSupply?: number | Long;
     maxSupply?: number | Long;
-    adminPrivateKeyECDSA?: string;
+    treasuryKey?: string;
+    adminKey?: string;
     kycKey?: string;
     freezeKey?: string;
     pauseKey?: string;
@@ -78,29 +78,29 @@ export interface TokenProps {
  */
 export class ResourceCreationState implements IState {
     /**
+     * The name of the state.
+     */
+    private readonly stateName: string;
+
+    /**
      * The logger used for logging resource creation state information.
      */
-    private logger: LoggerService;
+    private readonly logger: LoggerService;
 
     /**
      * The CLI service used for resource creation.
      */
-    private cliService: CLIService;
+    private readonly cliService: CLIService;
 
     /**
      * The client service used for resource creation.
      */
-    private clientService: ClientService;
+    private readonly clientService: ClientService;
 
     /**
      * The observer for the resource creation state.
      */
     private observer: IOBserver | undefined;
-
-    /**
-     * The name of the state.
-     */
-    private readonly stateName: string;
 
     /**
      * Represents the state of resource creation.
@@ -224,8 +224,7 @@ export class ResourceCreationState implements IState {
           The normal account ID: ${info.accountId.toString()}
           The aliased account ID: 0.0.${info.aliasKey?.toString()}
           The private key (use this in SDK/Hedera-native wallets): ${privateKey.toStringDer()}
-          The raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}
-          `,
+          The raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}`,
           this.stateName);
         return [props.privateKeyAliasECDSA, info.accountId];
     }
@@ -259,8 +258,8 @@ export class ResourceCreationState implements IState {
           .setTokenSymbol(props.tokenSymbol);
 
         // All keys will default to the operator key if not provided
-        if (props.treasuryPrivateKeyECDSA) {
-            const treasuryKey = PrivateKey.fromStringECDSA(props.treasuryPrivateKeyECDSA);
+        if (props.treasuryKey) {
+            const treasuryKey = PrivateKey.fromStringECDSA(props.treasuryKey);
             transaction.setTreasuryAccountId(treasuryKey.publicKey.toAccountId(0, 0));
         } else {
             transaction.setTreasuryAccountId(operatorId);
@@ -346,8 +345,8 @@ export class ResourceCreationState implements IState {
         const client = this.clientService.getClient();
 
         let signTx: TokenCreateTransaction = transaction;
-        if (props.adminPrivateKeyECDSA) {
-            const adminKey = PrivateKey.fromStringECDSA(props.adminPrivateKeyECDSA);
+        if (props.adminKey) {
+            const adminKey = PrivateKey.fromStringECDSA(props.adminKey);
             signTx.setAdminKey(adminKey.publicKey);
             signTx.freezeWith(client);
             signTx = await (await signTx.sign(adminKey)).signWithOperator(client);
