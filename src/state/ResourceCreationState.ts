@@ -133,7 +133,7 @@ export class ResourceCreationState implements IState {
         
         const mode = async ? 'asynchronous' : 'synchronous';
         this.logger.info(
-          `Starting resource Creation state in ${mode} mode`, this.stateName);
+          `Starting Resource Creation State in ${mode} mode`, this.stateName);
 
         const promise = this.createResources()
           .then(() => this.observer!.update(EventType.Finish));
