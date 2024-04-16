@@ -1,0 +1,39 @@
+{
+  "tokens": [
+    {
+      "tokenName": "Random NFT Token",
+      "tokenSymbol": "RNFT",
+      "decimals": 0,
+      "maxSupply": 1000,
+      "tokenMemo": "Random NFT token",
+      "tokenType": "NON_FUNGIBLE_UNIQUE",
+      "supplyType": "FINITE"
+    },
+    {
+      "tokenName": "Random FT Token",
+      "tokenSymbol": "RFT",
+      "decimals": 2,
+      "initialSupply": 1000000,
+      "tokenMemo": "Random FT token",
+      "tokenType": "FUNGIBLE_COMMON",
+      "supplyType": "INFINITE"
+    }
+  ],
+  "accounts": [
+    {
+      "privateKeyAliasECDSA": "0xbc6340d8b24bc70cd8826e43a8cce477756a7c0456a438c6cafab1fdacc0e647",
+      "balance": 1000,
+      "associatedTokens": [
+        "RNFT",
+        "RFT"
+      ]
+    },
+    {
+      "privateKeyAliasECDSA": "0xa79d22e45081cd83a8e5de6d72da25cb6fdb9d70b9eebe3ea0ca278a1bd659a0",
+      "balance": 1000,
+      "associatedTokens": [
+        "RNFT"
+      ]
+    }
+  ]
+}
