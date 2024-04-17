@@ -26,8 +26,10 @@ import {
   TokenAssociateTransaction,
   TokenCreateTransaction,
   TokenId,
+  TokenMintTransaction,
   TokenSupplyType,
-  TokenType
+  TokenType,
+  TransactionReceipt
 } from '@hashgraph/sdk';
 import { ITokenProps } from '../configuration/types/ITokenProps';
 
@@ -58,6 +60,29 @@ export class TokenUtils {
   }
 
   /**
+   * Mints the given amount of tokens for the given token.
+   * @param tokenId The token ID to mint.
+   * @param amount The amount of tokens to mint.
+   * @param metadata The metadata for the minted tokens.
+   * @param maxTransactionFee The maximum transaction fee to pay.
+   * @param supplyKey The supply key to sign the transaction.
+   * @param client The client to use for minting the tokens.
+   */
+  public static async mintToken(tokenId: TokenId,
+                                metadata: string,
+                                supplyKey: PrivateKey,
+                                client: Client): Promise<TransactionReceipt> {
+    const transaction = new TokenMintTransaction()
+      .setTokenId(tokenId)
+      .setMetadata([Buffer.from(metadata)])
+      .freezeWith(client);
+
+    const signTx = await transaction.sign(supplyKey);
+    const txResponse = await signTx.execute(client);
+    return txResponse.getReceipt(client);
+  }
+
+  /**
    * Creates a token with the given properties.
    * @param token The properties of the token to create.
    * @param client The client to use for creating the token.
@@ -80,6 +105,44 @@ export class TokenUtils {
     const receipt = await txResponse.getReceipt(client);
 
     return [token.tokenSymbol, receipt.tokenId!];
+  }
+
+  /**
+   * Returns the supply key for the given token.
+   *
+   * NOTE: The operator key will be used as a supply key by default,
+   * if the supply key is not provided in the properties
+   *
+   * @param token The properties of the token.
+   * @returns The supply key for the token.
+   */
+  public static getSupplyKey(token: ITokenProps): PrivateKey {
+    // The operator key will be used as supply key if one is not provided
+    if (token.supplyKey) {
+      return PrivateKey.fromStringECDSA(token.supplyKey);
+    } else {
+      return PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!);
+    }
+  }
+
+  /**
+   * Returns the treasury account ID for the given token.
+   *
+   * NOTE: The operator ID will be used as a treasury account ID by default,
+   * if the treasury key is not provided in the properties
+   *
+   * @param token The properties of the token.
+   * @returns The treasury account ID for the token.
+   */
+  public static getTreasuryAccountId(token: ITokenProps): AccountId {
+    // The operator key will be used as treasury key if one is not provided
+    if (token.treasuryKey) {
+      return PrivateKey.fromStringECDSA(token.treasuryKey)
+        .publicKey
+        .toAccountId(0, 0);
+    } else {
+      return AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!);
+    }
   }
 
   /**
@@ -124,23 +187,8 @@ export class TokenUtils {
    * @param token The properties of the token to create.
    */
   private static setKeyProperties(transaction: TokenCreateTransaction, token: ITokenProps): void {
-    const operatorKey = PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!);
-    const operatorId = AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!);
-
-    // The operator will be used as treasury account if one is not provided
-    if (token.treasuryKey) {
-      const treasuryKey = PrivateKey.fromStringECDSA(token.treasuryKey);
-      transaction.setTreasuryAccountId(treasuryKey.publicKey.toAccountId(0, 0));
-    } else {
-      transaction.setTreasuryAccountId(operatorId);
-    }
-
-    // The operator key will be used as supply key if one is not provided
-    if (token.supplyKey) {
-      transaction.setSupplyKey(PrivateKey.fromStringECDSA(token.supplyKey));
-    } else {
-      transaction.setSupplyKey(operatorKey.publicKey);
-    }
+    transaction.setTreasuryAccountId(this.getTreasuryAccountId(token));
+    transaction.setSupplyKey(this.getSupplyKey(token));
 
     if (token.kycKey) {
       transaction.setKycKey(PrivateKey.fromStringECDSA(token.kycKey));

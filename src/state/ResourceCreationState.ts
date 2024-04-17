@@ -118,6 +118,7 @@ export class ResourceCreationState implements IState {
         const accountIds: Map<string, AccountId> = await this.createAccounts(accountProps);
         const tokenIds: Map<string, TokenId> = await this.createTokens(tokenProps);
         await this.associateAccountsWithTokens(accountProps, accountIds, tokenIds);
+        await this.mintTokens(tokenProps, tokenIds);
     }
 
     /**
@@ -218,5 +219,38 @@ export class ResourceCreationState implements IState {
               return true;
           })
           .map(tokenSymbol => tokenIdsBySymbol.get(tokenSymbol)!);
+    }
+
+    private async mintTokens(tokenProps: ITokenProps[],
+                             tokenIds: Map<string, TokenId>): Promise<void> {
+        this.logger.info('Minting NFTs', this.stateName);
+        const client = this.clientService.getClient();
+        await Promise.all(
+          tokenProps
+            .filter(token => {
+              const shouldMint = !!token.mints?.length;
+              if (shouldMint && !tokenIds.has(token.tokenSymbol)) {
+                  this.logger.warn(`Token ID for ${token.tokenSymbol} not found`, this.stateName);
+                  return false;
+              }
+              return shouldMint;
+            })
+            .map(async (token: ITokenProps): Promise<void> => {
+              const tokenId = tokenIds.get(token.tokenSymbol)!;
+              const supplyKey = TokenUtils.getSupplyKey(token);
+              await Promise.all(token.mints!.map(async ({ metadata }) => {
+                await TokenUtils.mintToken(
+                  tokenId,
+                  metadata,
+                  supplyKey,
+                  client
+                );
+                this.logger.info(
+                  `Minted token ID ${tokenId} with metadata ${metadata}`,
+                  this.stateName
+                );
+              }));
+          })
+        );
     }
 }

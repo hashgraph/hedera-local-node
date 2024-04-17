@@ -18,8 +18,8 @@
  *
  */
 
-import { Long } from "@hashgraph/sdk";
-import { HashgraphProto } from "@hashgraph/sdk/lib/token/CustomFee";
+import { Long } from '@hashgraph/sdk';
+import { HashgraphProto } from '@hashgraph/sdk/lib/token/CustomFee';
 import ICustomFee = HashgraphProto.proto.ICustomFee;
 
 export interface ITokenProps {
@@ -30,6 +30,7 @@ export interface ITokenProps {
   decimals?: number | Long;
   initialSupply?: number | Long;
   maxSupply?: number | Long;
+  mints?: Array<{ metadata: string }>;
   treasuryKey?: string;
   adminKey?: string;
   kycKey?: string;
