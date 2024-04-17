@@ -18,17 +18,7 @@
  *
  */
 
-import {
-    AccountId,
-    AccountInfo,
-    AccountInfoQuery,
-    Client,
-    Hbar,
-    PrivateKey,
-    TokenAssociateTransaction,
-    TokenId,
-    TransferTransaction
-} from '@hashgraph/sdk';
+import { AccountId, PrivateKey, TokenId } from '@hashgraph/sdk';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -37,9 +27,10 @@ import { CLIService } from '../services/CLIService';
 import { ClientService } from '../services/ClientService';
 import { accounts, tokens } from '../configuration/initialResources.json';
 import { EventType } from '../types/EventType';
-import { CreateTokenUtils } from '../utils/CreateTokenUtils';
+import { TokenUtils } from '../utils/TokenUtils';
 import { ITokenProps } from '../configuration/types/ITokenProps';
 import { IAccountProps } from '../configuration/types/IAccountProps';
+import { AccountUtils } from '../utils/AccountUtils';
 
 /**
  * Represents the state of resource creation.
@@ -122,7 +113,7 @@ export class ResourceCreationState implements IState {
     private async createResources(): Promise<void> {
         const accountProps: IAccountProps[] = accounts as unknown as IAccountProps[];
         const tokenProps: ITokenProps[] = tokens as unknown as ITokenProps[];
-        
+
         const accountIds: Map<string, AccountId> = await this.createAccounts(accountProps);
         const tokenIds: Map<string, TokenId> = await this.createTokens(tokenProps);
         await this.associateAccountsWithTokens(accountProps, accountIds, tokenIds);
@@ -137,7 +128,7 @@ export class ResourceCreationState implements IState {
         const client = this.clientService.getClient();
         const accountIds = await Promise.all(
           accountProps.map(async (account: IAccountProps): Promise<[string, AccountId]> => {
-              const [privateKeyAliasECDSA, info] = await this.createAccount(account, client);
+              const [privateKeyAliasECDSA, info] = await AccountUtils.createAccount(account, client);
               const privateKey = PrivateKey.fromStringECDSA(privateKeyAliasECDSA);
               this.logger.info(
                 `Successfully created account with:
@@ -153,29 +144,6 @@ export class ResourceCreationState implements IState {
     }
 
     /**
-     * Creates an account with the given properties.
-     * @param account The properties of the account to create.
-     * @param client The client to use for creating the account.
-     */
-    private async createAccount(account: IAccountProps, client: Client): Promise<[string, AccountInfo]> {
-        const privateKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
-        const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
-        const hbarAmount = new Hbar(account.balance);
-
-        const response = await new TransferTransaction()
-          .addHbarTransfer(client.operatorAccountId!, hbarAmount.negated())
-          .addHbarTransfer(aliasAccountId, hbarAmount)
-          .execute(client);
-        await response.getReceipt(client);
-
-        const info = await new AccountInfoQuery()
-          .setAccountId(aliasAccountId)
-          .execute(client);
-
-        return [account.privateKeyAliasECDSA, info];
-    }
-
-    /**
      * Creates tokens with the given properties.
      * @param tokenProps The properties of the tokens to create.
      */
@@ -184,7 +152,7 @@ export class ResourceCreationState implements IState {
         const client = this.clientService.getClient();
         const tokenIds = await Promise.all(
           tokenProps.map(async (token: ITokenProps): Promise<[string, TokenId]> => {
-              const [tokenSymbol, tokenId] = await CreateTokenUtils.createToken(token, client);
+              const [tokenSymbol, tokenId] = await TokenUtils.createToken(token, client);
               this.logger.info(
                 `Successfully created ${token.tokenType} token '${tokenSymbol}' with ID ${tokenId}`,
                 this.stateName
@@ -206,6 +174,7 @@ export class ResourceCreationState implements IState {
                                               tokenIds: Map<string, TokenId>): Promise<void> {
         this.logger.info('Associating accounts with tokens', this.stateName);
 
+        const client = this.clientService.getClient();
         const associateAccountPromises: Promise<void>[] = accountProps
           .filter(account => {
               if (!accountIds.has(account.privateKeyAliasECDSA)) {
@@ -218,7 +187,7 @@ export class ResourceCreationState implements IState {
               const accountId = accountIds.get(account.privateKeyAliasECDSA)!;
               const accountTokens = this.getAssociatedTokenIds(account, tokenIds);
               const privateKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
-              await this.associateAccountWithTokens(accountId, accountTokens, privateKey);
+              await TokenUtils.associateAccountWithTokens(accountId, accountTokens, privateKey, client);
               this.logger.info(
                 `Associated account ${accountId} with token IDs: ${accountTokens.join(', ')}`,
                 this.stateName
@@ -226,26 +195,6 @@ export class ResourceCreationState implements IState {
           });
 
         await Promise.all(associateAccountPromises);
-    }
-
-    /**
-     * Associates an account with the given tokens.
-     * @param accountId The account ID to associate.
-     * @param tokenIds The token IDs to associate.
-     * @param accountKey The account key to sign the transaction.
-     */
-    private async associateAccountWithTokens(accountId: AccountId,
-                                             tokenIds: TokenId[],
-                                             accountKey: PrivateKey): Promise<void> {
-        const client = this.clientService.getClient();
-        const signTx = await new TokenAssociateTransaction()
-          .setAccountId(accountId)
-          .setTokenIds(tokenIds)
-          .freezeWith(client)
-          .sign(accountKey);
-
-        const txResponse = await signTx.execute(client);
-        await txResponse.getReceipt(client);
     }
 
     /**
