@@ -12,7 +12,7 @@ The Hedera Local Node project allows developers to set up their own local networ
 > **_NOTE:_**  It's recomended to start using the CLI Tool.
 
 - [Docker](#docker)
-- [CLI Tool](#cli-tool)
+- [CLI Tool](#cli-tool---hashgraphhedera-local)
 - [Environment Variables](./docs/environment-variables.md)
 - [Grafana & Prometheus](#grafana--prometheus)
 
@@ -32,7 +32,7 @@ The Hedera Local Node project allows developers to set up their own local networ
 
 - **Ensure the `VirtioFS` file sharing implementation is enabled in the docker settings.**
 
-Note: The image may look different if you are on a different version
+**Note**: The image may look different if you are on a different version
 ![docker-compose-settings.png](.github/docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
@@ -41,8 +41,13 @@ Note: The image may look different if you are on a different version
   - **Swap:** 1 GB
   - **Disk Image Size:** 64 GB
 
-Note: The image may look different if you are on a different version
+**Note**: The image may look different if you are on a different version
 ![settings.png](.github/settings.png)
+
+- Ensure the **`Allow the default Docker sockets to be used (requires password)`** is enabled in Docker **Settings -> Advanced**.
+
+**Note**: The image may look different if you are on a different version
+![docker-socket-setting](https://github.com/hashgraph/hedera-local-node/assets/56278409/9946dad6-27a9-4293-b37b-5286dd30d250)
 
 # CLI Tool - @hashgraph/hedera-local
 
