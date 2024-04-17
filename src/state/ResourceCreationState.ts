@@ -36,8 +36,8 @@ import { ClientService } from '../services/ClientService';
 import { accounts, tokens } from '../configuration/initialResources.json';
 import { EventType } from '../types/EventType';
 import { CreateTokenUtils } from '../utils/CreateTokenUtils';
-import { ITokenProps } from '../types/ITokenProps';
-import { IAccountProps } from '../types/IAccountProps';
+import { ITokenProps } from '../configuration/types/ITokenProps';
+import { IAccountProps } from '../configuration/types/IAccountProps';
 
 /**
  * Represents the state of resource creation.

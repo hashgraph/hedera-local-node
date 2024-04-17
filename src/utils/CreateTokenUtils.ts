@@ -21,13 +21,14 @@
 import {
   AccountId,
   Client,
+  CustomFee,
   PrivateKey,
   TokenCreateTransaction,
   TokenId,
   TokenSupplyType,
   TokenType
 } from '@hashgraph/sdk';
-import { ITokenProps } from '../types/ITokenProps';
+import { ITokenProps } from '../configuration/types/ITokenProps';
 
 export class CreateTokenUtils {
 
@@ -147,7 +148,7 @@ export class CreateTokenUtils {
     }
     if (props.customFees) {
       // TODO: Test this
-      transaction.setCustomFees(props.customFees);
+      transaction.setCustomFees(props.customFees.map(CustomFee._fromProtobuf));
     }
   }
 }
