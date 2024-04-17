@@ -90,7 +90,7 @@ export class ResourceCreationState implements IState {
     /**
      * This method is responsible for starting the ResourceCreationState.
      * It creates tokens asynchronously or synchronously based on the CLI arguments.
-     * @returns {Promise<void>} A Promise that resolves when the state is started.
+     * @returns Promise that resolves when the state is started.
      * @emits {EventType.Finish} When the state is finished.
      */
     public async onStart(): Promise<void> {
@@ -109,6 +109,7 @@ export class ResourceCreationState implements IState {
 
     /**
      * Creates accounts and tokens with the given properties and associates them.
+     * @returns Promise that resolves when all resources are created.
      */
     private async createResources(): Promise<void> {
         const accountProps: IAccountProps[] = accounts as unknown as IAccountProps[];
@@ -122,6 +123,7 @@ export class ResourceCreationState implements IState {
     /**
      * Creates accounts with the given properties.
      * @param accountProps The properties of the accounts to create.
+     * @returns Promise that resolves with a map of account private keys to account IDs.
      */
     private async createAccounts(accountProps: IAccountProps[]): Promise<Map<string, AccountId>> {
         this.logger.info('Creating accounts', this.stateName);
@@ -146,6 +148,7 @@ export class ResourceCreationState implements IState {
     /**
      * Creates tokens with the given properties.
      * @param tokenProps The properties of the tokens to create.
+     * @returns Promise that resolves with a map of token symbols to token IDs.
      */
     private async createTokens(tokenProps: ITokenProps[]): Promise<Map<string, TokenId>> {
         this.logger.info('Creating tokens', this.stateName);
@@ -168,6 +171,7 @@ export class ResourceCreationState implements IState {
      * @param accountProps The properties of the accounts to associate.
      * @param accountIds Map of account private keys to account IDs.
      * @param tokenIds Map of token symbols to token IDs.
+     * @returns Promise that resolves when all accounts are associated with tokens.
      */
     private async associateAccountsWithTokens(accountProps: IAccountProps[],
                                               accountIds: Map<string, AccountId>,
@@ -201,6 +205,7 @@ export class ResourceCreationState implements IState {
      * Gets the token IDs associated with the given account.
      * @param account The account to get the associated token IDs for.
      * @param tokenIdsBySymbol Map of token symbols to token IDs.
+     * @returns The token IDs associated with the account.
      */
     private getAssociatedTokenIds(account: IAccountProps,
                                   tokenIdsBySymbol: Map<string, TokenId>): TokenId[] {
