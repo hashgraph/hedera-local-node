@@ -21,15 +21,10 @@
 import {
     AccountId,
     AccountInfoQuery,
-    CustomFee,
     Hbar,
-    Long,
     PrivateKey,
     TokenAssociateTransaction,
-    TokenCreateTransaction,
     TokenId,
-    TokenSupplyType,
-    TokenType,
     TransferTransaction
 } from '@hashgraph/sdk';
 import { IOBserver } from '../controller/IObserver';
@@ -40,40 +35,17 @@ import { CLIService } from '../services/CLIService';
 import { ClientService } from '../services/ClientService';
 import { accounts, tokens } from '../configuration/initialResources.json';
 import { EventType } from '../types/EventType';
-
-export interface AccountProps {
-    privateKeyAliasECDSA: string;
-    balance: number;
-    associatedTokens: string[];
-}
-
-export interface TokenProps {
-    tokenName: string;
-    tokenSymbol: string;
-    tokenType: string;
-    supplyType: string;
-    decimals?: number | Long;
-    initialSupply?: number | Long;
-    maxSupply?: number | Long;
-    treasuryKey?: string;
-    adminKey?: string;
-    kycKey?: string;
-    freezeKey?: string;
-    pauseKey?: string;
-    wipeKey?: string;
-    supplyKey?: string;
-    feeScheduleKey?: string;
-    freezeDefault?: boolean;
-    autoRenewAccountId?: string;
-    expirationTime?: string;
-    autoRenewPeriod?: number | Long;
-    tokenMemo?: string;
-    customFees?: CustomFee[];
-}
+import { CreateTokenUtils } from '../utils/CreateTokenUtils';
+import { ITokenProps } from '../types/ITokenProps';
+import { IAccountProps } from '../types/IAccountProps';
 
 /**
  * Represents the state of resource creation.
  * This class is responsible for initializing the ResourceCreationState object.
+ *
+ * Uses {@link accounts} and {@link tokens} from the initialResources.json
+ * to create initial resources for the local-node environment
+ * 
  * @implements {IState}
  */
 export class ResourceCreationState implements IState {
@@ -142,16 +114,21 @@ export class ResourceCreationState implements IState {
         }
     }
 
+    /**
+     * Creates accounts and tokens with the given properties and associates them.
+     */
     private async createResources(): Promise<void> {
-        const accountProps = accounts as unknown as AccountProps[];
+        const accountProps = accounts as unknown as IAccountProps[];
         const accountIds = await this.createAccounts(accountProps);
-
-
-        const tokenIds = await this.createTokens(tokens as unknown as TokenProps[]);
+        const tokenIds = await this.createTokens(tokens as unknown as ITokenProps[]);
         await this.associateAccountsWithTokens(accountProps, accountIds, tokenIds);
     }
 
-    private async createAccounts(accountProps: AccountProps[]): Promise<Map<string, AccountId>> {
+    /**
+     * Creates accounts with the given properties.
+     * @param accountProps The properties of the accounts to create.
+     */
+    private async createAccounts(accountProps: IAccountProps[]): Promise<Map<string, AccountId>> {
         this.logger.info('Creating accounts', this.stateName);
         const accountIds = await Promise.all(
           accountProps.map(props => this.createAccount(props))
@@ -159,55 +136,14 @@ export class ResourceCreationState implements IState {
         return new Map(accountIds);
     }
 
-    private async createTokens(tokenProps: TokenProps[]): Promise<Map<string, TokenId>> {
-        this.logger.info('Creating tokens', this.stateName);
-        const tokenIds = await Promise.all(
-          tokenProps.map((props: TokenProps) => this.createToken(props))
-        );
-        return new Map(tokenIds);
-    }
-
-    private async associateAccountsWithTokens(
-      accountProps: AccountProps[],
-      accountIds: Map<string, AccountId>,
-      tokenIds: Map<string, TokenId>
-    ): Promise<void> {
-        this.logger.info('Associating accounts with tokens', this.stateName);
-
-        const promises: Promise<void>[] = accountProps
-          .filter(account => {
-              if (!accountIds.has(account.privateKeyAliasECDSA)) {
-                  this.logger.warn(`Account ID for key ${account.privateKeyAliasECDSA} not found`, this.stateName);
-                  return false;
-              }
-              return true;
-          })
-          .map(account => {
-              const accountId = accountIds.get(account.privateKeyAliasECDSA)!;
-              const accountKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
-              const accountTokens = this.getAssociatedTokenIds(account, tokenIds);
-              return this.associateAccountWithTokens(accountId, accountKey, accountTokens);
-          });
-
-        await Promise.all(promises);
-    }
-
-    private getAssociatedTokenIds(account: AccountProps, tokenIdsBySymbol: Map<string, TokenId>): TokenId[] {
-        return account.associatedTokens
-          .filter(tokenSymbol => {
-              if (!tokenIdsBySymbol.has(tokenSymbol)) {
-                  this.logger.warn(`Token ID for ${tokenSymbol} not found`, this.stateName);
-                  return false;
-              }
-              return true;
-          })
-          .map(tokenSymbol => tokenIdsBySymbol.get(tokenSymbol)!);
-    }
-
-    private async createAccount(props: AccountProps): Promise<[string, AccountId]> {
-        const privateKey = PrivateKey.fromStringECDSA(props.privateKeyAliasECDSA);
+    /**
+     * Creates an account with the given properties.
+     * @param account The properties of the account to create.
+     */
+    private async createAccount(account: IAccountProps): Promise<[string, AccountId]> {
+        const privateKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
         const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
-        const hbarAmount = new Hbar(props.balance);
+        const hbarAmount = new Hbar(account.balance);
 
         const client = this.clientService.getClient();
         const response = await new TransferTransaction()
@@ -226,14 +162,92 @@ export class ResourceCreationState implements IState {
           The private key (use this in SDK/Hedera-native wallets): ${privateKey.toStringDer()}
           The raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}`,
           this.stateName);
-        return [props.privateKeyAliasECDSA, info.accountId];
+        return [account.privateKeyAliasECDSA, info.accountId];
     }
 
-    private async associateAccountWithTokens(accountId: AccountId,
-                                             accountKey: PrivateKey,
-                                             tokenIds: TokenId[]): Promise<void> {
+    /**
+     * Creates tokens with the given properties.
+     * @param tokenProps The properties of the tokens to create.
+     */
+    private async createTokens(tokenProps: ITokenProps[]): Promise<Map<string, TokenId>> {
+        this.logger.info('Creating tokens', this.stateName);
         const client = this.clientService.getClient();
 
+        const tokenIds = new Map<string, TokenId>();
+
+        await Promise.all(tokenProps.map(async (props: ITokenProps) => {
+              const [tokenSymbol, tokenId] = await CreateTokenUtils.createToken(props, client);
+              this.logger.info(
+                `Successfully created ${props.tokenType} token '${tokenSymbol}' with ID ${tokenId}`,
+                this.stateName
+              );
+              tokenIds.set(tokenSymbol, tokenId);
+          }));
+
+        return tokenIds;
+    }
+
+    /**
+     * Associates accounts with tokens.
+     * @param accountProps The properties of the accounts to associate.
+     * @param accountIds Map of account private keys to account IDs.
+     * @param tokenIds Map of token symbols to token IDs.
+     */
+    private async associateAccountsWithTokens(
+      accountProps: IAccountProps[],
+      accountIds: Map<string, AccountId>,
+      tokenIds: Map<string, TokenId>
+    ): Promise<void> {
+        this.logger.info('Associating accounts with tokens', this.stateName);
+
+        const promises: Promise<void>[] = accountProps
+          .filter(account => {
+              if (!accountIds.has(account.privateKeyAliasECDSA)) {
+                  this.logger.warn(`Account ID for key ${account.privateKeyAliasECDSA} not found`, this.stateName);
+                  return false;
+              }
+              return true;
+          })
+          .map(async account => {
+              const accountId = accountIds.get(account.privateKeyAliasECDSA)!;
+              const accountKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
+              const accountTokens = this.getAssociatedTokenIds(account, tokenIds);
+              await this.associateAccountWithTokens(accountId, accountKey, accountTokens);
+              this.logger.info(
+                `Associated account ${accountId} with token IDs: ${accountTokens.join(', ')}`,
+                this.stateName
+              );
+          });
+
+        await Promise.all(promises);
+    }
+
+    /**
+     * Gets the token IDs associated with the given account.
+     * @param account The account to get the associated token IDs for.
+     * @param tokenIdsBySymbol Map of token symbols to token IDs.
+     */
+    private getAssociatedTokenIds(account: IAccountProps, tokenIdsBySymbol: Map<string, TokenId>): TokenId[] {
+        return account.associatedTokens
+          .filter(tokenSymbol => {
+              if (!tokenIdsBySymbol.has(tokenSymbol)) {
+                  this.logger.warn(`Token ID for ${tokenSymbol} not found`, this.stateName);
+                  return false;
+              }
+              return true;
+          })
+          .map(tokenSymbol => tokenIdsBySymbol.get(tokenSymbol)!);
+    }
+
+    /**
+     * Associates an account with the given tokens.
+     * @param accountId The account ID to associate.
+     * @param accountKey The account key to sign the transaction.
+     * @param tokenIds The token IDs to associate.
+     */
+    private async associateAccountWithTokens(
+      accountId: AccountId, accountKey: PrivateKey, tokenIds: TokenId[]): Promise<void> {
+        const client = this.clientService.getClient();
         const signTx = await new TokenAssociateTransaction()
           .setAccountId(accountId)
           .setTokenIds(tokenIds)
@@ -242,125 +256,5 @@ export class ResourceCreationState implements IState {
 
         const txResponse = await signTx.execute(client);
         await txResponse.getReceipt(client);
-
-        this.logger.info(
-          `Associated account ${accountId} with token IDs: ${tokenIds.join(', ')}`,
-          this.stateName
-        );
-    }
-
-    private async createToken(props: TokenProps): Promise<[string, TokenId]> {
-        const operatorKey = PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!);
-        const operatorId = AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!);
-
-        const transaction = new TokenCreateTransaction()
-          .setTokenName(props.tokenName)
-          .setTokenSymbol(props.tokenSymbol);
-
-        // All keys will default to the operator key if not provided
-        if (props.treasuryKey) {
-            const treasuryKey = PrivateKey.fromStringECDSA(props.treasuryKey);
-            transaction.setTreasuryAccountId(treasuryKey.publicKey.toAccountId(0, 0));
-        } else {
-            transaction.setTreasuryAccountId(operatorId);
-        }
-
-        if (props.supplyKey) {
-            transaction.setSupplyKey(PrivateKey.fromStringECDSA(props.supplyKey));
-        } else {
-            transaction.setSupplyKey(operatorKey.publicKey);
-        }
-
-        if (props.kycKey) {
-            transaction.setKycKey(PrivateKey.fromStringECDSA(props.kycKey));
-        } else {
-            transaction.setKycKey(operatorKey.publicKey);
-        }
-
-        if (props.freezeKey) {
-            transaction.setFreezeKey(PrivateKey.fromStringECDSA(props.freezeKey));
-        } else {
-            transaction.setFreezeKey(operatorKey.publicKey);
-        }
-
-        if (props.pauseKey) {
-            transaction.setPauseKey(PrivateKey.fromStringECDSA(props.pauseKey));
-        } else {
-            transaction.setPauseKey(operatorKey.publicKey);
-        }
-
-        if (props.wipeKey) {
-            transaction.setWipeKey(PrivateKey.fromStringECDSA(props.wipeKey));
-        } else {
-            transaction.setWipeKey(operatorKey.publicKey);
-        }
-
-        if (props.feeScheduleKey) {
-            transaction.setFeeScheduleKey(PrivateKey.fromStringECDSA(props.feeScheduleKey));
-        } else {
-            transaction.setFeeScheduleKey(operatorKey.publicKey);
-        }
-
-        // Set initial supply to 0 for NFTs
-        if (props.tokenType === TokenType.NonFungibleUnique.toString()) {
-            transaction.setTokenType(TokenType.NonFungibleUnique);
-            transaction.setInitialSupply(0);
-        } else {
-            transaction.setTokenType(TokenType.FungibleCommon);
-            transaction.setInitialSupply(props.initialSupply);
-        }
-
-        if (props.supplyType === TokenSupplyType.Finite.toString()) {
-            transaction.setSupplyType(TokenSupplyType.Finite);
-        } else {
-            transaction.setSupplyType(TokenSupplyType.Infinite);
-        }
-
-        if (props.maxSupply) {
-            transaction.setMaxSupply(props.maxSupply);
-        }
-        if (props.decimals) {
-            transaction.setDecimals(props.decimals);
-        }
-        if (props.freezeDefault) {
-            transaction.setFreezeDefault(props.freezeDefault);
-        }
-        if (props.autoRenewAccountId) {
-            transaction.setAutoRenewAccountId(props.autoRenewAccountId);
-        }
-        if (props.expirationTime) {
-            transaction.setExpirationTime(new Date(props.expirationTime));
-        }
-        if (props.autoRenewPeriod) {
-            transaction.setAutoRenewPeriod(props.autoRenewPeriod);
-        }
-        if (props.tokenMemo) {
-            transaction.setTokenMemo(props.tokenMemo);
-        }
-        if (props.customFees) {
-            // TODO: Test this
-            transaction.setCustomFees(props.customFees);
-        }
-
-        const client = this.clientService.getClient();
-
-        let signTx: TokenCreateTransaction = transaction;
-        if (props.adminKey) {
-            const adminKey = PrivateKey.fromStringECDSA(props.adminKey);
-            signTx.setAdminKey(adminKey.publicKey);
-            signTx.freezeWith(client);
-            signTx = await (await signTx.sign(adminKey)).signWithOperator(client);
-        } else {
-            signTx.freezeWith(client);
-            signTx = await signTx.signWithOperator(client);
-        }
-
-        const txResponse = await signTx.execute(client);
-        const receipt = await txResponse.getReceipt(client);
-        this.logger.info(
-          `Successfully created ${props.tokenType} token '${props.tokenSymbol}' with ID ${receipt.tokenId}`,
-          this.stateName
-        );
-        return [props.tokenSymbol, receipt.tokenId!];
     }
 }
