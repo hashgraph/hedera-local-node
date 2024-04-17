@@ -372,7 +372,7 @@ export class LoggerService implements IService{
 
         // assign key events
         window.key(
-            ['tab', 'C-c', '1', '2', '3', '4'],
+            ['tab', 'C-c', '1', '2', '3', '4', '5'],
             async (ch, key) => {
                 if (key.name === 'tab') {
                     window.focusNext();
@@ -380,26 +380,37 @@ export class LoggerService implements IService{
                     mirrorLog.hide();
                     relayLog.hide();
                     accountBoard.hide();
+                    resourceBoard.hide();
                     consensusLog.show();
                     consensusLog.focus();
                 } else if (ch === '2') {
                     relayLog.hide();
                     accountBoard.hide();
                     consensusLog.hide();
+                    resourceBoard.hide();
                     mirrorLog.show();
                     mirrorLog.focus();
                 } else if (ch === '3') {
                     mirrorLog.hide();
                     accountBoard.hide();
                     consensusLog.hide();
+                    resourceBoard.hide();
                     relayLog.show();
                     relayLog.focus();
                 } else if (ch === '4') {
                     mirrorLog.hide();
                     relayLog.hide();
                     consensusLog.hide();
+                    resourceBoard.hide();
                     accountBoard.show();
                     accountBoard.focus();
+                } else if (ch === '5') {
+                    mirrorLog.hide();
+                    relayLog.hide();
+                    consensusLog.hide();
+                    accountBoard.hide();
+                    resourceBoard.show();
+                    resourceBoard.focus();
                 } else {
                     window.destroy();
                     process.exit(0);
@@ -443,6 +454,7 @@ export class LoggerService implements IService{
               ['2', 'Open Mirror Node Log Board'],
               ['3', 'Open Relay Log Board'],
               ['4', 'Open Account Board'],
+              ['5', 'Open Resource Board']
             ],
         });
         return info;
