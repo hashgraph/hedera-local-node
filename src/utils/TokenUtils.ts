@@ -62,9 +62,7 @@ export class TokenUtils {
   /**
    * Mints the given amount of tokens for the given token.
    * @param tokenId The token ID to mint.
-   * @param amount The amount of tokens to mint.
    * @param metadata The metadata for the minted tokens.
-   * @param maxTransactionFee The maximum transaction fee to pay.
    * @param supplyKey The supply key to sign the transaction.
    * @param client The client to use for minting the tokens.
    */
