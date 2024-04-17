@@ -18,7 +18,9 @@
  *
  */
 
-import { CustomFee, Long } from "@hashgraph/sdk";
+import { Long } from "@hashgraph/sdk";
+import { HashgraphProto } from "@hashgraph/sdk/lib/token/CustomFee";
+import ICustomFee = HashgraphProto.proto.ICustomFee;
 
 export interface ITokenProps {
   tokenName: string;
@@ -41,5 +43,5 @@ export interface ITokenProps {
   expirationTime?: string;
   autoRenewPeriod?: number | Long;
   tokenMemo?: string;
-  customFees?: CustomFee[];
+  customFees?: ICustomFee[];
 }
