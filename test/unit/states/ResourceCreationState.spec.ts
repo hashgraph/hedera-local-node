@@ -71,7 +71,7 @@ describe('ResourceCreationState', () => {
     observer.update.resetHistory();
   });
 
-  it('should initialize the Init State', async () => {
+  it('should initialize the ResourceCreationState', async () => {
     expect(resourceCreationState).to.be.instanceOf(ResourceCreationState);
     testSandbox.assert.calledWith(serviceLocator, LoggerService.name);
     testSandbox.assert.calledWith(serviceLocator, ClientService.name);
@@ -91,30 +91,6 @@ describe('ResourceCreationState', () => {
   });
 
   describe('onStart', () => {
-    describe('When createInitialResources is true', () => {
-      let currentArgv: CLIOptions;
-      let createResourcesStub: SinonStub;
-
-      before(() => {
-        currentArgv = cliService.getCurrentArgv();
-        cliService.getCurrentArgv.returns({
-          ...currentArgv,
-          createInitialResources: true
-        });
-        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').resolves();
-      });
-
-      it ('should call createResources', async () => {
-        await resourceCreationState.onStart();
-        testSandbox.assert.called(createResourcesStub);
-      });
-
-      after(() => {
-        cliService.getCurrentArgv.returns(currentArgv);
-        createResourcesStub.restore();
-      });
-    });
-
     describe('When createInitialResources is false', () => {
       let currentArgv: CLIOptions;
       let createResourcesStub: SinonStub;
@@ -139,9 +115,33 @@ describe('ResourceCreationState', () => {
       });
     });
 
-    describe('When starting in synchronous mode', () => {
+    describe('When createInitialResources is true', () => {
       let currentArgv: CLIOptions;
-      let createResources: SinonStub;
+      let createResourcesStub: SinonStub;
+
+      before(() => {
+        currentArgv = cliService.getCurrentArgv();
+        cliService.getCurrentArgv.returns({
+          ...currentArgv,
+          createInitialResources: true
+        });
+        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').resolves();
+      });
+
+      it ('should call createResources', async () => {
+        await resourceCreationState.onStart();
+        testSandbox.assert.called(createResourcesStub);
+      });
+
+      after(() => {
+        cliService.getCurrentArgv.returns(currentArgv);
+        createResourcesStub.restore();
+      });
+    });
+
+    describe('When async is false', () => {
+      let currentArgv: CLIOptions;
+      let createResourcesStub: SinonStub;
       let awaitStub: SinonStub;
 
       before(() => {
@@ -151,7 +151,7 @@ describe('ResourceCreationState', () => {
           async: false
         });
         awaitStub = testSandbox.stub();
-        createResources = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').callsFake(async () => {
+        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').callsFake(async () => {
           await new Promise<void>(resolve => setTimeout(() => {
             awaitStub();
             resolve();
@@ -164,20 +164,20 @@ describe('ResourceCreationState', () => {
         await resourceCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, RESOURCE_CREATION_STARTING_SYNCHRONOUS_MESSAGE, ResourceCreationState.name);
-        testSandbox.assert.called(createResources);
+        testSandbox.assert.called(createResourcesStub);
         testSandbox.assert.called(awaitStub);
         testSandbox.assert.calledWith(observer.update, EventType.Finish);
       });
 
       after(() => {
         cliService.getCurrentArgv.returns(currentArgv);
-        createResources.restore();
+        createResourcesStub.restore();
       });
     });
 
-    describe('When starting in asynchronous mode', () => {
+    describe('When async is true', () => {
       let currentArgv: CLIOptions;
-      let createResources: SinonStub;
+      let createResourcesStub: SinonStub;
       let awaitStub: SinonStub;
 
       before(() => {
@@ -187,7 +187,7 @@ describe('ResourceCreationState', () => {
           async: true
         });
         awaitStub = testSandbox.stub();
-        createResources = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').callsFake(async () => {
+        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').callsFake(async () => {
           await new Promise<void>(resolve => setTimeout(() => {
             awaitStub();
             resolve();
@@ -200,14 +200,14 @@ describe('ResourceCreationState', () => {
         await resourceCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, RESOURCE_CREATION_STARTING_SYNCHRONOUS_MESSAGE, ResourceCreationState.name);
-        testSandbox.assert.called(createResources);
+        testSandbox.assert.called(createResourcesStub);
         testSandbox.assert.notCalled(awaitStub);
         testSandbox.assert.notCalled(observer.update);
       });
 
       after(() => {
         cliService.getCurrentArgv.returns(currentArgv);
-        createResources.restore();
+        createResourcesStub.restore();
       });
     });
   });
