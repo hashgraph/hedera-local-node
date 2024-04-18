@@ -158,12 +158,9 @@ describe('ResourceCreationState', () => {
         awaitStub = testSandbox.stub();
         createResourcesStub = testSandbox
           .stub(ResourceCreationState.prototype, <keyof ResourceCreationState>'createResources')
-          .callsFake(async () => new Promise<void>(resolve => {
-            setTimeout(() => {
-              awaitStub();
-              resolve();
-            }, 1000);
-        }));
+          .returns(new Promise(resolve => {
+            setTimeout(() => resolve(awaitStub()), 1000);
+          }));
       });
 
       it('should log correct message, await all resource creations and update observer', async () => {
@@ -198,12 +195,9 @@ describe('ResourceCreationState', () => {
         awaitStub = testSandbox.stub();
         createResourcesStub = testSandbox
           .stub(ResourceCreationState.prototype, <keyof ResourceCreationState>'createResources')
-          .callsFake(async () => new Promise<void>(resolve => {
-            setTimeout(() => {
-              awaitStub();
-              resolve();
-            }, 1000);
-        }));
+          .returns(new Promise(resolve => {
+            setTimeout(() => resolve(awaitStub()), 1000);
+          }));
       });
 
       it('should log correct message and NOT await all resource creations', async () => {
