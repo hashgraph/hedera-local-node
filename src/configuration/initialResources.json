@@ -5,6 +5,10 @@
       "tokenSymbol": "RNFT",
       "decimals": 0,
       "maxSupply": 1000,
+      "supplyKey": {
+        "value": "0xbc6340d8b24bc70cd8826e43a8cce477756a7c0456a438c6cafab1fdacc0e647",
+        "type": "ECDSA"
+      },
       "mints": [
         {
           "metadata": "QmNPCiNA3Dsu3K5FxDPMG5Q3fZRwVTg14EXA92uqEeSRXn"
@@ -29,16 +33,22 @@
   ],
   "accounts": [
     {
-      "privateKeyAliasECDSA": "0xbc6340d8b24bc70cd8826e43a8cce477756a7c0456a438c6cafab1fdacc0e647",
       "balance": 1000,
+      "privateKey": {
+        "value": "0xbc6340d8b24bc70cd8826e43a8cce477756a7c0456a438c6cafab1fdacc0e647",
+        "type": "ECDSA"
+      },
       "associatedTokens": [
         "RNFT",
         "RFT"
       ]
     },
     {
-      "privateKeyAliasECDSA": "0xa79d22e45081cd83a8e5de6d72da25cb6fdb9d70b9eebe3ea0ca278a1bd659a0",
       "balance": 1000,
+      "privateKey": {
+        "value": "0xa79d22e45081cd83a8e5de6d72da25cb6fdb9d70b9eebe3ea0ca278a1bd659a0",
+        "type": "ECDSA"
+      },
       "associatedTokens": [
         "RNFT"
       ]

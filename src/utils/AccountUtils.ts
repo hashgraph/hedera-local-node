@@ -18,8 +18,7 @@
  *
  */
 
-import { AccountInfo, AccountInfoQuery, Client, Hbar, PrivateKey, TransferTransaction } from '@hashgraph/sdk';
-import { IAccountProps } from '../configuration/types/IAccountProps';
+import { AccountId, AccountInfo, AccountInfoQuery, Client, Hbar, TransferTransaction } from '@hashgraph/sdk';
 
 /**
  * Provides utility methods for working with accounts.
@@ -28,13 +27,14 @@ export class AccountUtils {
 
   /**
    * Creates an account with the given properties.
-   * @param account The properties of the account to create.
+   * @param aliasAccountId The alias ID of the account to create.
+   * @param initialBalance The initial balance of the account.
    * @param client The client to use for creating the account.
    */
-  public static async createAccount(account: IAccountProps, client: Client): Promise<[string, AccountInfo]> {
-    const privateKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
-    const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
-    const hbarAmount = new Hbar(account.balance);
+  public static async createAccount(aliasAccountId: AccountId,
+                                    initialBalance: number,
+                                    client: Client): Promise<AccountInfo> {
+    const hbarAmount = new Hbar(initialBalance);
 
     const response = await new TransferTransaction()
       .addHbarTransfer(client.operatorAccountId!, hbarAmount.negated())
@@ -42,10 +42,8 @@ export class AccountUtils {
       .execute(client);
     await response.getReceipt(client);
 
-    const info = await new AccountInfoQuery()
+    return new AccountInfoQuery()
       .setAccountId(aliasAccountId)
       .execute(client);
-
-    return [account.privateKeyAliasECDSA, info];
   }
 }

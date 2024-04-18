@@ -32,6 +32,7 @@ import {
   TransactionReceipt
 } from '@hashgraph/sdk';
 import { ITokenProps } from '../configuration/types/ITokenProps';
+import { getPrivateKey } from '../configuration/types/IPrivateKey';
 
 /**
  * Provides utility methods for working with tokens.
@@ -85,13 +86,12 @@ export class TokenUtils {
    * @param token The properties of the token to create.
    * @param client The client to use for creating the token.
    */
-  public static async createToken(token: ITokenProps, client: Client): Promise<[string, TokenId]> {
+  public static async createToken(token: ITokenProps, client: Client): Promise<TokenId> {
     const transaction = this.getTokenCreateTransaction(token);
 
     let signTx: TokenCreateTransaction;
     if (token.adminKey) {
-      const adminKey = PrivateKey.fromStringECDSA(token.adminKey);
-      transaction.setAdminKey(adminKey.publicKey);
+      const adminKey = PrivateKey.fromStringECDSA(token.adminKey.value);
       transaction.freezeWith(client);
       signTx = await (await transaction.sign(adminKey)).signWithOperator(client);
     } else {
@@ -102,7 +102,7 @@ export class TokenUtils {
     const txResponse = await signTx.execute(client);
     const receipt = await txResponse.getReceipt(client);
 
-    return [token.tokenSymbol, receipt.tokenId!];
+    return receipt.tokenId!;
   }
 
   /**
@@ -117,10 +117,9 @@ export class TokenUtils {
   public static getSupplyKey(token: ITokenProps): PrivateKey {
     // The operator key will be used as supply key if one is not provided
     if (token.supplyKey) {
-      return PrivateKey.fromStringECDSA(token.supplyKey);
-    } else {
-      return PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!);
+      return getPrivateKey(token.supplyKey);
     }
+    return PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!);
   }
 
   /**
@@ -135,12 +134,9 @@ export class TokenUtils {
   public static getTreasuryAccountId(token: ITokenProps): AccountId {
     // The operator key will be used as treasury key if one is not provided
     if (token.treasuryKey) {
-      return PrivateKey.fromStringECDSA(token.treasuryKey)
-        .publicKey
-        .toAccountId(0, 0);
-    } else {
-      return AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!);
+      return getPrivateKey(token.treasuryKey).publicKey.toAccountId(0, 0);
     }
+    return AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!);
   }
 
   /**
@@ -163,6 +159,8 @@ export class TokenUtils {
   private static setRequiredProperties(transaction: TokenCreateTransaction, token: ITokenProps): void {
     transaction.setTokenName(token.tokenName);
     transaction.setTokenSymbol(token.tokenSymbol);
+    transaction.setTreasuryAccountId(this.getTreasuryAccountId(token));
+    transaction.setSupplyKey(this.getSupplyKey(token));
     // If not provided, the TokenType is FUNGIBLE_COMMON by default
     if (token.tokenType === TokenType.NonFungibleUnique.toString()) {
       transaction.setTokenType(TokenType.NonFungibleUnique);
@@ -185,27 +183,23 @@ export class TokenUtils {
    * @param token The properties of the token to create.
    */
   private static setKeyProperties(transaction: TokenCreateTransaction, token: ITokenProps): void {
-    transaction.setTreasuryAccountId(this.getTreasuryAccountId(token));
-    transaction.setSupplyKey(this.getSupplyKey(token));
-
+    if (token.adminKey) {
+      transaction.setAdminKey(getPrivateKey(token.adminKey));
+    }
     if (token.kycKey) {
-      transaction.setKycKey(PrivateKey.fromStringECDSA(token.kycKey));
+      transaction.setKycKey(getPrivateKey(token.kycKey));
     }
-
     if (token.freezeKey) {
-      transaction.setFreezeKey(PrivateKey.fromStringECDSA(token.freezeKey));
+      transaction.setFreezeKey(getPrivateKey(token.freezeKey));
     }
-
     if (token.pauseKey) {
-      transaction.setPauseKey(PrivateKey.fromStringECDSA(token.pauseKey));
+      transaction.setPauseKey(getPrivateKey(token.pauseKey));
     }
-
     if (token.wipeKey) {
-      transaction.setWipeKey(PrivateKey.fromStringECDSA(token.wipeKey));
+      transaction.setWipeKey(getPrivateKey(token.wipeKey));
     }
-
     if (token.feeScheduleKey) {
-      transaction.setFeeScheduleKey(PrivateKey.fromStringECDSA(token.feeScheduleKey));
+      transaction.setFeeScheduleKey(getPrivateKey(token.feeScheduleKey));
     }
   }
 

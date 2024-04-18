@@ -18,7 +18,7 @@
  *
  */
 
-import { AccountId, PrivateKey, TokenId } from '@hashgraph/sdk';
+import { AccountId, TokenId } from '@hashgraph/sdk';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -31,6 +31,7 @@ import { TokenUtils } from '../utils/TokenUtils';
 import { ITokenProps } from '../configuration/types/ITokenProps';
 import { IAccountProps } from '../configuration/types/IAccountProps';
 import { AccountUtils } from '../utils/AccountUtils';
+import { getPrivateKey } from '../configuration/types/IPrivateKey';
 
 /**
  * Represents the state of resource creation.
@@ -112,9 +113,8 @@ export class ResourceCreationState implements IState {
      * @returns Promise that resolves when all resources are created.
      */
     private async createResources(): Promise<void> {
-        const accountProps: IAccountProps[] = accounts as unknown as IAccountProps[];
-        const tokenProps: ITokenProps[] = tokens as unknown as ITokenProps[];
-
+        const accountProps: IAccountProps[] = accounts as IAccountProps[];
+        const tokenProps: ITokenProps[] = tokens as ITokenProps[];
         const accountIds: Map<string, AccountId> = await this.createAccounts(accountProps);
         const tokenIds: Map<string, TokenId> = await this.createTokens(tokenProps);
         await this.associateAccountsWithTokens(accountProps, accountIds, tokenIds);
@@ -131,16 +131,17 @@ export class ResourceCreationState implements IState {
         const client = this.clientService.getClient();
         const accountIds = await Promise.all(
           accountProps.map(async (account: IAccountProps): Promise<[string, AccountId]> => {
-              const [privateKeyAliasECDSA, info] = await AccountUtils.createAccount(account, client);
-              const privateKey = PrivateKey.fromStringECDSA(privateKeyAliasECDSA);
-              this.logger.info(
-                `Successfully created account with:
-                * normal account ID: ${info.accountId.toString()}
-                * aliased account ID: 0.0.${info.aliasKey?.toString()}
-                * private key (use this in SDK/Hedera-native wallets): ${privateKey.toStringDer()}
-                * raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}`,
-                this.stateName);
-              return [privateKeyAliasECDSA, info.accountId];
+            const privateKey = getPrivateKey(account.privateKey);
+            const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
+            const info = await AccountUtils.createAccount(aliasAccountId, account.balance, client);
+            this.logger.info(
+              `Successfully created account with:
+              * normal account ID: ${info.accountId.toString()}
+              * aliased account ID: 0.0.${info.aliasKey?.toString()}
+              * private key (use this in SDK/Hedera-native wallets): ${privateKey.toStringDer()}
+              * raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}`,
+              this.stateName);
+            return [account.privateKey.value, info.accountId];
           })
         );
         return new Map<string, AccountId>(accountIds);
@@ -156,12 +157,12 @@ export class ResourceCreationState implements IState {
         const client = this.clientService.getClient();
         const tokenIds = await Promise.all(
           tokenProps.map(async (token: ITokenProps): Promise<[string, TokenId]> => {
-              const [tokenSymbol, tokenId] = await TokenUtils.createToken(token, client);
+              const tokenId = await TokenUtils.createToken(token, client);
               this.logger.info(
-                `Successfully created ${token.tokenType} token '${tokenSymbol}' with ID ${tokenId}`,
+                `Successfully created ${token.tokenType} token '${token.tokenSymbol}' with ID ${tokenId}`,
                 this.stateName
               );
-              return [tokenSymbol, tokenId];
+              return [token.tokenSymbol, tokenId];
           })
         );
         return new Map<string, TokenId>(tokenIds);
@@ -182,16 +183,16 @@ export class ResourceCreationState implements IState {
         const client = this.clientService.getClient();
         const associateAccountPromises: Promise<void>[] = accountProps
           .filter(account => {
-              if (!accountIds.has(account.privateKeyAliasECDSA)) {
-                  this.logger.warn(`Account ID for key ${account.privateKeyAliasECDSA} not found`, this.stateName);
+              if (!accountIds.has(account.privateKey.value)) {
+                  this.logger.warn(`Account ID for key ${account.privateKey.value} not found`, this.stateName);
                   return false;
               }
               return true;
           })
           .map(async (account: IAccountProps): Promise<void> => {
-              const accountId = accountIds.get(account.privateKeyAliasECDSA)!;
+              const accountId = accountIds.get(account.privateKey.value)!;
               const accountTokens = this.getAssociatedTokenIds(account, tokenIds);
-              const privateKey = PrivateKey.fromStringECDSA(account.privateKeyAliasECDSA);
+              const privateKey = getPrivateKey(account.privateKey);
               await TokenUtils.associateAccountWithTokens(accountId, accountTokens, privateKey, client);
               this.logger.info(
                 `Associated account ${accountId} with token IDs: ${accountTokens.join(', ')}`,
@@ -239,12 +240,7 @@ export class ResourceCreationState implements IState {
               const tokenId = tokenIds.get(token.tokenSymbol)!;
               const supplyKey = TokenUtils.getSupplyKey(token);
               await Promise.all(token.mints!.map(async ({ metadata }) => {
-                await TokenUtils.mintToken(
-                  tokenId,
-                  metadata,
-                  supplyKey,
-                  client
-                );
+                await TokenUtils.mintToken(tokenId, metadata, supplyKey, client);
                 this.logger.info(
                   `Minted token ID ${tokenId} with metadata ${metadata}`,
                   this.stateName
