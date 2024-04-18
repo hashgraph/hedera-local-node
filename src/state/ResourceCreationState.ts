@@ -95,14 +95,19 @@ export class ResourceCreationState implements IState {
      * @emits {EventType.Finish} When the state is finished.
      */
     public async onStart(): Promise<void> {
-        const { async } = this.cliService.getCurrentArgv();
+        const { async, createInitialResources } = this.cliService.getCurrentArgv();
+        if (!createInitialResources) {
+          return;
+        }
         
         const mode = async ? 'asynchronous' : 'synchronous';
         this.logger.info(
           `Starting Resource Creation State in ${mode} mode`, this.stateName);
 
-        const promise = this.createResources()
-          .then(() => this.observer!.update(EventType.Finish));
+        const promise = this.createResources().then(() => {
+          this.observer?.update(EventType.Finish);
+        });
+
         if (!async) {
             await promise;
         }
