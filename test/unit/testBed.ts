@@ -17,14 +17,15 @@
  * limitations under the License.
  *
  */
-import sinon from "sinon";
+import sinon from 'sinon';
 import shell from 'shelljs';
-import { LoggerService } from "../../src/services/LoggerService";
-import { CLIService } from "../../src/services/CLIService";
-import { ServiceLocator } from "../../src/services/ServiceLocator";
-import { DockerService } from "../../src/services/DockerService";
-import { ConnectionService } from "../../src/services/ConnectionService";
-import { ClientService } from "../../src/services/ClientService";
+import { LoggerService } from '../../src/services/LoggerService';
+import { CLIService } from '../../src/services/CLIService';
+import { ServiceLocator } from '../../src/services/ServiceLocator';
+import { DockerService } from '../../src/services/DockerService';
+import { ConnectionService } from '../../src/services/ConnectionService';
+import { ClientService } from '../../src/services/ClientService';
+import { CLIOptions } from '../../src/types/CLIOptions';
 
 export interface LocalNodeTestBed {
     sandbox: sinon.SinonSandbox;
@@ -46,13 +47,13 @@ export interface LocalNodeTestBed {
 
 let testBed: LocalNodeTestBed;
 
-export function getTestBed(cliServiceArgs?: any) {
+export function getTestBed(cliServiceArgs?: Partial<CLIOptions>) {
     if (testBed) {
         resetTestBedHistory(testBed)
         if (cliServiceArgs) {
             testBed.cliServiceStub.getCurrentArgv.returns({
                 ...cliServiceArgs
-            })
+            } as CLIOptions)
         }
         
         return {

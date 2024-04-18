@@ -28,14 +28,22 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
 import {
-    AccountCreateTransaction, AccountId, AccountInfoQuery,
-    Hbar, PrivateKey, PublicKey, TransferTransaction, Wallet
+    AccountCreateTransaction,
+    AccountId,
+    AccountInfoQuery,
+    Hbar,
+    PrivateKey,
+    PublicKey,
+    TransferTransaction,
+    Wallet
 } from '@hashgraph/sdk';
 import { CLIService } from '../services/CLIService';
 import { Account } from '../types/AccountType';
 import { ClientService } from '../services/ClientService';
 import {
-    privateKeysECDSA, privateKeysAliasECDSA, privateKeysED25519
+    privateKeysAliasECDSA,
+    privateKeysECDSA,
+    privateKeysED25519
 } from '../configuration/accountConfiguration.json';
 import { EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH } from '../constants';
 import local from '../configuration/local.json';
@@ -95,7 +103,7 @@ export class AccountCreationState implements IState{
         this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
         this.clientService = ServiceLocator.Current.get<ClientService>(ClientService.name);
         this.nodeStartup = true;
-        this.logger.trace('Account Creaton State Initialized!', this.stateName);
+        this.logger.trace('Account Creation State Initialized!', this.stateName);
     }
 
     /**
