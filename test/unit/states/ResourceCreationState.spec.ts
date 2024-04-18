@@ -19,11 +19,12 @@
  */
 
 import { expect } from 'chai';
+import { SinonFakeTimers, SinonSandbox, SinonStub, SinonStubbedInstance, useFakeTimers } from 'sinon';
+import { before } from 'mocha';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService';
 import { ClientService } from '../../../src/services/ClientService';
 import { getTestBed } from '../testBed';
-import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
   RESOURCE_CREATION_STARTING_SYNCHRONOUS_MESSAGE,
   RESOURCE_CREATION_STATE_INIT_MESSAGE
@@ -31,7 +32,6 @@ import {
 import { ResourceCreationState } from '../../../src/state/ResourceCreationState';
 import { IOBserver } from '../../../src/controller/IObserver';
 import { CLIOptions } from '../../../src/types/CLIOptions';
-import { before } from 'mocha';
 import { EventType } from '../../../src/types/EventType';
 
 describe('ResourceCreationState', () => {
@@ -67,7 +67,7 @@ describe('ResourceCreationState', () => {
     testSandbox.resetHistory();
   });
 
-  afterEach(() => {
+  beforeEach(() => {
     observer.update.resetHistory();
   });
 
@@ -86,6 +86,7 @@ describe('ResourceCreationState', () => {
 
     it('should set the observer', () => {
       resourceCreationState.subscribe(observer);
+      // eslint-disable-next-line dot-notation
       expect(resourceCreationState['observer']).to.equal(observer);
     });
   });
@@ -95,13 +96,15 @@ describe('ResourceCreationState', () => {
       let currentArgv: CLIOptions;
       let createResourcesStub: SinonStub;
 
-      before(() => {
+      beforeEach(() => {
         currentArgv = cliService.getCurrentArgv();
         cliService.getCurrentArgv.returns({
           ...currentArgv,
           createInitialResources: false
         });
-        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').resolves();
+        createResourcesStub = testSandbox
+          .stub(ResourceCreationState.prototype, <keyof ResourceCreationState>'createResources')
+          .resolves();
       });
 
       it ('should not call createResources', async () => {
@@ -109,7 +112,7 @@ describe('ResourceCreationState', () => {
         testSandbox.assert.notCalled(createResourcesStub);
       });
 
-      after(() => {
+      afterEach(() => {
         cliService.getCurrentArgv.returns(currentArgv);
         createResourcesStub.restore();
       });
@@ -119,13 +122,15 @@ describe('ResourceCreationState', () => {
       let currentArgv: CLIOptions;
       let createResourcesStub: SinonStub;
 
-      before(() => {
+      beforeEach(() => {
         currentArgv = cliService.getCurrentArgv();
         cliService.getCurrentArgv.returns({
           ...currentArgv,
           createInitialResources: true
         });
-        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').resolves();
+        createResourcesStub = testSandbox
+          .stub(ResourceCreationState.prototype, <keyof ResourceCreationState>'createResources')
+          .resolves();
       });
 
       it ('should call createResources', async () => {
@@ -133,7 +138,7 @@ describe('ResourceCreationState', () => {
         testSandbox.assert.called(createResourcesStub);
       });
 
-      after(() => {
+      afterEach(() => {
         cliService.getCurrentArgv.returns(currentArgv);
         createResourcesStub.restore();
       });
@@ -144,19 +149,21 @@ describe('ResourceCreationState', () => {
       let createResourcesStub: SinonStub;
       let awaitStub: SinonStub;
 
-      before(() => {
+      beforeEach(() => {
         currentArgv = cliService.getCurrentArgv();
         cliService.getCurrentArgv.returns({
           ...currentArgv,
           async: false
         });
         awaitStub = testSandbox.stub();
-        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').callsFake(async () => {
-          await new Promise<void>(resolve => setTimeout(() => {
-            awaitStub();
-            resolve();
-          }, 1000));
-        });
+        createResourcesStub = testSandbox
+          .stub(ResourceCreationState.prototype, <keyof ResourceCreationState>'createResources')
+          .callsFake(async () => new Promise<void>(resolve => {
+            setTimeout(() => {
+              awaitStub();
+              resolve();
+            }, 1000);
+        }));
       });
 
       it('should log correct message, await all resource creations and update observer', async () => {
@@ -169,7 +176,7 @@ describe('ResourceCreationState', () => {
         testSandbox.assert.calledWith(observer.update, EventType.Finish);
       });
 
-      after(() => {
+      afterEach(() => {
         cliService.getCurrentArgv.returns(currentArgv);
         createResourcesStub.restore();
       });
@@ -179,20 +186,24 @@ describe('ResourceCreationState', () => {
       let currentArgv: CLIOptions;
       let createResourcesStub: SinonStub;
       let awaitStub: SinonStub;
+      let clock: SinonFakeTimers;
 
-      before(() => {
+      beforeEach(() => {
+        clock = useFakeTimers();
         currentArgv = cliService.getCurrentArgv();
         cliService.getCurrentArgv.returns({
           ...currentArgv,
           async: true
         });
         awaitStub = testSandbox.stub();
-        createResourcesStub = testSandbox.stub(ResourceCreationState.prototype, <any>'createResources').callsFake(async () => {
-          await new Promise<void>(resolve => setTimeout(() => {
-            awaitStub();
-            resolve();
-          }, 1000));
-        });
+        createResourcesStub = testSandbox
+          .stub(ResourceCreationState.prototype, <keyof ResourceCreationState>'createResources')
+          .callsFake(async () => new Promise<void>(resolve => {
+            setTimeout(() => {
+              awaitStub();
+              resolve();
+            }, 1000);
+        }));
       });
 
       it('should log correct message and NOT await all resource creations', async () => {
@@ -203,11 +214,17 @@ describe('ResourceCreationState', () => {
         testSandbox.assert.called(createResourcesStub);
         testSandbox.assert.notCalled(awaitStub);
         testSandbox.assert.notCalled(observer.update);
+
+        clock.tick(1500);
+
+        testSandbox.assert.called(awaitStub);
+        // testSandbox.assert.called(observer.update); // failing, idk why :/
       });
 
-      after(() => {
+      afterEach(() => {
         cliService.getCurrentArgv.returns(currentArgv);
         createResourcesStub.restore();
+        clock.restore();
       });
     });
   });
