@@ -327,23 +327,13 @@ describe('ResourceCreationState', () => {
       testSandbox.assert.callCount(createAccountStub, accounts.length);
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < accounts.length; i++) {
-        const aliasAccountId = getPrivateKey(accounts[i].privateKey as IPrivateKey).publicKey.toAccountId(0, 0);
         testSandbox.assert.calledWithMatch(
           createAccountStub.getCall(i),
-          aliasAccountId,
+          getPrivateKey(accounts[i].privateKey as IPrivateKey).publicKey.toAccountId(0, 0),
           accounts[i].balance,
           client
         );
       }
-
-      testSandbox.assert.calledWith(associateAccountsWithTokensSpy, accounts);
-      testSandbox.assert.callCount(associateAccountWithTokensStub,
-        accounts.filter(a => a.associatedTokens && a.associatedTokens.length > 0).length);
-
-      testSandbox.assert.calledWith(mintTokensSpy, tokens);
-      testSandbox.assert.callCount(mintTokensStub,
-        tokens.filter(t => t.mints && t.mints.length > 0)
-          .reduce((acc, t) => t.mints ? acc + t.mints.length : acc, 0));
     });
 
     it('should call associateAccountWithTokens with correct arguments', async () => {
