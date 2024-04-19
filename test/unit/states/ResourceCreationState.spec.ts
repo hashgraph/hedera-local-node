@@ -47,41 +47,6 @@ describe('ResourceCreationState', () => {
   let cliService: SinonStubbedInstance<CLIService>;
   let clientService: SinonStubbedInstance<ClientService>;
   let observer: SinonStubbedInstance<IOBserver>;
-  let entityNum: number = 1000;
-
-
-  const stubCreateTokenCalls = (n: number) => {
-    const createTokenStub = testSandbox.stub(TokenUtils, 'createToken');
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < n; i++) {
-      entityNum += 1;
-      const tokenId = TokenId.fromString(`0.0.${entityNum}`);
-      createTokenStub.onCall(i).resolves(tokenId);
-    }
-    return createTokenStub;
-  };
-
-  const stubCreateAccountCalls = (n: number) => {
-    const createAccountStub = testSandbox.stub(AccountUtils, 'createAccount');
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < n; i++) {
-      entityNum += 1;
-      const accountID = AccountId.fromString(`0.0.${entityNum}`);
-      createAccountStub.onCall(i).resolves(AccountInfo._fromProtobuf(
-        {
-          accountID: accountID._toProtobuf(),
-          key: getPrivateKey(accounts[i].privateKey as IPrivateKey)._toProtobufKey(),
-          balance: accounts[i].balance,
-          expirationTime: new Timestamp(1000, 0),
-        }
-      ));
-    }
-    return createAccountStub;
-  };
-
-  const stubAssociateAccountWithTokens = () => testSandbox.stub(TokenUtils, 'associateAccountWithTokens').resolves();
-
-  const stubMintTokens = () => testSandbox.stub(TokenUtils, 'mintToken').resolves();
 
   before(() => {
     const {
@@ -110,7 +75,7 @@ describe('ResourceCreationState', () => {
     testSandbox.resetHistory();
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     observer.update.resetHistory();
   });
 
@@ -275,25 +240,55 @@ describe('ResourceCreationState', () => {
     let createAccountStub: SinonStub;
     let associateAccountWithTokensStub: SinonStub;
     let mintTokensStub: SinonStub;
+    let entityNum = 1000;
 
     const client = Client.forLocalNode().setOperator(
       AccountId.fromString('0.0.2'),
       PrivateKey.fromStringED25519('302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137')
     );
 
-    beforeEach(() => {
+    const stubCreateTokenCalls = (n: number) => {
+      const stubbedFn = testSandbox.stub(TokenUtils, 'createToken');
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < n; i++) {
+        entityNum += 1;
+        const tokenId = TokenId.fromString(`0.0.${entityNum}`);
+        stubbedFn.onCall(i).resolves(tokenId);
+      }
+      return stubbedFn;
+    };
+
+    const stubCreateAccountCalls = (n: number) => {
+      const stubbedFn = testSandbox.stub(AccountUtils, 'createAccount');
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < n; i++) {
+        entityNum += 1;
+        const accountID = AccountId.fromString(`0.0.${entityNum}`);
+        stubbedFn.onCall(i).resolves(AccountInfo._fromProtobuf(
+          {
+            accountID: accountID._toProtobuf(),
+            key: getPrivateKey(accounts[i].privateKey as IPrivateKey)._toProtobufKey(),
+            balance: accounts[i].balance,
+            expirationTime: new Timestamp(1000, 0),
+          }
+        ));
+      }
+      return stubbedFn;
+    };
+
+    const setupStubs = () => {
       createTokenStub = stubCreateTokenCalls(tokens.length);
       createAccountStub = stubCreateAccountCalls(accounts.length);
-      associateAccountWithTokensStub = stubAssociateAccountWithTokens();
-      mintTokensStub = stubMintTokens();
+      associateAccountWithTokensStub = testSandbox.stub(TokenUtils, 'associateAccountWithTokens').resolves();
+      mintTokensStub = testSandbox.stub(TokenUtils, 'mintToken').resolves();
       createTokensSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'createTokens');
       createAccountsSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'createAccounts');
       associateAccountsWithTokensSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'associateAccountsWithTokens');
       mintTokensSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'mintTokens');
       clientService.getClient.returns(client);
-    });
+    };
 
-    afterEach(() => {
+    const tearDownStubs = () => {
       createTokenStub.restore();
       createAccountStub.restore();
       associateAccountWithTokensStub.restore();
@@ -303,11 +298,18 @@ describe('ResourceCreationState', () => {
       associateAccountsWithTokensSpy.restore();
       mintTokensSpy.restore();
       clientService.getClient.reset();
+    };
+
+    before(async () => {
+      setupStubs();
+      await resourceCreationState.onStart();
+    });
+
+    after(() => {
+      tearDownStubs();
     });
 
     it('should call createToken with correct arguments', async () => {
-      await resourceCreationState.onStart();
-
       testSandbox.assert.calledWith(createTokensSpy, tokens);
       testSandbox.assert.callCount(createTokenStub, tokens.length);
       // eslint-disable-next-line no-plusplus
@@ -321,8 +323,6 @@ describe('ResourceCreationState', () => {
     });
 
     it('should call createAccount with correct arguments', async () => {
-      await resourceCreationState.onStart();
-
       testSandbox.assert.calledWith(createAccountsSpy, accounts);
       testSandbox.assert.callCount(createAccountStub, accounts.length);
       // eslint-disable-next-line no-plusplus
@@ -337,16 +337,12 @@ describe('ResourceCreationState', () => {
     });
 
     it('should call associateAccountWithTokens with correct arguments', async () => {
-      await resourceCreationState.onStart();
-
       testSandbox.assert.calledWith(associateAccountsWithTokensSpy, accounts);
       testSandbox.assert.callCount(associateAccountWithTokensStub,
         accounts.filter(a => a.associatedTokens && a.associatedTokens.length > 0).length);
     });
 
     it('should call mintTokens with correct arguments', async () => {
-      await resourceCreationState.onStart();
-
       testSandbox.assert.calledWith(mintTokensSpy, tokens);
       testSandbox.assert.callCount(mintTokensStub,
         tokens.filter(t => t.mints && t.mints.length > 0)
