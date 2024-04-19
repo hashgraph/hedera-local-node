@@ -242,10 +242,10 @@ export class ResourceCreationState implements IState {
             .map(async (token: ITokenProps): Promise<void> => {
               const tokenId = tokenIds.get(token.tokenSymbol)!;
               const supplyKey = TokenUtils.getSupplyKey(token);
-              await Promise.all(token.mints!.map(async ({ metadata }) => {
-                await TokenUtils.mintToken(tokenId, metadata, supplyKey, client);
+              await Promise.all(token.mints!.map(async ({ CID }) => {
+                await TokenUtils.mintToken(tokenId, CID, supplyKey, client);
                 this.logger.info(
-                  `Minted token ID ${tokenId} with metadata ${metadata}`,
+                  `Minted token ID ${tokenId} with CID '${CID}'`,
                   this.stateName
                 );
               }));

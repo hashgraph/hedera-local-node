@@ -63,17 +63,17 @@ export class TokenUtils {
   /**
    * Mints the given amount of tokens for the given token.
    * @param tokenId The token ID to mint.
-   * @param metadata The metadata for the minted tokens.
+   * @param CID The CID metadata for the minted tokens.
    * @param supplyKey The supply key to sign the transaction.
    * @param client The client to use for minting the tokens.
    */
   public static async mintToken(tokenId: TokenId,
-                                metadata: string,
+                                CID: string,
                                 supplyKey: PrivateKey,
                                 client: Client): Promise<TransactionReceipt> {
     const transaction = new TokenMintTransaction()
       .setTokenId(tokenId)
-      .setMetadata([Buffer.from(metadata)])
+      .setMetadata([Buffer.from(CID)])
       .freezeWith(client);
 
     const signTx = await transaction.sign(supplyKey);

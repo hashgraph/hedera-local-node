@@ -11,10 +11,10 @@
       },
       "mints": [
         {
-          "metadata": "QmNPCiNA3Dsu3K5FxDPMG5Q3fZRwVTg14EXA92uqEeSRXn"
+          "CID": "QmNPCiNA3Dsu3K5FxDPMG5Q3fZRwVTg14EXA92uqEeSRXn"
         },
         {
-          "metadata": "QmZ4dgAgt8owvnULxnKxNe8YqpavtVCXmc1Lt2XajFpJs9"
+          "CID": "QmZ4dgAgt8owvnULxnKxNe8YqpavtVCXmc1Lt2XajFpJs9"
         }
       ],
       "tokenMemo": "Random NFT token",

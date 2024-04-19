@@ -31,7 +31,7 @@ export interface ITokenProps {
   decimals?: number | Long;
   initialSupply?: number | Long;
   maxSupply?: number | Long;
-  mints?: Array<{ metadata: string }>;
+  mints?: Array<{ CID: string }>;
   treasuryKey?: IPrivateKey;
   adminKey?: IPrivateKey;
   kycKey?: IPrivateKey;
