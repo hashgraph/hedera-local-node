@@ -89,15 +89,11 @@ export class TokenUtils {
   public static async createToken(token: ITokenProps, client: Client): Promise<TokenId> {
     const transaction = this.getTokenCreateTransaction(token);
 
-    let signTx: TokenCreateTransaction;
+    let signTx: TokenCreateTransaction = transaction.freezeWith(client);
     if (token.adminKey) {
-      const adminKey = PrivateKey.fromStringECDSA(token.adminKey.value);
-      transaction.freezeWith(client);
-      signTx = await (await transaction.sign(adminKey)).signWithOperator(client);
-    } else {
-      transaction.freezeWith(client);
-      signTx = await transaction.signWithOperator(client);
+      signTx = await signTx.sign(getPrivateKey(token.adminKey));
     }
+    signTx = await signTx.signWithOperator(client);
 
     const txResponse = await signTx.execute(client);
     const receipt = await txResponse.getReceipt(client);

@@ -19,8 +19,9 @@
  */
 
 import { expect } from 'chai';
-import { SinonFakeTimers, SinonSandbox, SinonStub, SinonStubbedInstance, useFakeTimers } from 'sinon';
+import { SinonFakeTimers, SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance, useFakeTimers } from 'sinon';
 import { before } from 'mocha';
+import { AccountId, AccountInfo, Client, PrivateKey, Timestamp, TokenId } from '@hashgraph/sdk';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService';
 import { ClientService } from '../../../src/services/ClientService';
@@ -33,6 +34,10 @@ import { ResourceCreationState } from '../../../src/state/ResourceCreationState'
 import { IOBserver } from '../../../src/controller/IObserver';
 import { CLIOptions } from '../../../src/types/CLIOptions';
 import { EventType } from '../../../src/types/EventType';
+import { TokenUtils } from '../../../src/utils/TokenUtils';
+import { accounts, tokens } from '../../../src/configuration/initialResources.json';
+import { AccountUtils } from '../../../src/utils/AccountUtils';
+import { getPrivateKey, IPrivateKey } from '../../../src/configuration/types/IPrivateKey';
 
 describe('ResourceCreationState', () => {
   let resourceCreationState: ResourceCreationState;
@@ -40,14 +45,51 @@ describe('ResourceCreationState', () => {
   let loggerService: SinonStubbedInstance<LoggerService>;
   let serviceLocator: SinonStub;
   let cliService: SinonStubbedInstance<CLIService>;
+  let clientService: SinonStubbedInstance<ClientService>;
   let observer: SinonStubbedInstance<IOBserver>;
+  let entityNum: number = 1000;
+
+
+  const stubCreateTokenCalls = (n: number) => {
+    const createTokenStub = testSandbox.stub(TokenUtils, 'createToken');
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < n; i++) {
+      entityNum += 1;
+      const tokenId = TokenId.fromString(`0.0.${entityNum}`);
+      createTokenStub.onCall(i).resolves(tokenId);
+    }
+    return createTokenStub;
+  };
+
+  const stubCreateAccountCalls = (n: number) => {
+    const createAccountStub = testSandbox.stub(AccountUtils, 'createAccount');
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < n; i++) {
+      entityNum += 1;
+      const accountID = AccountId.fromString(`0.0.${entityNum}`);
+      createAccountStub.onCall(i).resolves(AccountInfo._fromProtobuf(
+        {
+          accountID: accountID._toProtobuf(),
+          key: getPrivateKey(accounts[i].privateKey as IPrivateKey)._toProtobufKey(),
+          balance: accounts[i].balance,
+          expirationTime: new Timestamp(1000, 0),
+        }
+      ));
+    }
+    return createAccountStub;
+  };
+
+  const stubAssociateAccountWithTokens = () => testSandbox.stub(TokenUtils, 'associateAccountWithTokens').resolves();
+
+  const stubMintTokens = () => testSandbox.stub(TokenUtils, 'mintToken').resolves();
 
   before(() => {
     const {
       sandbox,
       loggerServiceStub,
       serviceLocatorStub,
-      cliServiceStub
+      cliServiceStub,
+      clientServiceStub
     } = getTestBed({
       workDir: 'testDir',
       async: false,
@@ -57,6 +99,7 @@ describe('ResourceCreationState', () => {
 
     loggerService = loggerServiceStub;
     cliService = cliServiceStub;
+    clientService = clientServiceStub;
     serviceLocator = serviceLocatorStub;
     testSandbox = sandbox;
     observer = { update: testSandbox.stub() };
@@ -220,6 +263,104 @@ describe('ResourceCreationState', () => {
         createResourcesStub.restore();
         clock.restore();
       });
+    });
+  });
+
+  describe('createResources', () => {
+    let createTokensSpy: SinonSpy;
+    let createAccountsSpy: SinonSpy;
+    let associateAccountsWithTokensSpy: SinonSpy;
+    let mintTokensSpy: SinonSpy;
+    let createTokenStub: SinonStub;
+    let createAccountStub: SinonStub;
+    let associateAccountWithTokensStub: SinonStub;
+    let mintTokensStub: SinonStub;
+
+    const client = Client.forLocalNode().setOperator(
+      AccountId.fromString('0.0.2'),
+      PrivateKey.fromStringED25519('302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137')
+    );
+
+    beforeEach(() => {
+      createTokenStub = stubCreateTokenCalls(tokens.length);
+      createAccountStub = stubCreateAccountCalls(accounts.length);
+      associateAccountWithTokensStub = stubAssociateAccountWithTokens();
+      mintTokensStub = stubMintTokens();
+      createTokensSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'createTokens');
+      createAccountsSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'createAccounts');
+      associateAccountsWithTokensSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'associateAccountsWithTokens');
+      mintTokensSpy = testSandbox.spy(resourceCreationState, <keyof ResourceCreationState>'mintTokens');
+      clientService.getClient.returns(client);
+    });
+
+    afterEach(() => {
+      createTokenStub.restore();
+      createAccountStub.restore();
+      associateAccountWithTokensStub.restore();
+      mintTokensStub.restore();
+      createTokensSpy.restore();
+      createAccountsSpy.restore();
+      associateAccountsWithTokensSpy.restore();
+      mintTokensSpy.restore();
+      clientService.getClient.reset();
+    });
+
+    it('should call createToken with correct arguments', async () => {
+      await resourceCreationState.onStart();
+
+      testSandbox.assert.calledWith(createTokensSpy, tokens);
+      testSandbox.assert.callCount(createTokenStub, tokens.length);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < tokens.length; i++) {
+        testSandbox.assert.calledWithMatch(
+          createTokenStub.getCall(i),
+          tokens[i],
+          client
+        );
+      }
+    });
+
+    it('should call createAccount with correct arguments', async () => {
+      await resourceCreationState.onStart();
+
+      testSandbox.assert.calledWith(createAccountsSpy, accounts);
+      testSandbox.assert.callCount(createAccountStub, accounts.length);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < accounts.length; i++) {
+        const aliasAccountId = getPrivateKey(accounts[i].privateKey as IPrivateKey).publicKey.toAccountId(0, 0);
+        testSandbox.assert.calledWithMatch(
+          createAccountStub.getCall(i),
+          aliasAccountId,
+          accounts[i].balance,
+          client
+        );
+      }
+
+      testSandbox.assert.calledWith(associateAccountsWithTokensSpy, accounts);
+      testSandbox.assert.callCount(associateAccountWithTokensStub,
+        accounts.filter(a => a.associatedTokens && a.associatedTokens.length > 0).length);
+
+      testSandbox.assert.calledWith(mintTokensSpy, tokens);
+      testSandbox.assert.callCount(mintTokensStub,
+        tokens.filter(t => t.mints && t.mints.length > 0)
+          .reduce((acc, t) => t.mints ? acc + t.mints.length : acc, 0));
+    });
+
+    it('should call associateAccountWithTokens with correct arguments', async () => {
+      await resourceCreationState.onStart();
+
+      testSandbox.assert.calledWith(associateAccountsWithTokensSpy, accounts);
+      testSandbox.assert.callCount(associateAccountWithTokensStub,
+        accounts.filter(a => a.associatedTokens && a.associatedTokens.length > 0).length);
+    });
+
+    it('should call mintTokens with correct arguments', async () => {
+      await resourceCreationState.onStart();
+
+      testSandbox.assert.calledWith(mintTokensSpy, tokens);
+      testSandbox.assert.callCount(mintTokensStub,
+        tokens.filter(t => t.mints && t.mints.length > 0)
+          .reduce((acc, t) => t.mints ? acc + t.mints.length : acc, 0));
     });
   });
 });

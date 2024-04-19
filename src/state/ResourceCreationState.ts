@@ -216,15 +216,13 @@ export class ResourceCreationState implements IState {
      */
     private getAssociatedTokenIds(account: IAccountProps,
                                   tokenIdsBySymbol: Map<string, TokenId>): TokenId[] {
-        return account.associatedTokens
-          .filter(tokenSymbol => {
-              if (!tokenIdsBySymbol.has(tokenSymbol)) {
-                  this.logger.warn(`Token ID for ${tokenSymbol} not found`, this.stateName);
-                  return false;
-              }
-              return true;
-          })
-          .map(tokenSymbol => tokenIdsBySymbol.get(tokenSymbol)!);
+        return account.associatedTokens?.filter(tokenSymbol => {
+          if (!tokenIdsBySymbol.has(tokenSymbol)) {
+            this.logger.warn(`Token ID for ${tokenSymbol} not found`, this.stateName);
+            return false;
+          }
+          return true;
+        }).map(tokenSymbol => tokenIdsBySymbol.get(tokenSymbol)!) || [];
     }
 
     private async mintTokens(tokenProps: ITokenProps[],
