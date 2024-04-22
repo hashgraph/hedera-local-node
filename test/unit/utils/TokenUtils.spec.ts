@@ -72,16 +72,17 @@ describe(TokenUtils.name, () => {
     let signStub: SinonStub<[privateKey: PrivateKey], Promise<TokenAssociateTransaction>>;
     let executeStub: SinonStub<[client: any, requestTimeout?: number | undefined], Promise<TransactionResponse>>;
 
-    before(() => {
+    beforeEach(() => {
       setAccountIdStub = testBed.sandbox.stub(TokenAssociateTransaction.prototype, 'setAccountId').returnsThis();
       setTokenIdsStub = testBed.sandbox.stub(TokenAssociateTransaction.prototype, 'setTokenIds').returnsThis();
       freezeWithStub = testBed.sandbox.stub(TokenAssociateTransaction.prototype, 'freezeWith').returnsThis()
       signStub = testBed.sandbox.stub(TokenAssociateTransaction.prototype, 'sign').resolvesThis();
-      executeStub = testBed.sandbox.stub(TokenAssociateTransaction.prototype, 'execute')
-        .resolves({ getReceipt: testBed.sandbox.stub().resolves() } as unknown as TransactionResponse);
+      executeStub = testBed.sandbox.stub(TokenAssociateTransaction.prototype, 'execute').resolves({
+        getReceipt: testBed.sandbox.stub().resolves()
+      } as unknown as TransactionResponse);
     });
 
-    after(() => {
+    afterEach(() => {
       setAccountIdStub.restore();
       setTokenIdsStub.restore();
       freezeWithStub.restore();
@@ -111,16 +112,17 @@ describe(TokenUtils.name, () => {
     let signStub: SinonStub<[privateKey: PrivateKey], Promise<TokenMintTransaction>>;
     let executeStub: SinonStub<[client: any, requestTimeout?: number | undefined], Promise<TransactionResponse>>;
 
-    before(() => {
+    beforeEach(() => {
       setTokenIdStub = testBed.sandbox.stub(TokenMintTransaction.prototype, 'setTokenId').returnsThis();
       setMetadataStub = testBed.sandbox.stub(TokenMintTransaction.prototype, 'setMetadata').returnsThis();
       freezeWithStub = testBed.sandbox.stub(TokenMintTransaction.prototype, 'freezeWith').returnsThis();
       signStub = testBed.sandbox.stub(TokenMintTransaction.prototype, 'sign').resolvesThis();
-      executeStub = testBed.sandbox.stub(TokenMintTransaction.prototype, 'execute')
-        .resolves({ getReceipt: testBed.sandbox.stub().resolves() } as unknown as TransactionResponse);
+      executeStub = testBed.sandbox.stub(TokenMintTransaction.prototype, 'execute').resolves({
+        getReceipt: testBed.sandbox.stub().resolves()
+      } as unknown as TransactionResponse);
     });
 
-    after(() => {
+    afterEach(() => {
       setTokenIdStub.restore();
       setMetadataStub.restore();
       freezeWithStub.restore();
@@ -184,19 +186,22 @@ describe(TokenUtils.name, () => {
 
     for (const token of [tokenWithEcdsaKeys, tokenWithED25519Keys, tokenWithoutKeys]) {
       const keyType = token.treasuryKey?.type;
-      let freezeWithStub: SinonStub<[client: any | null], TokenCreateTransaction>;
-      let signStub: SinonStub<[privateKey: PrivateKey], Promise<TokenCreateTransaction>>;
-      let signWithOperatorStub: SinonStub<[client: any], Promise<TokenCreateTransaction>>;
-      let executeStub: SinonStub<[client: any, requestTimeout?: number | undefined], Promise<TransactionResponse>>;
-      let getTokenCreateTransactionSpy: SinonSpy;
 
       describe(`when token has ${keyType} keys`, () => {
+        let freezeWithStub: SinonStub<[client: any | null], TokenCreateTransaction>;
+        let signStub: SinonStub<[privateKey: PrivateKey], Promise<TokenCreateTransaction>>;
+        let signWithOperatorStub: SinonStub<[client: any], Promise<TokenCreateTransaction>>;
+        let executeStub: SinonStub<[client: any, requestTimeout?: number | undefined], Promise<TransactionResponse>>;
+        let getTokenCreateTransactionSpy: SinonSpy;
+
         beforeEach(() => {
           freezeWithStub = testBed.sandbox.stub(TokenCreateTransaction.prototype, 'freezeWith').returnsThis();
           signStub = testBed.sandbox.stub(TokenCreateTransaction.prototype, 'sign').resolvesThis();
           signWithOperatorStub = testBed.sandbox.stub(TokenCreateTransaction.prototype, 'signWithOperator').resolvesThis();
           executeStub = testBed.sandbox.stub(TokenCreateTransaction.prototype, 'execute').resolves({
-            getReceipt: testBed.sandbox.stub().resolves({ tokenId: TokenId.fromString('0.0.12345') })
+            getReceipt: testBed.sandbox.stub().resolves({
+              tokenId: TokenId.fromString('0.0.12345')
+            })
           } as unknown as TransactionResponse);
           getTokenCreateTransactionSpy = testBed.sandbox.spy(TokenUtils, <keyof TokenUtils>'getTokenCreateTransaction');
         });
@@ -224,15 +229,12 @@ describe(TokenUtils.name, () => {
           testBed.sandbox.assert.match(actualTokenCreateTransaction, expectedTokenCreateTransaction);
         });
 
-        if (keyType !== undefined) {
+        if (keyType) {
           describe(`when token has admin key`, () => {
-            before(() => {
-              if (keyType === KeyType.ED25519) {
-                token.adminKey = toIPrivateKey(PrivateKey.generateED25519());
-              }
-              if (keyType === KeyType.ECDSA) {
-                token.adminKey = toIPrivateKey(PrivateKey.generateECDSA());
-              }
+            beforeEach(() => {
+              token.adminKey = toIPrivateKey(keyType === KeyType.ED25519 ?
+                PrivateKey.generateED25519() :
+                PrivateKey.generateECDSA());
             });
 
             it('should sign token with the admin key and operator client', async () => {
@@ -250,7 +252,7 @@ describe(TokenUtils.name, () => {
         }
 
         describe('when token does not have admin key', () => {
-          before(() => {
+          beforeEach(() => {
             delete token.adminKey;
           });
 
@@ -274,57 +276,78 @@ describe(TokenUtils.name, () => {
         .setTokenSymbol(token.tokenSymbol)
         .setTokenType(token.tokenType === NonFungibleUnique.toString() ? TokenType.NonFungibleUnique : TokenType.FungibleCommon)
         .setSupplyType(token.supplyType === Finite.toString() ? TokenSupplyType.Finite : TokenSupplyType.Infinite);
+
       if (token.decimals !== undefined) {
         expectedTokenCreateTransaction.setDecimals(token.decimals);
       }
+
+      // Non-fungible tokens must have an initial supply of 0
       if (token.tokenType === TokenType.NonFungibleUnique.toString()) {
         expectedTokenCreateTransaction.setInitialSupply(0);
       } else {
         expectedTokenCreateTransaction.setInitialSupply(token.initialSupply || 0);
       }
+
       if (token.maxSupply !== undefined) {
         expectedTokenCreateTransaction.setMaxSupply(token.maxSupply);
       }
+
+      // Treasury account ID is set to the operator ID by default
       if (token.treasuryKey !== undefined) {
         expectedTokenCreateTransaction.setTreasuryAccountId(
-          getPrivateKey(token.treasuryKey!).publicKey.toAccountId(0, 0));
+          getPrivateKey(token.treasuryKey!).publicKey.toAccountId(0, 0)
+        );
       } else {
         expectedTokenCreateTransaction.setTreasuryAccountId(
-          AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!));
+          AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!)
+        );
       }
+
       if (token.kycKey !== undefined) {
         expectedTokenCreateTransaction.setKycKey(getPrivateKey(token.kycKey!));
       }
+
       if (token.freezeKey !== undefined) {
         expectedTokenCreateTransaction.setFreezeKey(getPrivateKey(token.freezeKey!));
       }
+
       if (token.wipeKey !== undefined) {
         expectedTokenCreateTransaction.setWipeKey(getPrivateKey(token.wipeKey!));
       }
+
+      // Supply key is set to the operator key by default
       if (token.supplyKey !== undefined) {
         expectedTokenCreateTransaction.setSupplyKey(getPrivateKey(token.supplyKey!));
       } else {
         expectedTokenCreateTransaction.setSupplyKey(
-          PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!));
+          PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!)
+        );
       }
+
       if (token.feeScheduleKey !== undefined) {
         expectedTokenCreateTransaction.setFeeScheduleKey(getPrivateKey(token.feeScheduleKey!));
       }
+
       if (token.freezeDefault !== undefined) {
         expectedTokenCreateTransaction.setFreezeDefault(token.freezeDefault);
       }
+
       if (token.autoRenewAccountId !== undefined) {
         expectedTokenCreateTransaction.setAutoRenewAccountId(AccountId.fromString(token.autoRenewAccountId));
       }
+
       if (token.expirationTime !== undefined) {
         expectedTokenCreateTransaction.setExpirationTime(new Date(token.expirationTime));
       }
+
       if (token.autoRenewPeriod !== undefined) {
         expectedTokenCreateTransaction.setAutoRenewPeriod(token.autoRenewPeriod);
       }
+
       if (token.tokenMemo !== undefined) {
         expectedTokenCreateTransaction.setTokenMemo(token.tokenMemo);
       }
+
       return expectedTokenCreateTransaction;
     }
   });
