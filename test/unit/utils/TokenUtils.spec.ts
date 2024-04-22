@@ -374,8 +374,8 @@ describe(TokenUtils.name, () => {
       const token: ITokenProps = {
         tokenName: 'Test Fungible Token',
         tokenSymbol: 'TFT',
-        tokenType: 'FungibleCommon',
-        supplyType: 'Infinite',
+        tokenType: FungibleCommon.toString(),
+        supplyType: Infinite.toString(),
         supplyKey: toIPrivateKey(supplyKey)
       };
 
@@ -388,8 +388,8 @@ describe(TokenUtils.name, () => {
       const token: ITokenProps = {
         tokenName: 'Test Fungible Token',
         tokenSymbol: 'TFT',
-        tokenType: 'FungibleCommon',
-        supplyType: 'Infinite'
+        tokenType: FungibleCommon.toString(),
+        supplyType: Infinite.toString()
       };
 
       const actualSupplyKey: PrivateKey = TokenUtils.getSupplyKey(token);
@@ -403,8 +403,8 @@ describe(TokenUtils.name, () => {
       const token: ITokenProps = {
         tokenName: 'Test Fungible Token',
         tokenSymbol: 'TFT',
-        tokenType: 'FungibleCommon',
-        supplyType: 'Infinite',
+        tokenType: FungibleCommon.toString(),
+        supplyType: Infinite.toString(),
         treasuryKey: toIPrivateKey(treasuryKey)
       };
 
@@ -417,8 +417,8 @@ describe(TokenUtils.name, () => {
       const token: ITokenProps = {
         tokenName: 'Test Fungible Token',
         tokenSymbol: 'TFT',
-        tokenType: 'FungibleCommon',
-        supplyType: 'Infinite'
+        tokenType: FungibleCommon.toString(),
+        supplyType: Infinite.toString()
       };
 
       const actualTreasuryAccountId: AccountId = TokenUtils.getTreasuryAccountId(token);
