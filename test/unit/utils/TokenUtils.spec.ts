@@ -416,7 +416,7 @@ describe(TokenUtils.name, () => {
       case 'ED25519':
         keyType = KeyType.ED25519;
         break;
-      case 'secp256k1':
+      case 'ECDSA':
         keyType = KeyType.ECDSA;
         break;
       case 'DER':
