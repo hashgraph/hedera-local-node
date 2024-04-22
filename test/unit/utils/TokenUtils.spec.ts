@@ -412,7 +412,6 @@ describe(TokenUtils.name, () => {
 
   function toIPrivateKey(key: PrivateKey): IPrivateKey {
     let keyType: KeyType;
-    console.trace(key.type);
     switch(key.type) {
       case 'ED25519':
         keyType = KeyType.ED25519;
