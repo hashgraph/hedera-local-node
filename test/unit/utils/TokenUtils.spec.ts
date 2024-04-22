@@ -40,6 +40,8 @@ import { getPrivateKey, IPrivateKey, KeyType } from '../../../src/configuration/
 import { expect } from 'chai';
 import NonFungibleUnique = TokenType.NonFungibleUnique;
 import Finite = TokenSupplyType.Finite;
+import FungibleCommon = TokenType.FungibleCommon;
+import Infinite = TokenSupplyType.Infinite;
 
 describe(TokenUtils.name, () => {
   const client = Client.forLocalNode().setOperator(
@@ -145,12 +147,11 @@ describe(TokenUtils.name, () => {
     const tokenWithEcdsaKeys: ITokenProps = {
       tokenName: 'Test Fungible Token',
       tokenSymbol: 'TFT',
-      tokenType: 'FungibleCommon',
-      supplyType: 'Infinite',
+      tokenType: FungibleCommon.toString(),
+      supplyType: Infinite.toString(),
       tokenMemo: 'Test Token Memo',
       decimals: 2,
       initialSupply: 100,
-      maxSupply: 1000,
       treasuryKey: toIPrivateKey(PrivateKey.generateECDSA()),
       kycKey: toIPrivateKey(PrivateKey.generateECDSA()),
       freezeKey: toIPrivateKey(PrivateKey.generateECDSA()),
@@ -168,8 +169,8 @@ describe(TokenUtils.name, () => {
     const tokenWithED25519Keys: ITokenProps = {
       tokenName: 'Test NFT Token',
       tokenSymbol: 'TNFT',
-      tokenType: 'NonFungibleUnique',
-      supplyType: 'Finite',
+      tokenType: NonFungibleUnique.toString(),
+      supplyType: Finite.toString(),
       maxSupply: 1000,
       treasuryKey: toIPrivateKey(PrivateKey.generateED25519()),
       kycKey: toIPrivateKey(PrivateKey.generateED25519()),
@@ -188,8 +189,8 @@ describe(TokenUtils.name, () => {
     const tokenWithoutKeys: ITokenProps = {
       tokenName: 'Test Fungible Token No Keys',
       tokenSymbol: 'TFTNK',
-      tokenType: 'FungibleCommon',
-      supplyType: 'Finite',
+      tokenType: FungibleCommon.toString(),
+      supplyType: Finite.toString(),
       initialSupply: 1_000_000,
       maxSupply: 1_000_000_000
     };

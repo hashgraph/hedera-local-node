@@ -140,6 +140,7 @@ export class TokenUtils {
    * @param token The properties of the token to create.
    */
   private static getTokenCreateTransaction(token: ITokenProps): TokenCreateTransaction {
+    this.validateTokenProperties(token);
     const transaction = new TokenCreateTransaction();
     this.setRequiredProperties(transaction, token);
     this.setKeyProperties(transaction, token);
@@ -231,6 +232,47 @@ export class TokenUtils {
     if (token.customFees) {
       // TODO: Test this
       transaction.setCustomFees(token.customFees.map(CustomFee._fromProtobuf));
+    }
+  }
+
+  private static validateTokenProperties(token: ITokenProps) {
+    this.assertTruthy(token.tokenName, 'Token name is required');
+    this.assertTruthy(token.tokenSymbol, 'Token symbol is required');
+    this.assertTruthy(token.tokenType, 'Token type is required');
+    this.assertTruthy(token.supplyType, 'Supply type is required');
+    // If the token type is NON_FUNGIBLE_UNIQUE,
+    // the initial supply must be 0 and decimals must be undefined
+    if (token.tokenType === TokenType.NonFungibleUnique.toString()) {
+      this.assertFalsy(token.initialSupply, 'Initial supply must be 0 for non-fungible tokens');
+      this.assertFalsy(token.decimals, 'Decimals must be undefined for non-fungible tokens');
+    }
+    // If the token supply type is FINITE, the max supply must be provided
+    if (token.supplyType === TokenSupplyType.Finite.toString()) {
+      this.assertTruthy(token.maxSupply, 'Max supply is required for finite supply tokens');
+    } else {
+      this.assertFalsy(token.maxSupply, `Max supply must be undefined for infinite supply tokens, was ${token.maxSupply}`);
+    }
+    if (token.autoRenewPeriod) {
+      this.assertTruthy(token.autoRenewAccountId, 'Auto renew account ID is required for auto renew period');
+      this.assertInRange(token.autoRenewPeriod, 2_592_000, 8_000_000, 'Auto renew period must be between 30 days and 3 months');
+    }
+  }
+
+  private static assertTruthy(condition: unknown, errorMessage: string) {
+    if (!condition) {
+      throw new Error(errorMessage);
+    }
+  }
+
+  private static assertFalsy(condition: unknown, errorMessage: string) {
+    if (condition) {
+      throw new Error(errorMessage);
+    }
+  }
+
+  private static assertInRange(value: number, min: number, max: number, errorMessage: string) {
+    if (value < min || value > max) {
+      throw new Error(errorMessage);
     }
   }
 }
