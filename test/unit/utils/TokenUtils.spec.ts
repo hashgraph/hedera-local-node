@@ -148,19 +148,20 @@ describe(TokenUtils.name, () => {
       tokenType: 'FungibleCommon',
       supplyType: 'Infinite',
       tokenMemo: 'Test Token Memo',
-      decimals: 0,
+      decimals: 2,
       initialSupply: 100,
       maxSupply: 1000,
       treasuryKey: toIPrivateKey(PrivateKey.generateECDSA()),
       kycKey: toIPrivateKey(PrivateKey.generateECDSA()),
       freezeKey: toIPrivateKey(PrivateKey.generateECDSA()),
+      pauseKey: toIPrivateKey(PrivateKey.generateECDSA()),
       wipeKey: toIPrivateKey(PrivateKey.generateECDSA()),
       supplyKey: toIPrivateKey(PrivateKey.generateECDSA()),
       feeScheduleKey: toIPrivateKey(PrivateKey.generateECDSA()),
       freezeDefault: false,
       autoRenewAccountId: '0.0.12345',
       expirationTime: '2022-01-01T00:00:00.000Z',
-      autoRenewPeriod: 100,
+      autoRenewPeriod: 2_592_000,
       customFees: []
     };
 
@@ -169,19 +170,28 @@ describe(TokenUtils.name, () => {
       tokenSymbol: 'TNFT',
       tokenType: 'NonFungibleUnique',
       supplyType: 'Finite',
+      maxSupply: 1000,
       treasuryKey: toIPrivateKey(PrivateKey.generateED25519()),
       kycKey: toIPrivateKey(PrivateKey.generateED25519()),
       freezeKey: toIPrivateKey(PrivateKey.generateED25519()),
+      pauseKey: toIPrivateKey(PrivateKey.generateED25519()),
       wipeKey: toIPrivateKey(PrivateKey.generateED25519()),
       supplyKey: toIPrivateKey(PrivateKey.generateED25519()),
-      feeScheduleKey: toIPrivateKey(PrivateKey.generateED25519())
+      feeScheduleKey: toIPrivateKey(PrivateKey.generateED25519()),
+      freezeDefault: true,
+      autoRenewAccountId: '0.0.12345',
+      expirationTime: '2022-01-01T00:00:00.000Z',
+      autoRenewPeriod: 8_000_000,
+      customFees: []
     };
 
     const tokenWithoutKeys: ITokenProps = {
       tokenName: 'Test Fungible Token No Keys',
       tokenSymbol: 'TFTNK',
       tokenType: 'FungibleCommon',
-      supplyType: 'Finite'
+      supplyType: 'Finite',
+      initialSupply: 1_000_000,
+      maxSupply: 1_000_000_000
     };
 
     for (const token of [tokenWithEcdsaKeys, tokenWithED25519Keys, tokenWithoutKeys]) {
@@ -271,84 +281,89 @@ describe(TokenUtils.name, () => {
     }
 
     function getExpectedTokenCreateTransaction(token: ITokenProps): TokenCreateTransaction {
-      const expectedTokenCreateTransaction = new TokenCreateTransaction()
+      const transaction = new TokenCreateTransaction()
         .setTokenName(token.tokenName)
         .setTokenSymbol(token.tokenSymbol)
         .setTokenType(token.tokenType === NonFungibleUnique.toString() ? TokenType.NonFungibleUnique : TokenType.FungibleCommon)
         .setSupplyType(token.supplyType === Finite.toString() ? TokenSupplyType.Finite : TokenSupplyType.Infinite);
 
-      if (token.decimals !== undefined) {
-        expectedTokenCreateTransaction.setDecimals(token.decimals);
-      }
-
       // Non-fungible tokens must have an initial supply of 0
       if (token.tokenType === TokenType.NonFungibleUnique.toString()) {
-        expectedTokenCreateTransaction.setInitialSupply(0);
+        transaction.setInitialSupply(0);
       } else {
-        expectedTokenCreateTransaction.setInitialSupply(token.initialSupply || 0);
+        if (token.initialSupply) {
+          transaction.setInitialSupply(token.initialSupply);
+        }
+        if (token.decimals) {
+          transaction.setDecimals(token.decimals);
+        }
       }
 
-      if (token.maxSupply !== undefined) {
-        expectedTokenCreateTransaction.setMaxSupply(token.maxSupply);
+      if (token.supplyType === TokenSupplyType.Finite.toString() && token.maxSupply) {
+        transaction.setMaxSupply(token.maxSupply);
       }
 
       // Treasury account ID is set to the operator ID by default
-      if (token.treasuryKey !== undefined) {
-        expectedTokenCreateTransaction.setTreasuryAccountId(
+      if (token.treasuryKey) {
+        transaction.setTreasuryAccountId(
           getPrivateKey(token.treasuryKey!).publicKey.toAccountId(0, 0)
         );
       } else {
-        expectedTokenCreateTransaction.setTreasuryAccountId(
+        transaction.setTreasuryAccountId(
           AccountId.fromString(process.env.RELAY_OPERATOR_ID_MAIN!)
         );
       }
 
-      if (token.kycKey !== undefined) {
-        expectedTokenCreateTransaction.setKycKey(getPrivateKey(token.kycKey!));
-      }
-
-      if (token.freezeKey !== undefined) {
-        expectedTokenCreateTransaction.setFreezeKey(getPrivateKey(token.freezeKey!));
-      }
-
-      if (token.wipeKey !== undefined) {
-        expectedTokenCreateTransaction.setWipeKey(getPrivateKey(token.wipeKey!));
-      }
-
       // Supply key is set to the operator key by default
-      if (token.supplyKey !== undefined) {
-        expectedTokenCreateTransaction.setSupplyKey(getPrivateKey(token.supplyKey!));
+      if (token.supplyKey) {
+        transaction.setSupplyKey(getPrivateKey(token.supplyKey!));
       } else {
-        expectedTokenCreateTransaction.setSupplyKey(
+        transaction.setSupplyKey(
           PrivateKey.fromStringED25519(process.env.RELAY_OPERATOR_KEY_MAIN!)
         );
       }
 
-      if (token.feeScheduleKey !== undefined) {
-        expectedTokenCreateTransaction.setFeeScheduleKey(getPrivateKey(token.feeScheduleKey!));
+      if (token.kycKey) {
+        transaction.setKycKey(getPrivateKey(token.kycKey!));
+      }
+
+      if (token.freezeKey) {
+        transaction.setFreezeKey(getPrivateKey(token.freezeKey!));
+      }
+
+      if (token.pauseKey) {
+        transaction.setPauseKey(getPrivateKey(token.pauseKey!));
+      }
+
+      if (token.wipeKey) {
+        transaction.setWipeKey(getPrivateKey(token.wipeKey!));
+      }
+
+      if (token.feeScheduleKey) {
+        transaction.setFeeScheduleKey(getPrivateKey(token.feeScheduleKey!));
       }
 
       if (token.freezeDefault !== undefined) {
-        expectedTokenCreateTransaction.setFreezeDefault(token.freezeDefault);
+        transaction.setFreezeDefault(token.freezeDefault);
       }
 
-      if (token.autoRenewAccountId !== undefined) {
-        expectedTokenCreateTransaction.setAutoRenewAccountId(AccountId.fromString(token.autoRenewAccountId));
+      if (token.autoRenewAccountId) {
+        transaction.setAutoRenewAccountId(AccountId.fromString(token.autoRenewAccountId));
       }
 
-      if (token.expirationTime !== undefined) {
-        expectedTokenCreateTransaction.setExpirationTime(new Date(token.expirationTime));
+      if (token.expirationTime) {
+        transaction.setExpirationTime(new Date(token.expirationTime));
       }
 
-      if (token.autoRenewPeriod !== undefined) {
-        expectedTokenCreateTransaction.setAutoRenewPeriod(token.autoRenewPeriod);
+      if (token.autoRenewPeriod >= 2_592_000 && token.autoRenewPeriod <= 8_000_000) {
+        transaction.setAutoRenewPeriod(token.autoRenewPeriod);
       }
 
-      if (token.tokenMemo !== undefined) {
-        expectedTokenCreateTransaction.setTokenMemo(token.tokenMemo);
+      if (token.tokenMemo) {
+        transaction.setTokenMemo(token.tokenMemo);
       }
 
-      return expectedTokenCreateTransaction;
+      return transaction;
     }
   });
 

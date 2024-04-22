@@ -163,11 +163,19 @@ export class TokenUtils {
       transaction.setInitialSupply(0);
     } else {
       transaction.setTokenType(TokenType.FungibleCommon);
-      transaction.setInitialSupply(token.initialSupply || 0);
+      if (token.initialSupply) {
+        transaction.setInitialSupply(token.initialSupply);
+      }
+      if (token.decimals) {
+        transaction.setDecimals(token.decimals);
+      }
     }
     // If not provided, the TokenSupplyType is INFINITE by default
     if (token.supplyType === TokenSupplyType.Finite.toString()) {
       transaction.setSupplyType(TokenSupplyType.Finite);
+      if (token.maxSupply) {
+        transaction.setMaxSupply(token.maxSupply);
+      }
     } else {
       transaction.setSupplyType(TokenSupplyType.Infinite);
     }
@@ -205,12 +213,6 @@ export class TokenUtils {
    * @param token The properties of the token to create.
    */
   private static setOptionalProperties(transaction: TokenCreateTransaction, token: ITokenProps): void {
-    if (token.maxSupply || token.maxSupply === 0) {
-      transaction.setMaxSupply(token.maxSupply);
-    }
-    if (token.decimals || token.decimals === 0) {
-      transaction.setDecimals(token.decimals);
-    }
     if (token.freezeDefault !== undefined) {
       transaction.setFreezeDefault(token.freezeDefault);
     }
@@ -220,7 +222,7 @@ export class TokenUtils {
     if (token.expirationTime) {
       transaction.setExpirationTime(new Date(token.expirationTime));
     }
-    if (token.autoRenewPeriod || token.autoRenewPeriod === 0) {
+    if (token.autoRenewPeriod >= 2_592_000 && token.autoRenewPeriod <= 8_000_000) {
       transaction.setAutoRenewPeriod(token.autoRenewPeriod);
     }
     if (token.tokenMemo) {
