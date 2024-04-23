@@ -181,7 +181,7 @@ describe(AccountUtils.name, () => {
       setKeyStub = testBed.sandbox.stub(AccountCreateTransaction.prototype, 'setKey').returnsThis();
       setInitialBalanceStub = testBed.sandbox.stub(AccountCreateTransaction.prototype, 'setInitialBalance').returnsThis();
       executeAccountCreateTransactionStub = testBed.sandbox.stub(AccountCreateTransaction.prototype, 'execute')
-        .resolves({ getReceipt: testBed.sandbox.stub().resolves() } as unknown as TransactionResponse);
+        .resolves({ getReceipt: testBed.sandbox.stub().resolves({ accountId }) } as unknown as TransactionResponse);
       setAccountIdStub = testBed.sandbox.stub(AccountInfoQuery.prototype, 'setAccountId').returnsThis();
       executeAccountInfoQueryStub = testBed.sandbox.stub(AccountInfoQuery.prototype, 'execute')
         .resolves({ accountId, balance: new Hbar(balance) } as AccountInfo);
@@ -206,7 +206,7 @@ describe(AccountUtils.name, () => {
       testBed.sandbox.assert.calledWith(executeAccountCreateTransactionStub, client);
 
       // AccountInfoQuery
-      testBed.sandbox.assert.calledOnceWithExactly(setAccountIdStub, publicKey.toAccountId(0, 0));
+      testBed.sandbox.assert.calledOnceWithExactly(setAccountIdStub, accountId);
       testBed.sandbox.assert.calledWith(executeAccountInfoQueryStub, client);
     });
   });

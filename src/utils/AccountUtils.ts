@@ -88,10 +88,10 @@ export class AccountUtils {
       .setKey(publicKey)
       .setInitialBalance(new Hbar(initialBalance))
       .execute(client);
-    await response.getReceipt(client);
+    const receipt = await response.getReceipt(client);
 
     return new AccountInfoQuery()
-      .setAccountId(publicKey.toAccountId(0, 0))
+      .setAccountId(receipt.accountId!)
       .execute(client);
   }
 }
