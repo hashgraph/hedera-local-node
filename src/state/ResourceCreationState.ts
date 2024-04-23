@@ -97,6 +97,7 @@ export class ResourceCreationState implements IState {
     public async onStart(): Promise<void> {
         const { async, createInitialResources } = this.cliService.getCurrentArgv();
         if (!createInitialResources) {
+          this.observer!.update(EventType.Finish);
           return;
         }
         
@@ -104,13 +105,11 @@ export class ResourceCreationState implements IState {
         this.logger.info(
           `Starting Resource Creation state in ${mode} mode`, this.stateName);
 
-        const promise = this.createResources().then(() => {
-          this.observer?.update(EventType.Finish);
-        });
-
+        const promise = this.createResources();
         if (!async) {
             await promise;
         }
+        this.observer!.update(EventType.Finish);
     }
 
     /**

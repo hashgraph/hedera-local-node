@@ -215,12 +215,11 @@ describe('ResourceCreationState', () => {
         testSandbox.assert.calledWith(loggerService.info, RESOURCE_CREATION_STARTING_SYNCHRONOUS_MESSAGE, ResourceCreationState.name);
         testSandbox.assert.called(createResourcesStub);
         testSandbox.assert.notCalled(awaitStub);
-        testSandbox.assert.notCalled(observer.update);
+        testSandbox.assert.calledWith(observer.update, EventType.Finish);
 
         clock.tick(1500);
 
         testSandbox.assert.called(awaitStub);
-        // testSandbox.assert.called(observer.update); // failing, idk why :/
       });
 
       afterEach(() => {
