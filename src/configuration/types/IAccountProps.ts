@@ -21,7 +21,7 @@
 import { IPrivateKey } from './IPrivateKey';
 
 export interface IAccountProps {
-  privateKey: IPrivateKey;
   balance: number;
+  privateKey?: IPrivateKey;
   associatedTokens?: string[];
 }

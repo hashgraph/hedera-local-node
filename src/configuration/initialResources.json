@@ -45,10 +45,6 @@
     },
     {
       "balance": 1000,
-      "privateKey": {
-        "value": "0xa79d22e45081cd83a8e5de6d72da25cb6fdb9d70b9eebe3ea0ca278a1bd659a0",
-        "type": "ECDSA"
-      },
       "associatedTokens": [
         "RNFT"
       ]

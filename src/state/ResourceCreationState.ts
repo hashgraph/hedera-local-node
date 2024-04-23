@@ -18,7 +18,7 @@
  *
  */
 
-import { AccountId, TokenId } from '@hashgraph/sdk';
+import { TokenId } from '@hashgraph/sdk';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -31,7 +31,6 @@ import { TokenUtils } from '../utils/TokenUtils';
 import { ITokenProps } from '../configuration/types/ITokenProps';
 import { IAccountProps } from '../configuration/types/IAccountProps';
 import { AccountUtils } from '../utils/AccountUtils';
-import { getPrivateKey } from '../configuration/types/IPrivateKey';
 
 /**
  * Represents the state of resource creation.
@@ -119,36 +118,43 @@ export class ResourceCreationState implements IState {
     private async createResources(): Promise<void> {
         const accountProps: IAccountProps[] = accounts as IAccountProps[];
         const tokenProps: ITokenProps[] = tokens as ITokenProps[];
-        const accountIds: Map<string, AccountId> = await this.createAccounts(accountProps);
         const tokenIds: Map<string, TokenId> = await this.createTokens(tokenProps);
-        await this.associateAccountsWithTokens(accountProps, accountIds, tokenIds);
+        await this.createAndAssociateAccounts(accountProps, tokenIds);
         await this.mintTokens(tokenProps, tokenIds);
     }
 
     /**
      * Creates accounts with the given properties.
      * @param accountProps The properties of the accounts to create.
-     * @returns Promise that resolves with a map of account private keys to account IDs.
+     * @param tokenIdsBySymbol Map of token symbols to token IDs.
+     * @returns Promise that resolves when all accounts are created (and associated with tokens).
      */
-    private async createAccounts(accountProps: IAccountProps[]): Promise<Map<string, AccountId>> {
+    private async createAndAssociateAccounts(accountProps: IAccountProps[],
+                                             tokenIdsBySymbol: Map<string, TokenId>): Promise<void> {
         this.logger.info('Creating accounts', this.stateName);
         const client = this.clientService.getClient();
-        const accountIds = await Promise.all(
-          accountProps.map(async (account: IAccountProps): Promise<[string, AccountId]> => {
-            const privateKey = getPrivateKey(account.privateKey);
-            const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
-            const info = await AccountUtils.createAccount(aliasAccountId, account.balance, client);
-            this.logger.info(
-              `Successfully created account with:
-              * normal account ID: ${info.accountId.toString()}
-              * aliased account ID: 0.0.${info.aliasKey?.toString()}
+
+        const promises = accountProps.map(async (account: IAccountProps): Promise<void> => {
+          const { privateKey, accountInfo } = await AccountUtils.createAccountFromProps(account, client);
+          this.logger.info(
+            `Successfully created account with:
+              * normal account ID: ${accountInfo.accountId.toString()}
+              * aliased account ID: 0.0.${accountInfo.aliasKey?.toString()}
               * private key (use this in SDK/Hedera-native wallets): ${privateKey.toStringDer()}
               * raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}`,
-              this.stateName);
-            return [account.privateKey.value, info.accountId];
-          })
-        );
-        return new Map<string, AccountId>(accountIds);
+            this.stateName);
+
+          if (account.associatedTokens && account.associatedTokens.length > 0) {
+            const associatedTokenIds = this.getTokenIdsFor(account.associatedTokens, tokenIdsBySymbol);
+            await TokenUtils.associateAccountWithTokens(accountInfo.accountId, associatedTokenIds, privateKey, client);
+            this.logger.info(
+              `Associated account ${accountInfo.accountId} with tokens: ${associatedTokenIds.join(', ')}`,
+              this.stateName
+            );
+          }
+        });
+
+        await Promise.all(promises);
     }
 
     /**
@@ -159,63 +165,28 @@ export class ResourceCreationState implements IState {
     private async createTokens(tokenProps: ITokenProps[]): Promise<Map<string, TokenId>> {
         this.logger.info('Creating tokens', this.stateName);
         const client = this.clientService.getClient();
-        const tokenIds = await Promise.all(
-          tokenProps.map(async (token: ITokenProps): Promise<[string, TokenId]> => {
-              const tokenId = await TokenUtils.createToken(token, client);
-              this.logger.info(
-                `Successfully created ${token.tokenType} token '${token.tokenSymbol}' with ID ${tokenId}`,
-                this.stateName
-              );
-              return [token.tokenSymbol, tokenId];
-          })
-        );
-        return new Map<string, TokenId>(tokenIds);
+
+        const promises = tokenProps.map(async (token: ITokenProps): Promise<[string, TokenId]> => {
+          const tokenId = await TokenUtils.createToken(token, client);
+          this.logger.info(
+            `Successfully created ${token.tokenType} token '${token.tokenSymbol}' with ID ${tokenId}`,
+            this.stateName
+          );
+          return [token.tokenSymbol, tokenId];
+        });
+
+        return new Map<string, TokenId>(await Promise.all(promises));
     }
 
     /**
-     * Associates accounts with tokens.
-     * @param accountProps The properties of the accounts to associate.
-     * @param accountIds Map of account private keys to account IDs.
-     * @param tokenIds Map of token symbols to token IDs.
-     * @returns Promise that resolves when all accounts are associated with tokens.
-     */
-    private async associateAccountsWithTokens(accountProps: IAccountProps[],
-                                              accountIds: Map<string, AccountId>,
-                                              tokenIds: Map<string, TokenId>): Promise<void> {
-        this.logger.info('Associating accounts with tokens', this.stateName);
-
-        const client = this.clientService.getClient();
-        const associateAccountPromises: Promise<void>[] = accountProps
-          .filter(account => {
-              if (!accountIds.has(account.privateKey.value)) {
-                  this.logger.warn(`Account ID for key ${account.privateKey.value} not found`, this.stateName);
-                  return false;
-              }
-              return true;
-          })
-          .map(async (account: IAccountProps): Promise<void> => {
-              const accountId = accountIds.get(account.privateKey.value)!;
-              const accountTokens = this.getAssociatedTokenIds(account, tokenIds);
-              const privateKey = getPrivateKey(account.privateKey);
-              await TokenUtils.associateAccountWithTokens(accountId, accountTokens, privateKey, client);
-              this.logger.info(
-                `Associated account ${accountId} with token IDs: ${accountTokens.join(', ')}`,
-                this.stateName
-              );
-          });
-
-        await Promise.all(associateAccountPromises);
-    }
-
-    /**
-     * Gets the token IDs associated with the given account.
-     * @param account The account to get the associated token IDs for.
+     * Gets the token IDs associated with the given token symbols.
+     * @param tokenSymbols The token symbols to get IDs for.
      * @param tokenIdsBySymbol Map of token symbols to token IDs.
      * @returns The token IDs associated with the account.
      */
-    private getAssociatedTokenIds(account: IAccountProps,
-                                  tokenIdsBySymbol: Map<string, TokenId>): TokenId[] {
-        return account.associatedTokens?.filter(tokenSymbol => {
+    private getTokenIdsFor(tokenSymbols: string[],
+                           tokenIdsBySymbol: Map<string, TokenId>): TokenId[] {
+        return tokenSymbols?.filter(tokenSymbol => {
           if (!tokenIdsBySymbol.has(tokenSymbol)) {
             this.logger.warn(`Token ID for ${tokenSymbol} not found`, this.stateName);
             return false;
@@ -224,31 +195,37 @@ export class ResourceCreationState implements IState {
         }).map(tokenSymbol => tokenIdsBySymbol.get(tokenSymbol)!) || [];
     }
 
+  /**
+   * Mints tokens with the given properties.
+   * @param tokenProps The properties of the tokens to mint.
+   * @param tokenIdsBySymbol Map of token symbols to token IDs.
+   */
     private async mintTokens(tokenProps: ITokenProps[],
-                             tokenIds: Map<string, TokenId>): Promise<void> {
+                             tokenIdsBySymbol: Map<string, TokenId>): Promise<void> {
         this.logger.info('Minting NFTs', this.stateName);
         const client = this.clientService.getClient();
-        await Promise.all(
-          tokenProps
-            .filter(token => {
-              const shouldMint = !!token.mints?.length;
-              if (shouldMint && !tokenIds.has(token.tokenSymbol)) {
-                  this.logger.warn(`Token ID for ${token.tokenSymbol} not found`, this.stateName);
-                  return false;
-              }
-              return shouldMint;
-            })
-            .map(async (token: ITokenProps): Promise<void> => {
-              const tokenId = tokenIds.get(token.tokenSymbol)!;
-              const supplyKey = TokenUtils.getSupplyKey(token);
-              await Promise.all(token.mints!.map(async ({ CID }) => {
-                await TokenUtils.mintToken(tokenId, CID, supplyKey, client);
-                this.logger.info(
-                  `Minted token ID ${tokenId} with CID '${CID}'`,
-                  this.stateName
-                );
-              }));
+
+        const promises = tokenProps
+          .filter(token => {
+            const shouldMint = !!token.mints?.length;
+            if (shouldMint && !tokenIdsBySymbol.has(token.tokenSymbol)) {
+              this.logger.warn(`Token ID for ${token.tokenSymbol} not found`, this.stateName);
+              return false;
+            }
+            return shouldMint;
           })
-        );
+          .map(async (token: ITokenProps): Promise<void> => {
+            const tokenId = tokenIdsBySymbol.get(token.tokenSymbol)!;
+            const supplyKey = TokenUtils.getSupplyKey(token);
+            await Promise.all(token.mints!.map(async ({ CID }) => {
+              await TokenUtils.mintToken(tokenId, CID, supplyKey, client);
+              this.logger.info(
+                `Minted token ID ${tokenId} with CID '${CID}'`,
+                this.stateName
+              );
+            }));
+          });
+
+        await Promise.all(promises);
     }
 }

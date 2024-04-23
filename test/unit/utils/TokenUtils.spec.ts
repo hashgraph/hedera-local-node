@@ -18,8 +18,7 @@
  *
  */
 
-import { SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
-import { ClientService } from '../../../src/services/ClientService';
+import { SinonSpy, SinonStub } from 'sinon';
 import { before } from 'mocha';
 import { getTestBed, LocalNodeTestBed } from '../testBed';
 import { TokenUtils } from '../../../src/utils/TokenUtils';
@@ -36,30 +35,24 @@ import {
   TransactionResponse
 } from '@hashgraph/sdk';
 import { ITokenProps } from '../../../src/configuration/types/ITokenProps';
-import { getPrivateKey, IPrivateKey, KeyType } from '../../../src/configuration/types/IPrivateKey';
+import { getPrivateKey, KeyType } from '../../../src/configuration/types/IPrivateKey';
 import { expect } from 'chai';
+import { toIPrivateKey } from '../../testUtils';
 import NonFungibleUnique = TokenType.NonFungibleUnique;
 import Finite = TokenSupplyType.Finite;
 import FungibleCommon = TokenType.FungibleCommon;
 import Infinite = TokenSupplyType.Infinite;
 
 describe(TokenUtils.name, () => {
-  const client = Client.forLocalNode().setOperator(
-    AccountId.fromString('0.0.2'),
-    PrivateKey.fromStringED25519('302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137')
-  );
   let testBed: LocalNodeTestBed;
-  let clientServiceStub: SinonStubbedInstance<ClientService>;
-  let getClientStub: SinonStub<[], Client>;
+  let client: Client;
 
   before(() => {
     testBed = getTestBed();
-    clientServiceStub = testBed.clientServiceStub;
-    getClientStub = clientServiceStub.getClient.returns(client);
+    client = testBed.clientServiceStub.getClient();
   });
 
   after(() => {
-    getClientStub.restore();
     testBed.sandbox.restore();
   });
 
@@ -425,22 +418,4 @@ describe(TokenUtils.name, () => {
       testBed.sandbox.assert.match(actualTreasuryAccountId, operatorId);
     });
   });
-
-  function toIPrivateKey(key: PrivateKey): IPrivateKey {
-    let keyType: KeyType;
-    switch(key.type) {
-      case 'ED25519':
-        keyType = KeyType.ED25519;
-        break;
-      case 'secp256k1':
-        keyType = KeyType.ECDSA;
-        break;
-      case 'DER':
-        keyType = KeyType.DER;
-        break;
-      default:
-        throw new Error(`Unsupported key type: ${key.type}`);
-    }
-    return { value: key.toString(), type: keyType };
-  }
 });
