@@ -139,7 +139,7 @@ export class ResourceCreationState implements IState {
           this.logger.info(
             `Successfully created account with:
               * normal account ID: ${accountInfo.accountId.toString()}
-              * aliased account ID: 0.0.${accountInfo.aliasKey?.toString()}
+              * aliased account ID: ${accountInfo.aliasKey ? `0.0.${  accountInfo.aliasKey?.toString()}` : 'N/A'}
               * private key (use this in SDK/Hedera-native wallets): ${privateKey.toStringDer()}
               * raw private key (use this for JSON RPC wallet import): ${privateKey.toStringRaw()}`,
             this.stateName);
