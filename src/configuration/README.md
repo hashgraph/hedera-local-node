@@ -165,13 +165,13 @@ Edge cases to consider:
   - if not specified, the `ResourceCreationState` will use the operator account as the treasury account of the token.
 - **`initialSupply`**: 
   - if the `tokenType` is `NON_FUNGIBLE_UNIQUE`, the `initialSupply` field **must** be unspecified or set to `0`.
-  - if the `tokenType` is `FUNGIBLE_COMMON`, the `initialSupply` field can be provided.
+  - if the `tokenType` is `FUNGIBLE_COMMON`, the `initialSupply` field **must** be provided.
 - **`maxSupply`**:
   - if the `supplyType` is `FINITE`, the `maxSupply` **must** be provided.
   - if the `supplyType` is `INFINITE`, the `maxSupply` field **must** be unspecified.
 - **`decimals`**: 
   - if the `tokenType` is `NON_FUNGIBLE_UNIQUE`, the `decimals` field **must** be unspecified or set to `0`.
-  - if the `tokenType` is `FUNGIBLE_COMMON`, the `decimals` field can be provided.
+  - if the `tokenType` is `FUNGIBLE_COMMON`, the `decimals` field **must** be provided.
 - **`mints`**:
   - if the `tokenType` is `NON_FUNGIBLE_UNIQUE`, the `mints` array can be provided.
   - if the `tokenType` is `FUNGIBLE_COMMON`, the `mints` array is ignored.

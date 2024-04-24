@@ -245,6 +245,9 @@ export class TokenUtils {
     if (token.tokenType === TokenType.NonFungibleUnique.toString()) {
       this.assertFalsy(token.initialSupply, 'Initial supply must be 0 or undefined for non-fungible tokens');
       this.assertFalsy(token.decimals, 'Decimals must be 0 or undefined for non-fungible tokens');
+    } else {
+      this.assertTruthy(token.initialSupply, 'Initial supply is required for fungible tokens');
+      this.assertTruthy(token.decimals, 'Decimals is required for fungible tokens');
     }
     // If the token supply type is FINITE, the max supply must be provided
     if (token.supplyType === TokenSupplyType.Finite.toString()) {
