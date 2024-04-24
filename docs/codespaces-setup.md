@@ -26,7 +26,7 @@ Get to know what are the free and paid plans includes: [About billing for GitHub
 Open the [Hedela Local Node repo](https://github.com/hashgraph/hedera-local-node) and click on the `Code`->`Codespaces`->`...`-> `New with options...` button and choose the appropriate settings:
 ![Codespaces new button](https://docs.github.com/assets/cb-69605/mw-1440/images/help/codespaces/default-machine-type.webp)
 
-### Accessing ports
+### Services
 
 The following ports are setup to be accessed:
 | Type                              | Endpoint                                         |
@@ -36,7 +36,7 @@ The following ports are setup to be accessed:
 | Mirror Node REST API Endpoint     | [http://localhost:5551](http://localhost:5551)   |
 | JSON RPC Relay Endpoint           | [http://localhost:7546](http://localhost:7546)   |
 | JSON RPC Relay Websocket Endpoint | [http://localhost:8546](http://localhost:8546)   |
-| Mirror Node Explorer              | [http://localhost:8080](http://localhost:8080)   |
+| Mirror Node Explorer (Hashscan)              | [http://localhost:8080/devnet/dashboard](http://localhost:8080/devnet/dashboard)|
 | Grafana UI                        | [http://localhost:3000](http://localhost:3000)   |
 | Prometheus UI                     | [http://localhost:9090](http://localhost:9090)   |
 
@@ -45,10 +45,46 @@ They will be redirected automatically to the localhost of your computer if you a
 ### Config file
 `.devcontainer/devcontainer.json` is the configuration file for Codespaces: [`devcontainer.json`](https://containers.dev/implementors/json_reference/)
 
+### Testing
+
+#### Mirror Node REST API
+
+The following command queries the Mirror Node for a list of accounts on your Hedera network.
+
+```shell
+curl "http://localhost:5551/api/v1/accounts" \
+  -X GET
+```
+
+See the [Mirror Node interact API docs](https://testnet.mirrornode.hedera.com/api/v1/docs/)
+for a full list of available APIs.
+
+#### JSON RPC Relay
+
+The following command queries the RPC Relay for the latest block on your Hedera network.
+
+```shell
+curl "http://localhost:7546" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  --data '{"method":"eth_getBlockByNumber","params":["latest",false],"id":1,"jsonrpc":"2.0"}'
+```
+
+See the [endpoint table](https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/docs/rpc-api.md#endpoint-table)
+in `hedera-json-rpc-relay` for a full list of available RPCs.
+
+#### Mirror Node Explorer (Hashscan)
+
+Simply visit the URL in your browser.
+
+Ensure that `LOCALNET` is selected, as this will show you
+the Hedera network running within your Codespaces environment,
+and not one of the public nodes.
+
 ## Referenced Documents  
 
 * [Quickstart for GitHub Codespaces](https://docs.github.com/en/codespaces/getting-started/quickstart)
 * [GitHub Codespaces overview](https://docs.github.com/en/codespaces/overview)
 * [About billing for GitHub Codespaces](https://docs.github.com/en/billing/managing-billing-for-github-codespaces/about-billing-for-github-codespaces)
 * [devcontainer.json](https://containers.dev/implementors/json_reference/)
-* 
+
