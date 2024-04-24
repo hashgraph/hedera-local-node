@@ -18,7 +18,7 @@
  *
  */
 
-import { TokenId } from '@hashgraph/sdk';
+import { TokenId, TokenType } from '@hashgraph/sdk';
 import { IOBserver } from '../controller/IObserver';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -207,7 +207,8 @@ export class ResourceCreationState implements IState {
 
         const promises = tokenProps
           .filter(token => {
-            const shouldMint = !!token.mints?.length;
+            const isNft = token.tokenType === TokenType.NonFungibleUnique.toString();
+            const shouldMint = isNft && !!token.mints?.length;
             if (shouldMint && !tokenIdsBySymbol.has(token.tokenSymbol)) {
               this.logger.warn(`Token ID for ${token.tokenSymbol} not found`, this.stateName);
               return false;

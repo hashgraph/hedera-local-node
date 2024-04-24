@@ -243,8 +243,8 @@ export class TokenUtils {
     // If the token type is NON_FUNGIBLE_UNIQUE,
     // the initial supply must be 0 and decimals must be undefined
     if (token.tokenType === TokenType.NonFungibleUnique.toString()) {
-      this.assertFalsy(token.initialSupply, 'Initial supply must be 0 for non-fungible tokens');
-      this.assertFalsy(token.decimals, 'Decimals must be undefined for non-fungible tokens');
+      this.assertFalsy(token.initialSupply, 'Initial supply must be 0 or undefined for non-fungible tokens');
+      this.assertFalsy(token.decimals, 'Decimals must be 0 or undefined for non-fungible tokens');
     }
     // If the token supply type is FINITE, the max supply must be provided
     if (token.supplyType === TokenSupplyType.Finite.toString()) {
