@@ -2,6 +2,10 @@ name: Publish Package to npmjs
 on:
   release:
     types: [published]
+
+permissions:
+  contents: read
+
 jobs:
   publish-npm-package:
     runs-on: ubuntu-latest

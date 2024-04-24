@@ -30,6 +30,7 @@ defaults:
     shell: bash
 
 permissions:
+  contents: read
   statuses: write
 
 concurrency:
@@ -40,8 +41,6 @@ jobs:
   title-check:
     name: Title Check
     runs-on: [self-hosted, Linux, medium, ephemeral]
-    permissions:
-      statuses: write
     steps:
       - name: Check PR Title
         uses: aslafy-z/conventional-pr-title-action@v3
