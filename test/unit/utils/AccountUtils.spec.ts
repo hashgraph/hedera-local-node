@@ -48,7 +48,7 @@ describe(AccountUtils.name, () => {
   });
 
   after(() => {
-    testBed.sandbox.restore();
+    testBed.sandbox.resetHistory();
   });
 
   describe('createAccountFromProps', () => {

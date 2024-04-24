@@ -53,7 +53,7 @@ describe(TokenUtils.name, () => {
   });
 
   after(() => {
-    testBed.sandbox.restore();
+    testBed.sandbox.resetHistory();
   });
 
   describe('associateAccountWithTokens', () => {
