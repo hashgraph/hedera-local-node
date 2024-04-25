@@ -6,7 +6,7 @@ export PGDATABASE="${POSTGRES_DB:-postgres}"
 export PGHOST="${PGHOST}"
 export PGUSER="${POSTGRES_USER:-postgres}"
 
-DB_SPECIFIC_EXTENSION_SQL=
+DB_SPECIFIC_EXTENSION_SQL="create extension btree_gist;"
 # PostgreSQL 16 requires role A to have Admin privilege on role B in order to grant role B to any other role, and there
 # are several versioned v1 migrations that grant :importerUsername to :ownerUsername.
 DB_SPECIFIC_IMPORTER_ROLE_ADMIN="admin :ownerUsername"
