@@ -40,7 +40,7 @@ concurrency:
 jobs:
   smoke-tests:
     name: Smoke Tests
-    runs-on: [self-hosted, Linux, medium, ephemeral]
+    runs-on: [self-hosted, Linux, large, ephemeral]
 
     strategy:
       fail-fast: false
@@ -79,7 +79,7 @@ jobs:
 
   browser-tests:
     name: Browser Tests
-    runs-on: [self-hosted, Linux, medium, ephemeral ]
+    runs-on: [self-hosted, Linux, large, ephemeral ]
 
     strategy:
         fail-fast: false
@@ -115,7 +115,7 @@ jobs:
 
   unit-tests:
           name: Unit Tests
-          runs-on: [self-hosted, Linux, medium, ephemeral]
+          runs-on: [self-hosted, Linux, large, ephemeral]
       
           strategy:
               fail-fast: false
