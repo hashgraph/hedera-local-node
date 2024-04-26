@@ -40,7 +40,7 @@ concurrency:
 jobs:
   smoke-tests:
     name: Smoke Tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, medium, ephemeral]
 
     strategy:
       fail-fast: false
@@ -50,10 +50,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@0edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -68,7 +68,7 @@ jobs:
         run: npm run start -- --network ${{ matrix.network }} -d
 
       - name: Run smoke test
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.2.0
         with:
           max_attempts: 3
           timeout_minutes: 3
@@ -79,7 +79,7 @@ jobs:
 
   browser-tests:
     name: Browser Tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, medium, ephemeral ]
 
     strategy:
         fail-fast: false
@@ -88,10 +88,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -115,7 +115,7 @@ jobs:
 
   unit-tests:
           name: Unit Tests
-          runs-on: ubuntu-latest
+          runs-on: [self-hosted, Linux, medium, ephemeral]
       
           strategy:
               fail-fast: false
@@ -124,10 +124,10 @@ jobs:
       
           steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
               with:
                 node-version: ${{ matrix.node-version }}
                 cache: npm
@@ -140,5 +140,5 @@ jobs:
               
             - name: Upload coverage report
               if: ${{ always() && !cancelled() }}
-              uses: codecov/codecov-action@v3
+              uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed #  v4.3.0
       
