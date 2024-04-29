@@ -48,7 +48,7 @@ export enum LogBoard {
     MIRROR = 'MIRROR',
     RELAY = 'RELAY',
     ACCOUNT = 'ACCOUNT',
-    RESOURCE = 'RESOURCE'
+    RESOURCE = 'RESOURCE',
 }
 
 /**
