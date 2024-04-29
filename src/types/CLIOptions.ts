@@ -70,5 +70,5 @@ export interface CLIOptions {
     mirrorTag: string,
     relayTag: string,
     workDir: string,
-    createInitialResources: boolean
+    createInitialResources: boolean,
 }

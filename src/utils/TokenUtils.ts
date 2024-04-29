@@ -45,6 +45,8 @@ export class TokenUtils {
    * @param tokenIds The token IDs to associate.
    * @param accountKey The account key to sign the transaction.
    * @param client The client to use for associating the account with tokens.
+   * @returns {Promise<void>}
+   * A promise that resolves when the account is associated with the tokens.
    */
   public static async associateAccountWithTokens(accountId: AccountId,
                                                  tokenIds: TokenId[],
@@ -66,6 +68,7 @@ export class TokenUtils {
    * @param CID The CID metadata for the minted tokens.
    * @param supplyKey The supply key to sign the transaction.
    * @param client The client to use for minting the tokens.
+   * @returns {TransactionReceipt} The receipt of the mint transaction.
    */
   public static async mintToken(tokenId: TokenId,
                                 CID: string,
@@ -85,6 +88,7 @@ export class TokenUtils {
    * Creates a token with the given properties.
    * @param token The properties of the token to create.
    * @param client The client to use for creating the token.
+   * @returns {TokenId} The ID of the created token.
    */
   public static async createToken(token: ITokenProps, client: Client): Promise<TokenId> {
     const transaction = this.getTokenCreateTransaction(token);
@@ -108,7 +112,7 @@ export class TokenUtils {
    * if the supply key is not provided in the properties
    *
    * @param token The properties of the token.
-   * @returns The supply key for the token.
+   * @returns {PrivateKey} The supply key for the token.
    */
   public static getSupplyKey(token: ITokenProps): PrivateKey {
     // The operator key will be used as supply key if one is not provided
@@ -125,7 +129,7 @@ export class TokenUtils {
    * if the treasury key is not provided in the properties
    *
    * @param token The properties of the token.
-   * @returns The treasury account ID for the token.
+   * @returns {AccountId} The treasury account ID for the token.
    */
   public static getTreasuryAccountId(token: ITokenProps): AccountId {
     // The operator key will be used as treasury key if one is not provided
@@ -138,6 +142,7 @@ export class TokenUtils {
   /**
    * Creates a token create transaction with the given properties.
    * @param token The properties of the token to create.
+   * @returns {TokenCreateTransaction} The token create transaction.
    */
   private static getTokenCreateTransaction(token: ITokenProps): TokenCreateTransaction {
     this.validateTokenProperties(token);
@@ -235,7 +240,7 @@ export class TokenUtils {
     }
   }
 
-  private static validateTokenProperties(token: ITokenProps) {
+  private static validateTokenProperties(token: ITokenProps): void {
     this.assertTruthy(token.tokenName, 'Token name is required');
     this.assertTruthy(token.tokenSymbol, 'Token symbol is required');
     this.assertTruthy(token.tokenType, 'Token type is required');
@@ -261,19 +266,19 @@ export class TokenUtils {
     }
   }
 
-  private static assertTruthy(condition: unknown, errorMessage: string) {
+  private static assertTruthy(condition: unknown, errorMessage: string): void {
     if (!condition) {
       throw new Error(errorMessage);
     }
   }
 
-  private static assertFalsy(condition: unknown, errorMessage: string) {
+  private static assertFalsy(condition: unknown, errorMessage: string): void {
     if (condition) {
       throw new Error(errorMessage);
     }
   }
 
-  private static assertInRange(value: number, min: number, max: number, errorMessage: string) {
+  private static assertInRange(value: number, min: number, max: number, errorMessage: string): void {
     if (value < min || value > max) {
       throw new Error(errorMessage);
     }

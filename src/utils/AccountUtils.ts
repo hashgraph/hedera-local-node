@@ -37,6 +37,13 @@ import { getPrivateKey, KeyType } from '../configuration/types/IPrivateKey';
  */
 export class AccountUtils {
 
+  /**
+   * Creates an account with the given properties.
+   * @param account The account properties.
+   * @param client The client to use for creating the account.
+   * @returns {Promise<{privateKey: PrivateKey, accountInfo: AccountInfo}>}
+   * The private key and account info of the created account.
+   */
   public static async createAccountFromProps(account: IAccountProps,
                                              client: Client): Promise<{privateKey: PrivateKey, accountInfo: AccountInfo}> {
     const keyType = account.privateKey ? account.privateKey.type : KeyType.ECDSA;
@@ -58,6 +65,7 @@ export class AccountUtils {
    * @param aliasAccountId The alias ID of the account to create.
    * @param initialBalance The initial balance of the account.
    * @param client The client to use for creating the account.
+   * @returns {AccountInfo} The account info of the created account.
    */
   public static async createAliasedAccount(aliasAccountId: AccountId,
                                            initialBalance: number,
@@ -80,6 +88,7 @@ export class AccountUtils {
    * @param publicKey The public key of the account to create.
    * @param initialBalance The initial balance of the account.
    * @param client The client to use for creating the account.
+   * @returns {AccountInfo} The account info of the created account.
    */
   public static async createAccount(publicKey: PublicKey,
                                     initialBalance: number,
