@@ -256,9 +256,7 @@ export class AccountCreationState implements IState {
       const createAccountPromise: Promise<Account> = AccountUtils
         .createAccount(privateKey.publicKey, balance, client)
         .then((accountInfo) => {
-          const address = accountInfo.accountId.evmAddress ?
-            Buffer.from(accountInfo.accountId.evmAddress.toBytes()).toString('hex') :
-            accountInfo.accountId.toSolidityAddress();
+          const address = accountInfo.accountId.toSolidityAddress();
           return {
             accountId: accountInfo.accountId.toString(),
             balance: accountInfo.balance,
@@ -306,9 +304,7 @@ export class AccountCreationState implements IState {
       const createAccountPromise: Promise<Account> = AccountUtils
         .createAliasedAccount(aliasAccountId, balance, client)
         .then((accountInfo) => {
-          const address = accountInfo.accountId.evmAddress ?
-            Buffer.from(accountInfo.accountId.evmAddress.toBytes()).toString('hex') :
-            accountInfo.accountId.toSolidityAddress();
+          const address = privateKey.publicKey.toEvmAddress();
           return {
             accountId: accountInfo.accountId.toString(),
             balance: accountInfo.balance,
