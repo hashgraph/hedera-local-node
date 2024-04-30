@@ -323,7 +323,7 @@ export class AccountCreationState implements IState {
           accounts.forEach((account) => this.logAliasAccount(
             account.accountId,
             account.balance,
-            account.address,
+            `0x${account.address}`,
             `0x${account.privateKey.toStringRaw()}`
           ));
           this.logAliasAccountDivider();
