@@ -81,14 +81,14 @@ services:
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3:/records"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3:/recordStreams"
     command:
       - /usr/bin/env
       - ${PYTHON_VERSION}
       - /usr/local/bin/mirror.py
       - --linux
       - --watch-directory
-      - /records
+      - /recordStreams
       - --s3-endpoint
       - http://minio:9000
       - --debug
@@ -116,51 +116,81 @@ services:
       S3_ACCESS_KEY: "minioadmin"
       S3_SECRET_KEY: "minioadmin"
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.3:/balances"
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.3:/accountBalances"
     command:
       - /usr/bin/env
       - ${PYTHON_VERSION}
       - /usr/local/bin/mirror.py
       - --linux
       - --watch-directory
-      - /balances
+      - /accountBalances
       - --s3-endpoint
       - http://minio:9000
       - --debug
 
-  record-sidecar-uploader:
-    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
-    container_name: record-sidecar-uploader
-    user: root
+  grpc:
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-grpc:${MIRROR_IMAGE_TAG}"
+    container_name: mirror-node-grpc
     restart: unless-stopped
+    mem_swappiness: 0
+    mem_limit: "${MIRROR_GRPC_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_GRPC_MEM_LIMIT}"
+    depends_on:
+      network-node:
+        condition: service_started
+
+    environment:
+      HEDERA_MIRROR_GRPC_DB_HOST: db
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-grpc/
+    networks:
+      - mirror-node
+    ports:
+      - "5600:5600"
+    volumes:
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-grpc/application.yml"
+
+  importer:
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-importer:${MIRROR_IMAGE_TAG}"
+    container_name: mirror-node-importer
+    restart: unless-stopped
+    mem_swappiness: 0
+    mem_limit: "${MIRROR_IMPORTER_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_IMPORTER_MEM_LIMIT}"
+
+    environment:
+      HEDERA_MIRROR_IMPORTER_DB_HOST: db
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-importer/
     networks:
       - cloud-storage
-    environment:
-      DEBUG: "true"
-      REAPER_ENABLE: "true"
-      REAPER_MIN_KEEP: "1"
-      REAPER_INTERVAL: "5"
-      S3_ENABLE: "true"
-      GCS_ENABLE: "false"
-      SIG_REQUIRE: "false"
-      SIG_PRIORITIZE: "false"
-      STREAM_EXTENSION: "rcd.gz"
-      BUCKET_NAME: "hedera-streams"
-      BUCKET_PATH: "recordstreams/record0.0.3/sidecar"
-      S3_ACCESS_KEY: "minioadmin"
-      S3_SECRET_KEY: "minioadmin"
+      - mirror-node
     volumes:
-      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3/sidecar:/sidecar-files"
-    command:
-      - /usr/bin/env
-      - ${PYTHON_VERSION}
-      - /usr/local/bin/mirror.py
-      - --linux
-      - --watch-directory
-      - /sidecar-files
-      - --s3-endpoint
-      - http://minio:9000
-      - --debug
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-importer/application.yml"
+      - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
+
+  
+  monitor:
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-monitor:${MIRROR_IMAGE_TAG}"
+    container_name: mirror-node-monitor
+    mem_swappiness: 0
+    mem_limit: "${MIRROR_MONITOR_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_MONITOR_MEM_LIMIT}"
+    depends_on:
+      grpc:
+        condition: service_started
+
+      network-node:
+        condition: service_healthy
+    networks:
+      - mirror-node
+      - network-node-bridge
+    environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: "file:/usr/etc/hedera-mirror-monitor/"
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml"
 
 networks:
   network-node-bridge:
