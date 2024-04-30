@@ -125,55 +125,155 @@ export class AccountCreationState implements IState {
     const { accounts, balance, startup } = currentArgv;
     this.nodeStartup = startup;
 
-    await this.generateECDSA(async, balance, accounts);
-    await this.generateAliasECDSA(async, balance, accounts);
-    await this.generateED25519(async, balance, accounts);
+    const promise = this.generateAccounts(balance, accounts);
+    if (!async) {
+      await promise;
+    }
 
     this.observer!.update(EventType.Finish);
   }
 
   /**
-   * Generates ECDSA accounts.
+   * Generates accounts.
    *
-   * This method initializes the ECDSA account number counter and an array to hold the accounts.
-   * It then generates the specified number of accounts.
-   * If the node is in startup mode, it uses the private keys from the ECDSA private keys array to create the wallets, otherwise, it generates new ECDSA private keys.
-   * If the mode is asynchronous, it creates the accounts asynchronously and adds them to the accounts array, otherwise, it creates the accounts synchronously.
-   * Finally, if the mode is not asynchronous, it logs a divider, otherwise, it returns a promise that resolves when all the accounts have been created.
+   * This method generates ECDSA, alias ECDSA, and ED25519 accounts.
    *
    * @private
-   * @param {boolean} async - Whether the mode is asynchronous.
+   * @param {number} balance - The balance for the accounts.
+   * @param {number} accounts - The number of accounts to generate.
+   * @returns {Promise<void>} - A promise that resolves when the accounts have been generated.
+   */
+  private async generateAccounts(balance: number, accounts: number): Promise<void> {
+    await Promise.all([
+      this.generateECDSA(balance, accounts),
+      this.generateAliasECDSA(balance, accounts),
+      this.generateED25519(balance, accounts)
+    ]);
+  }
+
+  /**
+   * Generates ECDSA accounts.
+   *
+   * If the node is in startup mode:
+   * - it uses the private keys from the ECDSA private keys array to create the account.
+   * - otherwise, it generates new ECDSA private keys.
+   *
+   * @private
+   * @param {number} balance - The balance for the accounts.
+   * @param {number} limit - The number of accounts to generate.
+   * @returns {Promise<Account[]>} - A promise that resolves when all the accounts have been created.
+   */
+  private async generateECDSA(balance: number, limit: number): Promise<Account[]> {
+    const accountData = this.nodeStartup ?
+      privateKeysECDSA.map(privateKeyString => ({
+        balance,
+        privateKey: PrivateKey.fromStringECDSA(privateKeyString)
+      })) :
+      Array.from({ length: limit }, () => ({
+        balance,
+        privateKey: PrivateKey.generateECDSA()
+      }));
+
+    return this.createAccounts('ECDSA', accountData.slice(0, limit));
+  }
+
+  /**
+   * Generates alias ECDSA accounts.
+   *
+   * If the node is in startup mode and the private key for the alias ECDSA account exists:
+   * - it uses the private key to create the account.
+   * - otherwise, it generates new ECDSA private keys.
+   *
+   * If the mode is asynchronous:
+   * - it creates the alias accounts asynchronously and returns a promise that resolves when they have been created,
+   * - otherwise, it creates the alias accounts synchronously and returns them in a resolved promise.
+   *
+   * @private
    * @param {number} balance - The balance for the accounts.
    * @param {number} accountNum - The number of accounts to generate.
-   * @returns {Promise<void | Account[]>} - A promise that resolves when all the accounts have been created if the mode is asynchronous, otherwise void.
+   * @returns {Promise<Account[]>} - A promise that resolves when all the alias accounts have been created
    */
-  private async generateECDSA(async: boolean, balance: number, accountNum: number): Promise<void | Account[]> {
+  private async generateAliasECDSA(balance: number, accountNum: number): Promise<Account[]> {
+    const accountData = this.nodeStartup ?
+      privateKeysAliasECDSA.map(privateKeyString => ({
+        balance,
+        privateKey: PrivateKey.fromStringECDSA(privateKeyString)
+      })) :
+      Array.from({ length: accountNum }, () => ({
+        balance,
+        privateKey: PrivateKey.generateECDSA()
+      }));
+
+    return this.createAliasAccounts(accountData);
+  }
+
+  /**
+   * Generates ED25519 accounts.
+   *
+   * If the node is in startup mode:
+   * - it uses the private keys from the ED25519 private keys array to create the account.
+   * - otherwise, it generates new ED25519 private keys.
+   *
+   * @param balance - The balance for the accounts.
+   * @param limit - The number of accounts to generate.
+   * @returns {Promise<Account[]>} - A promise that resolves when all the
+   * accounts have been created if the mode is asynchronous, otherwise void.
+   * @private
+   */
+  private async generateED25519(balance: number, limit: number): Promise<Account[]> {
+    const accountData = this.nodeStartup ?
+      privateKeysED25519.map(privateKeyString => ({
+        balance,
+        privateKey: PrivateKey.fromStringED25519(privateKeyString)
+      })) :
+      Array.from({ length: limit }, () => ({
+        balance,
+        privateKey: PrivateKey.generateED25519()
+      }));
+
+    const endIndex = Math.min(accountData.length, limit);
+
+    return this.createAccounts('ED25519', accountData.slice(0, endIndex));
+  }
+
+  /**
+   * Generates ED25519 accounts.
+   *
+   * @private
+   * @param {string} title - The title to be logged for the account list.
+   * @param {Array<{ balance: number, privateKey: PrivateKey}>} accountData - The data for the accounts that will be created.
+   * @param {number} accountData.balance - The balance of the account to create.
+   * @param {PrivateKey} accountData.privateKey - The private key of the account to create.
+   * @returns {Promise<Account[]>} - A promise that resolves when all the accounts have been created.
+   */
+  private async createAccounts(title: string, accountData: { balance: number, privateKey: PrivateKey}[]): Promise<Account[]> {
     const accountPromises: Promise<Account>[] = [];
 
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < accountNum; i++) {
+    accountData.forEach((account) => {
+      const { privateKey, balance } = account;
       const client = this.clientService.getClient();
-
-      const privateKey = this.nodeStartup ?
-        PrivateKey.fromStringECDSA(privateKeysECDSA[i]) :
-        PrivateKey.generateECDSA();
 
       const createAccountPromise: Promise<Account> = AccountUtils
         .createAccount(privateKey.publicKey, balance, client)
-        .then((accountInfo) => ({
-          accountId: accountInfo.accountId.toString(),
-          balance: accountInfo.balance,
-          privateKey,
-          address: accountInfo.accountId.toSolidityAddress()
-        }));
+        .then((accountInfo) => {
+          const address = accountInfo.accountId.evmAddress ?
+            Buffer.from(accountInfo.accountId.evmAddress.toBytes()).toString('hex') :
+            accountInfo.accountId.toSolidityAddress();
+          return {
+            accountId: accountInfo.accountId.toString(),
+            balance: accountInfo.balance,
+            privateKey,
+            address
+          };
+        });
 
       accountPromises.push(createAccountPromise);
-    }
+    });
 
-    const createAccountsPromise = Promise.all(accountPromises)
+    return Promise.all(accountPromises)
       .then((accounts) => {
         if (accounts) {
-          this.logAccountTitle('ECDSA');
+          this.logAccountTitle(title);
           accounts.forEach((account) => this.logAccount(
             account.accountId,
             account.balance,
@@ -183,40 +283,24 @@ export class AccountCreationState implements IState {
         }
         return accounts;
       });
-
-    if (!async) {
-      const accounts = await createAccountsPromise;
-      return Promise.resolve(accounts);
-    }
-    return createAccountsPromise;
   }
 
   /**
-   * Generates alias ECDSA accounts.
+   * Creates alias accounts.
    *
-   * This method initializes the alias account number counter and an array to hold the accounts.
-   * It then generates the specified number of accounts.
-   * If the node is in startup mode and the private key for the alias ECDSA account exists, it uses the private key to create the wallet, otherwise, it creates a random wallet.
-   * If the mode is asynchronous, it creates the alias accounts asynchronously and adds them to the accounts array, otherwise, it creates the alias accounts synchronously and logs them.
-   * Finally, if the mode is asynchronous, it returns a promise that resolves when all the alias accounts have been created, otherwise, it logs a divider.
-   *
+   * @param accountData - The data for the accounts that will be created.
+   * @param accountData.balance - The balance of the account to create.
+   * @param accountData.privateKey - The private key of the account to create.
+   * @returns {Promise<Account[]>} - A promise that resolves when all the alias accounts have been created
    * @private
-   * @param {boolean} async - Whether the mode is asynchronous.
-   * @param {number} balance - The balance for the accounts.
-   * @param {number} accountNum - The number of accounts to generate.
-   * @returns {Promise<void | Account[]>} - A promise that resolves when all the alias accounts have been created if the mode is asynchronous, otherwise void.
    */
-  private async generateAliasECDSA(async: boolean, balance: number, accountNum: number): Promise<void | Account[]> {
+  private async createAliasAccounts(accountData: { balance: number, privateKey: PrivateKey}[]): Promise<Account[]> {
     const accountPromises: Promise<Account>[] = [];
 
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < accountNum; i++) {
+    accountData.forEach(account => {
+      const { privateKey, balance } = account;
       const client = this.clientService.getClient();
-
-      const privateKey = this.nodeStartup ?
-        PrivateKey.fromStringECDSA(privateKeysAliasECDSA[i]) :
-        PrivateKey.generateECDSA();
-
       const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
 
       const createAccountPromise: Promise<Account> = AccountUtils
@@ -225,17 +309,17 @@ export class AccountCreationState implements IState {
           accountId: accountInfo.accountId.toString(),
           balance: accountInfo.balance,
           privateKey,
-          address: accountInfo.accountId.toSolidityAddress()
+          address: Buffer.from(accountInfo.accountId.evmAddress!.toBytes()).toString('hex')
         }));
 
       accountPromises.push(createAccountPromise);
-    }
+    });
 
-    const createAccountsPromise = Promise.all(accountPromises)
+    return Promise.all(accountPromises)
       .then((accounts) => {
         if (accounts) {
           this.logAliasAccountTitle();
-          accounts.forEach((account) =>         this.logAliasAccount(
+          accounts.forEach((account) => this.logAliasAccount(
             account.accountId,
             account.balance,
             account.address,
@@ -245,70 +329,6 @@ export class AccountCreationState implements IState {
         }
         return accounts;
       });
-
-    if (!async) {
-      const accounts = await createAccountsPromise;
-      return Promise.resolve(accounts);
-    }
-    return createAccountsPromise;
-  }
-
-  /**
-   * Generates ED25519 accounts.
-   *
-   * This method initializes the ED25519 account number counter and an array to hold the accounts.
-   * It then generates the specified number of accounts.
-   * If the node is in startup mode, it uses the private keys from the ED25519 private keys array to create the wallets, otherwise, it generates new ED25519 private keys.
-   * If the mode is asynchronous, it creates the accounts asynchronously and adds them to the accounts array, otherwise, it creates the accounts synchronously.
-   * Finally, if the mode is not asynchronous, it logs a divider, otherwise, it returns a promise that resolves when all the accounts have been created.
-   *
-   * @private
-   * @param {boolean} async - Whether the mode is asynchronous.
-   * @param {number} balance - The balance for the accounts.
-   * @param {number} accountNum - The number of accounts to generate.
-   * @returns {Promise<void | Account[]>} - A promise that resolves when all the accounts have been created if the mode is asynchronous, otherwise void.
-   */
-  private async generateED25519(async: boolean, balance: number, accountNum: number): Promise<void | Account[]> {
-    const accountPromises: Promise<Account>[] = [];
-
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < accountNum; i++) {
-      const privateKey = this.nodeStartup ?
-        PrivateKey.fromStringED25519(privateKeysED25519[i]) :
-        PrivateKey.generateED25519();
-      const client = this.clientService.getClient();
-
-      const createAccountPromise: Promise<Account> = AccountUtils
-        .createAccount(privateKey.publicKey, balance, client)
-        .then((accountInfo) => ({
-          accountId: accountInfo.accountId.toString(),
-          balance: accountInfo.balance,
-          privateKey,
-          address: accountInfo.accountId.toSolidityAddress()
-        }));
-
-      accountPromises.push(createAccountPromise);
-    }
-
-    const createAccountsPromise = Promise.all(accountPromises)
-      .then((accounts) => {
-        if (accounts) {
-          this.logAccountTitle('ED25519');
-          accounts.forEach((account) => this.logAccount(
-            account.accountId,
-            account.balance,
-            `0x${account.privateKey.toStringRaw()}`
-          ));
-          this.logAccountDivider();
-        }
-        return accounts;
-      });
-
-    if (!async) {
-      const accounts = await createAccountsPromise;
-      return Promise.resolve(accounts);
-    }
-    return createAccountsPromise;
   }
 
   /**
