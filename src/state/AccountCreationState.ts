@@ -170,7 +170,9 @@ export class AccountCreationState implements IState {
         privateKey: PrivateKey.generateECDSA()
       }));
 
-    return this.createAccounts('ECDSA', accountData.slice(0, limit));
+    const endIndex = Math.min(accountData.length, limit);
+
+    return this.createAccounts('ECDSA', accountData.slice(0, endIndex));
   }
 
   /**
@@ -200,7 +202,9 @@ export class AccountCreationState implements IState {
         privateKey: PrivateKey.generateECDSA()
       }));
 
-    return this.createAliasAccounts(accountData);
+    const endIndex = Math.min(accountData.length, accountNum);
+
+    return this.createAliasAccounts(accountData.slice(0, endIndex));
   }
 
   /**
@@ -301,12 +305,17 @@ export class AccountCreationState implements IState {
 
       const createAccountPromise: Promise<Account> = AccountUtils
         .createAliasedAccount(aliasAccountId, balance, client)
-        .then((accountInfo) => ({
-          accountId: accountInfo.accountId.toString(),
-          balance: accountInfo.balance,
-          privateKey,
-          address: Buffer.from(accountInfo.accountId.evmAddress!.toBytes()).toString('hex')
-        }));
+        .then((accountInfo) => {
+          const address = accountInfo.accountId.evmAddress ?
+            Buffer.from(accountInfo.accountId.evmAddress.toBytes()).toString('hex') :
+            accountInfo.accountId.toSolidityAddress();
+          return {
+            accountId: accountInfo.accountId.toString(),
+            balance: accountInfo.balance,
+            privateKey,
+            address
+          };
+        });
 
       accountPromises.push(createAccountPromise);
     });
