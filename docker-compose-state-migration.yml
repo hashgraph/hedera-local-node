@@ -58,11 +58,32 @@ services:
       - "${APPLICATION_ROOT_PATH}/hedera.key:/opt/hgcapp/services-hedera/HapiApp2.0/hedera.key"
       - "${RECORD_PARSER_ROOT_PATH}:/opt/hgcapp/recordParser"
 
+  minio:
+    image: minio/minio
+    container_name: minio
+    entrypoint: sh
+    command: -c 'mkdir -p /data/hedera-streams && minio server /data --console-address ":9001"'
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    networks:
+      - cloud-storage
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - "minio-data:/data"
+      
   record-streams-uploader:
     image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
     container_name: record-streams-uploader
     user: root
     restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
     networks:
       - cloud-storage
     environment:
@@ -98,6 +119,9 @@ services:
     container_name: account-balances-uploader
     user: root
     restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
     networks:
       - cloud-storage
     environment:
@@ -124,6 +148,43 @@ services:
       - --linux
       - --watch-directory
       - /accountBalances
+      - --s3-endpoint
+      - http://minio:9000
+      - --debug
+
+  record-sidecar-uploader:
+    image: "${UPLOADER_IMAGE_PREFIX}uploader-mirror:${UPLOADER_IMAGE_TAG}"
+    container_name: record-sidecar-uploader
+    user: root
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - cloud-storage
+    environment:
+      DEBUG: "true"
+      REAPER_ENABLE: "true"
+      REAPER_MIN_KEEP: "1"
+      REAPER_INTERVAL: "5"
+      S3_ENABLE: "true"
+      GCS_ENABLE: "false"
+      SIG_REQUIRE: "false"
+      SIG_PRIORITIZE: "false"
+      STREAM_EXTENSION: "rcd.gz"
+      BUCKET_NAME: "hedera-streams"
+      BUCKET_PATH: "recordstreams/record0.0.3/sidecar"
+      S3_ACCESS_KEY: "minioadmin"
+      S3_SECRET_KEY: "minioadmin"
+    volumes:
+      - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3/sidecar:/sidecar-files"
+    command:
+      - /usr/bin/env
+      - ${PYTHON_VERSION}
+      - /usr/local/bin/mirror.py
+      - --linux
+      - --watch-directory
+      - /sidecar-files
       - --s3-endpoint
       - http://minio:9000
       - --debug
@@ -156,7 +217,9 @@ services:
     mem_swappiness: 0
     mem_limit: "${MIRROR_IMPORTER_MEM_LIMIT}"
     memswap_limit: "${MIRROR_IMPORTER_MEM_LIMIT}"
-
+    depends_on:
+      minio:
+        condition: service_started
     environment:
       HEDERA_MIRROR_IMPORTER_DB_HOST: db
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-importer/
