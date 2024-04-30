@@ -184,6 +184,7 @@ describe(TokenUtils.name, () => {
       tokenSymbol: 'TFTNK',
       tokenType: FungibleCommon.toString(),
       supplyType: Finite.toString(),
+      decimals: 2,
       initialSupply: 1_000_000,
       maxSupply: 1_000_000_000
     };
