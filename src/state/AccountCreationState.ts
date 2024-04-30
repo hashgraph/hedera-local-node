@@ -125,78 +125,11 @@ export class AccountCreationState implements IState {
     const { accounts, balance, startup } = currentArgv;
     this.nodeStartup = startup;
 
-    if (async) {
-      await this.generateAsync(balance, accounts);
-    } else {
-      await this.generateECDSA(async, balance, accounts);
-      await this.generateAliasECDSA(async, balance, accounts);
-      await this.generateED25519(async, balance, accounts);
-    }
+    await this.generateECDSA(async, balance, accounts);
+    await this.generateAliasECDSA(async, balance, accounts);
+    await this.generateED25519(async, balance, accounts);
 
     this.observer!.update(EventType.Finish);
-  }
-
-  /**
-   * Generates accounts asynchronously.
-   *
-   * This method generates ECDSA, alias ECDSA, and ED25519 accounts asynchronously, and logs the accounts.
-   *
-   * @param {number} balance The balance of the accounts.
-   * @param {number} accountNum The number of accounts to generate.
-   * @returns {Promise<void>} A Promise that resolves when the accounts are generated.
-   */
-  private async generateAsync(balance: number, accountNum: number): Promise<void> {
-    Promise.all([
-      await this.generateECDSA(true, balance, accountNum),
-      await this.generateAliasECDSA(true, balance, accountNum),
-      await this.generateED25519(true, balance, accountNum)
-    ]).then((allResponses) => {
-      const ecdsaResponses = allResponses[0];
-      const aliasEcdsaResponses = allResponses[1];
-      const ed25519Responses = allResponses[2];
-      if (ecdsaResponses) {
-        this.logAccountTitle(' ECDSA ');
-        ecdsaResponses.forEach((account) => {
-          if (account) {
-            this.logAccount(
-              account.accountId,
-              account.balance,
-              `0x${account.privateKey.toStringRaw()}`
-            );
-          }
-        });
-        this.logAccountDivider();
-      }
-
-      if (aliasEcdsaResponses) {
-        this.logAliasAccountTitle();
-        aliasEcdsaResponses.forEach((account) => {
-          if (account) {
-            this.logAliasAccount(
-              account.accountId,
-              account.balance,
-              account.address,
-              `0x${account.privateKey.toStringRaw()}`
-            );
-          }
-        });
-        this.logAliasAccountDivider();
-      }
-
-      if (ed25519Responses) {
-        this.logAccountTitle('ED25519');
-        ed25519Responses.forEach((account) => {
-          if (account) {
-            this.logAccount(
-              account.accountId,
-              account.balance,
-              `0x${account.privateKey.toStringRaw()}`
-            );
-          }
-        });
-        this.logAccountDivider();
-      }
-    });
   }
 
   /**
@@ -215,17 +148,15 @@ export class AccountCreationState implements IState {
    * @returns {Promise<void | Account[]>} - A promise that resolves when all the accounts have been created if the mode is asynchronous, otherwise void.
    */
   private async generateECDSA(async: boolean, balance: number, accountNum: number): Promise<void | Account[]> {
-    const accounts: Promise<Account>[] = [];
-
-    if (!async) this.logAccountTitle(' ECDSA ');
+    const accountPromises: Promise<Account>[] = [];
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < accountNum; i++) {
+      const client = this.clientService.getClient();
+
       const privateKey = this.nodeStartup ?
         PrivateKey.fromStringECDSA(privateKeysECDSA[i]) :
         PrivateKey.generateECDSA();
-
-      const client = this.clientService.getClient();
 
       const createAccountPromise: Promise<Account> = AccountUtils
         .createAccount(privateKey.publicKey, balance, client)
@@ -236,24 +167,28 @@ export class AccountCreationState implements IState {
           address: accountInfo.accountId.toSolidityAddress()
         }));
 
-      if (async) {
-        accounts.push(createAccountPromise);
-      } else {
-        // eslint-disable-next-line no-await-in-loop
-        const account = await createAccountPromise;
-        this.logAccount(
-          account.accountId,
-          account.balance,
-          `0x${privateKey.toStringRaw()}`
-        );
-      }
+      accountPromises.push(createAccountPromise);
     }
 
-    if (async) {
-      return Promise.all(accounts);
+    const createAccountsPromise = Promise.all(accountPromises)
+      .then((accounts) => {
+        if (accounts) {
+          this.logAccountTitle('ECDSA');
+          accounts.forEach((account) => this.logAccount(
+            account.accountId,
+            account.balance,
+            `0x${account.privateKey.toStringRaw()}`
+          ));
+          this.logAccountDivider();
+        }
+        return accounts;
+      });
+
+    if (!async) {
+      const accounts = await createAccountsPromise;
+      return Promise.resolve(accounts);
     }
-    this.logAccountDivider();
-    return Promise.resolve();
+    return createAccountsPromise;
   }
 
   /**
@@ -272,12 +207,12 @@ export class AccountCreationState implements IState {
    * @returns {Promise<void | Account[]>} - A promise that resolves when all the alias accounts have been created if the mode is asynchronous, otherwise void.
    */
   private async generateAliasECDSA(async: boolean, balance: number, accountNum: number): Promise<void | Account[]> {
-    const accounts: Promise<Account>[] = [];
-
-    if (!async) this.logAliasAccountTitle();
+    const accountPromises: Promise<Account>[] = [];
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < accountNum; i++) {
+      const client = this.clientService.getClient();
+
       const privateKey = this.nodeStartup ?
         PrivateKey.fromStringECDSA(privateKeysAliasECDSA[i]) :
         PrivateKey.generateECDSA();
@@ -285,7 +220,7 @@ export class AccountCreationState implements IState {
       const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
 
       const createAccountPromise: Promise<Account> = AccountUtils
-        .createAliasedAccount(aliasAccountId, balance, this.clientService.getClient())
+        .createAliasedAccount(aliasAccountId, balance, client)
         .then((accountInfo) => ({
           accountId: accountInfo.accountId.toString(),
           balance: accountInfo.balance,
@@ -293,25 +228,29 @@ export class AccountCreationState implements IState {
           address: accountInfo.accountId.toSolidityAddress()
         }));
 
-      if (async) {
-        accounts.push(createAccountPromise);
-      } else {
-        // eslint-disable-next-line no-await-in-loop
-        const account = await createAccountPromise;
-        this.logAliasAccount(
-          account.accountId,
-          account.balance,
-          account.address,
-          `0x${account.privateKey.toStringRaw()}`
-        );
-      }
+      accountPromises.push(createAccountPromise);
     }
 
-    if (async) {
-      return Promise.all(accounts);
+    const createAccountsPromise = Promise.all(accountPromises)
+      .then((accounts) => {
+        if (accounts) {
+          this.logAliasAccountTitle();
+          accounts.forEach((account) =>         this.logAliasAccount(
+            account.accountId,
+            account.balance,
+            account.address,
+            `0x${account.privateKey.toStringRaw()}`
+          ));
+          this.logAliasAccountDivider();
+        }
+        return accounts;
+      });
+
+    if (!async) {
+      const accounts = await createAccountsPromise;
+      return Promise.resolve(accounts);
     }
-    this.logAliasAccountDivider();
-    return Promise.resolve();
+    return createAccountsPromise;
   }
 
   /**
@@ -330,9 +269,7 @@ export class AccountCreationState implements IState {
    * @returns {Promise<void | Account[]>} - A promise that resolves when all the accounts have been created if the mode is asynchronous, otherwise void.
    */
   private async generateED25519(async: boolean, balance: number, accountNum: number): Promise<void | Account[]> {
-    const accounts: Promise<Account>[] = [];
-
-    if (!async) this.logAccountTitle('ED25519');
+    const accountPromises: Promise<Account>[] = [];
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < accountNum; i++) {
@@ -350,24 +287,28 @@ export class AccountCreationState implements IState {
           address: accountInfo.accountId.toSolidityAddress()
         }));
 
-      if (async) {
-        accounts.push(createAccountPromise);
-      } else {
-        // eslint-disable-next-line no-await-in-loop
-        const account = await createAccountPromise;
-        this.logAccount(
-          account.accountId,
-          new Hbar(account.balance),
-          `0x${privateKey.toStringRaw()}`
-        );
-      }
+      accountPromises.push(createAccountPromise);
     }
 
-    if (async) {
-      return Promise.all(accounts);
+    const createAccountsPromise = Promise.all(accountPromises)
+      .then((accounts) => {
+        if (accounts) {
+          this.logAccountTitle('ED25519');
+          accounts.forEach((account) => this.logAccount(
+            account.accountId,
+            account.balance,
+            `0x${account.privateKey.toStringRaw()}`
+          ));
+          this.logAccountDivider();
+        }
+        return accounts;
+      });
+
+    if (!async) {
+      const accounts = await createAccountsPromise;
+      return Promise.resolve(accounts);
     }
-    this.logAccountDivider();
-    return Promise.resolve();
+    return createAccountsPromise;
   }
 
   /**
