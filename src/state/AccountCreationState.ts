@@ -108,8 +108,8 @@ export class AccountCreationState implements IState {
    * @emits {EventType.Finish} When the state is finished.
    */
   public async onStart(): Promise<void> {
-    const currentArgv = this.cliService.getCurrentArgv();
-    const { async, blocklisting } = currentArgv;
+    const { async, blocklisting, accounts, balance, startup } = this.cliService.getCurrentArgv();
+    this.nodeStartup = startup;
 
     let blocklistedAccountsCount = 0;
     if (blocklisting) {
@@ -117,19 +117,15 @@ export class AccountCreationState implements IState {
     }
 
     const mode = async ? 'asynchronous' : 'synchronous';
-    const blockListedMessage = blocklistedAccountsCount > 0 ? `with ${blocklistedAccountsCount} blocklisted accounts` : '';
+    const blockListedMessage = blocklisting ? `with ${blocklistedAccountsCount} blocklisted accounts` : '';
     this.logger.info(
       `Starting Account Creation state in ${mode} mode ${blockListedMessage}`, this.stateName
     );
-
-    const { accounts, balance, startup } = currentArgv;
-    this.nodeStartup = startup;
 
     const promise = this.generateAccounts(balance, accounts);
     if (!async) {
       await promise;
     }
-
     this.observer!.update(EventType.Finish);
   }
 
