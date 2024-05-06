@@ -2,15 +2,23 @@ name: Publish Package to npmjs
 on:
   release:
     types: [published]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   publish-npm-package:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, Linux, medium, ephemeral ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
