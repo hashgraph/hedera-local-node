@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: docker
+    directory: /docker/main-network-node
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /docker/network-node-base
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /docker/network-node-haveged
+    schedule:
+      interval: daily
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+
+  - package-ecosystem: npm
+    directory: /test/cypress
+    schedule:
+      interval: daily
+
+  - package-ecosystem: npm
+    directory: /test/smoke
+    schedule:
+      interval: daily
