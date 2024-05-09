@@ -18,7 +18,6 @@
  *
  */
 
-import { Long } from '@hashgraph/sdk';
 import { IPrivateKey } from './IPrivateKey';
 
 type ICustomFee = import('@hashgraph/proto').proto.ICustomFee;
@@ -28,9 +27,9 @@ export interface ITokenProps {
   tokenSymbol: string;
   tokenType: string;
   supplyType: string;
-  decimals?: number | Long;
-  initialSupply?: number | Long;
-  maxSupply?: number | Long;
+  decimals?: number;
+  initialSupply?: number;
+  maxSupply?: number;
   mints?: Array<{ CID: string }>;
   treasuryKey?: IPrivateKey;
   adminKey?: IPrivateKey;
@@ -43,7 +42,7 @@ export interface ITokenProps {
   freezeDefault?: boolean;
   autoRenewAccountId?: string;
   expirationTime?: string;
-  autoRenewPeriod?: number | Long;
+  autoRenewPeriod?: number;
   tokenMemo?: string;
   customFees?: ICustomFee[];
 }

@@ -22,7 +22,6 @@ import {
   AccountId,
   Client,
   CustomFee,
-  Long,
   PrivateKey,
   TokenAssociateTransaction,
   TokenCreateTransaction,
@@ -279,7 +278,7 @@ export class TokenUtils {
     }
   }
 
-  private static assertInRange(value: number | Long, min: number, max: number, errorMessage: string): void {
+  private static assertInRange(value: number, min: number, max: number, errorMessage: string): void {
     if (value < min || value > max) {
       throw new Error(errorMessage);
     }
