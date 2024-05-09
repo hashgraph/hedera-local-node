@@ -228,7 +228,7 @@ export class TokenUtils {
     if (token.expirationTime) {
       transaction.setExpirationTime(new Date(token.expirationTime));
     }
-    if (token.autoRenewPeriod >= 2_592_000 && token.autoRenewPeriod <= 8_000_000) {
+    if (token.autoRenewPeriod) {
       transaction.setAutoRenewPeriod(token.autoRenewPeriod);
     }
     if (token.tokenMemo) {
