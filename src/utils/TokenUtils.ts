@@ -22,6 +22,7 @@ import {
   AccountId,
   Client,
   CustomFee,
+  Long,
   PrivateKey,
   TokenAssociateTransaction,
   TokenCreateTransaction,
@@ -228,7 +229,7 @@ export class TokenUtils {
     if (token.expirationTime) {
       transaction.setExpirationTime(new Date(token.expirationTime));
     }
-    if (token.autoRenewPeriod >= 2_592_000 && token.autoRenewPeriod <= 8_000_000) {
+    if (token.autoRenewPeriod) {
       transaction.setAutoRenewPeriod(token.autoRenewPeriod);
     }
     if (token.tokenMemo) {
@@ -278,7 +279,7 @@ export class TokenUtils {
     }
   }
 
-  private static assertInRange(value: number, min: number, max: number, errorMessage: string): void {
+  private static assertInRange(value: number | Long, min: number, max: number, errorMessage: string): void {
     if (value < min || value > max) {
       throw new Error(errorMessage);
     }
