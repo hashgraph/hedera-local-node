@@ -120,7 +120,12 @@ export const STATE_CONTROLLER_MISSING_STATE_CONFIG_ERROR = 'Something is wrong w
 
 // Account Creation State
 
-export const ACCOUNT_CREATION_STATE_INIT_MESSAGE = 'Account Creaton State Initialized!';
+export const ACCOUNT_CREATION_STATE_INIT_MESSAGE = 'Account Creation State Initialized!';
 export const ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE = 'Starting Account Creation state in synchronous mode ';
 export const ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE ='Starting Account Creation state in asynchronous mode ';
 export const ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE = 'Starting Account Creation state in asynchronous mode with 1 blocklisted accounts';
+
+// Resource Creation State
+export const RESOURCE_CREATION_STATE_INIT_MESSAGE = 'Resource Creation State Initialized!';
+export const RESOURCE_CREATION_STARTING_SYNCHRONOUS_MESSAGE = 'Starting Resource Creation state in synchronous mode';
+export const RESOURCE_CREATION_STARTING_ASYNCHRONOUS_MESSAGE ='Starting Resource Creation state in asynchronous mode';

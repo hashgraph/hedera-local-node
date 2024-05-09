@@ -18,7 +18,7 @@
  *
  */
 
-import { Widgets, log, screen } from 'blessed';
+import { log, screen, Widgets } from 'blessed';
 import terminal from 'blessed-terminal';
 import {
     COLOR_DIM,
@@ -40,13 +40,15 @@ import { ConnectionService } from './ConnectionService';
 import { DockerService } from './DockerService';
 import { IService } from './IService';
 import { ServiceLocator } from './ServiceLocator';
+import { ResourceCreationState } from '../state/ResourceCreationState';
 
 
 export enum LogBoard {
     CONSENSUS = 'CONSENSUS',
     MIRROR = 'MIRROR',
     RELAY = 'RELAY',
-    ACCOUNT = 'ACCOUNT'
+    ACCOUNT = 'ACCOUNT',
+    RESOURCE = 'RESOURCE',
 }
 
 /**
@@ -61,13 +63,13 @@ export class LoggerService implements IService{
      * The logger used by the LoggerService.
      * @private
      */
-    private logger: any;
+    private readonly logger: Console;
     
     /**
      * The name of the service.
      * @private
      */
-    private serviceName: string;
+    private readonly serviceName: string;
 
     /**
      * The screen used by the LoggerService.
@@ -112,6 +114,12 @@ export class LoggerService implements IService{
     private accountBoard: terminal.Widgets.LogElement | undefined;
 
     /**
+     * The resource board log element used by the LoggerService.
+     * @private
+     */
+    private resourceBoard: terminal.Widgets.LogElement | undefined;
+
+    /**
      * The info board table element used by the LoggerService.
      * @private
      */
@@ -121,7 +129,7 @@ export class LoggerService implements IService{
      * The verbosity level of the LoggerService.
      * @private
      */
-    private verboseLevel: number;
+    private readonly verboseLevel: number;
 
 
     /**
@@ -166,9 +174,11 @@ export class LoggerService implements IService{
     private static getLogLocation(module: string): LogBoard {
         if (module === AccountCreationState.name) {
             return LogBoard.ACCOUNT;
-        } else {
-            return LogBoard.CONSENSUS;
         }
+        if (module === ResourceCreationState.name) {
+            return LogBoard.RESOURCE;
+        }
+        return LogBoard.CONSENSUS;
     }
 
     /**
@@ -298,7 +308,7 @@ export class LoggerService implements IService{
         let isDetached = true;
         try {
             isDetached = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv().detached;
-        } catch (e: any) {
+        } catch (e) {
             // Do nothing, this will only occur when service has not been initilized still.
         }
         return isDetached;
@@ -328,6 +338,12 @@ export class LoggerService implements IService{
             case LogBoard.CONSENSUS:
                 this.consensusLog?.log(msg);
                 break;
+            case LogBoard.RESOURCE:
+                this.resourceBoard?.log(msg);
+                break;
+            default:
+                this.logger?.log(msg);
+                break;
         }
     }
 
@@ -343,7 +359,7 @@ export class LoggerService implements IService{
             smartCSR: true,
         });
 
-        window.title = "Hedera Local Node";
+        window.title = 'Hedera Local Node';
         this.grid = new terminal.grid({ rows: 12, cols: 12, screen: window });
 
         this.infoBoard = this.initiliazeInfoBoard(this.grid);
@@ -352,50 +368,63 @@ export class LoggerService implements IService{
         const mirrorLog = this.initiliazeMirrorLog(this.grid);
         const relayLog = this.initiliazeRelayLog(this.grid);
         const accountBoard = this.initializeAccountBoard(this.grid);
-        //assign key events
+        const resourceBoard = this.initializeResourceBoard(this.grid);
 
+        // assign key events
         window.key(
-            ["tab", "C-c", "1", "2", "3", "4"],
-            async function (ch, key) {
-                if (key.name == "tab") {
+            ['tab', 'C-c', '1', '2', '3', '4', '5'],
+            async (ch, key) => {
+                if (key.name === 'tab') {
                     window.focusNext();
-                } else if (ch == "1") {
+                } else if (ch === '1') {
                     mirrorLog.hide();
                     relayLog.hide();
                     accountBoard.hide();
+                    resourceBoard.hide();
                     consensusLog.show();
                     consensusLog.focus();
-                } else if (ch == "2") {
+                } else if (ch === '2') {
                     relayLog.hide();
                     accountBoard.hide();
                     consensusLog.hide();
+                    resourceBoard.hide();
                     mirrorLog.show();
                     mirrorLog.focus();
-                } else if (ch == "3") {
+                } else if (ch === '3') {
                     mirrorLog.hide();
                     accountBoard.hide();
                     consensusLog.hide();
+                    resourceBoard.hide();
                     relayLog.show();
                     relayLog.focus();
-                } else if (ch == "4") {
+                } else if (ch === '4') {
                     mirrorLog.hide();
                     relayLog.hide();
                     consensusLog.hide();
+                    resourceBoard.hide();
                     accountBoard.show();
                     accountBoard.focus();
+                } else if (ch === '5') {
+                    mirrorLog.hide();
+                    relayLog.hide();
+                    consensusLog.hide();
+                    accountBoard.hide();
+                    resourceBoard.show();
+                    resourceBoard.focus();
                 } else {
                     window.destroy();
-                    return process.exit(0);
+                    process.exit(0);
                 }
                 window.render();
             }
-            );
+        );
         window.render();
         this.screen = window;
         this.consensusLog = consensusLog;
         this.mirrorLog = mirrorLog;
         this.relayLog = relayLog;
         this.accountBoard = accountBoard;
+        this.resourceBoard = resourceBoard;
     }
 
     /**
@@ -413,18 +442,19 @@ export class LoggerService implements IService{
     private initiliazeInfoBoard(grid: terminal.grid): terminal.Widgets.TableElement {
         const info = grid.set(0, 7, 2, 3, terminal.table, {
             keys: true,
-            fg: "white",
-            label: "Commands Information",
+            fg: 'white',
+            label: 'Commands Information',
             columnSpacing: 1,
             columnWidth: [10, 30, 30],
           });
         info.setData({
-            headers: ["Key", "Command"],
+            headers: ['Key', 'Command'],
             data: [
-              ["1", "Open Consensus Node Board"],
-              ["2", "Open Mirror Node Log Board"],
-              ["3", "Open Relay Log Board"],
-              ["4", "Open Account Board"],
+              ['1', 'Open Consensus Node Board'],
+              ['2', 'Open Mirror Node Log Board'],
+              ['3', 'Open Relay Log Board'],
+              ['4', 'Open Account Board'],
+              ['5', 'Open Resource Board']
             ],
         });
         return info;
@@ -438,13 +468,13 @@ export class LoggerService implements IService{
     private initiliazeStatusBoard(grid: terminal.grid): terminal.Widgets.TableElement {
         const statusBoard = grid.set(0, 0, 2, 7, terminal.table, {
             keys: true,
-            fg: "white",
-            label: "Status",
+            fg: 'white',
+            label: 'Status',
             columnSpacing: 5,
             columnWidth: [15, 15, 15, 15, 15],
         });
         statusBoard.setData({
-            headers: ["Application", "Version", "Status", "Host", "Port"],
+            headers: ['Application', 'Version', 'Status', 'Host', 'Port'],
             data: [],
         });
 
@@ -464,37 +494,33 @@ export class LoggerService implements IService{
         if (isDetached) {
             return;
         }
-        const host = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv().host;
+        const { host } = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
         const connectionCheckService = ServiceLocator.Current.get<ConnectionService>(ConnectionService.name);
         const dockerService = ServiceLocator.Current.get<DockerService>(DockerService.name);
         const status = this.status as terminal.Widgets.TableElement;
 
-        let data: any[][] = [];
+        const data: string[][] = [];
         await Promise.all(
-        CONTAINERS.map(async (container) => {
-            let row = [];
-            const status = await connectionCheckService.checkConnection(container.port)
-            .then(
-            function () {
-                return `Running`;
-            },
-            function () {
-                return "Not Running";
-            }
-            );
+            CONTAINERS.map(async (container) => {
+                const row = [];
+                const connectionStatus = await connectionCheckService.checkConnection(container.port)
+                .then(
+                  () => 'Running',
+                  () => 'Not Running'
+                );
 
-            const verison = await dockerService.getContainerVersion(container.label);
-            row.push(container.name);
-            row.push(verison);
-            row.push(status);
-            row.push(host);
-            row.push(container.port)
-            data.push(row);
-        })
+                const version = await dockerService.getContainerVersion(container.label);
+                row.push(container.name);
+                row.push(version);
+                row.push(connectionStatus);
+                row.push(host);
+                row.push(container.port.toString());
+                data.push(row);
+            })
         );
         status.setData({
-        headers: ["Application", "Version", "Status", "Host", "Port"],
-        data: data,
+            headers: ['Application', 'Version', 'Status', 'Host', 'Port'],
+            data,
         });
         status.render();
     }
@@ -505,21 +531,19 @@ export class LoggerService implements IService{
      * @returns {terminal.Widgets.LogElement} - The initialized consensus log.
      */
     private initiliazeConsensusLog(grid: terminal.grid): terminal.Widgets.LogElement {
-        const consensusLog = grid.set(2, 0, 10, 12, log, {
-            fg: "white",
-            selectedFg: "white",
-            label: "Consensus Node Log",
+        return grid.set(2, 0, 10, 12, log, {
+            fg: 'white',
+            selectedFg: 'white',
+            label: 'Consensus Node Log',
             scrollable: true,
             focused: true,
             keys: true,
             vi: true,
             scrollbar: {
-              ch: " ",
-              inverse: true,
+                ch: ' ',
+                inverse: true,
             },
-          });
-
-        return consensusLog;
+        });
     }
 
     /**
@@ -529,15 +553,15 @@ export class LoggerService implements IService{
      */
     private initiliazeMirrorLog(grid: terminal.grid): terminal.Widgets.LogElement {
         const mirrorLog = grid.set(2, 0, 10, 12, log, {
-            fg: "white",
-            selectedFg: "white",
-            label: "Mirror Node Log",
+            fg: 'white',
+            selectedFg: 'white',
+            label: 'Mirror Node Log',
             scrollable: true,
             focused: true,
             keys: true,
             vi: true,
             scrollbar: {
-              ch: " ",
+              ch: ' ',
               inverse: true,
             },
         });
@@ -553,15 +577,15 @@ export class LoggerService implements IService{
      */
     private initiliazeRelayLog(grid: terminal.grid): terminal.Widgets.LogElement {
         const relayLog = grid.set(2, 0, 10, 12, log, {
-            fg: "white",
-            selectedFg: "white",
-            label: "Relay Log",
+            fg: 'white',
+            selectedFg: 'white',
+            label: 'Relay Log',
             scrollable: true,
             focused: true,
             keys: true,
             vi: true,
             scrollbar: {
-              ch: " ",
+              ch: ' ',
               inverse: true,
             },
         });
@@ -577,20 +601,44 @@ export class LoggerService implements IService{
      */
     private initializeAccountBoard(grid: terminal.grid): terminal.Widgets.LogElement {
         const accountBoard = grid.set(2, 0, 10, 12, log, {
-            fg: "white",
-            selectedFg: "white",
-            label: "Account Board",
+            fg: 'white',
+            selectedFg: 'white',
+            label: 'Account Board',
             scrollable: true,
             focused: true,
             keys: true,
             vi: true,
             scrollbar: {
-              ch: " ",
+              ch: ' ',
               inverse: true,
             },
         });
 
         accountBoard.hide();
         return accountBoard;
+    }
+
+    /**
+     * Initializes the resource board.
+     * @param {terminal.grid} grid - The grid where the resource board is placed.
+     * @returns {terminal.Widgets.LogElement} The initialized resource board.
+     */
+    private initializeResourceBoard(grid: terminal.grid): terminal.Widgets.LogElement {
+        const resourceBoard = grid.set(2, 0, 10, 12, log, {
+            fg: 'white',
+            selectedFg: 'white',
+            label: 'Resource Board',
+            scrollable: true,
+            focused: true,
+            keys: true,
+            vi: true,
+            scrollbar: {
+                ch: ' ',
+                inverse: true,
+            },
+        });
+
+        resourceBoard.hide();
+        return resourceBoard;
     }
 }

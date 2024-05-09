@@ -90,6 +90,7 @@ export class CLIService implements IService{
         CLIService.selectNetworkTag(yargs);
         CLIService.selectMirrorTag(yargs);
         CLIService.selectRelayTag(yargs);
+        CLIService.createInitialResources(yargs);
     }
 
     /**
@@ -159,6 +160,7 @@ export class CLIService implements IService{
         const mirrorTag = argv.mirrorTag as string;
         const relayTag = argv.relayTag as string;
         const workDir = FileSystemUtils.parseWorkDir(argv.workdir as string);
+        const createInitialResources = argv.createInitialResources as boolean;
         const currentArgv: CLIOptions = {
             accounts,
             async,
@@ -181,6 +183,7 @@ export class CLIService implements IService{
             mirrorTag,
             relayTag,
             workDir,
+            createInitialResources
         };
 
         return currentArgv;
@@ -584,6 +587,24 @@ export class CLIService implements IService{
             describe: 'Select custom hedera-json-rpc relay tag',
             demandOption: false,
             default: ''
+        });
+    }
+
+    /**
+     * Adds the 'create-initial-resources' option to the command line arguments.
+     * This option is a boolean that enables or disables creation of initial resources.
+     * It is not required and defaults to false.
+     *
+     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
+     * @private
+     * @static
+     */
+    private static createInitialResources(yargs: Argv<{}>): void {
+        yargs.option('create-initial-resources', {
+            type: 'boolean',
+            describe: 'Enable or disable creation of initial resources',
+            demandOption: false,
+            default: false
         });
     }
     

@@ -27,6 +27,7 @@ import { StartState } from '../state/StartState';
 import { StopState } from '../state/StopState';
 import { StateConfiguration } from '../types/StateConfiguration';
 import { DebugState } from '../state/DebugState';
+import { ResourceCreationState } from '../state/ResourceCreationState';
 
 /**
  * Class representing the state data.
@@ -48,6 +49,8 @@ export class StateData {
                 return this.getStopConfiguration();
             case 'accountCreation':
                 return this.getAccountCreationConfiguration();
+            case 'resourceCreation':
+                return this.getResourceCreationConfiguration();
             case 'debug':
                 return this.getDebugConfiguration();
             default:
@@ -70,6 +73,7 @@ export class StateData {
                 new StartState(),
                 new NetworkPrepState(),
                 new AccountCreationState(),
+                new ResourceCreationState(),
                 new CleanUpState(),
                 new AttachState()
             ]
@@ -89,9 +93,9 @@ export class StateData {
                 new StartState(),
                 new NetworkPrepState(),
                 new AccountCreationState(),
+                new ResourceCreationState(),
                 new CleanUpState(),
                 new AttachState()
-                
             ]
         };
     }
@@ -111,6 +115,20 @@ export class StateData {
     }
 
     /**
+     * Get the configuration for the resource creation state.
+     * @returns {StateConfiguration} The configuration for the resource creation state.
+     * @private
+     */
+    private getResourceCreationConfiguration(): StateConfiguration {
+        return {
+            'stateMachineName': 'resourceCreation',
+            'states': [
+                new ResourceCreationState()
+            ]
+        };
+    }
+
+    /**
      * Get the configuration for the account creation state.
      * @returns {StateConfiguration} The configuration for the account creation state.
      * @private
@@ -121,7 +139,7 @@ export class StateData {
             'states' : [
                 new AccountCreationState()
             ]
-        }
+        };
     }
 
     /**
@@ -135,6 +153,6 @@ export class StateData {
             'states' : [
                 new DebugState()
             ]
-        }
+        };
     }
 }

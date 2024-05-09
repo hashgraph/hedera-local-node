@@ -17,14 +17,16 @@
  * limitations under the License.
  *
  */
-import sinon from "sinon";
+import sinon from 'sinon';
 import shell from 'shelljs';
-import { LoggerService } from "../../src/services/LoggerService";
-import { CLIService } from "../../src/services/CLIService";
-import { ServiceLocator } from "../../src/services/ServiceLocator";
-import { DockerService } from "../../src/services/DockerService";
-import { ConnectionService } from "../../src/services/ConnectionService";
-import { ClientService } from "../../src/services/ClientService";
+import { LoggerService } from '../../src/services/LoggerService';
+import { CLIService } from '../../src/services/CLIService';
+import { ServiceLocator } from '../../src/services/ServiceLocator';
+import { DockerService } from '../../src/services/DockerService';
+import { ConnectionService } from '../../src/services/ConnectionService';
+import { ClientService } from '../../src/services/ClientService';
+import { CLIOptions } from '../../src/types/CLIOptions';
+import { AccountId, Client, PrivateKey } from '@hashgraph/sdk';
 
 export interface LocalNodeTestBed {
     sandbox: sinon.SinonSandbox;
@@ -46,13 +48,13 @@ export interface LocalNodeTestBed {
 
 let testBed: LocalNodeTestBed;
 
-export function getTestBed(cliServiceArgs?: any) {
+export function getTestBed(cliServiceArgs?: Partial<CLIOptions>) {
     if (testBed) {
         resetTestBedHistory(testBed)
         if (cliServiceArgs) {
             testBed.cliServiceStub.getCurrentArgv.returns({
                 ...cliServiceArgs
-            })
+            } as CLIOptions)
         }
         
         return {
@@ -79,7 +81,12 @@ function generateLocalNodeStubs(sandbox:sinon.SinonSandbox, cliServiceArgs?: any
     const dockerServiceStub = sandbox.createStubInstance(DockerService);
     const connectionServiceStub = sandbox.createStubInstance(ConnectionService);
     const loggerServiceStub = sandbox.createStubInstance(LoggerService);
-    const clientServiceStub = sandbox.createStubInstance(ClientService);
+    const clientServiceStub = sandbox.createStubInstance(ClientService, {
+        getClient: Client.forLocalNode().setOperator(
+          AccountId.fromString('0.0.2'),
+          PrivateKey.fromStringED25519('302e020100300506032b65700422042091132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137')
+        )
+    });
     const cliServiceStub = sandbox.createStubInstance(CLIService, {
       getCurrentArgv: {
         ...cliServiceArgs,

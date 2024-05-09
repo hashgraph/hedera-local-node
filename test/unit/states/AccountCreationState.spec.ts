@@ -21,14 +21,20 @@
 import { expect } from 'chai';
 import { AccountCreationState } from '../../../src/state/AccountCreationState';
 import { LoggerService } from '../../../src/services/LoggerService';
-import { CLIService } from '../../../src/services/CLIService'
+import { CLIService } from '../../../src/services/CLIService';
 import { ClientService } from '../../../src/services/ClientService';
-import { PrivateKey } from '@hashgraph/sdk';
+import { AccountId, AccountInfo, EvmAddress, Hbar, PrivateKey } from '@hashgraph/sdk';
 import { getTestBed } from '../testBed';
-import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
-import { ACCOUNT_CREATION_STATE_INIT_MESSAGE, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE,
-         ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE,
-         ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE } from '../../../src/constants';
+import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
+import {
+  ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE,
+  ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE,
+  ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE,
+  ACCOUNT_CREATION_STATE_INIT_MESSAGE
+} from '../../../src/constants';
+import { IOBserver } from '../../../src/controller/IObserver';
+import { AccountUtils } from '../../../src/utils/AccountUtils';
+import { CLIOptions } from '../../../src/types/CLIOptions';
 
 describe('AccountCreationState', () => {
   let accountCreationState: AccountCreationState,
@@ -36,7 +42,7 @@ describe('AccountCreationState', () => {
       loggerService: SinonStubbedInstance<LoggerService>,
       serviceLocator: SinonStub,
       cliService: SinonStubbedInstance<CLIService>,
-      observer;
+      observer: SinonStubbedInstance<IOBserver>;
 
   before(() => {
     const { 
@@ -60,7 +66,7 @@ describe('AccountCreationState', () => {
 
   after(() => {
     testSandbox.resetHistory();
-  })
+  });
 
   it('should initialize the Init State', async () => {
     expect(accountCreationState).to.be.instanceOf(AccountCreationState);
@@ -68,28 +74,38 @@ describe('AccountCreationState', () => {
     testSandbox.assert.calledWith(serviceLocator, ClientService.name);
     testSandbox.assert.calledWith(serviceLocator, CLIService.name);
     testSandbox.assert.calledOnceWithExactly(loggerService.trace, ACCOUNT_CREATION_STATE_INIT_MESSAGE, AccountCreationState.name);
-})
+  });
 
-it('should have a subscribe method', async () => {
-    expect(accountCreationState.subscribe).to.be.a('function');
-})
+  it('should have a subscribe method', async () => {
+      expect(accountCreationState.subscribe).to.be.a('function');
+  });
 
   describe('onStart', () => {
+    let generateECDSAStub: SinonStub;
+    let generateAliasECDSAStub: SinonStub;
+    let generateED25519Stub: SinonStub;
+
+    beforeEach(() => {
+      generateECDSAStub = testSandbox.stub(AccountCreationState.prototype, <any>'generateECDSA').resolves();
+      generateAliasECDSAStub = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').resolves();
+      generateED25519Stub = testSandbox.stub(AccountCreationState.prototype, <any>'generateED25519').resolves();
+    });
+
+    afterEach(() => {
+      generateECDSAStub.restore();
+      generateAliasECDSAStub.restore();
+      generateED25519Stub.restore();
+    });
+
     it('should log information when starting in synchronous mode', async () => {
-      const generateECDSAStub = testSandbox.stub(AccountCreationState.prototype, <any>'generateECDSA').resolves();
-      const generateAliasECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').resolves();
-      const generateED25519 = testSandbox.stub(AccountCreationState.prototype, <any>'generateED25519').resolves();
       await accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
       testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
-      testSandbox.assert.called(generateECDSAStub);
-      testSandbox.assert.called(generateAliasECDSA);
-      testSandbox.assert.called(generateED25519);
+      testSandbox.assert.calledOnce(generateECDSAStub);
+      testSandbox.assert.calledOnce(generateAliasECDSAStub);
+      testSandbox.assert.calledOnce(generateED25519Stub);
       testSandbox.assert.called(observer.update);
-      generateECDSAStub.restore();
-      generateAliasECDSA.restore();
-      generateED25519.restore();
     });
 
     it('should log information when starting in asynchronous mode', async () => {
@@ -100,16 +116,19 @@ it('should have a subscribe method', async () => {
         accounts: 5,
         startup: false,
       } as any);
-      const generateAsyncStub = testSandbox.stub(AccountCreationState.prototype, <any>'generateAsync').resolves();
 
       await accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
+
       testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
-      testSandbox.assert.called(generateAsyncStub);
-      generateAsyncStub.restore();
+      testSandbox.assert.calledOnce(generateECDSAStub);
+      testSandbox.assert.calledOnce(generateAliasECDSAStub);
+      testSandbox.assert.calledOnce(generateED25519Stub);
+      testSandbox.assert.called(observer.update);
     });
 
     it('should log information when blocklisting is enabled', async () => {
+      const getBlocklistedAccountsCountStub = testSandbox.stub(AccountCreationState.prototype, <any>'getBlocklistedAccountsCount').returns(1);
       cliService.getCurrentArgv.returns({
         async: true,
         blocklisting: true,
@@ -118,16 +137,17 @@ it('should have a subscribe method', async () => {
         startup: false,
       } as any);
 
-      const getBlocklistedAccountsCountStub = testSandbox.stub(AccountCreationState.prototype, <any>'getBlocklistedAccountsCount').returns(1);
-      const generateAsyncStub = testSandbox.stub(AccountCreationState.prototype, <any>'generateAsync').resolves();
       await accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
       testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE, 'AccountCreationState');
-      testSandbox.assert.called(generateAsyncStub);
       testSandbox.assert.called(getBlocklistedAccountsCountStub);
+      testSandbox.assert.calledOnce(generateECDSAStub);
+      testSandbox.assert.calledOnce(generateAliasECDSAStub);
+      testSandbox.assert.calledOnce(generateED25519Stub);
+      testSandbox.assert.called(observer.update);
+
       getBlocklistedAccountsCountStub.restore();
-      generateAsyncStub.restore();
     });
   });
 
@@ -139,46 +159,61 @@ it('should have a subscribe method', async () => {
   });
 
   describe('generate methods', () => {
-    let logAccountTitleStub: SinonStub;
+    const expectedAccountId: AccountId = AccountId.fromString('0.0.1234');
+    expectedAccountId.evmAddress = EvmAddress.fromString('0x1234');
+    const expectedBalance: Hbar = new Hbar(1000);
+
     let createAccountStub: SinonStub;
+    let createAliasAccountStub: SinonStub;
+    let logAccountStub: SinonStub;
+    let logAccountTitleStub: SinonStub;
     let logAliasAccountStub: SinonStub;
     let logAliasAccountTitleStub: SinonStub;
     let logAccountDividerStub: SinonStub;
-    let createAccountAsyncStub: SinonStub;
+    let logAliasAccountDividerStub: SinonStub;
 
     beforeEach(() => {
+      createAccountStub = testSandbox.stub(AccountUtils, <any>'createAccount')
+        .resolves({ accountId: expectedAccountId, balance: expectedBalance } as AccountInfo);
+      createAliasAccountStub = testSandbox.stub(AccountUtils, <any>'createAliasedAccount')
+        .resolves({ accountId: expectedAccountId, balance: expectedBalance } as AccountInfo);
+      logAccountStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAccount').resolves();
       logAccountTitleStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAccountTitle').resolves();
-      createAccountStub = testSandbox.stub(AccountCreationState.prototype, <any>'createAccount').resolves();
       logAliasAccountStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAliasAccount').resolves();
       logAliasAccountTitleStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAliasAccountTitle').resolves();
       logAccountDividerStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAccountDivider').resolves();
-      createAccountAsyncStub = testSandbox.stub(AccountCreationState.prototype, <any>'createAccountAsync');
+      logAliasAccountDividerStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAliasAccountDivider').resolves();
     })
 
     afterEach(() => {
+      logAccountStub.restore();
       logAccountTitleStub.restore();
       createAccountStub.restore();
+      createAliasAccountStub.restore();
       logAliasAccountStub.restore();
       logAliasAccountTitleStub.restore();
       logAccountDividerStub.restore();
-      createAccountAsyncStub.restore();
+      logAliasAccountDividerStub.restore();
     })
 
     describe('generateECDSA', () => {
       let generateAliasECDSA: SinonStub;
       let generateED25519: SinonStub;
-      let privateKeyStub: SinonStub;
+      let generateECDSA: SinonSpy;
+      let privateKeySpy: SinonSpy;
   
       beforeEach(() => {
         generateAliasECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').resolves();
         generateED25519 = testSandbox.stub(AccountCreationState.prototype, <any>'generateED25519').resolves();
-        privateKeyStub = testSandbox.stub(PrivateKey, 'generateECDSA').returns({'privateKey': 'some'} as any);
+        generateECDSA = testSandbox.spy(AccountCreationState.prototype, <any>'generateECDSA');
+        privateKeySpy = testSandbox.spy(PrivateKey, 'generateECDSA');
       })
   
       afterEach(() => {
         generateAliasECDSA.restore();
         generateED25519.restore();
-        privateKeyStub.restore();
+        generateECDSA.restore();
+        privateKeySpy.restore();
       })
   
       it('should generate ECDSA accounts synchronously and log the title and divider', async () => {
@@ -188,18 +223,22 @@ it('should have a subscribe method', async () => {
           balance: 1000,
           accounts: 5,
           startup: false,
-        } as any);
+        } as CLIOptions);
+
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.callCount(privateKeyStub, 5);
-        testSandbox.assert.calledOnce(logAccountTitleStub);
         testSandbox.assert.called(observer.update);
-        testSandbox.assert.called(logAccountDividerStub);
+
+        testSandbox.assert.callCount(privateKeySpy, 5);
         testSandbox.assert.callCount(createAccountStub, 5);
+        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ECDSA');
+        testSandbox.assert.callCount(logAccountStub, 5);
+        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
 
       it('should generate ECDSA accounts аsynchronously and log the title and divider', async () => {
@@ -210,39 +249,44 @@ it('should have a subscribe method', async () => {
           accounts: 10,
           startup: false,
         } as any);
+
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.callCount(privateKeyStub, 10);
-        testSandbox.assert.callCount(createAccountAsyncStub, 10);
-        testSandbox.assert.calledOnce(logAccountTitleStub);
         testSandbox.assert.called(observer.update);
-        testSandbox.assert.called(logAccountDividerStub);
+
+        await generateECDSA.returnValues[0];
+
+        testSandbox.assert.callCount(privateKeySpy, 10);
+        testSandbox.assert.callCount(createAccountStub, 10);
+        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ECDSA');
+        testSandbox.assert.callCount(logAccountStub, 10);
+        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
     });
   
     describe('generateAliasECDSA', () => {
       let generateECDSA: SinonStub;
       let generateED25519: SinonStub;
-      let createAliasAccountStub: SinonStub;
+      let generateAliasECDSA: SinonSpy;
+      let privateKeySpy: SinonSpy;
   
       beforeEach(() => {
         generateECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateECDSA').resolves();
         generateED25519 = testSandbox.stub(AccountCreationState.prototype, <any>'generateED25519').resolves();
-        createAliasAccountStub = testSandbox.stub(AccountCreationState.prototype, <any>'createAliasAccount').returns({
-          'accountId': 'someid',
-          'wallet': {'signingKey': {'privateKey': ''}},
-          'balance': 'balance'
-        });
+        generateAliasECDSA = testSandbox.spy(AccountCreationState.prototype, <any>'generateAliasECDSA');
+        privateKeySpy = testSandbox.spy(PrivateKey, 'generateECDSA');
       })
   
       afterEach(() => {
         generateECDSA.restore();
         generateED25519.restore();
-        createAliasAccountStub.restore();
+        generateAliasECDSA.restore();
+        privateKeySpy.restore();
       })
   
       it('should generate AliasECDSA accounts synchronously and log the title and divider', async () => {
@@ -258,12 +302,16 @@ it('should have a subscribe method', async () => {
         await accountCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.callCount(logAliasAccountStub, 10);
+        testSandbox.assert.called(observer.update);
+
+        testSandbox.assert.callCount(privateKeySpy, 10);
         testSandbox.assert.callCount(createAliasAccountStub, 10);
         testSandbox.assert.calledOnce(logAliasAccountTitleStub);
-        testSandbox.assert.called(observer.update);
+        testSandbox.assert.callCount(logAliasAccountStub, 10);
+        testSandbox.assert.calledOnce(logAliasAccountDividerStub);
       });
 
       it('should generate AliasECDSA accounts asynchronously and log the title and divider', async () => {
@@ -274,32 +322,44 @@ it('should have a subscribe method', async () => {
           accounts: 6,
           startup: false,
         } as any);
+
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.callCount(createAliasAccountStub, 6);
         testSandbox.assert.called(observer.update);
+
+        await generateAliasECDSA.returnValues[0];
+
+        testSandbox.assert.callCount(privateKeySpy, 6);
+        testSandbox.assert.callCount(createAliasAccountStub, 6);
+        testSandbox.assert.calledOnce(logAliasAccountTitleStub);
+        testSandbox.assert.callCount(logAliasAccountStub, 6);
+        testSandbox.assert.calledOnce(logAliasAccountDividerStub);
       });
     });
   
     describe('generateED25519', () => {
       let generateAliasECDSA: SinonStub;
       let generateECDSA: SinonStub;
-      let privateKeyStub: SinonStub;
+      let generateED25519: SinonSpy;
+      let privateKeySpy: SinonSpy;
   
       beforeEach(() => {
         generateAliasECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').resolves();
         generateECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateECDSA').resolves();
-        privateKeyStub = testSandbox.stub(PrivateKey, 'generateED25519').returns({'privateKey': 'some'} as any);
+        generateED25519 = testSandbox.spy(AccountCreationState.prototype, <any>'generateED25519');
+        privateKeySpy = testSandbox.spy(PrivateKey, 'generateED25519');
       })
   
       afterEach(() => {
         generateAliasECDSA.restore();
         generateECDSA.restore();
-        privateKeyStub.restore();
+        generateED25519.restore();
+        privateKeySpy.restore();
       })
   
       it('should generate ED25519 accounts synchronously and log the title and divider', async () => {
@@ -317,10 +377,14 @@ it('should have a subscribe method', async () => {
         testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
-        testSandbox.assert.callCount(privateKeyStub, 10);
+        testSandbox.assert.called(generateED25519);
+        testSandbox.assert.called(observer.update);
+
+        testSandbox.assert.callCount(privateKeySpy, 10);
         testSandbox.assert.callCount(createAccountStub, 10);
         testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ED25519');
-        testSandbox.assert.called(observer.update);
+        testSandbox.assert.callCount(logAccountStub, 10);
+        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
 
       it('should generate ED25519 accounts asynchronously and log the title and divider', async () => {
@@ -331,81 +395,24 @@ it('should have a subscribe method', async () => {
           accounts: 6,
           startup: false,
         } as any);
+
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
-        testSandbox.assert.callCount(privateKeyStub, 6);
-        testSandbox.assert.callCount(createAccountAsyncStub, 6);
-        testSandbox.assert.called(observer.update);
-      });
-    });
-  
-    describe('generateAsync', () => {
-      let generateAliasECDSA: SinonStub;
-      let generateECDSA: SinonStub;
-      let generateED25519: SinonStub;
-      let logAccountStub: SinonStub;
-  
-      beforeEach(() => {
-        const account = { 'accountId': 'someid', 'wallet': {'signingKey': {'privateKey': ''}}, 'balance': 'balance'};
-        generateAliasECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').returns([
-          { 'accountId': 'someid1', 'wallet': '', 'balance': 'balance'},
-          { 'accountId': 'someid2', 'wallet': '', 'balance': 'balance'},
-          { 'accountId': 'someid3', 'wallet': '', 'balance': 'balance'},
-          { 'accountId': 'someid4', 'wallet': '', 'balance': 'balance'},
-          { 'accountId': 'someid5', 'wallet': '', 'balance': 'balance'}
-        ]);
-        generateED25519 = testSandbox.stub(AccountCreationState.prototype, <any>'generateED25519').returns([
-          account,
-          account,
-          account,
-          account,
-          account
-        ]);
-        generateECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateECDSA').returns([
-          account,
-          account,
-          account,
-          account,
-          account
-        ]);
-        logAccountStub = testSandbox.stub(AccountCreationState.prototype, <any>'logAccount').resolves();
-      })
-  
-      afterEach(() => {
-        generateAliasECDSA.restore();
-        generateECDSA.restore();
-        generateED25519.restore();
-        logAccountStub.restore();
-      })
-  
-      it('should generate accounts asynchronously and log the titles and dividers', async () => {
-        cliService.getCurrentArgv.returns({
-                async: true,
-                blocklisting: false,
-                balance: 1000,
-                accounts: 5,
-                startup: false,
-              } as any);
-        await accountCreationState.subscribe(observer);
-        await accountCreationState.onStart();
-
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
-        testSandbox.assert.called(generateECDSA);
-        testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.callCount(logAccountStub, 10);
-        testSandbox.assert.callCount(logAliasAccountStub, 5);
-        testSandbox.assert.called(logAliasAccountTitleStub);
-        logAccountTitleStub.calledWithExactly(logAccountTitleStub.getCall(0),' ECDSA ');
-        logAccountTitleStub.calledWithExactly(logAccountTitleStub.getCall(1),'ED25519');
         testSandbox.assert.called(observer.update);
-        testSandbox.assert.calledTwice(logAccountDividerStub);
+
+        await generateED25519.returnValues[0];
+
+        testSandbox.assert.callCount(privateKeySpy, 6);
+        testSandbox.assert.callCount(createAccountStub, 6);
+        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ED25519');
+        testSandbox.assert.callCount(logAccountStub, 6);
+        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
     });
   })
 });
-

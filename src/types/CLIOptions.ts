@@ -18,7 +18,7 @@
  *
  */
 
-import { NetworkType } from "./NetworkType";
+import { NetworkType } from './NetworkType';
 
 /**
  * Represents the options that can be passed to the CLI.
@@ -42,6 +42,11 @@ import { NetworkType } from "./NetworkType";
  * @property {number} verbose - The level of verbosity.
  * @property {string} timestamp - The timestamp for debugging.
  * @property {boolean} enableDebug - Whether to enable debugging.
+ * @property {string} networkTag - The tag for the network.
+ * @property {string} mirrorTag - The tag for the mirror.
+ * @property {string} relayTag - The tag for the relay.
+ * @property {string} workDir - The working directory.
+ * @property {boolean} createInitialResources - Whether to create initial resources.
  */
 export interface CLIOptions {
     accounts: number,
@@ -65,4 +70,5 @@ export interface CLIOptions {
     mirrorTag: string,
     relayTag: string,
     workDir: string,
+    createInitialResources: boolean,
 }
