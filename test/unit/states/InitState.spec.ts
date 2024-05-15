@@ -24,20 +24,20 @@ import yaml from 'js-yaml';
 import { join } from 'path';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
-    APPLICATION_YML_RELATIVE_PATH,
-    INIT_STATE_BOOTSTRAPPED_PROP_SET,
-    INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
-    INIT_STATE_INIT_MESSAGE,
-    INIT_STATE_MIRROR_PROP_SET,
-    INIT_STATE_NO_ENV_VAR_CONFIGURED,
-    INIT_STATE_NO_NODE_CONF_NEEDED,
-    INIT_STATE_RELAY_LIMITS_DISABLED,
-    INIT_STATE_START_DOCKER_CHECK,
-    INIT_STATE_STARTING_MESSAGE,
-    NECESSARY_PORTS,
-    NETWORK_NODE_CONFIG_DIR_PATH,
-    OPTIONAL_PORTS,
-    RECORD_PARSER_SOURCE_REL_PATH
+  APPLICATION_YML_RELATIVE_PATH,
+  INIT_STATE_BOOTSTRAPPED_PROP_SET,
+  INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
+  INIT_STATE_INIT_MESSAGE,
+  INIT_STATE_MIRROR_PROP_SET,
+  INIT_STATE_NO_ENV_VAR_CONFIGURED,
+  INIT_STATE_NO_NODE_CONF_NEEDED,
+  INIT_STATE_RELAY_LIMITS_DISABLED,
+  INIT_STATE_START_DOCKER_CHECK,
+  INIT_STATE_STARTING_MESSAGE,
+  NECESSARY_PORTS,
+  NETWORK_NODE_CONFIG_DIR_PATH,
+  OPTIONAL_PORTS,
+  RECORD_PARSER_SOURCE_REL_PATH
 } from '../../../src/constants';
 import { ConfigurationData } from '../../../src/data/ConfigurationData';
 import { CLIService } from '../../../src/services/CLIService';
@@ -50,7 +50,7 @@ import { getTestBed } from '../testBed';
 
 describe('InitState tests', () => {
     let initState: InitState,
-        testSandbox: SinonSandbox, 
+        testSandbox: SinonSandbox,
         loggerService: SinonStubbedInstance<LoggerService>,
         serviceLocator: SinonStub,
         cliService: SinonStubbedInstance<CLIService>,
@@ -89,7 +89,7 @@ describe('InitState tests', () => {
     }
 
     before(() => {
-        const { 
+        const {
             sandbox,
             loggerServiceStub,
             serviceLocatorStub,
@@ -104,7 +104,7 @@ describe('InitState tests', () => {
             mirrorTag: 'test-mirror-tag',
             relayTag: 'test-relay-tag',
         });
-    
+
         testSandbox = sandbox
         dockerService = dockerServiceStub
         cliService = cliServiceStub
@@ -155,7 +155,7 @@ describe('InitState tests', () => {
         testSandbox.assert.calledOnce(dockerService.isCorrectDockerComposeVersion);
         testSandbox.assert.calledOnce(dockerService.checkDocker);
         testSandbox.assert.calledOnce(dockerService.checkDockerResources);
-        
+
         testSandbox.assert.calledOnceWithExactly(dockerService.isPortInUse, NECESSARY_PORTS.concat(OPTIONAL_PORTS));
         testSandbox.assert.calledWith(observerSpy, EventType.Finish);
         testSandbox.assert.calledOnce(prepareWorkDirectoryStub);
@@ -179,7 +179,7 @@ describe('InitState tests', () => {
         testSandbox.assert.calledOnce(dockerService.checkDockerResources);
 
         testSandbox.assert.calledWith(observerSpy, EventType.UnresolvableError);
-        
+
         testSandbox.assert.notCalled(dockerService.isPortInUse);
         testSandbox.assert.notCalled(loggerService.initializeTerminalUI);
     })
@@ -240,7 +240,7 @@ describe('InitState tests', () => {
         afterEach(() => {
             onStartStub.restore()
         })
-        
+
         it('should execute "prepareWorkDirectory" as expected', async () => {
             prepareWorkDirectoryStub.restore()
 
@@ -250,7 +250,7 @@ describe('InitState tests', () => {
             testSandbox.assert.calledWithExactly(loggerService.info, "Local Node Working directory set to testDir", InitState.name);
             testSandbox.assert.calledOnceWithExactly(createEphemeralDirectoriesStub, "testDir");
             testSandbox.assert.calledOnceWithExactly(copyPathsStub, configFiles);
-            
+
             prepareWorkDirectoryStub = testSandbox.stub(initState as any, 'prepareWorkDirectory')
         })
 
@@ -397,7 +397,7 @@ describe('InitState tests', () => {
                 configureMirrorNodePropertiesStub = testSandbox.stub(initState as any, 'configureMirrorNodeProperties');
             })
 
-            it('should execute "configureMirrorNodeProperties" as write to file', async () => {
+            it('should set the persist properties for transactionBytes and transactionRecordBytes to true', async () => {
                 await initState.onStart();
                 testSandbox.assert.calledOnceWithExactly(loggerService.info, INIT_STATE_MIRROR_PROP_SET, InitState.name);
                 testSandbox.assert.called(fsReadFileSync);
