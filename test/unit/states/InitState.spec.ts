@@ -32,12 +32,12 @@ import {
     INIT_STATE_NO_ENV_VAR_CONFIGURED,
     INIT_STATE_NO_NODE_CONF_NEEDED,
     INIT_STATE_RELAY_LIMITS_DISABLED,
-    INIT_STATE_STARTING_MESSAGE,
     INIT_STATE_START_DOCKER_CHECK,
+    INIT_STATE_STARTING_MESSAGE,
     NECESSARY_PORTS,
     NETWORK_NODE_CONFIG_DIR_PATH,
     OPTIONAL_PORTS,
-    RECORD_PARSER_SOURCE_REL_PATH,
+    RECORD_PARSER_SOURCE_REL_PATH
 } from '../../../src/constants';
 import { ConfigurationData } from '../../../src/data/ConfigurationData';
 import { CLIService } from '../../../src/services/CLIService';
@@ -53,6 +53,7 @@ describe('InitState tests', () => {
         testSandbox: SinonSandbox, 
         loggerService: SinonStubbedInstance<LoggerService>,
         serviceLocator: SinonStub,
+        cliService: SinonStubbedInstance<CLIService>,
         dockerService: SinonStubbedInstance<DockerService>,
         observerSpy: SinonSpy,
         configurationData: SinonStub,
@@ -93,6 +94,7 @@ describe('InitState tests', () => {
             loggerServiceStub,
             serviceLocatorStub,
             dockerServiceStub,
+            cliServiceStub
         } = getTestBed({
             workDir: 'testDir',
             fullMode: true,
@@ -105,6 +107,7 @@ describe('InitState tests', () => {
     
         testSandbox = sandbox
         dockerService = dockerServiceStub
+        cliService = cliServiceStub
         loggerService = loggerServiceStub
         serviceLocator = serviceLocatorStub
 
@@ -213,6 +216,16 @@ describe('InitState tests', () => {
                             },
                             downloader: {
                                 local: {}
+                            },
+                            parser: {
+                                record: {
+                                    entity: {
+                                        persist: {
+                                            transactionBytes: false,
+                                            transactionRecordBytes: false
+                                        }
+                                    }
+                                }
                             }
                         },
                         monitor: {
@@ -345,6 +358,53 @@ describe('InitState tests', () => {
             testSandbox.assert.called(ymlDump);
 
             configureMirrorNodePropertiesStub = testSandbox.stub(initState as any, 'configureMirrorNodeProperties')
+        })
+
+        describe('when persistTransactionBytes is set to true', () => {
+            let cliOptionsStub: SinonStub;
+
+            const expectedMirrorProperties = {
+                hedera: {
+                    mirror: {
+                        importer : {
+                            parser: {
+                                record: {
+                                    entity: {
+                                        persist: {
+                                            transactionBytes: true,
+                                            transactionRecordBytes: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            before(() => {
+                cliOptionsStub = testSandbox.stub((initState  as any), 'cliOptions').value({
+                    ...cliService.getCurrentArgv(),
+                    persistTransactionBytes: true
+                });
+                configureMirrorNodePropertiesStub.restore();
+                onStartStub = testSandbox.stub(initState, 'onStart')
+                  .callsFake(() => (initState  as any).configureMirrorNodeProperties());
+            })
+
+            after(() => {
+                cliOptionsStub.restore();
+                configureMirrorNodePropertiesStub = testSandbox.stub(initState as any, 'configureMirrorNodeProperties');
+            })
+
+            it('should execute "configureMirrorNodeProperties" as write to file', async () => {
+                await initState.onStart();
+                testSandbox.assert.calledOnceWithExactly(loggerService.info, INIT_STATE_MIRROR_PROP_SET, InitState.name);
+                testSandbox.assert.called(fsReadFileSync);
+                testSandbox.assert.called(fsWriteFileSync);
+                testSandbox.assert.called(ymlLoad);
+                testSandbox.assert.calledWithMatch(ymlDump, expectedMirrorProperties);
+            })
         })
     })
 });
