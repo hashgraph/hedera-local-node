@@ -161,6 +161,7 @@ export class CLIService implements IService{
         const relayTag = argv.relayTag as string;
         const workDir = FileSystemUtils.parseWorkDir(argv.workdir as string);
         const createInitialResources = argv.createInitialResources as boolean;
+        const persistTransactionBytes = argv.persistTransactionBytes as boolean;
         const currentArgv: CLIOptions = {
             accounts,
             async,
@@ -183,7 +184,8 @@ export class CLIService implements IService{
             mirrorTag,
             relayTag,
             workDir,
-            createInitialResources
+            createInitialResources,
+            persistTransactionBytes,
         };
 
         return currentArgv;

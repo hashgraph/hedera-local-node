@@ -8,6 +8,9 @@ hedera:
       parser:
         record:
           entity:
+            persist:
+              transactionBytes: false
+              transactionRecordBytes: false
             redis:
               enabled: false
           sidecar:

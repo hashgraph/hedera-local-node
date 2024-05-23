@@ -43,8 +43,8 @@ import {
     INIT_STATE_NO_ENV_VAR_CONFIGURED,
     INIT_STATE_NO_NODE_CONF_NEEDED,
     INIT_STATE_RELAY_LIMITS_DISABLED,
-    INIT_STATE_STARTING_MESSAGE,
     INIT_STATE_START_DOCKER_CHECK,
+    INIT_STATE_STARTING_MESSAGE,
     NECESSARY_PORTS,
     NETWORK_NODE_CONFIG_DIR_PATH,
     OPTIONAL_PORTS,
@@ -263,25 +263,28 @@ export class InitState implements IState{
     // TODO: finish off multi node
     private configureMirrorNodeProperties(): void {
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
-        const turboMode = !this.cliOptions.fullMode;
-        const debugMode = this.cliOptions.enableDebug;
-        const multiNode = this.cliOptions.multiNode;
+        const { enableDebug, fullMode, multiNode, persistTransactionBytes, workDir } = this.cliOptions;
 
-        const propertiesFilePath = join(this.cliOptions.workDir, 'compose-network/mirror-node/application.yml');
+        const propertiesFilePath = join(workDir, 'compose-network/mirror-node/application.yml');
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
 
-        if (turboMode) {
+        if (!fullMode) {
             application.hedera.mirror.importer.dataPath = originalNodeConfiguration.turboNodeProperties.dataPath;
             application.hedera.mirror.importer.downloader.sources = originalNodeConfiguration.turboNodeProperties.sources;
         }
 
-        if (debugMode) {
-            application.hedera.mirror.importer.downloader.local = originalNodeConfiguration.local
+        if (enableDebug) {
+            application.hedera.mirror.importer.downloader.local = originalNodeConfiguration.local;
         }
 
         if (multiNode) {
-            application['hedera']['mirror']['monitor']['nodes'] = originalNodeConfiguration.multiNodeProperties;
+            application.hedera.mirror.monitor.nodes = originalNodeConfiguration.multiNodeProperties;
             process.env.RELAY_HEDERA_NETWORK = '{"network-node:50211":"0.0.3","network-node-1:50211":"0.0.4","network-node-2:50211":"0.0.5","network-node-3:50211":"0.0.6"}';
+        }
+
+        if (persistTransactionBytes) {
+            application.hedera.mirror.importer.parser.record.entity.persist.transactionBytes = true;
+            application.hedera.mirror.importer.parser.record.entity.persist.transactionRecordBytes = true;
         }
 
         writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));

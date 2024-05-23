@@ -47,6 +47,7 @@ import { NetworkType } from './NetworkType';
  * @property {string} relayTag - The tag for the relay.
  * @property {string} workDir - The working directory.
  * @property {boolean} createInitialResources - Whether to create initial resources.
+ * @property {boolean} persistTransactionBytes - Whether to persist transaction bytes.
  */
 export interface CLIOptions {
     accounts: number,
@@ -71,4 +72,5 @@ export interface CLIOptions {
     relayTag: string,
     workDir: string,
     createInitialResources: boolean,
+    persistTransactionBytes: boolean,
 }
