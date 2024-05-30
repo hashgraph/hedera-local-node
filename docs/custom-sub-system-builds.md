@@ -23,7 +23,7 @@ To setup Hedera Local Node project using custom images, please first clone the r
 git clone https://github.com/hashgraph/hedera-local-node.git
 ```
 
-In the following guide we have chosen to use tag `local` for the locally created images. This value should be set in `value` key in `./src/configuration/local.json` for the corresponding image. The example below will set all images to be the one that are locally build:
+In the following guide we have chosen to use tag `local` for the locally created images. This value should be set in `value` key in `./src/configuration/local.json` for the corresponding image. The example below will set all images to be the one that are locally built:
 
 ```
 {"key": "NETWORK_NODE_IMAGE_TAG", "value": "local"},
@@ -33,10 +33,10 @@ In the following guide we have chosen to use tag `local` for the locally created
 {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "local"}
 ```
 
-Please review the steps below on how to build each image. When they are created and `local.json` is populate accordingly, you can proceed with running The Hedera Local Node as usual.
+Please review the steps below on how to build each image. When they are created and `local.json` is populated accordingly, you can proceed with running The Hedera Local Node as usual.
 
 ## Building Custom images
-### Build Consensus/Network node
+### Build Consensus/Network node image
 
   - For building consensus/network image clone `hedera-services` repo:
     ```
@@ -83,7 +83,7 @@ Please review the steps below on how to build each image. When they are created 
       $BUILD_PATH
     ```
 
-## Build Haveged node
+## Build Haveged image
   - For building haveged image clone `hedera-services` repo:
 
     ```
@@ -107,8 +107,8 @@ Please review the steps below on how to build each image. When they are created 
       $BUILD_PATH
     ```
 
-## Build Mirror node
-  - For building mirror image clone `hedera-mirror-node` repo:
+## Build Mirror node images
+  - For building mirror images clone `hedera-mirror-node` repo:
     
     ```
     git clone https://github.com/hashgraph/hedera-mirror-node.git
@@ -142,8 +142,8 @@ Please review the steps below on how to build each image. When they are created 
     docker build -t gcr.io/mirrornode/hedera-mirror-importer:local -f ./hedera-mirror-importer/Dockerfile ./hedera-mirror-importer
     ```
 
-## Build Relay node
-  - For building mirror image clone `hedera-json-rpc-relay` repo:
+## Build Relay node image
+  - For building relay image clone `hedera-json-rpc-relay` repo:
 
     ```
     git clone https://github.com/hashgraph/hedera-json-rpc-relay.git
@@ -161,8 +161,8 @@ Please review the steps below on how to build each image. When they are created 
     docker build -t ghcr.io/hashgraph/hedera-json-rpc-relay:local -f Dockerfile .
     ```
 
-## Build Mirror node Explorer
-  - For building mirror image clone `hedera-mirror-node-explorer` repo:
+## Build Mirror node Explorer image
+  - For building explorer image clone `hedera-mirror-node-explorer` repo:
 
     ```
     git clone https://github.com/hashgraph/hedera-mirror-node-explorer.git
@@ -183,7 +183,7 @@ Please review the steps below on how to build each image. When they are created 
   - Build `hedera-mirror-node-explorer` images:
 
     ```
-    npm i npm-run-all --save-dev
+    npm i 
     npm run build
     docker build -t gcr.io/hedera-registry/hedera-mirror-node-explorer:local .
     ```
