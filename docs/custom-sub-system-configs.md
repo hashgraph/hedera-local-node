@@ -1,7 +1,10 @@
-This document is describing how to change the default configurations of the sub systems components.
+# Customizing Local Node Configuration
 
-# Relay configurations
-In the `src/configuration/local.json` you can set the following values in the Relay:
+This document describes how to change the default configurations of the sub systems components.
+
+# Relay configuration
+
+In the file `src/configuration/local.json` you can set the following values for the Relay:
 
 | Envariable variable                            | Description |
 | --------                                       | -------     | 
@@ -24,14 +27,14 @@ In the `src/configuration/local.json` you can set the following values in the Re
 | RELAY_WS_SUBSCRIPTION_LIMIT                    | Maximum amount of subscriptions per single connection. |
 | RELAY_MIRROR_NODE_GET_CONTRACT_RESULTS_RETRIES | Maximun amount of retries to repeat on `GetContractResults` `contracts/results/` requests when fetching contract results after eth_sendRawTransaction submission. *Note that this in addition and multiplies the configured Axios retries values.    |
 
-# Mirror Node configurations
+# Mirror Node configuration
+
 The configuration file of the Mirror Node is stored in `compose-network/mirror-node/application.yml`
 
-> **_NOTE:_**  Please not that settings below are just the one present in the Local node's `application.yml` file. For complete reference and default values (including for REST API, REST Java API, Rosetta API, Web3 API) please review: [Mirror Node Configuration](https://github.com/hashgraph/hedera-mirror-node/blob/main/docs/configuration.md)
+> **_NOTE:_**  Please note that settings below are just the ones present in the Local node's `application.yml` file. For complete reference and default values (including for REST API, REST Java API, Rosetta API, Web3 API) please review: [Mirror Node Configuration](https://github.com/hashgraph/hedera-mirror-node/blob/main/docs/configuration.md)
 
+## Importer
 
-
-## Importer 
 The following table lists the available properties along with their default values.
 
 | Name                                                                             | Default                                              | Description                                                                                                                                                                                                                                                        |
@@ -50,16 +53,16 @@ The following table lists the available properties along with their default valu
 | `hedera.mirror.importer.network`                                                 | demo                                                 | Which Hedera network to use. Recognized names are `demo`, `mainnet`, `other`, `testnet`, and `previewnet`. Other names are allowed but are treated as development or test networks.                                                                                |
 | `hedera.mirror.monitor.publish.scenarios.<name>.type`              |          | The type of transaction to publish. See the [`TransactionType`](/hedera-mirror-monitor/src/main/java/com/hedera/mirror/monitor/publish/transaction/TransactionType.java) enum for a list of possible values |
 
-
 ## GRPC API
-The following table lists the available properties along with their default values. 
+
+The following table lists the available properties along with their default values.
 
 | Name                                                        | Default          | Description                                                                                                                      |
 | ----------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `hedera.mirror.grpc.listener.type`                          | REDIS            | The type of listener to use for incoming messages. Accepts either NOTIFY, POLL, REDIS or SHARED_POLL                             |
 
-
 ## Monitor
+
 The following table lists the available properties along with their default values.
 
 | Name                                                               | Default  | Description                                                                                                                                                                                                 |
@@ -76,6 +79,6 @@ The following table lists the available properties along with their default valu
 | `hedera.mirror.monitor.subscribe.rest.<name>.samplePercent`        | 1.0      | The percentage of transactions to verify against the API. Accepts values between 0-1                                                                                                                        |
 | `hedera.mirror.monitor.network`                                    | TESTNET  | Which network to connect to. Automatically populates the main node & mirror node endpoints. Can be `MAINNET`, `PREVIEWNET`, `TESTNET` or `OTHER`                                                            |
 | `hedera.mirror.monitor.nodes[].accountId`                          | ""       | The main node's account ID                                                                                                                                                                                  |
-| `hedera.mirror.monitor.nodes[].host`                               | ""       | The main node's hostname  
+| `hedera.mirror.monitor.nodes[].host`                               | ""       | The main node's hostname  |
 | `hedera.mirror.monitor.operator.accountId`                         | ""       | Operator account ID used to pay for transactions                                                                                                                                                            |
-| `hedera.mirror.monitor.operator.privateKey`                        | ""       | Operator ED25519 private key used to sign transactions in hex encoded DER format          
+| `hedera.mirror.monitor.operator.privateKey`                        | ""       | Operator ED25519 private key used to sign transactions in hex encoded DER format |
