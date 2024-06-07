@@ -28,8 +28,6 @@ import { getTestBed } from '../testBed';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
   ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE,
-  ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE,
-  ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE,
   ACCOUNT_CREATION_STATE_INIT_MESSAGE
 } from '../../../src/constants';
 import { IOBserver } from '../../../src/controller/IObserver';

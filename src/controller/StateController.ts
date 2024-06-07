@@ -140,7 +140,7 @@ export class StateController implements IOBserver{
             if (error instanceof TypeError) {
                 // Ignore this error, it finds the methods and executes the code, but still results in TypeError
             } else {
-                this.logger.error(`${CHECK_FAIL} Trying to transition to next state was not possible. Error is: ${error}`, this.controllerName);
+                this.logger.error(`Trying to transition to next state was not possible. Error is: ${error}`, this.controllerName);
                 process.exit(1);
             }
         }
