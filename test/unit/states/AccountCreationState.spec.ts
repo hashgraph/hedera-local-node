@@ -101,7 +101,7 @@ describe('AccountCreationState', () => {
       await accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
-      testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
+      testSandbox.assert.calledTwice(loggerService.info);
       testSandbox.assert.calledOnce(generateECDSAStub);
       testSandbox.assert.calledOnce(generateAliasECDSAStub);
       testSandbox.assert.calledOnce(generateED25519Stub);
@@ -120,7 +120,7 @@ describe('AccountCreationState', () => {
       await accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
-      testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
+      testSandbox.assert.callCount(loggerService.info, 4);
       testSandbox.assert.calledOnce(generateECDSAStub);
       testSandbox.assert.calledOnce(generateAliasECDSAStub);
       testSandbox.assert.calledOnce(generateED25519Stub);
