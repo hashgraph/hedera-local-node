@@ -31,6 +31,7 @@ import { TokenUtils } from '../utils/TokenUtils';
 import { ITokenProps } from '../configuration/types/ITokenProps';
 import { IAccountProps } from '../configuration/types/IAccountProps';
 import { AccountUtils } from '../utils/AccountUtils';
+import { LOADING, RESOURCE_CREATION_STATE_INIT_MESSAGE } from '../constants';
 
 /**
  * Represents the state of resource creation.
@@ -76,7 +77,7 @@ export class ResourceCreationState implements IState {
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
         this.clientService = ServiceLocator.Current.get<ClientService>(ClientService.name);
-        this.logger.trace('Resource Creation State Initialized!', this.stateName);
+        this.logger.trace(RESOURCE_CREATION_STATE_INIT_MESSAGE, this.stateName);
     }
 
     /**
@@ -102,7 +103,7 @@ export class ResourceCreationState implements IState {
         
         const mode = async ? 'asynchronous' : 'synchronous';
         this.logger.info(
-          `Starting Resource Creation state in ${mode} mode`, this.stateName);
+          `${LOADING} Starting Resource Creation state in ${mode} mode...`, this.stateName);
 
         const promise = this.createResources();
         if (!async) {

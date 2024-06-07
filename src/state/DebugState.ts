@@ -27,7 +27,7 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { CLIService } from '../services/CLIService';
 import { Errors } from '../Errors/LocalNodeErrors';
-import { RELATIVE_RECORDS_DIR_PATH, RELATIVE_TMP_DIR_PATH } from '../constants';
+import { DEBUG_STATE_INIT_MESSAGE, DEBUG_STATE_STARTING_MESSAGE, RELATIVE_RECORDS_DIR_PATH, RELATIVE_TMP_DIR_PATH } from '../constants';
 
 /**
  * Represents the debug state of the Hedera Local Node.
@@ -48,7 +48,7 @@ export class DebugState implements IState{
     constructor() {
         this.stateName = DebugState.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Debug State Initialized!', this.stateName);
+        this.logger.trace(DEBUG_STATE_INIT_MESSAGE, this.stateName);
     }
 
     public subscribe(observer: IOBserver): void {
@@ -72,7 +72,7 @@ export class DebugState implements IState{
         try {
             const { timestamp, workDir } = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv();
             // DebugState.checkForDebugMode();
-            this.logger.trace('Debug State Starting...', this.stateName);
+            this.logger.trace(DEBUG_STATE_STARTING_MESSAGE, this.stateName);
             const jsTimestampNum = DebugState.getAndValidateTimestamp(timestamp);
 
             const tempDir = resolve(workDir, RELATIVE_TMP_DIR_PATH);

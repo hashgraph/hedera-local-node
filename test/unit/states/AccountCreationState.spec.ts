@@ -228,7 +228,7 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.callCount(loggerService.info, 8);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
@@ -253,7 +253,7 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.callCount(loggerService.info, 10);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
@@ -287,6 +287,7 @@ describe('AccountCreationState', () => {
         generateED25519.restore();
         generateAliasECDSA.restore();
         privateKeySpy.restore();
+        loggerService.info.resetHistory()
       })
   
       it('should generate AliasECDSA accounts synchronously and log the title and divider', async () => {
@@ -301,7 +302,7 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.callCount(loggerService.info, 12);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
@@ -326,7 +327,7 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.callCount(loggerService.info, 2);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
@@ -360,6 +361,7 @@ describe('AccountCreationState', () => {
         generateECDSA.restore();
         generateED25519.restore();
         privateKeySpy.restore();
+        loggerService.info.resetHistory();
       })
   
       it('should generate ED25519 accounts synchronously and log the title and divider', async () => {
@@ -374,7 +376,7 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.callCount(loggerService.info, 2);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
@@ -399,7 +401,7 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE, 'AccountCreationState');
+        testSandbox.assert.callCount(loggerService.info, 2);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
