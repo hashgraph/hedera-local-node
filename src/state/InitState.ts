@@ -36,6 +36,7 @@ import originalNodeConfiguration from '../configuration/originalNodeConfiguratio
 import { DockerService } from '../services/DockerService';
 import {
     APPLICATION_YML_RELATIVE_PATH,
+    CHECK_SUCCESS,
     INIT_STATE_BOOTSTRAPPED_PROP_SET,
     INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
     INIT_STATE_INIT_MESSAGE,
@@ -45,6 +46,7 @@ import {
     INIT_STATE_RELAY_LIMITS_DISABLED,
     INIT_STATE_START_DOCKER_CHECK,
     INIT_STATE_STARTING_MESSAGE,
+    LOADING,
     NECESSARY_PORTS,
     NETWORK_NODE_CONFIG_DIR_PATH,
     OPTIONAL_PORTS,
@@ -125,7 +127,7 @@ export class InitState implements IState{
 
         await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
-        this.logger.info(`Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
+        this.logger.info(`${LOADING} Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
 
         this.prepareWorkDirectory();
         const workDirConfiguration = [
@@ -153,7 +155,7 @@ export class InitState implements IState{
      * @returns {void}
     */
     private prepareWorkDirectory() {
-        this.logger.info(`Local Node Working directory set to ${this.cliOptions.workDir}`, this.stateName);
+        this.logger.info(`${CHECK_SUCCESS} Local Node Working directory set to ${this.cliOptions.workDir}.`, this.stateName);
         FileSystemUtils.createEphemeralDirectories(this.cliOptions.workDir);
         const configDirSource = join(__dirname, `../../${NETWORK_NODE_CONFIG_DIR_PATH}`);
         const configPathMirrorNodeSource = join(__dirname, `../../${APPLICATION_YML_RELATIVE_PATH}`);

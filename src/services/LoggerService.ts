@@ -21,6 +21,8 @@
 import { log, screen, Widgets } from 'blessed';
 import terminal from 'blessed-terminal';
 import {
+    CHECK_FAIL,
+    CHEKC_WARN,
     COLOR_DIM,
     COLOR_RESET,
     CONSENSUS_NODE_LABEL,
@@ -231,7 +233,7 @@ export class LoggerService implements IService{
         if (this.verboseLevel < VerboseLevel.WARNING) {
             return;
         }
-        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.WARNING);
+        const msgToLog = LoggerService.messageCompute(`${CHEKC_WARN} ${msg}`, module, VerboseLevel.WARNING);
         this.writeToLog(msgToLog, module);
     }
 
@@ -245,7 +247,7 @@ export class LoggerService implements IService{
         if (this.verboseLevel < VerboseLevel.ERROR) {
             return;
         }
-        const msgToLog = LoggerService.messageCompute(msg, module, VerboseLevel.ERROR);
+        const msgToLog = LoggerService.messageCompute(`${CHECK_FAIL} ${msg}`, module, VerboseLevel.ERROR);
         this.writeToLog(msgToLog, module);
     }
 

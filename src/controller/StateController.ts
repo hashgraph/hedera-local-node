@@ -18,6 +18,7 @@
  *
  */
 
+import { CHECK_FAIL, CHECK_SUCCESS } from '../constants';
 import { StateData } from '../data/StateData';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
@@ -73,8 +74,8 @@ export class StateController implements IOBserver{
         this.stateConfiguration = new StateData().getSelectedStateConfiguration(stateName);
         this.currStateNum = 0;
         this.maxStateNum = 0;
-        this.logger.trace('State Controller Initialized!', this.controllerName);
-        this.logger.info(`Starting ${stateName} procedure!`, this.controllerName);
+        this.logger.trace(`${CHECK_SUCCESS} State Controller Initialized!`, this.controllerName);
+        this.logger.info(`${CHECK_SUCCESS} Starting ${stateName} procedure!`, this.controllerName);
     }
 
     /**
@@ -84,7 +85,7 @@ export class StateController implements IOBserver{
      */
     public async startStateMachine() {
         if (!this.stateConfiguration) {
-            this.logger.error('Something is wrong with state configuration!', this.controllerName);
+            this.logger.error(`${CHECK_FAIL} Something is wrong with state configuration!`, this.controllerName);
             // TODO: handle error
             process.exit(1);
         } else {
@@ -139,7 +140,7 @@ export class StateController implements IOBserver{
             if (error instanceof TypeError) {
                 // Ignore this error, it finds the methods and executes the code, but still results in TypeError
             } else {
-                this.logger.error(`Trying to transition to next state was not possible. Error is: ${error}`, this.controllerName);
+                this.logger.error(`${CHECK_FAIL} Trying to transition to next state was not possible. Error is: ${error}`, this.controllerName);
                 process.exit(1);
             }
         }
