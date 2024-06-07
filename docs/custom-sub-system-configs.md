@@ -82,3 +82,11 @@ The following table lists the available properties along with their default valu
 | `hedera.mirror.monitor.nodes[].host`                               | ""       | The main node's hostname  |
 | `hedera.mirror.monitor.operator.accountId`                         | ""       | Operator account ID used to pay for transactions                                                                                                                                                            |
 | `hedera.mirror.monitor.operator.privateKey`                        | ""       | Operator ED25519 private key used to sign transactions in hex encoded DER format |
+
+## Web3 API
+
+The following table lists the available properties along with their default values.
+
+| Name                                       | Default | Description                                                                        |
+|--------------------------------------------|---------|------------------------------------------------------------------------------------|
+| `hedera.mirror.web3.opcode.tracer.enabled` | true    | Whether the `/contracts/results/{transactionIdOrHash}/opcodes` endpoint is exposed |
