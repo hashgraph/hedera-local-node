@@ -25,6 +25,7 @@ import { join } from 'path';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
   APPLICATION_YML_RELATIVE_PATH,
+  CHECK_SUCCESS,
   INIT_STATE_BOOTSTRAPPED_PROP_SET,
   INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
   INIT_STATE_INIT_MESSAGE,
@@ -247,7 +248,7 @@ describe('InitState tests', () => {
             onStartStub = testSandbox.stub(initState, 'onStart')
                 .callsFake(() => (initState  as any).prepareWorkDirectory())
             await initState.onStart();
-            testSandbox.assert.calledWithExactly(loggerService.info, "Local Node Working directory set to testDir", InitState.name);
+            testSandbox.assert.calledWithExactly(loggerService.info, `${CHECK_SUCCESS} Local Node Working directory set to testDir.`, InitState.name);
             testSandbox.assert.calledOnceWithExactly(createEphemeralDirectoriesStub, "testDir");
             testSandbox.assert.calledOnceWithExactly(copyPathsStub, configFiles);
 

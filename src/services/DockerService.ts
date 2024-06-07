@@ -24,7 +24,10 @@ import semver from'semver';
 import fs from 'fs';
 import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, 
          MIN_CPUS, MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE,
-         RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE } from '../constants';
+         RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE, 
+         CHECK_SUCCESS,
+         CHECK_FAIL,
+         LOADING} from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -66,7 +69,7 @@ export class DockerService implements IService{
     constructor() {
         this.serviceName = DockerService.name;
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
-        this.logger.trace('Docker Service Initialized!', this.serviceName);
+        this.logger.trace(`${CHECK_SUCCESS} Docker Service Initialized!`, this.serviceName);
 
         const defaultSocketPath = IS_WINDOWS
         ? '//./pipe/docker_engine'
@@ -109,11 +112,11 @@ export class DockerService implements IService{
         await docker
           .info()
           .then(() => {
-            this.logger.trace('Docker is running.', this.serviceName);
+            this.logger.trace(`${CHECK_SUCCESS} Docker is running.`, this.serviceName);
             isRunning = true;
           })
           .catch(() => {
-            this.logger.error('Docker is not running.', this.serviceName);
+            this.logger.error(`${CHECK_FAIL} Docker is not running.`, this.serviceName);
             isRunning = false;
           });
         return isRunning;
@@ -140,16 +143,16 @@ export class DockerService implements IService{
       resolvedPromises.forEach((result, index) => {
         const port = portsToCheck[index];
         if (result && OPTIONAL_PORTS.includes(port)) {
-          this.logger.info(`Port ${port} is in use.`, this.serviceName); 
+          this.logger.warn(`Port ${port} is in use.`, this.serviceName); 
         } else if (result && NECESSARY_PORTS.includes(port)) {
-          this.logger.error(`Port ${port} is in use.`, this.serviceName); 
+          this.logger.error(`${CHECK_FAIL} Port ${port} is in use.`, this.serviceName); 
         }
       });
 
       const resolvedPromisesNecessaryPortsOnly = resolvedPromises.slice(0, NECESSARY_PORTS.length);
 
       if(!(resolvedPromisesNecessaryPortsOnly.every(value => value === false))) {
-        this.logger.error('Node cannot start properly because necessary ports are in use', this.serviceName);
+        this.logger.error(`${CHECK_FAIL} Node cannot start properly because necessary ports are in use!`, this.serviceName);
         process.exit(1);
       }
     }
@@ -161,7 +164,7 @@ export class DockerService implements IService{
      * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the Docker Compose version is correct.
      */
     public async isCorrectDockerComposeVersion (): Promise<boolean> {
-        this.logger.info('Checking docker compose version...', this.serviceName);
+        this.logger.info(`${LOADING} Checking docker compose version...`, this.serviceName);
         // We are executing both commands because in Linux we may have docker-compose v2, so we need to check both
         const resultFirstCommand = await shell.exec(
           'docker compose version --short',
@@ -174,13 +177,13 @@ export class DockerService implements IService{
     
         // Exit code is 127 when no docker installation is found
         if (resultFirstCommand.code === 127 && resultSecondCommand.code === 127) {
-            this.logger.error('Please install docker compose V2.', this.serviceName);
+            this.logger.error(`Please install docker compose V2.`, this.serviceName);
         } else if (
           resultFirstCommand.code === 127 &&
           resultSecondCommand.code === 0
         ) {
             this.logger.error(
-            'Looks like you have docker-compose V1, but you need docker compose V2',
+            `Looks like you have docker-compose V1, but you need docker compose V2!`,
             this.serviceName
           );
         } else {
@@ -200,7 +203,7 @@ export class DockerService implements IService{
     }
 
     public async checkDockerResources(isMultiNodeMode: boolean) {
-      this.logger.info('Checking docker resources...', this.serviceName);
+      this.logger.info(`${LOADING} Checking docker resources...`, this.serviceName);
       const resultDockerInfoCommand = await shell.exec(
         "docker system info --format='{{json .}}'",
         { silent: true }
@@ -389,6 +392,6 @@ export class DockerService implements IService{
         this.logger.trace('Cleaning the volumes and temp files...', stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
         shell.exec(`docker network prune -f 2>${nullOutput}`);
-        this.logger.info('Trying to startup again...', stateName);
+        this.logger.info(`${LOADING} Trying to startup again...`, stateName);
     }
 }

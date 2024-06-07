@@ -65,6 +65,7 @@ describe('DebugState tests', () => {
 
     after(() => {
         testSandbox.resetHistory();
+        loggerService.trace.resetHistory();
     });
 
     it('should initialize the Debug State', async () => {
@@ -102,6 +103,7 @@ describe('DebugState tests', () => {
             
             testSandbox.assert.calledWith(shellExecStub, shellCommand);
             testSandbox.assert.calledTwice(loggerService.trace)
+            testSandbox.assert.calledWith(loggerService.trace, DEBUG_STATE_INIT_MESSAGE, DebugState.name);
             testSandbox.assert.calledWith(loggerService.trace, DEBUG_STATE_STARTING_MESSAGE, DebugState.name);
 
             getAndValidateTimestampSub.restore();
