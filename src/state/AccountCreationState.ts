@@ -35,7 +35,7 @@ import {
     privateKeysECDSA,
     privateKeysED25519
 } from '../configuration/accountConfiguration.json';
-import { EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH } from '../constants';
+import { ACCOUNT_CREATION_STATE_INIT_MESSAGE, CHECK_SUCCESS, EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH, LOADING } from '../constants';
 import local from '../configuration/local.json';
 import { AccountUtils } from '../utils/AccountUtils';
 
@@ -85,7 +85,7 @@ export class AccountCreationState implements IState {
         this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
         this.clientService = ServiceLocator.Current.get<ClientService>(ClientService.name);
         this.nodeStartup = true;
-        this.logger.trace('Account Creation State Initialized!', this.stateName);
+        this.logger.trace(ACCOUNT_CREATION_STATE_INIT_MESSAGE, this.stateName);
     }
 
     /**
@@ -119,13 +119,14 @@ export class AccountCreationState implements IState {
         const mode = async ? 'asynchronous' : 'synchronous';
         const blockListedMessage = blocklisting ? `with ${blocklistedAccountsCount} blocklisted accounts` : '';
         this.logger.info(
-            `Starting Account Creation state in ${mode} mode ${blockListedMessage}`, this.stateName
+            `${LOADING} Starting Account Creation state in ${mode} mode ${blockListedMessage}...`, this.stateName
         );
 
         const promise = this.generateAccounts(balance, accounts);
         if (!async) {
             await promise;
         }
+        this.logger.info(`${CHECK_SUCCESS} Accounts created succefully!`, this.stateName);
         this.observer!.update(EventType.Finish);
     }
 

@@ -29,6 +29,7 @@ import { IState } from './IState';
 import { CLIService } from '../services/CLIService';
 import { CLIOptions } from '../types/CLIOptions';
 import { EventType } from '../types/EventType';
+import { CHECK_SUCCESS, LOADING } from '../constants';
 
 /**
  * The `CleanUpState` class is responsible for cleaning up and reverting unneeded changes to files.
@@ -86,7 +87,7 @@ export class CleanUpState implements IState{
      * @returns {Promise<void>}
      */
     public async onStart(): Promise<void> {
-        this.logger.info('Initiating clean up procedure. Trying to revert unneeded changes to files...', this.stateName);
+        this.logger.info(`${LOADING} Initiating clean up procedure. Trying to revert unneeded changes to files...`, this.stateName);
         this.revertNodeProperties();
         this.revertMirrorNodeProperties();
         if (this.observer) {
@@ -114,7 +115,7 @@ export class CleanUpState implements IState{
 
         application.hedera.mirror.monitor.nodes = originalNodeConfiguration.fullNodeProperties;
         writeFileSync(propertiesFilePath, yaml.dump(application, { lineWidth: 256 }));
-        this.logger.info('Clean up of mirror node properties finished.', this.stateName);
+        this.logger.info(`${CHECK_SUCCESS} Clean up of mirror node properties finished.`, this.stateName);
     }
 
     /**
@@ -138,6 +139,6 @@ export class CleanUpState implements IState{
 
         writeFileSync(propertiesFilePath, originalProperties, { flag: 'w' });
 
-        this.logger.info('Clean up of consensus node properties finished.', this.stateName);
+        this.logger.info(`${CHECK_SUCCESS} Clean up of consensus node properties finished.`, this.stateName);
     }
 }

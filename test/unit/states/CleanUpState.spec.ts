@@ -27,6 +27,7 @@ import fs from 'fs';
 import path from 'path';
 import { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { getTestBed } from '../testBed';
+import { LOADING } from '../../../src/constants';
 
 describe('CleanUpState', () => {
   let cleanUpState: CleanUpState;
@@ -87,7 +88,7 @@ describe('CleanUpState', () => {
       // Verify that revertNodeProperties and revertMirrorNodeProperties are called
       expect(revertNodePropertiesStub.calledOnce).to.be.true;
       expect(revertMirrorNodePropertiesStub.calledOnce).to.be.true;
-      testSandbox.assert.calledOnceWithExactly(loggerService.info, 'Initiating clean up procedure. Trying to revert unneeded changes to files...', 'CleanUpState');
+      testSandbox.assert.calledOnceWithExactly(loggerService.info, `${LOADING} Initiating clean up procedure. Trying to revert unneeded changes to files...`, 'CleanUpState');
     });
 
     it('should call observer.update with EventType.Finish', async () => {
