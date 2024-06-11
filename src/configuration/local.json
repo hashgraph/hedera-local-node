@@ -1,9 +1,9 @@
 {
   "imageTagConfiguration": [
-    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.51.0-alpha.3"},
-    {"key": "HAVEGED_IMAGE_TAG", "value": "0.51.0-alpha.3"},
-    {"key": "MIRROR_IMAGE_TAG", "value": "0.106.1"},
-    {"key": "RELAY_IMAGE_TAG", "value": "0.48.1"},
+    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.51.0-alpha.4"},
+    {"key": "HAVEGED_IMAGE_TAG", "value": "0.51.0-alpha.4"},
+    {"key": "MIRROR_IMAGE_TAG", "value": "0.107.0-rc1"},
+    {"key": "RELAY_IMAGE_TAG", "value": "0.49.0"},
     {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "24.4.0"}
   ],
   "envConfiguration": [
@@ -30,6 +30,7 @@
     "properties": [
       {"key": "files.maxSizeKb", "value": "6144"},
       {"key": "contracts.precompile.atomicCryptoTransfer.enabled", "value": true},
+      {"key": "contracts.systemContract.accountService.enabled", "value": true},
       {"key": "hedera.transaction.eip2930.enabled", "value": true},
       {"key": "accounts.blocklist.enabled", "value": false},
       {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"}
