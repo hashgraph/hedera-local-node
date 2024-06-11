@@ -29,6 +29,35 @@ In the file `src/configuration/local.json` you can set the following values for 
 
 # Mirror Node configuration
 
+For choosing different image version for the Mirror Node containers, you can add the following variables in `src/configuration/local.json` file inside `imageTagConfiguration` section:
+
+- `MIRROR_MONITOR_IMAGE_TAG`
+- `MIRROR_GRPC_IMAGE_TAG`
+- `MIRROR_GRPC_IMAGE_TAG`
+- `MIRROR_REST_IMAGE_TAG`
+- `MIRROR_WEB3_IMAGE_TAG`
+- `MIRROR_IMPORTER_IMAGE_TAG`
+
+A full example where every Mirror Node image is specified, would look like this:
+
+```
+  "imageTagConfiguration": [
+    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.49.7"},
+    {"key": "HAVEGED_IMAGE_TAG", "value": "0.49.7"},
+    {"key": "MIRROR_IMAGE_TAG", "value": "0.106.0"},
+    {"key": "MIRROR_MONITOR_IMAGE_TAG", "value": "0.102.0"},
+    {"key": "MIRROR_GRPC_IMAGE_TAG", "value": "0.102.0"},
+    {"key": "MIRROR_REST_IMAGE_TAG", "value": "0.102.0"},
+    {"key": "MIRROR_WEB3_IMAGE_TAG", "value": "0.102.0"},
+    {"key": "MIRROR_IMPORTER_IMAGE_TAG", "value": "0.102.0"},
+    {"key": "RELAY_IMAGE_TAG", "value": "0.47.0"},
+    {"key": "MIRROR_NODE_EXPLORER_IMAGE_TAG", "value": "24.4.0"}
+  ],
+```
+
+If the variables above are not set ( are missing in `local.json` file ) or their values are null, `MIRROR_IMAGE_TAG` will be used as default.
+
+
 The configuration file of the Mirror Node is stored in `compose-network/mirror-node/application.yml`
 
 > **_NOTE:_**  Please note that settings below are just the ones present in the Local node's `application.yml` file. For complete reference and default values (including for REST API, REST Java API, Rosetta API, Web3 API) please review: [Mirror Node Configuration](https://github.com/hashgraph/hedera-mirror-node/blob/main/docs/configuration.md)
