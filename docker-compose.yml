@@ -305,10 +305,13 @@ services:
     environment:
       HEDERA_MIRROR_WEB3_DB_HOST: db
       HEDERA_MIRROR_WEB3_EVM_NETWORK: OTHER
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-web3/
     ports:
       - "8545:8545"
     restart: unless-stopped
     tty: true
+    volumes:
+      - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-web3/application.yml"
 
   monitor:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-monitor:${MIRROR_IMAGE_TAG}"

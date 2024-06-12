@@ -24,21 +24,21 @@ import yaml from 'js-yaml';
 import { join } from 'path';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
-  APPLICATION_YML_RELATIVE_PATH,
-  CHECK_SUCCESS,
-  INIT_STATE_BOOTSTRAPPED_PROP_SET,
-  INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
-  INIT_STATE_INIT_MESSAGE,
-  INIT_STATE_MIRROR_PROP_SET,
-  INIT_STATE_NO_ENV_VAR_CONFIGURED,
-  INIT_STATE_NO_NODE_CONF_NEEDED,
-  INIT_STATE_RELAY_LIMITS_DISABLED,
-  INIT_STATE_START_DOCKER_CHECK,
-  INIT_STATE_STARTING_MESSAGE,
-  NECESSARY_PORTS,
-  NETWORK_NODE_CONFIG_DIR_PATH,
-  OPTIONAL_PORTS,
-  RECORD_PARSER_SOURCE_REL_PATH
+    APPLICATION_YML_RELATIVE_PATH,
+    CHECK_SUCCESS,
+    INIT_STATE_BOOTSTRAPPED_PROP_SET,
+    INIT_STATE_CONFIGURING_ENV_VARIABLES_FINISH,
+    INIT_STATE_INIT_MESSAGE,
+    INIT_STATE_MIRROR_PROP_SET,
+    INIT_STATE_NO_ENV_VAR_CONFIGURED,
+    INIT_STATE_NO_NODE_CONF_NEEDED,
+    INIT_STATE_RELAY_LIMITS_DISABLED,
+    INIT_STATE_START_DOCKER_CHECK,
+    INIT_STATE_STARTING_MESSAGE,
+    NECESSARY_PORTS,
+    NETWORK_NODE_CONFIG_DIR_PATH,
+    OPTIONAL_PORTS,
+    RECORD_PARSER_SOURCE_REL_PATH
 } from '../../../src/constants';
 import { ConfigurationData } from '../../../src/data/ConfigurationData';
 import { CLIService } from '../../../src/services/CLIService';
@@ -231,6 +231,13 @@ describe('InitState tests', () => {
                         },
                         monitor: {
                             nodes: {}
+                        },
+                        web3: {
+                            opcode: {
+                                tracer: {
+                                    enabled: true
+                                }
+                            }
                         }
                     }
                 }
@@ -356,7 +363,19 @@ describe('InitState tests', () => {
             testSandbox.assert.called(fsReadFileSync);
             testSandbox.assert.called(fsWriteFileSync);
             testSandbox.assert.called(ymlLoad);
-            testSandbox.assert.called(ymlDump);
+            testSandbox.assert.calledWithMatch(ymlDump, {
+                hedera: {
+                    mirror: {
+                        web3 : {
+                            opcode: {
+                                tracer: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 
             configureMirrorNodePropertiesStub = testSandbox.stub(initState as any, 'configureMirrorNodeProperties')
         })
