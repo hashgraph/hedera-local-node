@@ -305,6 +305,7 @@ services:
     environment:
       HEDERA_MIRROR_WEB3_DB_HOST: db
       HEDERA_MIRROR_WEB3_EVM_NETWORK: OTHER
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-web3/
     ports:
       - "8545:8545"
     restart: unless-stopped
