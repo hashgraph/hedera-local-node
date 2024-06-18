@@ -7,7 +7,6 @@ const config = {
         'preset': 'conventionalcommits',
         'releaseRules': [{ breaking: true, release: 'minor' }]
       }
-
     ],
     [
       '@semantic-release/release-notes-generator',
