@@ -68,7 +68,7 @@ jobs:
         run: npm run start -- --network ${{ matrix.network }} -d
 
       - name: Run smoke test
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.2.0
+        uses: step-security/retry@052d8009a065e321fd72db951d7e412f8063b9e5 # v3.0.0
         with:
           max_attempts: 3
           timeout_minutes: 3
