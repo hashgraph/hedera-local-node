@@ -21,7 +21,6 @@
 import yargs, { ArgumentsCamelCase, Argv } from 'yargs';
 import { IService } from './IService';
 import { CLIOptions } from '../types/CLIOptions';
-import { NetworkType } from '../types/NetworkType';
 import { VerboseLevel } from '../types/VerboseLevel';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -78,7 +77,6 @@ export class CLIService implements IService{
         CLIService.loadAccountOptions(yargs, true);
         CLIService.detachedOption(yargs);
         CLIService.hostOption(yargs);
-        CLIService.networkOption(yargs);
         CLIService.rateLimitOption(yargs);
         CLIService.devModeOption(yargs);
         CLIService.fullModeOption(yargs);
@@ -144,7 +142,6 @@ export class CLIService implements IService{
         const balance = argv.balance as number;
         const detached = argv.detached as boolean;
         const host = argv.host as string;
-        const network = CLIService.resolveNetwork(argv.network as string);
         const limits = argv.limits as boolean;
         const devMode = argv.dev as boolean;
         const fullMode = argv.full as boolean;
@@ -168,7 +165,6 @@ export class CLIService implements IService{
             balance,
             detached,
             host,
-            network,
             limits,
             devMode,
             fullMode,
@@ -281,28 +277,6 @@ export class CLIService implements IService{
             describe: 'Run the local node with host',
             demandOption: false,
             default: '127.0.0.1'
-        });
-    }
-
-    /**
-     * Adds the 'network' option to the command line arguments.
-     * This option is a string that selects the network configuration.
-     * Pre-built configs include 'mainnet', 'previewnet', 'testnet', and 'local'.
-     * It is not required and defaults to 'local'.
-     * The option can also be set using the alias 'n'.
-     * 
-     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
-     * @private
-     * @static
-     */
-    private static networkOption(yargs: Argv<{}>): void {
-        yargs.option('network', {
-            alias: 'n',
-            type: 'string',
-            describe:
-                "Select the network configuration. Pre-built configs: ['mainnet', 'previewnet', 'testnet', 'local']",
-            demandOption: false,
-            default: 'local'
         });
     }
 
@@ -608,27 +582,6 @@ export class CLIService implements IService{
             demandOption: false,
             default: false
         });
-    }
-    
-    /**
-     * Resolve the network type from a string.
-     * @param {string} network - The network type as a string.
-     * @returns {NetworkType} The network type.
-     * @private
-     */
-    private static resolveNetwork(network: string): NetworkType {
-        switch (network) {
-            case 'local':
-                return NetworkType.LOCAL;
-            case 'mainnet':
-                return NetworkType.MAINNET;
-            case 'testnet':
-                return NetworkType.TESTNET;
-            case 'previewnet':
-                return NetworkType.PREVIEWNET;
-            default:
-                return NetworkType.LOCAL;
-        }
     }
 
     /**
