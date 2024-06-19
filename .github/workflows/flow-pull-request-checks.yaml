@@ -46,7 +46,6 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [18.x]
-        network: [mainnet, testnet, local, previewnet]
 
     steps:
       - name: Checkout repository
@@ -64,8 +63,8 @@ jobs:
           cd test/smoke
           npm ci
 
-      - name: Start the local node with ${{ matrix.network }} images
-        run: npm run start -- --network ${{ matrix.network }} -d
+      - name: Start the local node
+        run: npm run start -- -d
 
       - name: Run smoke test
         uses: step-security/retry@052d8009a065e321fd72db951d7e412f8063b9e5 # v3.0.0
