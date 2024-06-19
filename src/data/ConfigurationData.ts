@@ -30,15 +30,6 @@ export class ConfigurationData {
      * @returns {NetworkConfiguration} The configuration data.
      */
     public static getInstance(): NetworkConfiguration {
-        const relayConfiguration = local?.envConfiguration ?? undefined;
-        const nodeProperties = local?.nodeConfiguration!.properties ?? undefined;
-
-        return {
-            imageTagConfiguration: local.imageTagConfiguration,
-            envConfiguration: relayConfiguration,
-            nodeConfiguration: {
-                properties: nodeProperties,
-            }
-        };
+        return local;
     }
 }
