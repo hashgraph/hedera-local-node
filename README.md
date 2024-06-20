@@ -107,7 +107,6 @@ Available commands:
             --d or --detached for starting in detached mode.
             --verbose set the verbose level. Defaults to 'info' choices are "info" & "trace"
             --h or --host to override the default host.
-            --n or --network to override the default configuration. Defaults to mainnet.
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
             --dev to enable/disable developer mode.
             --full to enable/disable full mode. Production local-node.
@@ -453,14 +452,6 @@ $ hedera generate-accounts 2
 ```
 
 - --h / --host - Override the default host.
-
----
-
-## Network specific configuration
-
-Network specific configurations can be applied using the `-n/--network` option when starting/restarting the local node. Pre-configured options are [mainnet](./configs/mainnet.json), [previewnet](./configs/previewnet.json), [testnet](./configs/testnet.json) and [local](./configs/local.json)
-
-To create a custom network configuration, you can edit the `src/configuration/local.json` with the images and properties that you want and just start the network with `npm run start`.
 
 ---
 

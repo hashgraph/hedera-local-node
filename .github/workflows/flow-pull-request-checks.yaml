@@ -46,7 +46,6 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [18.x]
-        network: [mainnet, testnet, local, previewnet]
 
     steps:
       - name: Checkout repository
@@ -64,8 +63,8 @@ jobs:
           cd test/smoke
           npm ci
 
-      - name: Start the local node with ${{ matrix.network }} images
-        run: npm run start -- --network ${{ matrix.network }} -d
+      - name: Start the local node
+        run: npm run start -- -d
 
       - name: Run smoke test
         uses: step-security/retry@052d8009a065e321fd72db951d7e412f8063b9e5 # v3.0.0
@@ -82,9 +81,9 @@ jobs:
     runs-on: [self-hosted, Linux, large, ephemeral ]
 
     strategy:
-        fail-fast: false
-        matrix:
-            node-version: [18.x]
+      fail-fast: false
+      matrix:
+        node-version: [18.x]
 
     steps:
       - name: Checkout repository
@@ -118,30 +117,30 @@ jobs:
         run: npm run stop
 
   unit-tests:
-          name: Unit Tests
-          runs-on: [self-hosted, Linux, medium, ephemeral]
-      
-          strategy:
-              fail-fast: false
-              matrix:
-                  node-version: [18.x]
-      
-          steps:
-            - name: Checkout repository
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-              with:
-                node-version: ${{ matrix.node-version }}
-                cache: npm
-      
-            - name: Install dependencies
-              run: npm ci
-      
-            - name: Run tests
-              run: npm run test
-              
-            - name: Upload coverage report
-              if: ${{ always() && !cancelled() }}
-              uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed #  v4.3.0
+    name: Unit Tests
+    runs-on: [self-hosted, Linux, medium, ephemeral]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Upload coverage report
+        if: ${{ always() && !cancelled() }}
+        uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed #  v4.3.0

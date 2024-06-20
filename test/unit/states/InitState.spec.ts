@@ -118,7 +118,7 @@ describe('InitState tests', () => {
             update: observerSpy
         }
         initState.subscribe(observer);
-        configurationData = testSandbox.stub(ConfigurationData, 'getSelectedConfigurationData').callsFake(() => TEST_CONFIGURATION)
+        configurationData = testSandbox.stub(ConfigurationData, 'getInstance').callsFake(() => TEST_CONFIGURATION)
         stubPrivateFunctions()
     });
 

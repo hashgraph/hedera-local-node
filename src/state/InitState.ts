@@ -112,7 +112,7 @@ export class InitState implements IState{
      */
     public async onStart(): Promise<void> {
         this.logger.trace(INIT_STATE_STARTING_MESSAGE, this.stateName);
-        const configurationData = ConfigurationData.getSelectedConfigurationData(this.cliOptions.network);
+        const configurationData = ConfigurationData.getInstance();
 
         // Check if docker is running and it's the correct version
         this.logger.info(INIT_STATE_START_DOCKER_CHECK, this.stateName);
@@ -127,7 +127,7 @@ export class InitState implements IState{
 
         await this.dockerService.isPortInUse(NECESSARY_PORTS.concat(OPTIONAL_PORTS));
 
-        this.logger.info(`${LOADING} Setting configuration for ${this.cliOptions.network} network with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
+        this.logger.info(`${LOADING} Setting configuration with latest images on host ${this.cliOptions.host} with dev mode turned ${this.cliOptions.devMode ? 'on' : 'off'} using ${this.cliOptions.fullMode? 'full': 'turbo'} mode in ${this.cliOptions.multiNode? 'multi' : 'single'} node configuration...`, this.stateName);
 
         this.prepareWorkDirectory();
         const workDirConfiguration = [

@@ -18,8 +18,6 @@
  *
  */
 
-import { NetworkType } from './NetworkType';
-
 /**
  * Represents the options that can be passed to the CLI.
  * 
@@ -30,7 +28,6 @@ import { NetworkType } from './NetworkType';
  * @property {number} balance - The balance for the accounts.
  * @property {boolean} detached - Whether to run in detached mode.
  * @property {string} host - The host address.
- * @property {NetworkType} network - The type of the network.
  * @property {boolean} limits - Whether to impose limits.
  * @property {boolean} devMode - Whether to run in development mode.
  * @property {boolean} fullMode - Whether to run in full mode.
@@ -55,7 +52,6 @@ export interface CLIOptions {
     balance: number,
     detached: boolean,
     host: string,
-    network: NetworkType,
     limits: boolean,
     devMode: boolean,
     fullMode: boolean,

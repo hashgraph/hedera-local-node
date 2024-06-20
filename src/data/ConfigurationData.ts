@@ -19,52 +19,17 @@
  */
 
 import { NetworkConfiguration } from '../types/NetworkConfiguration';
-import { NetworkType } from '../types/NetworkType';
 import local from '../configuration/local.json';
-import mainnet from '../configuration/mainnet.json';
-import testnet from '../configuration/testnet.json';
-import previewnet from '../configuration/previewnet.json';
 
 /**
  * Class representing a configuration data.
  */
 export class ConfigurationData {
     /**
-     * Get the selected configuration data based on the network type.
-     * @param {NetworkType} network - The type of the network.
-     * @returns {NetworkConfiguration} The configuration data for the selected network.
+     * Get the configuration data.
+     * @returns {NetworkConfiguration} The configuration data.
      */
-    public static getSelectedConfigurationData(network: NetworkType): NetworkConfiguration {
-        switch (network) {
-            case NetworkType.LOCAL:
-                return ConfigurationData.getNetworkConfiguration(local as any);
-            case NetworkType.MAINNET:
-                return ConfigurationData.getNetworkConfiguration(mainnet as any);
-            case NetworkType.TESTNET:
-                return ConfigurationData.getNetworkConfiguration(testnet as any);
-            case NetworkType.PREVIEWNET:
-                return ConfigurationData.getNetworkConfiguration(previewnet as any);
-            default:
-                return ConfigurationData.getNetworkConfiguration(local as any);
-        }
-    }
-
-    /**
-     * Get the network configuration from the JSON configuration.
-     * @param {NetworkConfiguration} jsonConfiguration - The JSON configuration.
-     * @returns The network configuration.
-     */
-    private static getNetworkConfiguration(jsonConfiguration: NetworkConfiguration): NetworkConfiguration {
-        const relayConfiguration = jsonConfiguration?.envConfiguration ?? undefined;
-        const nodeProperties = jsonConfiguration?.nodeConfiguration!.properties ?? undefined;
-        const configuration: NetworkConfiguration = {
-            imageTagConfiguration: jsonConfiguration.imageTagConfiguration,
-            envConfiguration: relayConfiguration,
-            nodeConfiguration: {
-                properties: nodeProperties,
-            }
-        };
-
-        return configuration;
+    public static getInstance(): NetworkConfiguration {
+        return local;
     }
 }
