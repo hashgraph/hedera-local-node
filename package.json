@@ -57,7 +57,7 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
-    "@hashgraph/sdk": "2.43.0",
+    "@hashgraph/sdk": "2.47.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "csv-parser": "^3.0.0",
