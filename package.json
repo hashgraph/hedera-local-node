@@ -54,20 +54,20 @@
     "nyc": "^17.0.0",
     "prettier": "^3.0.3",
     "sinon": "^14.0.0",
-    "typescript": "^5.4.3"
+    "typescript": "^5.5.2"
   },
   "dependencies": {
-    "@hashgraph/sdk": "2.43.0",
+    "@hashgraph/sdk": "^2.47.0",
     "blessed": "^0.1.81",
     "blessed-terminal": "^0.1.22",
     "csv-parser": "^3.0.0",
     "detect-port": "^1.5.1",
     "dockerode": "^4.0.2",
     "dotenv": "^16.4.5",
-    "ethers": "^6.13.0",
+    "ethers": "^6.13.1",
     "js-yaml": "^4.1.0",
     "rimraf": "^5.0.5",
-    "semver": "^7.6.0",
+    "semver": "^7.6.2",
     "shelljs": "^0.8.5",
     "ts-mocha": "^9.0.0",
     "yargs": "^17.7.2"
