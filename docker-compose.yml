@@ -216,7 +216,7 @@ services:
         target: /var/lib/postgresql/data
 
   grpc:
-    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-grpc:${MIRROR_IMAGE_TAG}"
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-grpc:${MIRROR_GRPC_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
     container_name: mirror-node-grpc
     restart: unless-stopped
     mem_swappiness: 0
@@ -238,7 +238,7 @@ services:
       - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-grpc/application.yml"
 
   importer:
-    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-importer:${MIRROR_IMAGE_TAG}"
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-importer:${MIRROR_IMPORTER_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
     container_name: mirror-node-importer
     restart: unless-stopped
     mem_swappiness: 0
@@ -260,7 +260,7 @@ services:
       - ./compose-network/mirror-node/addressBook.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
 
   rest:
-    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-rest:${MIRROR_IMAGE_TAG}"
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-rest:${MIRROR_REST_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
     container_name: mirror-node-rest
     mem_swappiness: 0
     mem_limit: "${MIRROR_REST_MEM_LIMIT}"
@@ -290,7 +290,7 @@ services:
       DOCKER_LOCAL_MIRROR_NODE_URL: ${DOCKER_LOCAL_MIRROR_NODE_URL}
 
   web3:
-    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_IMAGE_TAG}"
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_WEB3_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
     container_name: mirror-node-web3
     mem_swappiness: 0
     mem_limit: "${MIRROR_WEB3_MEM_LIMIT}"
@@ -314,7 +314,7 @@ services:
       - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-web3/application.yml"
 
   monitor:
-    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-monitor:${MIRROR_IMAGE_TAG}"
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-monitor:${MIRROR_MONITOR_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
     container_name: mirror-node-monitor
     mem_swappiness: 0
     mem_limit: "${MIRROR_MONITOR_MEM_LIMIT}"
