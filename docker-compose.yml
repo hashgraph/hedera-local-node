@@ -24,7 +24,7 @@ services:
         [
           "CMD",
           "grep",
-          "-E",
+          "-Ei",
           "Now current platform status = ACTIVE|Hedera - HederaNode#0 is ACTIVE",
           "/opt/hgcapp/services-hedera/HapiApp2.0/output/hgcaa.log"
         ]
