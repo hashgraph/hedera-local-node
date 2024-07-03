@@ -34,7 +34,8 @@
       {"key": "contracts.systemContract.accountService.enabled", "value": true},
       {"key": "hedera.transaction.eip2930.enabled", "value": true},
       {"key": "accounts.blocklist.enabled", "value": false},
-      {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"}
+      {"key": "accounts.blocklist.path", "value": "data/config/evm-addresses-blocklist.csv"},
+      {"key": "entities.unlimitedAutoAssociationsEnabled", "value": true}
     ]
   }
 }
