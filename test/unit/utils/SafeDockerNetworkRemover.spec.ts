@@ -86,7 +86,7 @@ describe('SafeDockerNetworkRemover', () => {
       expect(removeByNameStub.calledWith('hedera-cloud-storage')).to.be.true;
       removeByNameStub.restore();
     });
-    it('check if all of the networks from composer yaml files are listen in the NETWORK_NAMES const', () => {
+    it('check if all of the networks from composer yaml files are listed in the NETWORK_NAMES const', () => {
       const relativePath = '../../..';
       const files = readdirSync(join(__dirname, relativePath)).filter(name => /^docker-compose.*\.yml$/.test(name));
       let actual = [];
