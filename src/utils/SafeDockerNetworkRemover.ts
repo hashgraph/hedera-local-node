@@ -19,7 +19,7 @@
  */
 
 import shell from 'shelljs';
-import { IS_WINDOWS, NETWORK_NAMES } from "../constants";
+import { IS_WINDOWS, NETWORK_PREFIX } from '../constants';
 
 /**
  * Checks if the given string is a valid Docker network ID.
@@ -39,28 +39,19 @@ import { IS_WINDOWS, NETWORK_NAMES } from "../constants";
 const isCorrectDockerId = (id: string) => id.trim() !== '' && /^[a-f0-9]{12}$/.test(id);
 
 /**
- * Provides utility methods for safe networks removal
+ * Provides utility methods for safe networks removal.
  */
 export class SafeDockerNetworkRemover {
   /**
-   * Removes all the networks started by docker compose.
+   * Removes all the networks started by docker compose. Only networks with the "hedera-" prefix will be affected.
    */
   public static removeAll() {
-    for (const network of NETWORK_NAMES) {
-      this.removeByName(network)
-    }
-  }
-
-  /**
-   * Removes one single network by its name.
-   */
-  public static removeByName(name: string) {
-    const result = shell.exec(`docker network ls --filter name=${name} --format "{{.ID}}"`);
+    const result = shell.exec(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`);
     if (!result || result.stderr !== '') {
       return;
     }
-    for (const id of result.stdout.split('\n').filter(isCorrectDockerId)) {
+    result.stdout.split('\n').filter(isCorrectDockerId).forEach((id) => {
       shell.exec(`docker network rm ${id} -f 2>${IS_WINDOWS ? 'null' : '/dev/null'}`);
-    }
+    });
   }
 }

@@ -21,10 +21,10 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { SafeDockerNetworkRemover } from '../../../src/utils/SafeDockerNetworkRemover';
-import { IS_WINDOWS, NETWORK_NAMES } from '../../../src/constants';
+import { IS_WINDOWS, NETWORK_PREFIX } from '../../../src/constants';
 import { getTestBed } from '../testBed';
-import yaml, {load, loadAll} from 'js-yaml';
-import fs, {createReadStream, readdirSync, readFile, readFileSync} from 'fs';
+import { load } from 'js-yaml';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from "path";
 
 describe('SafeDockerNetworkRemover', () => {
@@ -40,65 +40,70 @@ describe('SafeDockerNetworkRemover', () => {
     shellExecStub = shellStubs.shellExecStub;
   });
 
+  after(() => {
+    shellExecStub.restore();
+  });
+
   describe('removeByName', () => {
-    it('should remove the network when a valid ID is returned', () => {
-      shellExecStub
-        .withArgs('docker network ls --filter name=hedera-cloud-storage --format "{{.ID}}"')
-        .returns({ stderr: '', stdout: '89ded1eca1d5\n' });
+    it('should not proceed if docker network ls command fails', () => {
+      shellExecStub.withArgs(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`).returns({ stderr: 'error' });
 
-      shellExecStub
-        .withArgs('docker network rm 89ded1eca1d5 -f 2>null')
-        .returns({ stderr: '', stdout: '' });
+      SafeDockerNetworkRemover.removeAll();
+      expect(shellExecStub.calledOnce).to.be.true;
+      expect(shellExecStub.calledWith(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`)).to.be.true;
+    });
 
-      SafeDockerNetworkRemover.removeByName('hedera-cloud-storage');
+    it('should not proceed if docker network ls command returns no result', () => {
+      shellExecStub.withArgs(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`).returns({ stdout: '', stderr: '' });
 
-      expect(shellExecStub.calledWith('docker network ls --filter name=hedera-cloud-storage --format "{{.ID}}"')).to.be.true;
+      SafeDockerNetworkRemover.removeAll();
+      expect(shellExecStub.calledWith(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`)).to.be.true;
+    });
+
+    it('should remove valid Docker network IDs', () => {
+      shellExecStub.withArgs(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`).returns({ stdout: '89ded1eca1d5\ninvalidID123\n', stderr: '' });
+      shellExecStub.withArgs(`docker network rm 89ded1eca1d5 -f 2>${IS_WINDOWS ? 'null' : '/dev/null'}`).returns({});
+
+      SafeDockerNetworkRemover.removeAll();
       expect(shellExecStub.calledWith(`docker network rm 89ded1eca1d5 -f 2>${IS_WINDOWS ? 'null' : '/dev/null'}`)).to.be.true;
     });
 
-    it('should not attempt to remove network if no valid ID is returned', () => {
-      shellExecStub
-        .withArgs('docker network ls --filter name=hedera-cloud-storage --format "{{.ID}}"')
-        .returns({ stderr: '', stdout: 'invalidID123\n' });
+    it('should not remove invalid Docker network IDs', () => {
+      shellExecStub.withArgs(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`).returns({ stdout: 'invalidID123\nanotherInvalid\n', stderr: '' });
 
-      SafeDockerNetworkRemover.removeByName('hedera-cloud-storage');
-
-      expect(shellExecStub.calledWith('docker network ls --filter name=hedera-cloud-storage --format "{{.ID}}"')).to.be.true;
-      expect(shellExecStub.calledWith('docker network rm invalidID123 -f 2>null')).to.be.false;
-    });
-
-    it('should handle shell errors gracefully', () => {
-      shellExecStub
-        .withArgs('docker network ls --filter name=hedera-cloud-storage --format "{{.ID}}"')
-        .returns({ stderr: 'some error', stdout: '' });
-
-      SafeDockerNetworkRemover.removeByName('hedera-cloud-storage');
-
-      expect(shellExecStub.calledWith('docker network ls --filter name=hedera-cloud-storage --format "{{.ID}}"')).to.be.true;
-      expect(shellExecStub.calledWith('docker network rm 89ded1eca1d5 -f 2>null')).to.be.false;
+      SafeDockerNetworkRemover.removeAll();
+      expect(shellExecStub.calledWith(`docker network rm invalidID123 -f 2>${IS_WINDOWS ? 'null' : '/dev/null'}`)).to.be.false;
+      expect(shellExecStub.calledWith(`docker network rm anotherInvalid -f 2>${IS_WINDOWS ? 'null' : '/dev/null'}`)).to.be.false;
     });
   });
 
-  describe('removeAll', () => {
-    it('should call removeByName for each network', () => {
-      const removeByNameStub = sinon.stub(SafeDockerNetworkRemover, 'removeByName');
-      SafeDockerNetworkRemover.removeAll();
-      expect(removeByNameStub.calledWith('hedera-cloud-storage')).to.be.true;
-      removeByNameStub.restore();
-    });
+  describe('config check', () => {
     it('check if all of the networks from composer yaml files are listed in the NETWORK_NAMES const', () => {
       const relativePath = '../../..';
       const files = readdirSync(join(__dirname, relativePath)).filter(name => /^docker-compose.*\.yml$/.test(name));
-      let actual = [];
       for (const file of files) {
         const data = readFileSync(join(__dirname, `${relativePath}/${file}`));
         const config = load(data.toString());
-        actual = [...actual, ...Object.values(config.networks || {}).map((network: any) => network.name.trim())];
+        for (const network of Object.values(config.networks || {}).map((network: any) => network.name.trim())) {
+          expect(network.startsWith(NETWORK_PREFIX), `Network '${network}' does not start with the prefix '${NETWORK_PREFIX}'. It won't be removed by 'npm run stop'`).to.be.true;
+        }
       }
-      expect([...new Set(actual)].sort().join(',')).to.equal(
-        NETWORK_NAMES.sort().join(','),
-        `Make sure that no network is missing in NETWORK_NAMES const. It won't be removed by 'npm run stop' otherwise`,
-      );
+    });
+    it('check if all services have a network set and all network names start with "hedera-"', () => {
+      const relativePath = '../../..';
+      const files = readdirSync(join(__dirname, relativePath)).filter(name => /^docker-compose.*\.yml$/.test(name));
+      for (const file of files) {
+        const data = readFileSync(join(__dirname, `${relativePath}/${file}`));
+        const config = load(data.toString());
+        const services = config.services || {};
+        for (const [serviceName, serviceConfig] of Object.entries(services)) {
+          if (serviceConfig.extends || (serviceConfig.network_mode || '' === 'none')) {
+            continue; // The child service might have inherited the network. There is no network in non-network mode.
+          }
+          const networks = serviceConfig.networks;
+          expect(networks, `Service '${serviceName}' does not have a network set.`).to.exist;
+        }
+      }
     });
   });
 });

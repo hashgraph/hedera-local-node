@@ -36,15 +36,7 @@ export const CONTAINERS = [
     },
 ];
 
-/**
- * Names of all the networks created by Docker Compose in this repository.
- * Make sure to keep them up to date to always be able to remove them all using this service.
- */
-export const NETWORK_NAMES = [
-    'hedera-cloud-storage',
-    'hedera-mirror-node',
-    'hedera-network-node-bridge',
-];
+export const NETWORK_PREFIX = 'hedera-';
 
 export const CONSENSUS_NODE_LABEL = "network-node";
 export const MIRROR_NODE_LABEL = "mirror-node-rest";
