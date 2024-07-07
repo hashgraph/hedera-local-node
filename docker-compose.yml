@@ -503,7 +503,7 @@ services:
 
 networks:
   network-node-bridge:
-    name: hedera-network-node-bridge
+    name: hedera-network-node
     driver: bridge
     ipam:
       driver: default
