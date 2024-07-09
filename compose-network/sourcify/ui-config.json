@@ -1,0 +1,13 @@
+{
+    "SERVER_URL": "http://localhost:5555",
+    "REPOSITORY_SERVER_URL": "http://localhost:10000",
+    "EXPLORER_URL": "http://localhost:8080",
+    "BRAND_PRODUCT_LOGO_URL": "",
+    "TERMS_OF_SERVICE_URL": "",
+    "REMOTE_IMPORT": false,
+    "GITHUB_IMPORT": false,
+    "CONTRACT_IMPORT": false,
+    "JSON_IMPORT": false,
+    "OPEN_IN_REMIX": false,
+    "CREATE2_VERIFICATION": false
+  }

@@ -285,9 +285,8 @@ services:
     restart: "unless-stopped"
     ports:
       - "8080:8080"
-    environment:
-      DOCKER_LOCAL_MIRROR_NODE_MENU_NAME: ${DOCKER_LOCAL_MIRROR_NODE_MENU_NAME}
-      DOCKER_LOCAL_MIRROR_NODE_URL: ${DOCKER_LOCAL_MIRROR_NODE_URL}
+    volumes:
+      - ./compose-network/explorer/networks-config.json:/app/networks-config.json
 
   web3:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_WEB3_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
@@ -499,6 +498,64 @@ services:
       network-node-bridge:
         ipv4_address: 172.27.0.50
 
+  sourcify-server:
+    image: ghcr.io/hashgraph/hedera-sourcify/server:${SOURCIFY_TAG}
+    restart: unless-stopped
+    container_name: sourcify-server-${SOURCIFY_TAG}
+    environment:
+      NODE_ENV: ${SOURCIFY_NODE_ENV}
+    ports:
+      - "${SOURCIFY_SERVER_PORT}:5555"
+    volumes:
+      - type: bind
+        source: ./compose-network/sourcify/servers.yaml
+        target: /home/app/services/server/dist/servers.yaml
+      - type: bind
+        source: ./compose-network/sourcify/sourcify-chains.json
+        target: /home/app/services/server/dist/sourcify-chains.json
+      - type: bind
+        source: ./compose-network/sourcify/local.js
+        target: /home/app/services/server/dist/config/local.js
+      - type: volume
+        source: sourcify-data
+        target: /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${SOURCIFY_SERVER_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  sourcify-sourcify-ui:
+    image: ghcr.io/hashgraph/hedera-sourcify/ui:${SOURCIFY_TAG}
+    restart: unless-stopped
+    container_name: sourcify-ui-${SOURCIFY_TAG}
+    ports:
+      - "${SOURCIFY_UI_PORT}:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - type: bind
+        source: ./compose-network/sourcify/ui-config.json
+        target: /usr/share/nginx/html/config.json
+
+  sourcify-repository:
+    image: ghcr.io/hashgraph/hedera-sourcify/repository:${SOURCIFY_TAG}
+    restart: unless-stopped
+    container_name: sourcify-repository-${SOURCIFY_TAG}
+    environment:
+      SOURCIFY_SERVER: "http://host.docker.internal:${SOURCIFY_SERVER_PORT}"
+      SERVER_URL: "http://localhost:${SOURCIFY_SERVER_PORT}"
+    volumes:
+      - type: volume
+        source: sourcify-data
+        target: /data
+        read_only: true
+    ports:
+      - "${SOURCIFY_REPOSITORY_PORT}:80"
+
 networks:
   network-node-bridge:
     name: network-node-bridge
@@ -525,3 +582,5 @@ volumes:
     name: prometheus-data
   grafana-data:
     name: grafana-data
+  sourcify:
+    name: sourcify-data
