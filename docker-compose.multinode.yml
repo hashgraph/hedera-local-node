@@ -15,8 +15,7 @@ services:
       start_period: 10s
     volumes:
       - "${APPLICATION_ROOT_PATH}/config.multinode.txt:/opt/hgcapp/services-hedera/HapiApp2.0/config.txt"
-    networks:
-      - network-node-bridge
+    network_mode: none
 
   network-node-1:
     &network-node-definition
@@ -224,10 +223,4 @@ services:
   importer:
     volumes:
       - ./compose-network/mirror-node/addressBook.multinode.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
-    networks:
-      - multinode-importer-network
-
-networks:
-  multinode-importer-network:
-    name: hedera-multinode-importer
-    driver: bridge
+    network_mode: none
