@@ -223,4 +223,3 @@ services:
   importer:
     volumes:
       - ./compose-network/mirror-node/addressBook.multinode.bin:/usr/etc/hedera-mirror-importer/local-dev-1-node.addressbook.f102.json.bin
-    network_mode: none
