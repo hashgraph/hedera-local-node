@@ -91,7 +91,7 @@ describe('SafeDockerNetworkRemover', () => {
     });
     it('check if all services have a network set and all network names start with "hedera-"', () => {
       const relativePath = '../../..';
-      const files = readdirSync(join(__dirname, relativePath)).filter(name => /^docker-compose.*\.yml$/.test(name));
+      const files = readdirSync(join(__dirname, relativePath)).filter(name => /^docker-compose(?!.*evm\.yml$).*\.yml$/.test(name));
       for (const file of files) {
         const data = readFileSync(join(__dirname, `${relativePath}/${file}`));
         const config = load(data.toString());

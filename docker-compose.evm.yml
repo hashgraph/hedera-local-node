@@ -8,7 +8,6 @@ services:
         "echo 'Deleting old recordStream files.';find /records/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
-    network_mode: none
 
   account-balances-uploader:
     restart: "no"
@@ -19,7 +18,6 @@ services:
         "echo 'Deleting old accountBalances files.';find /balances/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
-    network_mode: none
 
   record-sidecar-uploader:
     restart: "no"
@@ -30,7 +28,6 @@ services:
         "echo 'Deleting old sidecars files.';find /sidecar-files/ -type f -delete;echo 'This container is intentionally disabled by the EVM profile.';"
       ]
     command: []
-    network_mode: none
 
   minio:
     restart: "no"
@@ -40,11 +37,9 @@ services:
         "This container is intentionally disabled by the EVM profile."
       ]
     command: []
-    network_mode: none
 
   importer:
     user: root
     volumes:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/balance0.0.3:/node/streams/accountBalances/balance0.0.3"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/record0.0.3:/node/streams/recordstreams/record0.0.3"
-    network_mode: none

@@ -48,4 +48,3 @@ services:
     volumes:
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/accountBalances/:/node/streams/accountBalances/"
       - "${NETWORK_NODE_LOGS_ROOT_PATH}/recordStreams/:/node/streams/recordstreams/"
-    network_mode: none
