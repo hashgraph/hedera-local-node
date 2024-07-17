@@ -24,6 +24,7 @@ import { StopState } from '../../../src/state/StopState';
 import {
   DOCKER_CLEANING_VALUMES_MESSAGE,
   DOCKER_STOPPING_CONTAINERS_MESSAGE,
+  NETWORK_PREFIX,
   STOP_STATE_INIT_MESSAGE,
   STOP_STATE_ON_START_MESSAGE,
   STOP_STATE_STOPPED_MESSAGE,
@@ -79,6 +80,11 @@ describe('StopState tests', () => {
 
     it('should execute onStart properly', async () => {
         const { shellCDStub, shellExecStub }= shellTest;
+        const network = { name: 'hedera-cloud-storage', id: '89ded1eca1d5' };
+        shellExecStub
+          .withArgs(`docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`)
+          .returns({ stderr: '', stdout: network.id });
+
         await stopState.onStart();
 
         // loggin messages
@@ -100,7 +106,7 @@ describe('StopState tests', () => {
         testSandbox.assert.calledWith(shellExecStub, 'docker compose down -v --remove-orphans 2>/dev/null');
         testSandbox.assert.calledWith(shellExecStub, 'rm -rf network-logs/* >/dev/null 2>&1');
         testSandbox.assert.calledWith(shellExecStub, 'rm -rf "testDir/network-logs" >/dev/null 2>&1');
-        testSandbox.assert.calledWith(shellExecStub, 'docker network prune -f 2>/dev/null');
+        testSandbox.assert.calledWith(shellExecStub, `docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`);
 
         expect(processTest.processCWDStub.calledOnce).to.be.true;
     })

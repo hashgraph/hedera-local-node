@@ -288,6 +288,8 @@ services:
     environment:
       DOCKER_LOCAL_MIRROR_NODE_MENU_NAME: ${DOCKER_LOCAL_MIRROR_NODE_MENU_NAME}
       DOCKER_LOCAL_MIRROR_NODE_URL: ${DOCKER_LOCAL_MIRROR_NODE_URL}
+    networks:
+      - mirror-node
 
   web3:
     image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-web3:${MIRROR_WEB3_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
@@ -501,7 +503,7 @@ services:
 
 networks:
   network-node-bridge:
-    name: network-node-bridge
+    name: hedera-network-node
     driver: bridge
     ipam:
       driver: default
@@ -510,10 +512,10 @@ networks:
           ip_range: 172.27.0.0/24
           gateway: 172.27.0.254
   mirror-node:
-    name: mirror-node
+    name: hedera-mirror-node
     driver: bridge
   cloud-storage:
-    name: cloud-storage
+    name: hedera-cloud-storage
     driver: bridge
 
 volumes:

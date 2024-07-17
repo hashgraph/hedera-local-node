@@ -36,6 +36,7 @@ import {
 } from '../constants';
 import { CLIOptions } from '../types/CLIOptions';
 import { CLIService } from '../services/CLIService';
+import { SafeDockerNetworkRemover } from '../utils/SafeDockerNetworkRemover';
 
 export class StopState implements IState {
     /**
@@ -101,7 +102,7 @@ export class StopState implements IState {
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
         this.logger.trace(`Working dir is ${this.cliOptions.workDir}`, this.stateName);
         shell.exec(`rm -rf "${join(this.cliOptions.workDir, 'network-logs')}" >${nullOutput} 2>&1`);
-        shell.exec(`docker network prune -f 2>${nullOutput}`);
+        SafeDockerNetworkRemover.removeAll();
         shell.cd(rootPath);
         this.logger.info(STOP_STATE_STOPPED_MESSAGE, this.stateName);
         this.observer?.update(EventType.Finish);

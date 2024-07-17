@@ -21,6 +21,7 @@
 import { expect } from 'chai';
 import fs from 'fs';
 import yaml from 'js-yaml';
+import { after } from "mocha";
 import { join } from 'path';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
@@ -247,6 +248,11 @@ describe('InitState tests', () => {
 
         afterEach(() => {
             onStartStub.restore()
+        })
+
+        after(() => {
+            fsReadFileSync.restore()
+            ymlLoad.restore()
         })
 
         it('should execute "prepareWorkDirectory" as expected', async () => {

@@ -36,6 +36,8 @@ export const CONTAINERS = [
     },
 ];
 
+export const NETWORK_PREFIX = 'hedera-';
+
 export const CONSENSUS_NODE_LABEL = "network-node";
 export const MIRROR_NODE_LABEL = "mirror-node-rest";
 export const RELAY_LABEL = "json-rpc-relay";

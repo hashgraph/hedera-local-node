@@ -356,7 +356,7 @@ services:
 
 networks:
   network-node-bridge:
-    name: network-node-bridge
+    name: hedera-network-node-bridge
     driver: bridge
     ipam:
       driver: default
@@ -365,10 +365,10 @@ networks:
           ip_range: 172.27.0.0/24
           gateway: 172.27.0.254
   mirror-node:
-    name: mirror-node
+    name: hedera-mirror-node
     driver: bridge
   cloud-storage:
-    name: cloud-storage
+    name: hedera-cloud-storage
     driver: bridge
 
 volumes:

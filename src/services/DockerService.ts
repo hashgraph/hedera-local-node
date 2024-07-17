@@ -35,6 +35,7 @@ import detectPort from 'detect-port';
 import * as dotenv from 'dotenv';
 import { CLIOptions } from '../types/CLIOptions';
 import path from 'path';
+import { SafeDockerNetworkRemover } from '../utils/SafeDockerNetworkRemover';
 
 dotenv.config();
 
@@ -90,7 +91,7 @@ export class DockerService implements IService{
 
     /**
      * Returns the null output path depending on the operating system.
-     * 
+     *
      * @public
      * @returns {string} - The null output path.
      */
@@ -391,7 +392,7 @@ export class DockerService implements IService{
         shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
         this.logger.trace('Cleaning the volumes and temp files...', stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
-        shell.exec(`docker network prune -f 2>${nullOutput}`);
+        SafeDockerNetworkRemover.removeAll();
         this.logger.info(`${LOADING} Trying to startup again...`, stateName);
     }
 }
