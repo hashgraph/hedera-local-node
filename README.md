@@ -24,7 +24,7 @@ The Hedera Local Node project allows developers to set up their own local networ
   - NPM version check: `npm -v`
 - [Docker](https://www.docker.com/) `>= v20.10.x`
   - Docker version check: `docker -v`
-- [Docker Compose](https://docs.docker.com/compose/) `=> v2.12.2`
+- [Docker Compose](https://docs.docker.com/compose/) `=> v2.13.2`
   - Docker Compose version check: `docker compose version`
 - Minimum 16GB RAM
 
