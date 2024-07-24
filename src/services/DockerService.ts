@@ -254,13 +254,15 @@ export class DockerService implements IService{
 
     private logShellOutput(shellExec: any) {
         [shellExec.stdout, shellExec.stderr].forEach( (output: string) => {
-            output.split("\n").map((line: string) => {
+          output.split("\n").map((line: string) => {
+                if (line === "") return;
                 this.logger.debug(line, this.serviceName);
             });
         });
     }
 
     private async executeExternal(command: string, options = {}): Promise<shell.ShellString> {
+        this.logger.trace(`🚀 Executing command: ${command}`, this.serviceName);
         const shellExec = shell.exec(command, options);
         this.logShellOutput(shellExec);
         return shellExec;
@@ -400,8 +402,8 @@ export class DockerService implements IService{
     public async tryDockerRecovery(stateName: string): Promise<void> {
         const nullOutput = this.getNullOutput();
         this.logger.trace('Stopping the docker containers...', stateName);
-        this.executeExternal(`docker compose kill --remove-orphans 2>${nullOutput}`, {silent: true});
-        this.executeExternal(`docker compose down -v --remove-orphans 2>${nullOutput}`, {silent: true});
+        this.executeExternal(`docker compose kill --remove-orphans`, {silent: true});
+        this.executeExternal(`docker compose down -v --remove-orphans`, {silent: true});
         this.logger.trace('Cleaning the volumes and temp files...', stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
         SafeDockerNetworkRemover.removeAll();
