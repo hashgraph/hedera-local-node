@@ -251,7 +251,23 @@ export class DockerService implements IService{
       const recommendedMemory = isMultiNodeMode ? MIN_MEMORY_MULTI_MODE : MIN_MEMORY_SINGLE_MODE;
       this.logger.error(`Your docker memory resources are set to ${dockerMemory.toFixed(2)}GB. This is not enough, set to at least ${recommendedMemory}GB`, this.serviceName);
     }
-    
+
+    private logShellOutput(shellExec: any) {
+        [shellExec.stdout, shellExec.stderr].forEach( (output: string) => {
+            output.split("\n").map((line: string) => {
+                if (line === "") return;
+                this.logger.debug(line, this.serviceName);
+            });
+        });
+    }
+
+    private async executeExternal(command: string, options = {}): Promise<shell.ShellString> {
+        this.logger.trace(`🚀 Executing command: ${command}`, this.serviceName);
+        const shellExec = shell.exec(command, options);
+        this.logShellOutput(shellExec);
+        return shellExec;
+    }
+
     /**
      * Returns a Docker container object for the given container label.
      * 
@@ -352,9 +368,7 @@ export class DockerService implements IService{
           composeFiles.push(...this.getUserComposeFiles(userComposeDir));
       }
 
-      return shell.exec(
-          `docker compose -f ${composeFiles.join(' -f ')} up -d 2>${this.getNullOutput()}`
-      );
+      return this.executeExternal(`docker compose -f ${composeFiles.join(' -f ')} up -d`, {silent: true});
     }
 
     /**
@@ -388,8 +402,8 @@ export class DockerService implements IService{
     public async tryDockerRecovery(stateName: string): Promise<void> {
         const nullOutput = this.getNullOutput();
         this.logger.trace('Stopping the docker containers...', stateName);
-        shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
-        shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
+        this.executeExternal(`docker compose kill --remove-orphans`, {silent: true});
+        this.executeExternal(`docker compose down -v --remove-orphans`, {silent: true});
         this.logger.trace('Cleaning the volumes and temp files...', stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
         SafeDockerNetworkRemover.removeAll();

@@ -24,6 +24,7 @@ import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
 import { CLIService } from './CLIService';
 import { Errors } from '../Errors/LocalNodeErrors';
+import debounce from '../utils/debounce';
 
 /**
  * ConnectionService is a service class that handles network connections.
@@ -52,6 +53,9 @@ export class ConnectionService implements IService{
      */
     private cliService: CLIService;
 
+    // Debounced function to print error message at most once every N seconds
+    private readonly debouncedErrorLog;
+
     /**
      * Constructs a new instance of the ConnectionService.
      * Initializes the logger and CLI service, and logs the initialization of the connection service.
@@ -61,6 +65,11 @@ export class ConnectionService implements IService{
         this.logger = ServiceLocator.Current.get<LoggerService>(LoggerService.name);
         this.cliService = ServiceLocator.Current.get<CLIService>(CLIService.name);
         this.logger.trace('Connection Service Initialized!', this.serviceName);
+
+        this.debouncedErrorLog = debounce((message: string) => {
+            this.logger.info(message, this.serviceName);
+        }, 5000);
+
     }
 
     /**
@@ -72,7 +81,7 @@ export class ConnectionService implements IService{
      * @returns {Promise<void>} A promise that resolves when the port is ready for connection.
      * @public
      */
-    public async waitForFiringUp(port: number): Promise<void> {
+    public async waitForFiringUp(port: number, serviceName: string): Promise<void> {
         const { host } = this.cliService.getCurrentArgv();
         let isReady = false;
         // this means that we wait around 100 seconds, normal consensus node startup takes around 60 seconds
@@ -83,12 +92,13 @@ export class ConnectionService implements IService{
             .on('data', () => {
               isReady = true;
             })
-            .on('error', (err) => {
-              this.logger.trace(
-                `Waiting for the containers at ${host}:${port}, retrying in 0.1 seconds...`,
-                this.serviceName
-              );
-              this.logger.error(err.message, this.serviceName);
+            .on('error', (err: any) => {
+              if (err.code === 'ECONNREFUSED') {
+                  this.debouncedErrorLog(`${serviceName} not yet available at: ${host}:${port}. Retrying...`);
+              }
+              else {
+                  this.logger.error(err.message, this.serviceName);
+              }
             });
 
             retries--;
