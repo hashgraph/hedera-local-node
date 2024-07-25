@@ -254,7 +254,7 @@ export class DockerService implements IService{
 
     private logShellOutput(shellExec: any) {
         [shellExec.stdout, shellExec.stderr].forEach( (output: string) => {
-          output.split("\n").map((line: string) => {
+            output.split("\n").map((line: string) => {
                 if (line === "") return;
                 this.logger.debug(line, this.serviceName);
             });
