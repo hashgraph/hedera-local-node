@@ -103,7 +103,7 @@ jobs:
           npm ci
 
       - name: Start local node
-        run: npm run start -- -d
+        run: npm run start -- -d --verbose=trace
 
       - name: Prepare and run the tests
         run: |

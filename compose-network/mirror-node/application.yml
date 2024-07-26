@@ -11,6 +11,7 @@ hedera:
             persist:
               transactionBytes: false
               transactionRecordBytes: false
+              transactionHash: true
             redis:
               enabled: false
           sidecar:
