@@ -6,7 +6,8 @@ export PGDATABASE="${POSTGRES_DB:-postgres}"
 export PGHOST="${PGHOST}"
 export PGUSER="${POSTGRES_USER:-postgres}"
 
-DB_SPECIFIC_EXTENSION_SQL="create extension btree_gist;"
+DB_SPECIFIC_EXTENSION_SQL="create extension btree_gist;
+                           create extension pg_trgm;"
 # PostgreSQL 16 requires role A to have Admin privilege on role B in order to grant role B to any other role, and there
 # are several versioned v1 migrations that grant :importerUsername to :ownerUsername.
 DB_SPECIFIC_IMPORTER_ROLE_ADMIN="admin :ownerUsername"
@@ -15,6 +16,7 @@ DB_SPECIFIC_SQL="alter user :ownerUsername with createrole;"
 # v2 schema no longer creates the REST API user, while v1 schema still does
 if [[ "${SCHEMA_V2}" == "true" ]]; then
   DB_SPECIFIC_EXTENSION_SQL="create extension if not exists btree_gist;
+                             create extension if not exists pg_trgm;
                              create extension citus;
                              grant all privileges on database :dbName to :ownerUsername;
                              grant create on database :dbName to :ownerUsername;
