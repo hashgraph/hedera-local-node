@@ -64,7 +64,7 @@ jobs:
           npm ci
 
       - name: Start the local node
-        run: npm run start -- -d
+        run: npm run start -- -d --verbose=trace
 
       - name: Run smoke test
         uses: step-security/retry@052d8009a065e321fd72db951d7e412f8063b9e5 # v3.0.0
