@@ -172,7 +172,7 @@ services:
       - --debug
 
   minio:
-    image: minio/minio
+    image: ghcr.io/mhga24/minio/minio
     container_name: minio
     entrypoint: sh
     command: -c 'mkdir -p /data/hedera-streams && minio server /data --console-address ":9001"'
@@ -488,7 +488,7 @@ services:
         ipv4_address: 172.27.0.5
 
   cache:
-    image: redis:6-alpine
+    image: ghcr.io/mhga24/redis:6-alpine
     container_name: relay-cache
     mem_limit: "${RELAY_MEM_LIMIT}"
     memswap_limit: "${RELAY_MEM_LIMIT}"
