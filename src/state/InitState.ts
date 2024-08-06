@@ -214,7 +214,7 @@ export class InitState implements IState{
     } {
         const node = variable.key;
         let tag = variable.value;
-        if (this.cliOptions.networkTag && (node === "NETWORK_NODE_IMAGE_TAG" || node === "HAVEGED_IMAGE_TAG")) {
+        if (this.cliOptions.networkTag && (node === "NETWORK_NODE_IMAGE_TAG")) {
             tag = this.cliOptions.networkTag;
         } else if(this.cliOptions.mirrorTag && node === "MIRROR_IMAGE_TAG") {
             tag = this.cliOptions.mirrorTag;
