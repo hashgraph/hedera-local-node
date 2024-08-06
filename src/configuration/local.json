@@ -1,6 +1,6 @@
 {
   "imageTagConfiguration": [
-    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.53.0-alpha.2"},
+    {"key": "NETWORK_NODE_IMAGE_TAG", "value": "0.52.0"},
     {"key": "HAVEGED_IMAGE_TAG", "value": "0.53.0-alpha.2"},
     {"key": "MIRROR_IMAGE_TAG", "value": "0.111.0-rc1"},
     {"key": "RELAY_IMAGE_TAG", "value": "0.53.0-rc4"},
