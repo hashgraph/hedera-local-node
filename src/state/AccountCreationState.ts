@@ -38,6 +38,7 @@ import {
 import { ACCOUNT_CREATION_STATE_INIT_MESSAGE, CHECK_SUCCESS, EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH, LOADING } from '../constants';
 import local from '../configuration/local.json';
 import { AccountUtils } from '../utils/AccountUtils';
+import { RetryUtils } from '../utils/RetryUtils';
 
 /**
  * Represents the state of account creation.
@@ -257,17 +258,25 @@ export class AccountCreationState implements IState {
             const { privateKey, balance } = account;
             const client = this.clientService.getClient();
 
-            const createAccountPromise: Promise<Account> = AccountUtils
-                .createAccount(privateKey.publicKey, balance, client)
-                .then((accountInfo) => {
-                    const address = accountInfo.accountId.toSolidityAddress();
-                    return {
-                        accountId: accountInfo.accountId.toString(),
-                        balance: accountInfo.balance,
-                        privateKey,
-                        address
-                    };
-                });
+            const createAccountPromise: Promise<Account> = RetryUtils.retryTask(
+                async () => AccountUtils
+                    .createAccount(privateKey.publicKey, balance, client)
+                    .then((accountInfo) => {
+                        const address = accountInfo.accountId.toSolidityAddress();
+                        return {
+                            accountId: accountInfo.accountId.toString(),
+                            balance: accountInfo.balance,
+                            privateKey,
+                            address
+                        };
+                    }),
+                {
+                    doOnRetry: (error) => this.logger.warn(
+                        `Error occurred during task execution: "${error?.toString()}"`,
+                        this.stateName
+                    )
+                }
+            );
 
             accountPromises.push(createAccountPromise);
         });
@@ -305,17 +314,25 @@ export class AccountCreationState implements IState {
             const client = this.clientService.getClient();
             const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
 
-            const createAccountPromise: Promise<Account> = AccountUtils
-                .createAliasedAccount(aliasAccountId, balance, client)
-                .then((accountInfo) => {
-                    const address = privateKey.publicKey.toEvmAddress();
-                    return {
-                        accountId: accountInfo.accountId.toString(),
-                        balance: accountInfo.balance,
-                        privateKey,
-                        address
-                    };
-                });
+            const createAccountPromise: Promise<Account> = RetryUtils.retryTask(
+                async () => AccountUtils
+                    .createAliasedAccount(aliasAccountId, balance, client)
+                    .then((accountInfo) => {
+                        const address = privateKey.publicKey.toEvmAddress();
+                        return {
+                            accountId: accountInfo.accountId.toString(),
+                            balance: accountInfo.balance,
+                            privateKey,
+                            address
+                        };
+                    }),
+                {
+                    doOnRetry: (error) => this.logger.warn(
+                        `Error occurred during task execution: "${error?.toString()}"`,
+                        this.stateName
+                    )
+                }
+            );
 
             accountPromises.push(createAccountPromise);
         });
