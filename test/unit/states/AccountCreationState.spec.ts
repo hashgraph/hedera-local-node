@@ -102,54 +102,40 @@ describe('AccountCreationState', () => {
     });
 
     it('should log information when starting in synchronous mode', async () => {
-      await accountCreationState.subscribe(observer);
+      accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
-      testSandbox.assert.calledTwice(loggerService.info);
+      commonAssertsForStart();
       testSandbox.assert.calledOnce(generateECDSAStub);
       testSandbox.assert.calledOnce(generateAliasECDSAStub);
       testSandbox.assert.calledOnce(generateED25519Stub);
-      testSandbox.assert.called(observer.update);
     });
 
     it('should log information when starting in asynchronous mode', async () => {
-      cliService.getCurrentArgv.returns({
-        async: true,
-        blocklisting: false,
-        balance: 1000,
-        accounts: 5,
-        startup: false,
-      } as any);
+      stubCliOptions({ async: true });
 
-      await accountCreationState.subscribe(observer);
+      accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
-      testSandbox.assert.calledTwice(loggerService.info);
+      commonAssertsForStart();
       testSandbox.assert.calledOnce(generateECDSAStub);
       testSandbox.assert.calledOnce(generateAliasECDSAStub);
       testSandbox.assert.calledOnce(generateED25519Stub);
-      testSandbox.assert.called(observer.update);
     });
 
     it('should log information when blocklisting is enabled', async () => {
       const getBlocklistedAccountsCountStub = testSandbox.stub(AccountCreationState.prototype, <any>'getBlocklistedAccountsCount').returns(1);
-      cliService.getCurrentArgv.returns({
-        async: true,
-        blocklisting: true,
-        balance: 1000,
-        accounts: 5,
-        startup: false,
-      } as any);
+      stubCliOptions({ async: true, blocklisting: true });
 
-      await accountCreationState.subscribe(observer);
+      accountCreationState.subscribe(observer);
       await accountCreationState.onStart();
 
+      commonAssertsForStart();
       testSandbox.assert.calledWith(loggerService.info, ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE, 'AccountCreationState');
       testSandbox.assert.called(getBlocklistedAccountsCountStub);
       testSandbox.assert.calledOnce(generateECDSAStub);
       testSandbox.assert.calledOnce(generateAliasECDSAStub);
       testSandbox.assert.calledOnce(generateED25519Stub);
-      testSandbox.assert.called(observer.update);
 
       getBlocklistedAccountsCountStub.restore();
     });
@@ -180,6 +166,16 @@ describe('AccountCreationState', () => {
     let logAccountDividerStub: SinonStub;
     let logAliasAccountDividerStub: SinonStub;
     let privateKeySpy: SinonSpy;
+
+    beforeEach(() => {
+      stubCliOptions({
+        async: false,
+        blocklisting: false,
+        balance: 1000,
+        accounts: 5,
+        startup: false,
+      });
+    });
 
     beforeEach(() => {
       createAccountStub = testSandbox.stub(AccountUtils, <any>'createAccount')
@@ -225,15 +221,7 @@ describe('AccountCreationState', () => {
       })
   
       it('should generate ECDSA accounts synchronously and log the title and divider', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 5,
-          startup: false,
-        } as CLIOptions);
-
-        await accountCreationState.subscribe(observer);
+        accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.called(generateECDSA);
@@ -245,15 +233,9 @@ describe('AccountCreationState', () => {
       });
 
       it('should generate ECDSA accounts аsynchronously and log the title and divider', async () => {
-        cliService.getCurrentArgv.returns({
-          async: true,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 10,
-          startup: false,
-        } as any);
+        stubCliOptions({ async: true });
 
-        await accountCreationState.subscribe(observer);
+        accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.called(generateECDSA);
@@ -262,21 +244,11 @@ describe('AccountCreationState', () => {
 
         await generateECDSA.returnValues[0];
 
-        assertCreatedAccounts(10, 'ECDSA');
-        testSandbox.assert.callCount(createAccountStub, 10);
+        assertCreatedAccounts(5, 'ECDSA');
+        testSandbox.assert.callCount(createAccountStub, 5);
       });
 
       it('should retry the creation of ECDSA accounts if there is an error', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 10,
-          startup: false,
-        } as any);
-
-        // Stub the createAccount method to throw an error
-        // on the first two calls and then resolve any subsequent calls
         const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
         const errorCount = 2;
         rejectWithError(createAccountStub, error, errorCount);
@@ -290,27 +262,13 @@ describe('AccountCreationState', () => {
       });
 
       it('should not retry the creation of ECDSA accounts if there is an error which is not retryable', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 10,
-          startup: false,
-        } as any);
-
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
         const error = new Error('Some other error');
-        const errorCount = 2;
-        rejectWithError(createAccountStub, error, errorCount);
+        rejectWithError(createAccountStub, error, 2);
 
         accountCreationState.subscribe(observer);
-        try {
-          await accountCreationState.onStart();
-          expect.fail('Expected an error to be thrown');
-        } catch (e) {
-          expect(e).to.equal(error);
-        }
+        await assertThrowsError(() => accountCreationState.onStart(), error);
 
         const accounts = cliService.getCurrentArgv().accounts;
         assertCreatedAccounts(accounts, 'ECDSA', false);
@@ -337,35 +295,21 @@ describe('AccountCreationState', () => {
       })
   
       it('should generate AliasECDSA accounts synchronously and log the title and divider', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 10,
-          startup: false,
-        } as any);
-        
-        await accountCreationState.subscribe(observer);
+        accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
 
-        assertCreatedAccountAliases(10);
-        testSandbox.assert.callCount(createAliasAccountStub, 10);
+        assertCreatedAccountAliases(5);
+        testSandbox.assert.callCount(createAliasAccountStub, 5);
       });
 
       it('should generate AliasECDSA accounts asynchronously and log the title and divider', async () => {
-        cliService.getCurrentArgv.returns({
-          async: true,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 6,
-          startup: false,
-        } as any);
+        stubCliOptions({ async: true });
 
-        await accountCreationState.subscribe(observer);
+        accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.called(generateAliasECDSA);
@@ -374,22 +318,12 @@ describe('AccountCreationState', () => {
 
         await generateAliasECDSA.returnValues[0];
 
-        assertCreatedAccountAliases(6);
-        testSandbox.assert.callCount(createAliasAccountStub, 6);
+        assertCreatedAccountAliases(5);
+        testSandbox.assert.callCount(createAliasAccountStub, 5);
       });
 
 
       it('should retry the creation of AliasECDSA accounts if there is an error', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 6,
-          startup: false,
-        } as any);
-
-        // Stub the createAccount method to throw an error
-        // on the first two calls and then resolve any subsequent calls
         const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
         const errorCount = 2;
         rejectWithError(createAliasAccountStub, error, errorCount);
@@ -403,27 +337,11 @@ describe('AccountCreationState', () => {
       });
 
       it('should not retry the creation of AliasECDSA accounts if there is an error which is not retryable', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 6,
-          startup: false,
-        } as any);
-
-        // Stub the createAliasAccount method to throw an error
-        // on the first two calls and then resolve any subsequent calls
         const error = new Error('Some other error');
-        const errorCount = 2;
-        rejectWithError(createAliasAccountStub, error, errorCount);
+        rejectWithError(createAliasAccountStub, error, 2);
 
         accountCreationState.subscribe(observer);
-        try {
-          await accountCreationState.onStart();
-          expect.fail('Expected an error to be thrown');
-        } catch (e) {
-          expect(e).to.equal(error);
-        }
+        await assertThrowsError(() => accountCreationState.onStart(), error);
 
         const accounts = cliService.getCurrentArgv().accounts;
         assertCreatedAccountAliases(accounts, false);
@@ -450,34 +368,20 @@ describe('AccountCreationState', () => {
       })
   
       it('should generate ED25519 accounts synchronously and log the title and divider', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 10,
-          startup: false,
-        } as any);
-
-        await accountCreationState.subscribe(observer);
+        accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.callCount(createAccountStub, 10);
-        assertCreatedAccounts(10, 'ED25519');
+        testSandbox.assert.callCount(createAccountStub, 5);
+        assertCreatedAccounts(5, 'ED25519');
       });
 
       it('should generate ED25519 accounts asynchronously and log the title and divider', async () => {
-        cliService.getCurrentArgv.returns({
-          async: true,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 6,
-          startup: false,
-        } as any);
+        stubCliOptions({ async: true });
 
-        await accountCreationState.subscribe(observer);
+        accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
         testSandbox.assert.called(generateAliasECDSA);
@@ -486,21 +390,11 @@ describe('AccountCreationState', () => {
 
         await generateED25519.returnValues[0];
 
-        assertCreatedAccounts(6, 'ED25519');
-        testSandbox.assert.callCount(createAccountStub, 6);
+        assertCreatedAccounts(5, 'ED25519');
+        testSandbox.assert.callCount(createAccountStub, 5);
       });
 
       it('should retry the creation of ED25519 accounts if there is an error', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 6,
-          startup: false,
-        } as any);
-
-        // Stub the createAccount method to throw an error
-        // on the first two calls and then resolve any subsequent calls
         const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
         const errorCount = 2;
         rejectWithError(createAccountStub, error, errorCount);
@@ -514,27 +408,11 @@ describe('AccountCreationState', () => {
       });
 
       it('should not retry the creation of ED25519 accounts if there is an error which is not retryable', async () => {
-        cliService.getCurrentArgv.returns({
-          async: false,
-          blocklisting: false,
-          balance: 1000,
-          accounts: 6,
-          startup: false,
-        } as any);
-
-        // Stub the createAccount method to throw an error
-        // on the first two calls and then resolve any subsequent calls
         const error = new Error('Some other error');
-        const errorCount = 2;
-        rejectWithError(createAccountStub, error, errorCount);
+        rejectWithError(createAccountStub, error, 2);
 
         accountCreationState.subscribe(observer);
-        try {
-          await accountCreationState.onStart();
-          expect.fail('Expected an error to be thrown');
-        } catch (e) {
-          expect(e).to.equal(error);
-        }
+        await assertThrowsError(() => accountCreationState.onStart(), error);
 
         const accounts = cliService.getCurrentArgv().accounts;
         assertCreatedAccounts(accounts, 'ED25519', false);
@@ -576,15 +454,13 @@ describe('AccountCreationState', () => {
     }
 
     function assertCreatedAccounts(accounts: number, accountType: string, success: boolean = true): void {
-      testSandbox.assert.called(observer.update);
+      commonAssertsForStart(success);
       testSandbox.assert.callCount(privateKeySpy, accounts);
       if (success) {
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, accountType);
         testSandbox.assert.callCount(logAccountStub, accounts);
         testSandbox.assert.calledOnce(logAccountDividerStub);
       } else {
-        testSandbox.assert.calledOnce(loggerService.info);
         testSandbox.assert.notCalled(logAccountTitleStub);
         testSandbox.assert.notCalled(logAccountStub);
         testSandbox.assert.notCalled(logAccountDividerStub);
@@ -592,19 +468,42 @@ describe('AccountCreationState', () => {
     }
 
     function assertCreatedAccountAliases(count: number, success: boolean = true): void {
-      testSandbox.assert.called(observer.update);
+      commonAssertsForStart(success);
       testSandbox.assert.callCount(privateKeySpy, count);
       if (success) {
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.calledOnce(logAliasAccountTitleStub);
         testSandbox.assert.callCount(logAliasAccountStub, count);
         testSandbox.assert.calledOnce(logAliasAccountDividerStub);
       } else {
-        testSandbox.assert.calledOnce(loggerService.info);
         testSandbox.assert.notCalled(logAliasAccountTitleStub);
         testSandbox.assert.notCalled(logAliasAccountStub);
         testSandbox.assert.notCalled(logAliasAccountDividerStub);
       }
     }
   });
+
+  function stubCliOptions(mockedOptions: Partial<CLIOptions>): void {
+    cliService.getCurrentArgv.returns({
+      ...cliService.getCurrentArgv(),
+      ...mockedOptions,
+    } as CLIOptions);
+  }
+
+  function commonAssertsForStart(success: boolean = true): void {
+    testSandbox.assert.called(observer.update);
+    if (success) {
+      testSandbox.assert.calledTwice(loggerService.info);
+    } else {
+      testSandbox.assert.calledOnce(loggerService.info);
+    }
+  }
+
+  async function assertThrowsError(fn: () => Promise<void>, error: Error): Promise<void> {
+    try {
+      await fn();
+      expect.fail('Expected an exception to be thrown');
+    } catch (e) {
+      expect(e).to.equal(error);
+    }
+  }
 });
