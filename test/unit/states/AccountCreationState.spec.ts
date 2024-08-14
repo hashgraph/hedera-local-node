@@ -568,7 +568,7 @@ describe('AccountCreationState', () => {
       if (retries > 0) {
         testSandbox.assert.callCount(loggerService.warn, 2);
         for (const call of loggerService.warn.getCalls()) {
-          expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
+          expect(call.args[0]).to.equal(`Error occurred during task execution: "${error!.toString()}"`);
         }
       } else {
         testSandbox.assert.notCalled(loggerService.warn);
