@@ -179,6 +179,7 @@ describe('AccountCreationState', () => {
     let logAliasAccountTitleStub: SinonStub;
     let logAccountDividerStub: SinonStub;
     let logAliasAccountDividerStub: SinonStub;
+    let privateKeySpy: SinonSpy;
 
     beforeEach(() => {
       createAccountStub = testSandbox.stub(AccountUtils, <any>'createAccount')
@@ -202,13 +203,13 @@ describe('AccountCreationState', () => {
       logAliasAccountTitleStub.restore();
       logAccountDividerStub.restore();
       logAliasAccountDividerStub.restore();
+      privateKeySpy.restore();
     })
 
     describe('generateECDSA', () => {
       let generateAliasECDSA: SinonStub;
       let generateED25519: SinonStub;
       let generateECDSA: SinonSpy;
-      let privateKeySpy: SinonSpy;
   
       beforeEach(() => {
         generateAliasECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').resolves();
@@ -221,7 +222,6 @@ describe('AccountCreationState', () => {
         generateAliasECDSA.restore();
         generateED25519.restore();
         generateECDSA.restore();
-        privateKeySpy.restore();
       })
   
       it('should generate ECDSA accounts synchronously and log the title and divider', async () => {
@@ -236,17 +236,12 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.called(observer.update);
 
-        testSandbox.assert.callCount(privateKeySpy, 5);
+        assertCreatedAccounts(5, 'ECDSA');
         testSandbox.assert.callCount(createAccountStub, 5);
-        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ECDSA');
-        testSandbox.assert.callCount(logAccountStub, 5);
-        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
 
       it('should generate ECDSA accounts аsynchronously and log the title and divider', async () => {
@@ -261,19 +256,14 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.called(observer.update);
 
         await generateECDSA.returnValues[0];
 
-        testSandbox.assert.callCount(privateKeySpy, 10);
+        assertCreatedAccounts(10, 'ECDSA');
         testSandbox.assert.callCount(createAccountStub, 10);
-        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ECDSA');
-        testSandbox.assert.callCount(logAccountStub, 10);
-        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
 
       it('should retry the creation of ECDSA accounts if there is an error', async () => {
@@ -285,35 +275,18 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
-
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
-        createAccountStub.reset();
-        createAccountStub
-          .onFirstCall().rejects(error)
-          .onSecondCall().rejects(error)
-          .resolves(accountInfo);
+        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
+        const errorCount = 2;
+        rejectWithError(createAccountStub, error, errorCount);
 
         accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        // Assert that the task was retried until it succeeded
-        const count = cliService.getCurrentArgv().accounts;
-        testSandbox.assert.called(observer.update);
-        testSandbox.assert.callCount(createAccountStub, count + 2);
-        testSandbox.assert.callCount(privateKeySpy, count);
-        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ECDSA');
-        testSandbox.assert.callCount(logAccountStub, count);
-        testSandbox.assert.calledOnce(logAccountDividerStub);
-
-        await generateECDSA.returnValues[0];
-
-        // Assert that the error was logged on each failure
-        testSandbox.assert.callCount(loggerService.warn, 2);
-        for (const call of loggerService.warn.getCalls()){
-          expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
-        }
+        const accounts = cliService.getCurrentArgv().accounts;
+        assertCreatedAccounts(accounts, 'ECDSA');
+        assertRetries(createAccountStub, errorCount, error);
       });
 
       it('should not retry the creation of ECDSA accounts if there is an error which is not retryable', async () => {
@@ -325,15 +298,11 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const error = new Error('Some other error');
-
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
-        createAccountStub.reset();
-        createAccountStub
-          .onFirstCall().rejects(error)
-          .onSecondCall().rejects(error)
-          .resolves(accountInfo);
+        const error = new Error('Some other error');
+        const errorCount = 2;
+        rejectWithError(createAccountStub, error, errorCount);
 
         accountCreationState.subscribe(observer);
         try {
@@ -343,15 +312,9 @@ describe('AccountCreationState', () => {
           expect(e).to.equal(error);
         }
 
-        // Assert that the task was not retried
-        const count = cliService.getCurrentArgv().accounts;
-        testSandbox.assert.called(observer.update);
-        testSandbox.assert.callCount(createAccountStub, count);
-        testSandbox.assert.callCount(privateKeySpy, count);
-        testSandbox.assert.notCalled(logAccountTitleStub);
-        testSandbox.assert.notCalled(logAccountStub);
-        testSandbox.assert.notCalled(logAccountDividerStub);
-        testSandbox.assert.notCalled(loggerService.warn);
+        const accounts = cliService.getCurrentArgv().accounts;
+        assertCreatedAccounts(accounts, 'ECDSA', false);
+        assertRetries(createAccountStub, 0);
       });
     });
   
@@ -359,7 +322,6 @@ describe('AccountCreationState', () => {
       let generateECDSA: SinonStub;
       let generateED25519: SinonStub;
       let generateAliasECDSA: SinonSpy;
-      let privateKeySpy: SinonSpy;
   
       beforeEach(() => {
         generateECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateECDSA').resolves();
@@ -372,7 +334,6 @@ describe('AccountCreationState', () => {
         generateECDSA.restore();
         generateED25519.restore();
         generateAliasECDSA.restore();
-        privateKeySpy.restore();
       })
   
       it('should generate AliasECDSA accounts synchronously and log the title and divider', async () => {
@@ -387,17 +348,12 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.called(observer.update);
 
-        testSandbox.assert.callCount(privateKeySpy, 10);
+        assertCreatedAccountAliases(10);
         testSandbox.assert.callCount(createAliasAccountStub, 10);
-        testSandbox.assert.calledOnce(logAliasAccountTitleStub);
-        testSandbox.assert.callCount(logAliasAccountStub, 10);
-        testSandbox.assert.calledOnce(logAliasAccountDividerStub);
       });
 
       it('should generate AliasECDSA accounts asynchronously and log the title and divider', async () => {
@@ -412,19 +368,14 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.called(observer.update);
 
         await generateAliasECDSA.returnValues[0];
 
-        testSandbox.assert.callCount(privateKeySpy, 6);
+        assertCreatedAccountAliases(6);
         testSandbox.assert.callCount(createAliasAccountStub, 6);
-        testSandbox.assert.calledOnce(logAliasAccountTitleStub);
-        testSandbox.assert.callCount(logAliasAccountStub, 6);
-        testSandbox.assert.calledOnce(logAliasAccountDividerStub);
       });
 
 
@@ -437,32 +388,18 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
-
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
-        createAliasAccountStub.reset();
-        createAliasAccountStub
-          .onFirstCall().rejects(error)
-          .onSecondCall().rejects(error)
-          .resolves(accountInfo);
+        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
+        const errorCount = 2;
+        rejectWithError(createAliasAccountStub, error, errorCount);
 
         accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        // Assert that the task was retried until it succeeded
-        const count = cliService.getCurrentArgv().accounts;
-        testSandbox.assert.callCount(createAliasAccountStub, count + 2);
-        testSandbox.assert.callCount(privateKeySpy, count);
-        testSandbox.assert.calledOnce(logAliasAccountTitleStub);
-        testSandbox.assert.callCount(logAliasAccountStub, count);
-        testSandbox.assert.calledOnce(logAliasAccountDividerStub);
-
-        // Assert that the error was logged on each failure
-        testSandbox.assert.callCount(loggerService.warn, 2);
-        for (const call of loggerService.warn.getCalls()){
-          expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
-        }
+        const accounts = cliService.getCurrentArgv().accounts;
+        assertCreatedAccountAliases(accounts);
+        assertRetries(createAliasAccountStub, errorCount, error);
       });
 
       it('should not retry the creation of AliasECDSA accounts if there is an error which is not retryable', async () => {
@@ -474,15 +411,11 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const error = new Error('Some other error');
-
-        // Stub the createAccount method to throw an error
+        // Stub the createAliasAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
-        createAliasAccountStub.reset();
-        createAliasAccountStub
-          .onFirstCall().rejects(error)
-          .onSecondCall().rejects(error)
-          .resolves(accountInfo);
+        const error = new Error('Some other error');
+        const errorCount = 2;
+        rejectWithError(createAliasAccountStub, error, errorCount);
 
         accountCreationState.subscribe(observer);
         try {
@@ -492,15 +425,9 @@ describe('AccountCreationState', () => {
           expect(e).to.equal(error);
         }
 
-        // Assert that the task was not retried
-        const count = cliService.getCurrentArgv().accounts;
-        testSandbox.assert.called(observer.update);
-        testSandbox.assert.callCount(createAliasAccountStub, count);
-        testSandbox.assert.callCount(privateKeySpy, count);
-        testSandbox.assert.notCalled(logAliasAccountTitleStub);
-        testSandbox.assert.notCalled(logAliasAccountStub);
-        testSandbox.assert.notCalled(logAliasAccountDividerStub);
-        testSandbox.assert.notCalled(loggerService.warn);
+        const accounts = cliService.getCurrentArgv().accounts;
+        assertCreatedAccountAliases(accounts, false);
+        assertRetries(createAliasAccountStub, 0);
       });
     });
   
@@ -508,7 +435,6 @@ describe('AccountCreationState', () => {
       let generateAliasECDSA: SinonStub;
       let generateECDSA: SinonStub;
       let generateED25519: SinonSpy;
-      let privateKeySpy: SinonSpy;
   
       beforeEach(() => {
         generateAliasECDSA = testSandbox.stub(AccountCreationState.prototype, <any>'generateAliasECDSA').resolves();
@@ -521,7 +447,6 @@ describe('AccountCreationState', () => {
         generateAliasECDSA.restore();
         generateECDSA.restore();
         generateED25519.restore();
-        privateKeySpy.restore();
       })
   
       it('should generate ED25519 accounts synchronously and log the title and divider', async () => {
@@ -536,17 +461,11 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.called(observer.update);
-
-        testSandbox.assert.callCount(privateKeySpy, 10);
         testSandbox.assert.callCount(createAccountStub, 10);
-        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ED25519');
-        testSandbox.assert.callCount(logAccountStub, 10);
-        testSandbox.assert.calledOnce(logAccountDividerStub);
+        assertCreatedAccounts(10, 'ED25519');
       });
 
       it('should generate ED25519 accounts asynchronously and log the title and divider', async () => {
@@ -561,19 +480,14 @@ describe('AccountCreationState', () => {
         await accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        testSandbox.assert.calledTwice(loggerService.info);
         testSandbox.assert.called(generateAliasECDSA);
         testSandbox.assert.called(generateECDSA);
         testSandbox.assert.called(generateED25519);
-        testSandbox.assert.called(observer.update);
 
         await generateED25519.returnValues[0];
 
-        testSandbox.assert.callCount(privateKeySpy, 6);
+        assertCreatedAccounts(6, 'ED25519');
         testSandbox.assert.callCount(createAccountStub, 6);
-        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ED25519');
-        testSandbox.assert.callCount(logAccountStub, 6);
-        testSandbox.assert.calledOnce(logAccountDividerStub);
       });
 
       it('should retry the creation of ED25519 accounts if there is an error', async () => {
@@ -585,33 +499,18 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
-
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
-        createAccountStub.reset();
-        createAccountStub
-          .onFirstCall().rejects(error)
-          .onSecondCall().rejects(error)
-          .resolves(accountInfo);
+        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
+        const errorCount = 2;
+        rejectWithError(createAccountStub, error, errorCount);
 
         accountCreationState.subscribe(observer);
         await accountCreationState.onStart();
 
-        // Assert that the task was retried until it succeeded
-        const count = cliService.getCurrentArgv().accounts;
-        testSandbox.assert.called(observer.update);
-        testSandbox.assert.callCount(createAccountStub, count + 2);
-        testSandbox.assert.callCount(privateKeySpy, count);
-        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, 'ED25519');
-        testSandbox.assert.callCount(logAccountStub, count);
-        testSandbox.assert.calledOnce(logAccountDividerStub);
-
-        // Assert that the error was logged on each failure
-        testSandbox.assert.callCount(loggerService.warn, 2);
-        for (const call of loggerService.warn.getCalls()){
-          expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
-        }
+        const accounts = cliService.getCurrentArgv().accounts;
+        assertCreatedAccounts(accounts, 'ED25519');
+        assertRetries(createAccountStub, errorCount, error);
       });
 
       it('should not retry the creation of ED25519 accounts if there is an error which is not retryable', async () => {
@@ -623,15 +522,11 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const error = new Error('Some other error');
-
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
-        createAccountStub.reset();
-        createAccountStub
-          .onFirstCall().rejects(error)
-          .onSecondCall().rejects(error)
-          .resolves(accountInfo);
+        const error = new Error('Some other error');
+        const errorCount = 2;
+        rejectWithError(createAccountStub, error, errorCount);
 
         accountCreationState.subscribe(observer);
         try {
@@ -641,16 +536,75 @@ describe('AccountCreationState', () => {
           expect(e).to.equal(error);
         }
 
-        // Assert that the task was not retried
-        const count = cliService.getCurrentArgv().accounts;
-        testSandbox.assert.called(observer.update);
-        testSandbox.assert.callCount(createAccountStub, count);
-        testSandbox.assert.callCount(privateKeySpy, count);
+        const accounts = cliService.getCurrentArgv().accounts;
+        assertCreatedAccounts(accounts, 'ED25519', false);
+        assertRetries(createAccountStub, 0);
+      });
+    });
+
+    /**
+     * Stubs the createAccount method to throw an error on the first two calls
+     * and then resolve any subsequent calls
+     *
+     * @param stub The stub to reset and configure
+     * @param error The error to throw
+     * @param calls The number of calls to make before resolving
+     */
+    function rejectWithError(stub: SinonStub, error: Error, calls: number) {
+      stub.reset();
+      for (let i = 0; i < calls; i++) {
+        stub.onCall(i).rejects(error);
+      }
+      stub.resolves(accountInfo);
+    }
+
+    function assertRetries(stub: SinonStub, retries: number, error?: Error) {
+      const accounts = cliService.getCurrentArgv().accounts;
+
+      // Assert that the task was retried until it succeeded
+      testSandbox.assert.callCount(stub, accounts + retries);
+
+      // Assert that the error was logged on each failure
+      if (retries > 0) {
+        testSandbox.assert.callCount(loggerService.warn, 2);
+        for (const call of loggerService.warn.getCalls()) {
+          expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
+        }
+      } else {
+        testSandbox.assert.notCalled(loggerService.warn);
+      }
+    }
+
+    function assertCreatedAccounts(accounts: number, accountType: string, success: boolean = true): void {
+      testSandbox.assert.called(observer.update);
+      testSandbox.assert.callCount(privateKeySpy, accounts);
+      if (success) {
+        testSandbox.assert.calledTwice(loggerService.info);
+        testSandbox.assert.calledOnceWithExactly(logAccountTitleStub, accountType);
+        testSandbox.assert.callCount(logAccountStub, accounts);
+        testSandbox.assert.calledOnce(logAccountDividerStub);
+      } else {
+        testSandbox.assert.calledOnce(loggerService.info);
         testSandbox.assert.notCalled(logAccountTitleStub);
         testSandbox.assert.notCalled(logAccountStub);
         testSandbox.assert.notCalled(logAccountDividerStub);
-        testSandbox.assert.notCalled(loggerService.warn);
-      });
-    });
-  })
+      }
+    }
+
+    function assertCreatedAccountAliases(count: number, success: boolean = true): void {
+      testSandbox.assert.called(observer.update);
+      testSandbox.assert.callCount(privateKeySpy, count);
+      if (success) {
+        testSandbox.assert.calledTwice(loggerService.info);
+        testSandbox.assert.calledOnce(logAliasAccountTitleStub);
+        testSandbox.assert.callCount(logAliasAccountStub, count);
+        testSandbox.assert.calledOnce(logAliasAccountDividerStub);
+      } else {
+        testSandbox.assert.calledOnce(loggerService.info);
+        testSandbox.assert.notCalled(logAliasAccountTitleStub);
+        testSandbox.assert.notCalled(logAliasAccountStub);
+        testSandbox.assert.notCalled(logAliasAccountDividerStub);
+      }
+    }
+  });
 });
