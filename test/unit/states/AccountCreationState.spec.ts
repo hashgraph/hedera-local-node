@@ -23,18 +23,13 @@ import { AccountCreationState } from '../../../src/state/AccountCreationState';
 import { LoggerService } from '../../../src/services/LoggerService';
 import { CLIService } from '../../../src/services/CLIService';
 import { ClientService } from '../../../src/services/ClientService';
-import {
-  AccountId,
-  AccountInfo,
-  EvmAddress,
-  Hbar,
-  PrivateKey
-} from '@hashgraph/sdk';
+import { AccountId, AccountInfo, EvmAddress, Hbar, PrivateKey } from '@hashgraph/sdk';
 import { getTestBed } from '../testBed';
 import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
   ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE,
-  ACCOUNT_CREATION_STATE_INIT_MESSAGE
+  ACCOUNT_CREATION_STATE_INIT_MESSAGE,
+  FAILED_TO_FIND_A_HEALTHY_NODE,
 } from '../../../src/constants';
 import { IOBserver } from '../../../src/controller/IObserver';
 import { AccountUtils } from '../../../src/utils/AccountUtils';
@@ -290,15 +285,14 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const firstError = new Error('First attempt failed');
-        const secondError = new Error('Second attempt failed');
+        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
 
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
         createAccountStub.reset();
         createAccountStub
-          .onFirstCall().rejects(firstError)
-          .onSecondCall().rejects(secondError)
+          .onFirstCall().rejects(error)
+          .onSecondCall().rejects(error)
           .resolves(accountInfo);
 
         accountCreationState.subscribe(observer);
@@ -317,11 +311,47 @@ describe('AccountCreationState', () => {
 
         // Assert that the error was logged on each failure
         testSandbox.assert.callCount(loggerService.warn, 2);
-        for (let i = 0; i < loggerService.warn.getCalls().length; i++){
-          const call = loggerService.warn.getCalls()[i];
-          const error = i > 0 ? secondError : firstError;
+        for (const call of loggerService.warn.getCalls()){
           expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
         }
+      });
+
+      it('should not retry the creation of ECDSA accounts if there is an error which is not retryable', async () => {
+        cliService.getCurrentArgv.returns({
+          async: false,
+          blocklisting: false,
+          balance: 1000,
+          accounts: 10,
+          startup: false,
+        } as any);
+
+        const error = new Error('Some other error');
+
+        // Stub the createAccount method to throw an error
+        // on the first two calls and then resolve any subsequent calls
+        createAccountStub.reset();
+        createAccountStub
+          .onFirstCall().rejects(error)
+          .onSecondCall().rejects(error)
+          .resolves(accountInfo);
+
+        accountCreationState.subscribe(observer);
+        try {
+          await accountCreationState.onStart();
+          expect.fail('Expected an error to be thrown');
+        } catch (e) {
+          expect(e).to.equal(error);
+        }
+
+        // Assert that the task was not retried
+        const count = cliService.getCurrentArgv().accounts;
+        testSandbox.assert.called(observer.update);
+        testSandbox.assert.callCount(createAccountStub, count);
+        testSandbox.assert.callCount(privateKeySpy, count);
+        testSandbox.assert.notCalled(logAccountTitleStub);
+        testSandbox.assert.notCalled(logAccountStub);
+        testSandbox.assert.notCalled(logAccountDividerStub);
+        testSandbox.assert.notCalled(loggerService.warn);
       });
     });
   
@@ -407,15 +437,14 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const firstError = new Error('First attempt failed');
-        const secondError = new Error('Second attempt failed');
+        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
 
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
         createAliasAccountStub.reset();
         createAliasAccountStub
-          .onFirstCall().rejects(firstError)
-          .onSecondCall().rejects(secondError)
+          .onFirstCall().rejects(error)
+          .onSecondCall().rejects(error)
           .resolves(accountInfo);
 
         accountCreationState.subscribe(observer);
@@ -431,11 +460,47 @@ describe('AccountCreationState', () => {
 
         // Assert that the error was logged on each failure
         testSandbox.assert.callCount(loggerService.warn, 2);
-        for (let i = 0; i < loggerService.warn.getCalls().length; i++){
-          const call = loggerService.warn.getCalls()[i];
-          const error = i > 0 ? secondError : firstError;
+        for (const call of loggerService.warn.getCalls()){
           expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
         }
+      });
+
+      it('should not retry the creation of AliasECDSA accounts if there is an error which is not retryable', async () => {
+        cliService.getCurrentArgv.returns({
+          async: false,
+          blocklisting: false,
+          balance: 1000,
+          accounts: 6,
+          startup: false,
+        } as any);
+
+        const error = new Error('Some other error');
+
+        // Stub the createAccount method to throw an error
+        // on the first two calls and then resolve any subsequent calls
+        createAliasAccountStub.reset();
+        createAliasAccountStub
+          .onFirstCall().rejects(error)
+          .onSecondCall().rejects(error)
+          .resolves(accountInfo);
+
+        accountCreationState.subscribe(observer);
+        try {
+          await accountCreationState.onStart();
+          expect.fail('Expected an error to be thrown');
+        } catch (e) {
+          expect(e).to.equal(error);
+        }
+
+        // Assert that the task was not retried
+        const count = cliService.getCurrentArgv().accounts;
+        testSandbox.assert.called(observer.update);
+        testSandbox.assert.callCount(createAliasAccountStub, count);
+        testSandbox.assert.callCount(privateKeySpy, count);
+        testSandbox.assert.notCalled(logAliasAccountTitleStub);
+        testSandbox.assert.notCalled(logAliasAccountStub);
+        testSandbox.assert.notCalled(logAliasAccountDividerStub);
+        testSandbox.assert.notCalled(loggerService.warn);
       });
     });
   
@@ -520,15 +585,14 @@ describe('AccountCreationState', () => {
           startup: false,
         } as any);
 
-        const firstError = new Error('First attempt failed');
-        const secondError = new Error('Second attempt failed');
+        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
 
         // Stub the createAccount method to throw an error
         // on the first two calls and then resolve any subsequent calls
         createAccountStub.reset();
         createAccountStub
-          .onFirstCall().rejects(firstError)
-          .onSecondCall().rejects(secondError)
+          .onFirstCall().rejects(error)
+          .onSecondCall().rejects(error)
           .resolves(accountInfo);
 
         accountCreationState.subscribe(observer);
@@ -545,11 +609,47 @@ describe('AccountCreationState', () => {
 
         // Assert that the error was logged on each failure
         testSandbox.assert.callCount(loggerService.warn, 2);
-        for (let i = 0; i < loggerService.warn.getCalls().length; i++){
-          const call = loggerService.warn.getCalls()[i];
-          const error = i > 0 ? secondError : firstError;
+        for (const call of loggerService.warn.getCalls()){
           expect(call.args[0]).to.equal(`Error occurred during task execution: "${error.toString()}"`);
         }
+      });
+
+      it('should not retry the creation of ED25519 accounts if there is an error which is not retryable', async () => {
+        cliService.getCurrentArgv.returns({
+          async: false,
+          blocklisting: false,
+          balance: 1000,
+          accounts: 6,
+          startup: false,
+        } as any);
+
+        const error = new Error('Some other error');
+
+        // Stub the createAccount method to throw an error
+        // on the first two calls and then resolve any subsequent calls
+        createAccountStub.reset();
+        createAccountStub
+          .onFirstCall().rejects(error)
+          .onSecondCall().rejects(error)
+          .resolves(accountInfo);
+
+        accountCreationState.subscribe(observer);
+        try {
+          await accountCreationState.onStart();
+          expect.fail('Expected an error to be thrown');
+        } catch (e) {
+          expect(e).to.equal(error);
+        }
+
+        // Assert that the task was not retried
+        const count = cliService.getCurrentArgv().accounts;
+        testSandbox.assert.called(observer.update);
+        testSandbox.assert.callCount(createAccountStub, count);
+        testSandbox.assert.callCount(privateKeySpy, count);
+        testSandbox.assert.notCalled(logAccountTitleStub);
+        testSandbox.assert.notCalled(logAccountStub);
+        testSandbox.assert.notCalled(logAccountDividerStub);
+        testSandbox.assert.notCalled(loggerService.warn);
       });
     });
   })

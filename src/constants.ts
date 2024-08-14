@@ -135,6 +135,7 @@ export const ACCOUNT_CREATION_STARTING_SYNCHRONOUS_MESSAGE = `${LOADING} Startin
 export const ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_MESSAGE = `${LOADING} Starting Account Creation state in asynchronous mode...`;
 export const ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE = `${LOADING} Starting Account Creation state in asynchronous mode with 1 blocklisted accounts...`;
 export const ACCOUNT_CREATION_FINISHED = `${CHECK_SUCCESS} Accounts created succefully!`;
+export const FAILED_TO_FIND_A_HEALTHY_NODE = "failed to find a healthy working node";
 
 // Resource Creation State
 export const RESOURCE_CREATION_STATE_INIT_MESSAGE = `${CHECK_SUCCESS} Resource Creation State Initialized!`;

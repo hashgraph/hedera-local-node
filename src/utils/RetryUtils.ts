@@ -36,10 +36,12 @@ export class RetryUtils {
     {
       maxRetries = 3,
       backOff = 500,
+      shouldRetry = (_error: unknown) => true,
       doOnRetry = (_error: unknown) => {},
     }: {
       maxRetries?: number;
       backOff?: number;
+      shouldRetry?: (error: unknown) => boolean;
       doOnRetry?: (error: unknown) => void;
     } = {}
   ): Promise<T> {
@@ -49,7 +51,7 @@ export class RetryUtils {
         // eslint-disable-next-line no-await-in-loop
         return await task();
       } catch (error) {
-        if (retries === maxRetries - 1) {
+        if (!shouldRetry(error) || retries === maxRetries - 1) {
           throw error;
         }
         doOnRetry(error);

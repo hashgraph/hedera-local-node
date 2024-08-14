@@ -33,9 +33,15 @@ import { ClientService } from '../services/ClientService';
 import {
     privateKeysAliasECDSA,
     privateKeysECDSA,
-    privateKeysED25519
+    privateKeysED25519,
 } from '../configuration/accountConfiguration.json';
-import { ACCOUNT_CREATION_STATE_INIT_MESSAGE, CHECK_SUCCESS, EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH, LOADING } from '../constants';
+import {
+    ACCOUNT_CREATION_STATE_INIT_MESSAGE,
+    CHECK_SUCCESS,
+    EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH,
+    FAILED_TO_FIND_A_HEALTHY_NODE,
+    LOADING,
+} from '../constants';
 import local from '../configuration/local.json';
 import { AccountUtils } from '../utils/AccountUtils';
 import { RetryUtils } from '../utils/RetryUtils';
@@ -271,6 +277,9 @@ export class AccountCreationState implements IState {
                         };
                     }),
                 {
+                    shouldRetry: (error) => {
+                        return error?.toString().includes(FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
+                    },
                     doOnRetry: (error) => this.logger.warn(
                         `Error occurred during task execution: "${error?.toString()}"`,
                         this.stateName
@@ -327,6 +336,9 @@ export class AccountCreationState implements IState {
                         };
                     }),
                 {
+                    shouldRetry: (error) => {
+                        return error?.toString().includes(FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
+                    },
                     doOnRetry: (error) => this.logger.warn(
                         `Error occurred during task execution: "${error?.toString()}"`,
                         this.stateName
