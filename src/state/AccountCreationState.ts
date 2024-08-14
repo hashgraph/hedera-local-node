@@ -264,30 +264,24 @@ export class AccountCreationState implements IState {
             const { privateKey, balance } = account;
             const client = this.clientService.getClient();
 
-            const createAccountPromise: Promise<Account> = RetryUtils.retryTask(
-                async () => AccountUtils
-                    .createAccount(privateKey.publicKey, balance, client)
-                    .then((accountInfo) => {
-                        const address = accountInfo.accountId.toSolidityAddress();
-                        return {
-                            accountId: accountInfo.accountId.toString(),
-                            balance: accountInfo.balance,
-                            privateKey,
-                            address
-                        };
-                    }),
-                {
-                    shouldRetry: (error) => {
-                        return error?.toString().includes(FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
-                    },
-                    doOnRetry: (error) => this.logger.warn(
-                        `Error occurred during task execution: "${error?.toString()}"`,
-                        this.stateName
-                    )
-                }
+            const createAccountPromise: Promise<Account> = AccountUtils
+                .createAccount(privateKey.publicKey, balance, client)
+                .then((accountInfo) => {
+                    const address = accountInfo.accountId.toSolidityAddress();
+                    return {
+                        accountId: accountInfo.accountId.toString(),
+                        balance: accountInfo.balance,
+                        privateKey,
+                        address
+                    };
+                });
+
+            const retryable: Promise<Account> = RetryUtils.retryTask(
+              () => createAccountPromise,
+              { shouldRetry: this.shouldRetry, doOnRetry: this.doOnRetry }
             );
 
-            accountPromises.push(createAccountPromise);
+            accountPromises.push(retryable);
         });
 
         return Promise.all(accountPromises)
@@ -323,30 +317,24 @@ export class AccountCreationState implements IState {
             const client = this.clientService.getClient();
             const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
 
-            const createAccountPromise: Promise<Account> = RetryUtils.retryTask(
-                async () => AccountUtils
-                    .createAliasedAccount(aliasAccountId, balance, client)
-                    .then((accountInfo) => {
-                        const address = privateKey.publicKey.toEvmAddress();
-                        return {
-                            accountId: accountInfo.accountId.toString(),
-                            balance: accountInfo.balance,
-                            privateKey,
-                            address
-                        };
-                    }),
-                {
-                    shouldRetry: (error) => {
-                        return error?.toString().includes(FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
-                    },
-                    doOnRetry: (error) => this.logger.warn(
-                        `Error occurred during task execution: "${error?.toString()}"`,
-                        this.stateName
-                    )
-                }
+            const createAccountPromise: Promise<Account> = AccountUtils
+                .createAliasedAccount(aliasAccountId, balance, client)
+                .then((accountInfo) => {
+                    const address = privateKey.publicKey.toEvmAddress();
+                    return {
+                        accountId: accountInfo.accountId.toString(),
+                        balance: accountInfo.balance,
+                        privateKey,
+                        address
+                    };
+                });
+
+            const retryable: Promise<Account> = RetryUtils.retryTask(
+              () => createAccountPromise,
+              { shouldRetry: this.shouldRetry, doOnRetry: this.doOnRetry }
             );
 
-            accountPromises.push(createAccountPromise);
+            accountPromises.push(retryable);
         });
 
         return Promise.all(accountPromises)
@@ -507,5 +495,13 @@ export class AccountCreationState implements IState {
             '|--------------------------------------------------------------------------------------------------------------------------------------|',
             this.stateName
         );
+    }
+
+    private shouldRetry(error: unknown): boolean {
+        return error?.toString().includes(FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
+    }
+
+    private doOnRetry(error: unknown): void {
+        this.logger.warn(`Error occurred during task execution: "${error?.toString()}"`, this.stateName);
     }
 }
