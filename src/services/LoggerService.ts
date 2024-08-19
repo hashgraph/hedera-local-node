@@ -22,7 +22,7 @@ import { log, screen, Widgets } from 'blessed';
 import terminal from 'blessed-terminal';
 import {
     CHECK_FAIL,
-    CHEKC_WARN,
+    CHECK_WARN,
     COLOR_DIM,
     COLOR_RESET,
     CONSENSUS_NODE_LABEL,
@@ -33,7 +33,7 @@ import {
     MIRROR_NODE_LABEL,
     RELAY_LABEL,
     TRACE_COLOR,
-    WARNING_COLOR
+    WARNING_COLOR,
 } from '../constants';
 import { AccountCreationState } from '../state/AccountCreationState';
 import { VerboseLevel } from '../types/VerboseLevel';
@@ -233,7 +233,7 @@ export class LoggerService implements IService{
         if (this.verboseLevel < VerboseLevel.WARNING) {
             return;
         }
-        const msgToLog = LoggerService.messageCompute(`${CHEKC_WARN} ${msg}`, module, VerboseLevel.WARNING);
+        const msgToLog = LoggerService.messageCompute(`${CHECK_WARN} ${msg}`, module, VerboseLevel.WARNING);
         this.writeToLog(msgToLog, module);
     }
 
