@@ -29,7 +29,7 @@ import { SinonSandbox, SinonSpy, SinonStub, SinonStubbedInstance } from 'sinon';
 import {
   ACCOUNT_CREATION_STARTING_ASYNCHRONOUS_BLOCKLIST_MESSAGE,
   ACCOUNT_CREATION_STATE_INIT_MESSAGE,
-  FAILED_TO_FIND_A_HEALTHY_NODE,
+  SDK_ERRORS,
 } from '../../../src/constants';
 import { IOBserver } from '../../../src/controller/IObserver';
 import { AccountUtils } from '../../../src/utils/AccountUtils';
@@ -249,7 +249,7 @@ describe('AccountCreationState', () => {
       });
 
       it('should retry the creation of ECDSA accounts if there is an error', async () => {
-        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
+        const error = new Error(SDK_ERRORS.FAILED_TO_FIND_A_HEALTHY_NODE);
         const errorCount = 2;
         rejectWithError(createAccountStub, error, errorCount);
 
@@ -324,7 +324,7 @@ describe('AccountCreationState', () => {
 
 
       it('should retry the creation of AliasECDSA accounts if there is an error', async () => {
-        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
+        const error = new Error(SDK_ERRORS.FAILED_TO_FIND_A_HEALTHY_NODE);
         const errorCount = 2;
         rejectWithError(createAliasAccountStub, error, errorCount);
 
@@ -395,7 +395,7 @@ describe('AccountCreationState', () => {
       });
 
       it('should retry the creation of ED25519 accounts if there is an error', async () => {
-        const error = new Error(FAILED_TO_FIND_A_HEALTHY_NODE);
+        const error = new Error(SDK_ERRORS.FAILED_TO_FIND_A_HEALTHY_NODE);
         const errorCount = 2;
         rejectWithError(createAccountStub, error, errorCount);
 

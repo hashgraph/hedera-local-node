@@ -39,8 +39,8 @@ import {
     ACCOUNT_CREATION_STATE_INIT_MESSAGE,
     CHECK_SUCCESS,
     EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH,
-    FAILED_TO_FIND_A_HEALTHY_NODE,
     LOADING,
+    SDK_ERRORS,
 } from '../constants';
 import local from '../configuration/local.json';
 import { AccountUtils } from '../utils/AccountUtils';
@@ -495,7 +495,7 @@ export class AccountCreationState implements IState {
     }
 
     private shouldRetry = (error: unknown): boolean => {
-        return error?.toString().includes(FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
+        return error?.toString().includes(SDK_ERRORS.FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
     }
 
     private doOnRetry = (error: unknown): void => {
