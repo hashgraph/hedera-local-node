@@ -33,11 +33,18 @@ import { ClientService } from '../services/ClientService';
 import {
     privateKeysAliasECDSA,
     privateKeysECDSA,
-    privateKeysED25519
+    privateKeysED25519,
 } from '../configuration/accountConfiguration.json';
-import { ACCOUNT_CREATION_STATE_INIT_MESSAGE, CHECK_SUCCESS, EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH, LOADING } from '../constants';
+import {
+    ACCOUNT_CREATION_STATE_INIT_MESSAGE,
+    CHECK_SUCCESS,
+    EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH,
+    LOADING,
+    SDK_ERRORS,
+} from '../constants';
 import local from '../configuration/local.json';
 import { AccountUtils } from '../utils/AccountUtils';
+import { RetryUtils } from '../utils/RetryUtils';
 
 /**
  * Represents the state of account creation.
@@ -256,10 +263,14 @@ export class AccountCreationState implements IState {
         accountData.forEach((account) => {
             const { privateKey, balance } = account;
             const client = this.clientService.getClient();
+            const publicKey = privateKey.publicKey;
 
-            const createAccountPromise: Promise<Account> = AccountUtils
-                .createAccount(privateKey.publicKey, balance, client)
-                .then((accountInfo) => {
+            const createAccountPromise: Promise<Account> = RetryUtils.retryTask(
+                () => AccountUtils.createAccount(publicKey, balance, client),
+                {
+                    shouldRetry: error => this.shouldRetry(error),
+                    doOnRetry: error => this.doOnRetry(error)
+                }).then((accountInfo) => {
                     const address = accountInfo.accountId.toSolidityAddress();
                     return {
                         accountId: accountInfo.accountId.toString(),
@@ -305,9 +316,12 @@ export class AccountCreationState implements IState {
             const client = this.clientService.getClient();
             const aliasAccountId = privateKey.publicKey.toAccountId(0, 0);
 
-            const createAccountPromise: Promise<Account> = AccountUtils
-                .createAliasedAccount(aliasAccountId, balance, client)
-                .then((accountInfo) => {
+            const createAccountPromise: Promise<Account> = RetryUtils.retryTask(
+                () => AccountUtils.createAliasedAccount(aliasAccountId, balance, client),
+                {
+                    shouldRetry: error => this.shouldRetry(error),
+                    doOnRetry: error => this.doOnRetry(error)
+                }).then((accountInfo) => {
                     const address = privateKey.publicKey.toEvmAddress();
                     return {
                         accountId: accountInfo.accountId.toString(),
@@ -478,5 +492,13 @@ export class AccountCreationState implements IState {
             '|--------------------------------------------------------------------------------------------------------------------------------------|',
             this.stateName
         );
+    }
+
+    private shouldRetry = (error: unknown): boolean => {
+        return error?.toString().includes(SDK_ERRORS.FAILED_TO_FIND_A_HEALTHY_NODE) ?? false;
+    }
+
+    private doOnRetry = (error: unknown): void => {
+        this.logger.warn(`Error occurred during task execution: "${error?.toString()}"`, this.stateName);
     }
 }

@@ -11,29 +11,33 @@
 # NOTE: Must be placed last to ensure enforcement over all other rules
 
 # Protection Rules for Github Configuration Files and Actions Workflows
-/.github/                                       @hashgraph/release-engineering @hashgraph/release-engineering-managers
+/.github/                                               @hashgraph/devops-ci @hashgraph/release-engineering-managers
+/.github/workflows/                                     @hashgraph/devops-ci @hashgraph/devops-ci-committers
+
+# Legacy Maven project files
+**/pom.xml                                              @hashgraph/devops-ci
 
 # Cmake project files and inline plugins
-**/.clang*                                      @hashgraph/release-engineering @hashgraph/release-engineering-managers @hashgraph/hedera-sdk
-**/.clang-format                                @hashgraph/release-engineering @hashgraph/release-engineering-managers @hashgraph/hedera-sdk
-**/.clang-tidy                                  @hashgraph/release-engineering @hashgraph/release-engineering-managers @hashgraph/hedera-sdk
-**/CMakeLists.txt                               @hashgraph/release-engineering @hashgraph/release-engineering-managers @hashgraph/hedera-sdk
-**/CMakePresets.json                            @hashgraph/release-engineering @hashgraph/release-engineering-managers @hashgraph/hedera-sdk
+**/.clang*                                              @hashgraph/devops-ci @hashgraph/devops-ci-committers @hashgraph/hedera-sdk
+**/.clang-format                                        @hashgraph/devops-ci @hashgraph/devops-ci-committers @hashgraph/hedera-sdk
+**/.clang-tidy                                          @hashgraph/devops-ci @hashgraph/devops-ci-committers @hashgraph/hedera-sdk
+**/CMakeLists.txt                                       @hashgraph/devops-ci @hashgraph/devops-ci-committers @hashgraph/hedera-sdk
+**/CMakePresets.json                                    @hashgraph/devops-ci @hashgraph/devops-ci-committers @hashgraph/hedera-sdk
 
 # Codacy Tool Configurations
-/config/                                        @hashgraph/release-engineering @hashgraph/release-engineering-managers
-.remarkrc                                       @hashgraph/release-engineering @hashgraph/release-engineering-managers
+/config/                                                @hashgraph/devops-ci @hashgraph/release-engineering-managers
+.remarkrc                                               @hashgraph/devops-ci @hashgraph/release-engineering-managers
 
 # Self-protection for root CODEOWNERS files (this file should not exist and should definitely require approval)
-/CODEOWNERS                                      @hashgraph/release-engineering @hashgraph/release-engineering-managers
+/CODEOWNERS                                             @hashgraph/release-engineering-managers
 
 # Protect the repository root files
-/README.md                                      @hashgraph/release-engineering @hashgraph/release-engineering-managers
-**/LICENSE                                      @hashgraph/release-engineering @hashgraph/release-engineering-managers
+/README.md                                              @hashgraph/devops-ci @hashgraph/release-engineering-managers
+**/LICENSE                                              @hashgraph/release-engineering-managers
 
 # CodeCov configuration
-**/codecov.yml                                  @hashgraph/release-engineering @hashgraph/release-engineering-managers
+**/codecov.yml                                          @hashgraph/devops-ci @hashgraph/release-engineering-managers
 
 # Git Ignore definitions
-**/.gitignore                                   @hashgraph/release-engineering @hashgraph/release-engineering-managers
-**/.gitignore.*                                 @hashgraph/release-engineering @hashgraph/release-engineering-managers
+**/.gitignore                                           @hashgraph/devops-ci @hashgraph/release-engineering-managers
+**/.gitignore.*                                         @hashgraph/devops-ci @hashgraph/release-engineering-managers
