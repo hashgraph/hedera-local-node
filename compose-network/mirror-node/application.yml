@@ -1,5 +1,26 @@
 hedera:
   mirror:
+    restJava:
+      db:
+        host: 127.0.0.1
+        name: mirror_node
+        password: mirror_rest_java_pass
+        port: 5432
+        sslMode: DISABLE
+        statementTimeout: 10000
+        username: mirror_rest_java
+      response:
+        headers:
+          defaults:
+            # Headers set by default unless overridden in specific request mapping paths defined below.
+            "Access-Control-Allow-Origin": "*"
+            "Cache-Control": "public, max-age=1"
+          path:
+            # Override inherited defaults and define additional headers for individual controller request mappings.
+            # "[]" around the path preserves special characters. Multiple header name/value pairs may be defined per path.
+            "[/api/v1/topics/{id}]":
+              "Cache-Control": "public, max-age=5"
+
     grpc:
       listener:
         type: SHARED_POLL

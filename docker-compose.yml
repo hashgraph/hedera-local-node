@@ -279,6 +279,29 @@ services:
     restart: unless-stopped
     tty: false
 
+  rest-java:
+    image: "${MIRROR_IMAGE_PREFIX}hedera-mirror-rest-java:${MIRROR_REST_IMAGE_TAG:-${MIRROR_IMAGE_TAG}}"
+    container_name: mirror-node-rest-java
+    mem_swappiness: 0
+    mem_limit: "${MIRROR_REST_MEM_LIMIT}"
+    memswap_limit: "${MIRROR_REST_MEM_LIMIT}"
+    depends_on:
+      importer:
+        condition: service_started
+      db:
+        condition: service_started
+    environment:
+      HEDERA_MIRROR_RESTJAVA_DB_HOST: db
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/usr/etc/hedera-mirror-rest-java/
+    networks:
+      - mirror-node
+    ports:
+      - 8084:8084
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./application.yml:/usr/etc/hedera-mirror-rest-java/application.yml
+
   explorer:
     container_name: hedera-explorer
     image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-mirror-node-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
