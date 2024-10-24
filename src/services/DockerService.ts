@@ -206,8 +206,7 @@ export class DockerService implements IService{
     public async checkDockerResources(isMultiNodeMode: boolean) {
       this.logger.info(`${LOADING} Checking docker resources...`, this.serviceName);
       const resultDockerInfoCommand = await shell.exec(
-        "docker system info --format='{{json .}}'",
-        { silent: true }
+        "docker system info --format='{{json .}}'"
       );
       
       const systemInfoJson = JSON.parse(resultDockerInfoCommand.stdout);
