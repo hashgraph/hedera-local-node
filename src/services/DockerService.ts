@@ -221,7 +221,7 @@ export class DockerService implements IService{
       );
       
       // const systemInfoJson = JSON.parse(resultDockerInfoCommand.stdout);
-      const dockerMemory = Math.round(memTotal / Math.pow(1024, 3));
+      const dockerMemory = Math.round(parseInt(memTotal) / Math.pow(1024, 3));
       const dockerCPUs = parseInt(ncpu);
 
       return this.checkMemoryResources(dockerMemory, isMultiNodeMode) &&
