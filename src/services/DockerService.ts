@@ -96,6 +96,7 @@ export class DockerService implements IService{
      * @returns {string} - The null output path.
      */
     public getNullOutput(): "null" | "/dev/null" {
+        console.log(`process.platform: ${process.platform}`)
         if (IS_WINDOWS) return 'null';
         return '/dev/null';
     }
