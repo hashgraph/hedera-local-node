@@ -148,7 +148,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   unit-tests-windows:
-    name: Unit Tests
+    name: Unit Tests on Windows 2022
     runs-on: windows-2022
 
     strategy:
