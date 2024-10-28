@@ -85,7 +85,7 @@ export class ConnectionService implements IService{
         const { host } = this.cliService.getCurrentArgv();
         let isReady = false;
         // this means that we wait around 100 seconds, normal consensus node startup takes around 60 seconds
-        let retries = 1000;
+        let retries = 100;
         while (!isReady) {
           net
             .createConnection(port, host)
