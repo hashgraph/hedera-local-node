@@ -11,16 +11,25 @@ jobs:
       pull-requests: write
     runs-on: local-node-linux-medium
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
       - name: Checkout Code
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
       - name: Configure Node JS
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 20
+
       - name: Clean Install
         run: npm ci
+
       - name: Build Source
         run: npm run build
+
       - name: Run semantic-release
         run: npx semantic-release
         env:
