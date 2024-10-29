@@ -78,7 +78,7 @@ jobs:
 
   smoke-tests-windows:
     name: Smoke Tests on Windows
-    runs-on: windows-2022
+    runs-on: windows-2019
 
     strategy:
       fail-fast: false
@@ -101,8 +101,8 @@ jobs:
           cd test/smoke
           npm ci
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       - name: Start the local node
         run: npm run start -- -d --verbose=trace
