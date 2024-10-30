@@ -205,14 +205,19 @@ export class DockerService implements IService{
 
     public async checkDockerResources(isMultiNodeMode: boolean) {
       this.logger.info(`${LOADING} Checking docker resources...`, this.serviceName);
-      const resultDockerInfoCommand = await shell.exec(
-        "docker system info --format='{{json .}}'",
-        { silent: true }
+
+      const ncpu = await shell.exec(
+          "docker info --format='{{.NCPU}}'",
+          { silent: true }
+      );
+
+      const memTotal = await shell.exec(
+          "docker info --format='{{.MemTotal}}'",
+          { silent: true }
       );
       
-      const systemInfoJson = JSON.parse(resultDockerInfoCommand.stdout);
-      const dockerMemory = Math.round(systemInfoJson['MemTotal'] / Math.pow(1024, 3));
-      const dockerCPUs = systemInfoJson['NCPU'];
+      const dockerMemory = Math.round(parseInt(memTotal) / Math.pow(1024, 3));
+      const dockerCPUs = parseInt(ncpu);
 
       return this.checkMemoryResources(dockerMemory, isMultiNodeMode) &&
       this.checkCPUResources(dockerCPUs);

@@ -22,14 +22,15 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { StopState } from '../../../src/state/StopState';
 import {
-  DOCKER_CLEANING_VALUMES_MESSAGE,
-  DOCKER_STOPPING_CONTAINERS_MESSAGE,
-  NETWORK_PREFIX,
-  STOP_STATE_INIT_MESSAGE,
-  STOP_STATE_ON_START_MESSAGE,
-  STOP_STATE_STOPPED_MESSAGE,
-  STOP_STATE_STOPPING_MESSAGE
-} from '../../../src/constants';
+    DOCKER_CLEANING_VALUMES_MESSAGE,
+    DOCKER_STOPPING_CONTAINERS_MESSAGE,
+    IS_WINDOWS,
+    NETWORK_PREFIX,
+    STOP_STATE_INIT_MESSAGE,
+    STOP_STATE_ON_START_MESSAGE,
+    STOP_STATE_STOPPED_MESSAGE,
+    STOP_STATE_STOPPING_MESSAGE,
+} from "../../../src/constants";
 import path from 'path';
 import { getTestBed } from '../testBed';
 import { LoggerService } from '../../../src/services/LoggerService';
@@ -102,10 +103,10 @@ describe('StopState tests', () => {
         testSandbox.assert.calledThrice(shellCDStub);
 
         // shell commands: 'exec'
-        testSandbox.assert.calledWith(shellExecStub, 'docker compose kill --remove-orphans 2>/dev/null');
-        testSandbox.assert.calledWith(shellExecStub, 'docker compose down -v --remove-orphans 2>/dev/null');
-        testSandbox.assert.calledWith(shellExecStub, 'rm -rf network-logs/* >/dev/null 2>&1');
-        testSandbox.assert.calledWith(shellExecStub, 'rm -rf "testDir/network-logs" >/dev/null 2>&1');
+        testSandbox.assert.calledWith(shellExecStub, `docker compose kill --remove-orphans 2>${IS_WINDOWS ? 'null' : '/dev/null'}`);
+        testSandbox.assert.calledWith(shellExecStub, `docker compose down -v --remove-orphans 2>${IS_WINDOWS ? 'null' : '/dev/null'}`);
+        testSandbox.assert.calledWith(shellExecStub, `rm -rf network-logs/* >${IS_WINDOWS ? 'null' : '/dev/null'} 2>&1`);
+        testSandbox.assert.calledWith(shellExecStub, `rm -rf "testDir/network-logs" >${IS_WINDOWS ? 'null' : '/dev/null'} 2>&1`);
         testSandbox.assert.calledWith(shellExecStub, `docker network ls --filter name=${NETWORK_PREFIX} --format "{{.ID}}"`);
 
         expect(processTest.processCWDStub.calledOnce).to.be.true;
