@@ -88,7 +88,7 @@ npm install && npm install -g
 `npm run stop` to stop the network
 `npm run generate-accounts` to generate new account for already started network
 
-> **_NOTE:_**  If you want to use any of the CLI options listed below, you'd need to pass `--` after `npm run start` (for example) and then specify the wanted option. For example, if you want to start in detached mode, you can use `npm run start -- -d`
+> **_NOTE:_**  If you want to use any of the CLI options listed below, you'd need to pass `--` after `npm run start` (for example) and then specify the wanted option.
 
 > **_WARNING:_** While stopping the networks, we will first list all Docker networks with the `hedera-` prefix in their names. This operation may affect not only the networks initiated by the `npm run start` command from this repository but also any other networks you have created with this prefix. Network termination can be triggered both by a direct `npm run stop` call and by the `npm run start` script if the initial startup process fails and failover recovery is activated. One of the recovery steps includes attempting to close all previously started networks with the `hedera-` prefix.
 
@@ -105,7 +105,6 @@ Local Hedera Package - Runs consensus and mirror nodes on localhost:
 Available commands:
     start - Starts the local hedera network.
         options:
-            --d or --detached for starting in detached mode.
             --verbose set the verbose level. Defaults to 'info' choices are "info" & "trace"
             --h or --host to override the default host.
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
@@ -165,7 +164,7 @@ $ hedera start
 [Hedera-Local-Node] INFO (InitState) Setting configuration for local network with latest images on host 127.0.0.1 with dev mode turned off using turbo mode in single node configuration...
 [Hedera-Local-Node] INFO (InitState) Hedera JSON-RPC Relay rate limits were disabled.
 [Hedera-Local-Node] INFO (InitState) Needed environment variables were set for this configuration.
-[Hedera-Local-Node] INFO (InitState) Needed bootsrap properties were set for this configuration.
+[Hedera-Local-Node] INFO (InitState) Needed bootstrap properties were set for this configuration.
 [Hedera-Local-Node] INFO (InitState) Needed mirror node properties were set for this configuration.
 [Hedera-Local-Node] INFO (StartState) Starting Hedera Local Node...
 [Hedera-Local-Node] INFO (StartState) Detecting network...
@@ -231,7 +230,6 @@ $ hedera start
 - --accounts - Default is 10 per type. Specify the number of accounts to generate at startup. The first 10 are with predefined
   private keys, and the next ones are with random generated private keys.
 
-- --d / --detached - Start the local node in detached mode.
 - --h / --host - Override the default host.
 
 ```bash
@@ -241,7 +239,7 @@ $ hedera start --accounts=2
 [Hedera-Local-Node] INFO (InitState) Setting configuration for local network with latest images on host 127.0.0.1 with dev mode turned off using turbo mode in single node configuration...
 [Hedera-Local-Node] INFO (InitState) Hedera JSON-RPC Relay rate limits were disabled.
 [Hedera-Local-Node] INFO (InitState) Needed environment variables were set for this configuration.
-[Hedera-Local-Node] INFO (InitState) Needed bootsrap properties were set for this configuration.
+[Hedera-Local-Node] INFO (InitState) Needed bootstrap properties were set for this configuration.
 [Hedera-Local-Node] INFO (InitState) Needed mirror node properties were set for this configuration.
 [Hedera-Local-Node] INFO (StartState) Starting Hedera Local Node...
 [Hedera-Local-Node] INFO (StartState) Detecting network...
@@ -307,7 +305,7 @@ $ hedera restart
 [Hedera-Local-Node] INFO (InitState) Setting configuration for local network with latest images on host 127.0.0.1 with dev mode turned off using turbo mode in single node configuration...
 [Hedera-Local-Node] INFO (InitState) Hedera JSON-RPC Relay rate limits were disabled.
 [Hedera-Local-Node] INFO (InitState) Needed environment variables were set for this configuration.
-[Hedera-Local-Node] INFO (InitState) Needed bootsrap properties were set for this configuration.
+[Hedera-Local-Node] INFO (InitState) Needed bootstrap properties were set for this configuration.
 [Hedera-Local-Node] INFO (InitState) Needed mirror node properties were set for this configuration.
 [Hedera-Local-Node] INFO (StartState) Starting Hedera Local Node...
 [Hedera-Local-Node] INFO (StartState) Detecting network...
@@ -372,7 +370,6 @@ $ hedera restart
 - --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
   private keys, and the next ones are with random generated private keys.
 
-- --d / --detached - Start the local node in detached mode.
 - --h / --host - Override the default host.
 
 ```bash
@@ -385,7 +382,7 @@ $ hedera restart --accounts=2
 [Hedera-Local-Node] INFO (InitState) Setting configuration for local network with latest images on host 127.0.0.1 with dev mode turned off using turbo mode in single node configuration...
 [Hedera-Local-Node] INFO (InitState) Hedera JSON-RPC Relay rate limits were disabled.
 [Hedera-Local-Node] INFO (InitState) Needed environment variables were set for this configuration.
-[Hedera-Local-Node] INFO (InitState) Needed bootsrap properties were set for this configuration.
+[Hedera-Local-Node] INFO (InitState) Needed bootstrap properties were set for this configuration.
 [Hedera-Local-Node] INFO (InitState) Needed mirror node properties were set for this configuration.
 [Hedera-Local-Node] INFO (StartState) Starting Hedera Local Node...
 [Hedera-Local-Node] INFO (StartState) Detecting network...

@@ -26,7 +26,6 @@
  * @property {number} accounts - The number of accounts to be created.
  * @property {boolean} async - Whether to run commands asynchronously.
  * @property {number} balance - The balance for the accounts.
- * @property {boolean} detached - Whether to run in detached mode.
  * @property {string} host - The host address.
  * @property {boolean} limits - Whether to impose limits.
  * @property {boolean} devMode - Whether to run in development mode.
@@ -50,7 +49,6 @@ export interface CLIOptions {
     accounts: number,
     async: boolean,
     balance: number,
-    detached: boolean,
     host: string,
     limits: boolean,
     devMode: boolean,

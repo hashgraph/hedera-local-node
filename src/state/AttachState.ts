@@ -18,15 +18,12 @@
  *
  */
 
-import { CONSENSUS_NODE_LABEL, MIRROR_NODE_LABEL, RELAY_LABEL } from '../constants';
 import { IOBserver } from '../controller/IObserver';
-import { CLIService } from '../services/CLIService';
 import { DockerService } from '../services/DockerService';
 import { LoggerService } from '../services/LoggerService';
 import { ServiceLocator } from '../services/ServiceLocator';
 import { EventType } from '../types/EventType';
 import { IState } from './IState';
-import stream from 'stream';
 
 export class AttachState implements IState{
     /**
@@ -48,11 +45,6 @@ export class AttachState implements IState{
      * The name of the state.
      */
     private stateName: string;
-
-    /**
-     * Timeout for updateStatusBoard
-     */
-    private timeOut: number = 10000;
     
     /**
      * Represents the AttachState class.
@@ -75,75 +67,10 @@ export class AttachState implements IState{
 
     /**
      * Starts the state.
-     * 
-     * This method checks if the state is detached, and if not, it attaches the logs of the consensus node, mirror node, and relay.
-     * It also continuously updates the status board every 10 seconds.
-     * 
      * @public
      * @returns {Promise<void>}
      */
     public async onStart(): Promise<void> {
-        const detached = ServiceLocator.Current.get<CLIService>(CLIService.name).getCurrentArgv().detached;
-        if (detached) {
-            this.observer!.update(EventType.Finish);
-        }
-
-        await this.attachContainerLogs(CONSENSUS_NODE_LABEL);
-        await this.attachContainerLogs(MIRROR_NODE_LABEL);
-        await this.attachContainerLogs(RELAY_LABEL);
-
-        await this.continuouslyUpdateStatusBoard();
-    }
-
-    /**
-     * Attaches the logs of a container.
-     * 
-     * This method gets the container with the specified label, creates a log stream, and attaches the container's logs to the log stream.
-     * It filters out lines that include "Transaction ID: 0.0.2-" and updates the TUI with the log lines.
-     * 
-     * @private
-     * @param {string} containerLabel - The label of the container.
-     * @returns {Promise<void>} A Promise that resolves when the logs have been attached.
-     */
-    private async attachContainerLogs(containerLabel: string): Promise<void> {
-        const container = await this.dockerService.getContainer(containerLabel);
-        const logger = this.logger;
-        let logStream = new stream.PassThrough();
-        logStream.on("data", function (chunk) {
-          let line = chunk.toString("utf8");
-          if (!line.includes(" Transaction ID: 0.0.2-")) {
-            logger.attachTUI(line, containerLabel);
-          }
-        });
-      
-        container.logs(
-          {
-            follow: true,
-            stdout: true,
-            stderr: true,
-            since: Date.now() / 1000,
-          },
-          function (err: any, stream: any) {
-            if (err) {
-              return console.error(err.message);
-            }
-            container.modem.demuxStream(stream, logStream, logStream);
-            stream.on("end", function () {
-              logStream.end("!stop!");
-            });
-          }
-        );
-    }
-
-    private async continuouslyUpdateStatusBoard(): Promise<void> {
-      let i = 0;
-      while (i++ < this.loopIterations()) {
-        await this.logger.updateStatusBoard();
-        await new Promise((resolve) => setTimeout(resolve, this.timeOut));
-      }
-    }
-
-    private loopIterations(): number {
-      return Number.MAX_VALUE;
+        this.observer!.update(EventType.Finish);
     }
 }
