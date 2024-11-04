@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import sinon, { SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
+import sinon, { SinonSandbox, SinonStubbedInstance } from 'sinon';
 import { AttachState } from '../../../src/state/AttachState';
 import { IOBserver } from '../../../src/controller/IObserver';
 import { CLIService } from '../../../src/services/CLIService';
@@ -10,25 +10,19 @@ import { getTestBed } from '../testBed';
 
 describe('AttachState', () => {
   let attachState: AttachState,
-      dockerService: SinonStubbedInstance<DockerService>,
       cliService: SinonStubbedInstance<CLIService>,
-      testSandbox: SinonSandbox,
-      loggerService: SinonStubbedInstance<LoggerService>;
+      testSandbox: SinonSandbox;
 
   before(() => {
     const {
         sandbox,
-        dockerServiceStub,
-        cliServiceStub,
-        loggerServiceStub
+        cliServiceStub
     } = getTestBed({
         workDir: 'testDir',
     });
 
-    dockerService = dockerServiceStub
     cliService = cliServiceStub
     testSandbox = sandbox
-    loggerService = loggerServiceStub
 
     // Create an instance of AttachState
     attachState = new AttachState();
