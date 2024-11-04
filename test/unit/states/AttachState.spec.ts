@@ -3,8 +3,6 @@ import sinon, { SinonSandbox, SinonStubbedInstance } from 'sinon';
 import { AttachState } from '../../../src/state/AttachState';
 import { IOBserver } from '../../../src/controller/IObserver';
 import { CLIService } from '../../../src/services/CLIService';
-import { DockerService } from '../../../src/services/DockerService';
-import { LoggerService } from '../../../src/services/LoggerService';
 import { EventType } from '../../../src/types/EventType';
 import { getTestBed } from '../testBed';
 
