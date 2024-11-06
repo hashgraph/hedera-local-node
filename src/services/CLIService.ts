@@ -75,7 +75,6 @@ export class CLIService implements IService{
     public static loadStartupOptions(yargs: Argv<{}>): void {
         CLIService.loadCommonOptions(yargs)
         CLIService.loadAccountOptions(yargs, true);
-        CLIService.detachedOption(yargs);
         CLIService.hostOption(yargs);
         CLIService.rateLimitOption(yargs);
         CLIService.devModeOption(yargs);
@@ -140,7 +139,6 @@ export class CLIService implements IService{
         const accounts = argv.accounts as number;
         const async = argv.async as boolean;
         const balance = argv.balance as number;
-        const detached = argv.detached as boolean;
         const host = argv.host as string;
         const limits = argv.limits as boolean;
         const devMode = argv.dev as boolean;
@@ -163,7 +161,6 @@ export class CLIService implements IService{
             accounts,
             async,
             balance,
-            detached,
             host,
             limits,
             devMode,
@@ -196,7 +193,6 @@ export class CLIService implements IService{
         const state = argv._[0] as string
         this.currentArgv = {
             ...argv,
-            detached: CLIService.isStartup(state) ? argv.detached : true,
             startup: CLIService.isStartup(state)
         };
     }
@@ -237,26 +233,6 @@ export class CLIService implements IService{
         yargs.positional('accounts', {
             describe: 'Generated accounts of each type.',
             default: 10
-        });
-    }
-
-    /**
-     * Adds the 'detached' option to the command line arguments.
-     * This option is a boolean that specifies whether to run the local node in detached mode.
-     * It is not required and defaults to false.
-     * The option can also be set using the alias 'd'.
-     * 
-     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
-     * @private
-     * @static
-     */
-    private static detachedOption(yargs: Argv<{}>): void {
-        yargs.option('detached', {
-            alias: 'd',
-            type: 'boolean',
-            describe: 'Run the local node in detached mode',
-            demandOption: false,
-            default: false
         });
     }
 

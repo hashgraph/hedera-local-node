@@ -117,8 +117,6 @@ describe('StartState tests', () => {
 
         testSandbox.assert.calledOnce(processTestBed.processCWDStub);
         testSandbox.assert.calledWith(observerSpy, EventType.Finish);
-
-        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and send DockerError event (when dockerComposeUp status code eq 1)', async () => {
@@ -130,8 +128,6 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.callCount, 2);
         testSandbox.assert.match(observerSpy.args[0], EventType.DockerError);
         testSandbox.assert.match(observerSpy.args[1], EventType.Finish);
-
-        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and handle connectionService error (LocalNodeError)', async () => {
@@ -144,8 +140,6 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.callCount, 1);
         testSandbox.assert.match(observerSpy.args[0], EventType.UnknownError);
         testSandbox.assert.calledWith(loggerService.error, 'message', StartState.name);
-
-        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and handle connectionService error (generic error)', async () => {
@@ -158,7 +152,5 @@ describe('StartState tests', () => {
         testSandbox.assert.match(observerSpy.callCount, 1);
         testSandbox.assert.match(observerSpy.args[0], EventType.UnknownError);
         testSandbox.assert.notCalled(loggerService.error);
-
-        testSandbox.assert.calledOnce(loggerService.initializeTerminalUI);
     })
 });

@@ -94,7 +94,6 @@ export class StartState implements IState{
      */
     public async onStart(): Promise<void> {
         this.logger.info(START_STATE_STARTING_MESSAGE, this.stateName);
-        this.logger.initializeTerminalUI();
 
         const rootPath = process.cwd();
 
@@ -120,7 +119,6 @@ export class StartState implements IState{
             return;
         }
 
-        await this.logger.updateStatusBoard();
         this.logger.info(START_STATE_STARTED_MESSAGE, this.stateName);
         this.observer?.update(EventType.Finish);
     }

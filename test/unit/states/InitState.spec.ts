@@ -164,8 +164,6 @@ describe('InitState tests', () => {
         testSandbox.assert.calledOnce(configureEnvVariablesStub);
         testSandbox.assert.calledOnce(configureNodePropertiesStub);
         testSandbox.assert.calledOnce(configureMirrorNodePropertiesStub);
-
-        testSandbox.assert.notCalled(loggerService.initializeTerminalUI);
     })
 
     it('should execute onStart and finish with UnresolvableError on docker checks (Compose Version, Docker Running, Resources)', async () => {
@@ -183,7 +181,6 @@ describe('InitState tests', () => {
         testSandbox.assert.calledWith(observerSpy, EventType.UnresolvableError);
 
         testSandbox.assert.notCalled(dockerService.isPortInUse);
-        testSandbox.assert.notCalled(loggerService.initializeTerminalUI);
     })
 
     describe('private functions', () => {
