@@ -22,13 +22,12 @@ import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
 import fs from 'fs';
-import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, 
-         MIN_CPUS, MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE,
-         RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE, 
-         CHECK_SUCCESS,
-         CHECK_FAIL,
-         LOADING,
-        SHARED_PATHS_ERROR } from '../constants';
+import {
+    IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, MIN_CPUS,
+    MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE, RECOMMENDED_CPUS,
+    RECOMMENDED_MEMORY_SINGLE_MODE, CHECK_SUCCESS, CHECK_FAIL, LOADING,
+    SHARED_PATHS_ERROR
+} from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
