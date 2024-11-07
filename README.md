@@ -47,7 +47,7 @@ The Hedera Local Node project allows developers to set up their own local networ
 - Ensure the hedera-local-node folder is added to Docker File Sharing **Settings -> Resources -> File Sharing**.
 
 **Note**: The image may look different if you are on a different version
-![docker-file-sharing-settings.png](.github/docker-compose-settings.png)
+![docker-file-sharing-settings.png](.github/docker-file-sharing-settings.png)
 
 - Ensure the *Allow the default Docker sockets to be used (requires password)* is enabled in Docker **Settings -> Advanced**.
 
