@@ -9,7 +9,7 @@
 The Hedera Local Node project allows developers to set up their own local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
 </br></br>
 
-> **_NOTE:_**  It's recommended to start using the CLI Tool.
+> **_NOTE:_**  It's recomended to start using the CLI Tool.
 
 - [Docker](#docker)
 - [CLI Tool](#cli-tool---hashgraphhedera-local)
@@ -18,24 +18,24 @@ The Hedera Local Node project allows developers to set up their own local networ
 
 # Requirements
 
-- [Node.js](https://nodejs.org/) `>= v20.11.0`
+- [Node.js](https://nodejs.org/) `>= v14.x`
   - Node version check: `node -v`
-- NPM `>= v10.2.4`
+- NPM `>= v6.14.17`
   - NPM version check: `npm -v`
-- [Docker](https://www.docker.com/) `>= v27.3.1`
+- [Docker](https://www.docker.com/) `>= v20.10.x`
   - Docker version check: `docker -v`
-- [Docker Compose](https://docs.docker.com/compose/) `=> v2.29.7`
+- [Docker Compose](https://docs.docker.com/compose/) `=> v2.12.2`
   - Docker Compose version check: `docker compose version`
 - Minimum 16GB RAM
 
 ### Note:
 
-- Ensure the **VirtioFS** file sharing implementation is enabled in the docker settings
+- **Ensure the `VirtioFS` file sharing implementation is enabled in the docker settings.**
 
 **Note**: The image may look different if you are on a different version
 ![docker-compose-settings.png](.github/docker-compose-settings.png)
 
-- Ensure the following configurations are set at minimum in Docker **Settings -> Resources** and are available for use.
+- Ensure the following configurations are set at minimum in Docker **Settings** -> **Resources** and are available for use
   - **CPUs:** 6
   - **Memory:** 8GB
   - **Swap:** 1 GB
@@ -44,15 +44,10 @@ The Hedera Local Node project allows developers to set up their own local networ
 **Note**: The image may look different if you are on a different version
 ![settings.png](.github/settings.png)
 
-- Ensure the hedera-local-node folder is added to Docker File Sharing **Settings -> Resources -> File Sharing**.
+- Ensure the **`Allow the default Docker sockets to be used (requires password)`** is enabled in Docker **Settings -> Advanced**.
 
 **Note**: The image may look different if you are on a different version
-![docker-file-sharing-settings.png](.github/docker-file-sharing-settings.png)
-
-- Ensure the *Allow the default Docker sockets to be used (requires password)* is enabled in Docker **Settings -> Advanced**.
-
-**Note**: The image may look different if you are on a different version
-![docker-socket-setting](.github/docker-socket-settings.png)
+![docker-socket-setting](https://github.com/hashgraph/hedera-local-node/assets/56278409/9946dad6-27a9-4293-b37b-5286dd30d250)
 
 # CLI Tool - @hashgraph/hedera-local
 
@@ -110,22 +105,22 @@ Local Hedera Package - Runs consensus and mirror nodes on localhost:
 Available commands:
     start - Starts the local hedera network.
         options:
-            --verbose to set the verbose level. Defaults to 'info' choices are "info" & "trace"
+            --verbose set the verbose level. Defaults to 'info' choices are "info" & "trace"
             --h or --host to override the default host.
             --l or --limits to enable/disable the JSON-RPC relay rate limits. Defaults to true.
             --dev to enable/disable developer mode.
             --full to enable/disable full mode. Production local-node.
-            --multinode to enable or disable multi-node mode.
+            --multinode     Enable or disable multi-node mode.
             --balance to set starting hbar balance of the created accounts.
             --async to enable or disable asynchronous creation of accounts.
             --b or --blocklist to enable or disable account blocklisting. Depending on how many private keys are blocklisted, this will affect the generated on startup accounts.
-            --enable-debug to enable or disable debugging of the local node [boolean] [default: false]
-            --network-tag to select custom network node tag [string] [defaults: predefined selected configuration]
-            --mirror-tag to select custom mirror node tag [string] [defaults: predefined selected configuration]
-            --relay-tag to select custom hedera-json-rpc relay tag [string] [defaults: predefined selected configuration]
-            --workdir path to the working directory for local node [string] [default: "[USER APP DATA]/hedera-local"]
+            --enable-debug  Enable or disable debugging of the local node [boolean] [default: false]
+            --network-tag Select custom network node tag [string] [defaults: predefined selected configuration]
+            --mirror-tag Select custom mirror node tag [string] [defaults: predefined selected configuration]
+            --relay-tag Select custom hedera-json-rpc relay tag [string] [defaults: predefined selected configuration]
+            --workdir       Path to the working directory for local node [string] [default: "[USER APP DATA]/hedera-local"]
     stop - Stops the local hedera network and delete all the existing data.
-    restart - Restarts the local hedera network.
+    restart - Restart the local hedera network.
     generate-accounts <n> - Generates N accounts, default 10.
         options:
             --h or --host to override the default host.
@@ -143,6 +138,24 @@ Note: Read more about `developer mode` [here](https://github.com/hashgraph/heder
 ### Commands
 
 #### `hedera start <options>`
+
+![Demo](.github/demo-start.gif)
+
+- --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
+  private keys, and the next ones are with random generated private keys.
+
+- --h / --host - Override the default host.
+
+#### `hedera restart <options>`
+
+![Demo](.github/demo-restart.gif)
+
+- --accounts - Default is 10. Specify the number of accounts to generate at startup. The first 10 are with predefined
+  private keys, and the next ones are with random generated private keys.
+
+- --h / --host - Override the default host.
+
+#### `hedera start -d <options>`
 
 ```bash
 $ hedera start
@@ -280,7 +293,7 @@ No available options
 
 ---
 
-#### `hedera restart <options>`
+#### `hedera restart -d <options>`
 
 ```bash
 $ hedera restart
