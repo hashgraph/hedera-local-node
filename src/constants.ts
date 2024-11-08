@@ -144,3 +144,6 @@ export const ACCOUNT_CREATION_FINISHED = `${CHECK_SUCCESS} Accounts created succ
 export const RESOURCE_CREATION_STATE_INIT_MESSAGE = `${CHECK_SUCCESS} Resource Creation State Initialized!`;
 export const RESOURCE_CREATION_STARTING_SYNCHRONOUS_MESSAGE = `${LOADING} Starting Resource Creation state in synchronous mode...`;
 export const RESOURCE_CREATION_STARTING_ASYNCHRONOUS_MESSAGE = `${LOADING} Starting Resource Creation state in asynchronous mode...`;
+
+// Docker messages
+export const SHARED_PATHS_ERROR = `You can configure shared paths from Docker -> Preferences... -> Resources -> File Sharing.`;

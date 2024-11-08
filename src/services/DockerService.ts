@@ -22,12 +22,12 @@ import Dockerode from 'dockerode';
 import shell from 'shelljs';
 import semver from'semver';
 import fs from 'fs';
-import { IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, 
-         MIN_CPUS, MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE,
-         RECOMMENDED_CPUS, RECOMMENDED_MEMORY_SINGLE_MODE, 
-         CHECK_SUCCESS,
-         CHECK_FAIL,
-         LOADING} from '../constants';
+import {
+    IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, MIN_CPUS,
+    MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE, RECOMMENDED_CPUS,
+    RECOMMENDED_MEMORY_SINGLE_MODE, CHECK_SUCCESS, CHECK_FAIL, LOADING,
+    SHARED_PATHS_ERROR
+} from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -260,6 +260,12 @@ export class DockerService implements IService{
     private logShellOutput(shellExec: any) {
         [shellExec.stdout, shellExec.stderr].forEach( (output: string) => {
             output.split("\n").map((line: string) => {
+                if (line.indexOf(SHARED_PATHS_ERROR) > -1) {
+                    this.logger.error(`Hedera local node start up TERMINATED due to docker's misconfiguration`);
+                    this.logger.error(SHARED_PATHS_ERROR);
+                    this.logger.error(`See https://docs.docker.com/desktop/settings/mac/#file-sharing for more info.`);
+                    process.exit();
+                }
                 if (line === "") return;
                 this.logger.debug(line, this.serviceName);
             });
