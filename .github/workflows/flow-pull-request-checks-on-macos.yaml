@@ -159,3 +159,6 @@ runs:
         colima version >> "$GITHUB_OUTPUT"
         echo "$EOF" >> "$GITHUB_OUTPUT"
       shell: bash
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
