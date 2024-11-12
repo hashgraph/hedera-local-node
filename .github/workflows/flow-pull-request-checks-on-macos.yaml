@@ -1,166 +1,161 @@
-##
-# Copyright (C) 2023-2024 Hedera Hashgraph, LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-##
+name: "Setup Docker on macOS"
+description: "Setup Docker on macOS using Colima, Lima-VM, and Homebrew."
+inputs:
+  upgrade-qemu:
+    description: "Upgrade QEMU to the latest version. Add a lot of time to the job."
+    required: false
+    default: "false"
+  lima:
+    description: "Lima version. Defaults to the latest version."
+    required: false
+    default: "latest"
+  colima:
+    description: "Colima version. Defaults to the latest version."
+    required: false
+    default: "latest"
+  colima-network-address:
+    description: "Starts Colima with a reachable network address (`--network-address`). Makes Colima startup slower."
+    required: false
+    default: "false"
+outputs:
+  colima-version:
+    value: ${{ steps.colima-version.outputs.version }}
+    description: Version of Colima
+  docker-client-version:
+    value: ${{ steps.docker-client-version.outputs.version }}
+    description: Version of the Docker client
+  docker-compose-version:
+    value: ${{ steps.docker-compose-version.outputs.version }}
+    description: Version of Docker Compose
+runs:
+  using: "composite"
+  steps:
+    - name: OS safety check
+      if: runner.os != 'macOS'
+      run: |
+        echo "Not a macOS runner, exiting."
+        exit 1
+      shell: bash
+    - name: ARM64 safety check
+      run: |
+        arch_name=$(uname -m)
+        if [ "$arch_name" = "arm64" ]
+        then
+            echo "Detected M-series processor runner without nested virtualization support, exiting."
+            exit 1
+        else
+            echo "Running on supported architecture: ${arch_name}"
+        fi
+      shell: bash
+    - name: Update Homebrew
+      run: |
+        echo "::group::Updating Homebrew"
+        brew update --preinstall
+        echo "::endgroup::"
+      shell: bash
+    - name: Install Lima
+      env:
+        GH_TOKEN: ${{ github.token }}
+        INPUT_LIMA: ${{ inputs.lima }}
+      run: |
+        if [ $INPUT_LIMA == "latest" ]
+        then
+            LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
+        else
+            LIMA_VERSION=$INPUT_LIMA
+        fi
 
-name: "PR Checks on MacOS"
-on:
-  workflow_dispatch:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-  push:
-    branches:
-      - main
+        echo "::group::Installing Lima version $LIMA_VERSION"
+        curl -fsSL "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
+        echo "::endgroup::"
+      shell: bash
+    - name: Install Colima
+      env:
+        GH_TOKEN: ${{ github.token }}
+        INPUT_COLIMA: ${{ inputs.colima }}
+      run: |
+        if [ $INPUT_COLIMA == "latest" ]
+        then
+            COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
+        else
+            COLIMA_VERSION=$INPUT_COLIMA
+        fi
 
-defaults:
-  run:
-    shell: bash
+        echo "::group::Installing Colima version $COLIMA_VERSION"
+        curl -LO https://github.com/abiosoft/colima/releases/download/${COLIMA_VERSION}/colima-$(uname)-$(uname -m)
 
-permissions:
-  contents: read
-
-concurrency:
-  group: pr-checks-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
-jobs:
-  smoke-tests:
-    name: Smoke Tests
-    runs-on: macos-14
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [20.x]
-
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
-        with:
-          egress-policy: audit
-
-      - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-
-      - name: Install dependencies
-        run: |
-          npm ci
-          cd test/smoke
-          npm ci
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
-      - name: Start the local node
-        run: npm run start -- -d --verbose=trace
-
-      - name: Run smoke test
-        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
-        with:
-          max_attempts: 3
-          timeout_minutes: 3
-          command: npm run test:smoke
-
-      - name: Stop the local node
-        run: npm run stop
-
-#  browser-tests:
-#    name: Browser Tests
-#    runs-on: macos-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        node-version: [20.x]
-#
-#    steps:
-#      - name: Harden Runner
-#        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
-#        with:
-#          egress-policy: audit
-#
-#      - name: Checkout repository
-#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-#
-#      - name: Use Node.js ${{ matrix.node-version }}
-#        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#          cache: npm
-#
-#      - name: Install dependencies
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev  -y
-#          sudo apt-get install libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
-#          npm ci
-#
-#      - name: Start local node
-#        run: npm run start -- -d --verbose=trace
-#
-#      - name: Prepare and run the tests
-#        run: |
-#          cd test/cypress
-#          npm ci
-#          npm run build
-#          npm run start
-#          npm run test
-#
-#      - name: Stop the local node
-#        run: npm run stop
-#
-#  unit-tests:
-#    name: Unit Tests
-#    runs-on: macos-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        node-version: [20.x]
-#
-#    steps:
-#      - name: Harden Runner
-#        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
-#        with:
-#          egress-policy: audit
-#
-#      - name: Checkout repository
-#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-#
-#      - name: Use Node.js ${{ matrix.node-version }}
-#        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#          cache: npm
-#
-#      - name: Install dependencies
-#        run: npm ci
-#
-#      - name: Run tests
-#        run: npm run test
-#
-#      - name: Upload coverage report
-#        if: ${{ always() && !cancelled() }}
-#        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4.6.0
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
+        # install in $PATH
+        install colima-$(uname)-$(uname -m) /usr/local/bin/colima
+        echo "::endgroup::"
+      shell: bash
+    - name: Workaround for Python conflicts in GHA Runners
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALL_UPGRADE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+      run: |
+        brew unlink python@3 || true
+        brew uninstall --ignore-dependencies python@3 || true
+        brew install --overwrite --force python@3
+      shell: bash
+    - name: Install QEMU, Docker client, and Docker Compose
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALL_UPGRADE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+      run: |
+        echo "::group::Installing QEMU, Docker client, and Docker Compose"
+        brew install docker docker-compose
+        # Installing QEMU 9.0.2 as a temporary workaround. Version 9.1.0 seems to be broken with Lima/Colima at the moment.
+        wget  https://raw.githubusercontent.com/Homebrew/homebrew-core/f1a9cf104a9a51779c7a532b658c490f69974839/Formula/q/qemu.rb
+        brew install qemu.rb 2>&1 | tee install.log
+        echo "::endgroup::"
+      shell: bash
+    - name: Configure Docker Compose plugin
+      run: |
+        mkdir -p ~/.docker/cli-plugins
+        ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ~/.docker/cli-plugins/docker-compose
+      shell: bash
+    - name: Upgrade QEMU
+      if: inputs.upgrade-qemu == 'true'
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALL_UPGRADE: "1"
+      run: brew upgrade qemu
+      shell: bash
+    - name: Start Colima
+      env:
+        COLIMA_NETWORK_ADDRESS: ${{ inputs.colima-network-address }}
+      run: |
+        CPU_COUNT=$(sysctl -n hw.ncpu)
+        MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
+        COLIMA_ARGS="--cpu $CPU_COUNT --memory $MEMORY --arch x86_64"
+        if [ $COLIMA_NETWORK_ADDRESS == "true" ]
+        then
+          COLIMA_ARGS="$COLIMA_ARGS --network-address"
+        fi
+        echo "::group::Starting Colima with args: $COLIMA_ARGS"
+        colima start $COLIMA_ARGS
+        echo "::endgroup::"
+      shell: bash
+    - id: docker-client-version
+      run: |
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "version<<$EOF" >> "$GITHUB_OUTPUT"
+        docker version >> "$GITHUB_OUTPUT"
+        echo "$EOF" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - id: docker-compose-version
+      run: |
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "version<<$EOF" >> "$GITHUB_OUTPUT"
+        docker compose version >> "$GITHUB_OUTPUT"
+        echo "$EOF" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - id: colima-version
+      run: |
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "version<<$EOF" >> "$GITHUB_OUTPUT"
+        colima version >> "$GITHUB_OUTPUT"
+        echo "$EOF" >> "$GITHUB_OUTPUT"
+      shell: bash
