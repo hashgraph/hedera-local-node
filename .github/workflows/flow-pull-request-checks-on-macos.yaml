@@ -1,32 +1,5 @@
 name: "Setup Docker on macOS"
 description: "Setup Docker on macOS using Colima, Lima-VM, and Homebrew."
-inputs:
-  upgrade-qemu:
-    description: "Upgrade QEMU to the latest version. Add a lot of time to the job."
-    required: false
-    default: "false"
-  lima:
-    description: "Lima version. Defaults to the latest version."
-    required: false
-    default: "latest"
-  colima:
-    description: "Colima version. Defaults to the latest version."
-    required: false
-    default: "latest"
-  colima-network-address:
-    description: "Starts Colima with a reachable network address (`--network-address`). Makes Colima startup slower."
-    required: false
-    default: "false"
-outputs:
-  colima-version:
-    value: ${{ steps.colima-version.outputs.version }}
-    description: Version of Colima
-  docker-client-version:
-    value: ${{ steps.docker-client-version.outputs.version }}
-    description: Version of the Docker client
-  docker-compose-version:
-    value: ${{ steps.docker-compose-version.outputs.version }}
-    description: Version of Docker Compose
 runs:
   using: "composite"
   steps:
@@ -56,7 +29,7 @@ runs:
     - name: Install Lima
       env:
         GH_TOKEN: ${{ github.token }}
-        INPUT_LIMA: ${{ inputs.lima }}
+        INPUT_LIMA: latest
       run: |
         if [ $INPUT_LIMA == "latest" ]
         then
@@ -72,7 +45,7 @@ runs:
     - name: Install Colima
       env:
         GH_TOKEN: ${{ github.token }}
-        INPUT_COLIMA: ${{ inputs.colima }}
+        INPUT_COLIMA: latest
       run: |
         if [ $INPUT_COLIMA == "latest" ]
         then
@@ -116,16 +89,9 @@ runs:
         mkdir -p ~/.docker/cli-plugins
         ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ~/.docker/cli-plugins/docker-compose
       shell: bash
-    - name: Upgrade QEMU
-      if: inputs.upgrade-qemu == 'true'
-      env:
-        HOMEBREW_NO_AUTO_UPDATE: "1"
-        HOMEBREW_NO_INSTALL_UPGRADE: "1"
-      run: brew upgrade qemu
-      shell: bash
     - name: Start Colima
       env:
-        COLIMA_NETWORK_ADDRESS: ${{ inputs.colima-network-address }}
+        COLIMA_NETWORK_ADDRESS: true
       run: |
         CPU_COUNT=$(sysctl -n hw.ncpu)
         MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
