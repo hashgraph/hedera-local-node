@@ -140,7 +140,7 @@ jobs:
       run: |
         CPU_COUNT=$(sysctl -n hw.ncpu)
         MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
-        COLIMA_ARGS="--cpu $CPU_COUNT --memory $MEMORY --arch x86_64"
+        COLIMA_ARGS="--cpu 3 --memory 10 --arch x86_64"
         if [ $COLIMA_NETWORK_ADDRESS == "true" ]
         then
           COLIMA_ARGS="$COLIMA_ARGS --network-address"
