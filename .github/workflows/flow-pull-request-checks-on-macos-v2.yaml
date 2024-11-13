@@ -48,19 +48,19 @@ jobs:
         node-version: [20.x]
 
     steps:
-    - name: Setup docker (missing on MacOS)
-      run: |
-        brew install docker
-        colima start
-
-    - name: Setup docker and docker-compose (missing on MacOS)
-      run: |
-        brew install docker docker-compose
-
-        mkdir -p ~/.docker/cli-plugins
-        ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
-
-        colima start
+#    - name: Setup docker (missing on MacOS)
+#      run: |
+#        brew install docker
+#        colima start
+#
+#    - name: Setup docker and docker-compose (missing on MacOS)
+#      run: |
+#        brew install docker docker-compose
+#
+#        mkdir -p ~/.docker/cli-plugins
+#        ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+#
+#        colima start
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
