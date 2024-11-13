@@ -145,6 +145,7 @@ jobs:
         then
           COLIMA_ARGS="$COLIMA_ARGS --network-address"
         fi
+        COLIMA_ARGS="$COLIMA_ARGS --network-address"
         echo "::group::Starting Colima with args: $COLIMA_ARGS"
         colima start $COLIMA_ARGS
         echo "::endgroup::"
