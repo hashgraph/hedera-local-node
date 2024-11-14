@@ -48,29 +48,30 @@ jobs:
         node-version: [20.x]
 
     steps:
-    - name: OS safety check
-      if: runner.os != 'macOS'
-      run: |
-        echo "Not a macOS runner, exiting."
-        exit 1
-      shell: bash
-    - name: ARM64 safety check
-      run: |
-        arch_name=$(uname -m)
-        if [ "$arch_name" = "arm64" ]
-        then
-            echo "Detected M-series processor runner without nested virtualization support, exiting."
-            exit 1
-        else
-            echo "Running on supported architecture: ${arch_name}"
-        fi
-      shell: bash
-    - name: Update Homebrew
-      run: |
-        echo "::group::Updating Homebrew"
-        brew update --preinstall
-        echo "::endgroup::"
-      shell: bash
+#    - name: OS safety check
+#      if: runner.os != 'macOS'
+#      run: |
+#        echo "Not a macOS runner, exiting."
+#        exit 1
+#      shell: bash
+#    - name: ARM64 safety check
+#      run: |
+#        arch_name=$(uname -m)
+#        if [ "$arch_name" = "arm64" ]
+#        then
+#            echo "Detected M-series processor runner without nested virtualization support, exiting."
+#            exit 1
+#        else
+#            echo "Running on supported architecture: ${arch_name}"
+#        fi
+#      shell: bash
+#    - name: Update Homebrew
+#      run: |
+#        echo "::group::Updating Homebrew"
+#        brew update --preinstall
+#        echo "::endgroup::"
+#      shell: bash
+
 #    - name: Install Lima
 #      env:
 #        GH_TOKEN: ${{ github.token }}
