@@ -163,10 +163,10 @@ jobs:
         run: |
           sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
 
-      - name: Setup tmate session
-        env:
-          FIRING_UP_RETRY_ATTEMPTS: 1000
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup tmate session
+#        env:
+#          FIRING_UP_RETRY_ATTEMPTS: 2000
+#        uses: mxschmitt/action-tmate@v3
 
       - name: Run the local node
         env:
@@ -176,15 +176,15 @@ jobs:
           max_attempts: 3
           timeout_minutes: 45
           command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
-#
-#      - name: Run smoke test
-#        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
-#        with:
-#          max_attempts: 5
-#          timeout_minutes: 3
-#          command: npm run test:smoke
 
-      - name: Setup tmate session
-        env:
-          FIRING_UP_RETRY_ATTEMPTS: 1000
-        uses: mxschmitt/action-tmate@v3
+      - name: Run smoke test
+        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
+        with:
+          max_attempts: 5
+          timeout_minutes: 5
+          command: npm run test:smoke
+
+#      - name: Setup tmate session
+#        env:
+#          FIRING_UP_RETRY_ATTEMPTS: 1000
+#        uses: mxschmitt/action-tmate@v3
