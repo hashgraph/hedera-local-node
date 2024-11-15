@@ -72,10 +72,10 @@ jobs:
       shell: bash
 
     - name: Workaround for Python conflicts in GHA Runners
-#      env:
-#        HOMEBREW_NO_AUTO_UPDATE: "1"
-#        HOMEBREW_NO_INSTALL_UPGRADE: "1"
-#        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALL_UPGRADE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
       run: |
         brew unlink python@3 || true
         brew uninstall --ignore-dependencies python@3 || true
@@ -83,10 +83,10 @@ jobs:
       shell: bash
 
     - name: Install QEMU, Docker client, and Docker Compose
-#      env:
-#        HOMEBREW_NO_AUTO_UPDATE: "1"
-#        HOMEBREW_NO_INSTALL_UPGRADE: "1"
-#        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALL_UPGRADE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
       run: |
         brew install docker docker-compose
         wget  https://raw.githubusercontent.com/Homebrew/homebrew-core/f1a9cf104a9a51779c7a532b658c490f69974839/Formula/q/qemu.rb
