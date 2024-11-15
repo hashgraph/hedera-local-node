@@ -85,7 +85,7 @@ export class ConnectionService implements IService{
         const { host } = this.cliService.getCurrentArgv();
         let isReady = false;
         // this means that we wait around 100 seconds, normal consensus node startup takes around 60 seconds
-        let retries = 100;
+        let retries = parseInt(process.env.FIRING_UP_RETRY_ATTEMPTS ?? '20');
         while (!isReady) {
           net
             .createConnection(port, host)
@@ -102,7 +102,7 @@ export class ConnectionService implements IService{
             });
 
             retries--;
-          await new Promise((r) => setTimeout(r, 100));
+          await new Promise((r) => setTimeout(r, 500));
           if (retries < 0) {
             throw Errors.CONNECTION_ERROR(port);
           }
