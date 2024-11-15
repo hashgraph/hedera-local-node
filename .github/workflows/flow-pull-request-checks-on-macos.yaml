@@ -145,6 +145,11 @@ jobs:
           npm ci
           cd test/smoke
           npm ci
+          npx hardhat compile
+
+      - name: Pull docker images
+        run: |
+          docker compose pull
 
       - name: Create temp folders
         run: |
@@ -154,16 +159,18 @@ jobs:
           mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/recordStreams/record0.0.3/sidecar
           chmod -R 777 /Users/runner/work/hedera-local-node/hedera-local-node/
 
-      - name: Pull docker images
+      - name: Symlink docker host
         run: |
-          docker compose pull
+          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
 
-#      - name: Run the local node
-#        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
-#        with:
-#          max_attempts: 3
-#          timeout_minutes: 30
-#          command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
+      - name: Run the local node
+        env:
+          FIRING_UP_RETRY_ATTEMPTS: 1000
+        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
+        with:
+          max_attempts: 3
+          timeout_minutes: 45
+          command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
 #
 #      - name: Run smoke test
 #        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
@@ -173,4 +180,6 @@ jobs:
 #          command: npm run test:smoke
 
       - name: Setup tmate session
+        env:
+          FIRING_UP_RETRY_ATTEMPTS: 1000
         uses: mxschmitt/action-tmate@v3
