@@ -123,7 +123,7 @@ jobs:
         run: |
           CPU_COUNT=$(sysctl -n hw.ncpu)
           MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
-          COLIMA_ARGS="--cpu 3 --memory 10 --arch x86_64 --network-address"
+          COLIMA_ARGS="--cpu 3 --memory 11 --arch x86_64 --network-address"
           echo "::group::Starting Colima with args: $COLIMA_ARGS"
           colima start $COLIMA_ARGS
           echo "::endgroup::"
