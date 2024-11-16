@@ -170,7 +170,7 @@ jobs:
 
       - name: Run the local node
         env:
-          FIRING_UP_RETRY_ATTEMPTS: 1000
+          FIRING_UP_RETRY_ATTEMPTS: 10000
         uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
         with:
           max_attempts: 3
