@@ -134,7 +134,7 @@ jobs:
         run: |
           CPU_COUNT=$(sysctl -n hw.ncpu)
           MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
-          COLIMA_ARGS="--cpu 3 --memory 10 --arch aarch --network-address"
+          COLIMA_ARGS="--cpu 3 --memory 10 --arch x86_64 --network-address"
           echo "::group::Starting Colima with args: $COLIMA_ARGS"
           colima start $COLIMA_ARGS
           echo "::endgroup::"
@@ -174,7 +174,7 @@ jobs:
         uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
         with:
           max_attempts: 3
-          timeout_minutes: 45
+          timeout_minutes: 60
           command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
 
       - name: Run smoke test
