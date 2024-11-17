@@ -163,11 +163,6 @@ jobs:
         run: |
           sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
 
-#      - name: Setup tmate session
-#        env:
-#          FIRING_UP_RETRY_ATTEMPTS: 10000
-#        uses: mxschmitt/action-tmate@v3
-
       - name: Run the local node
         env:
           FIRING_UP_RETRY_ATTEMPTS: 10000
