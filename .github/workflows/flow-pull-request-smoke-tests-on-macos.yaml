@@ -14,7 +14,7 @@
 # limitations under the License.
 ##
 
-name: "PR Checks macos"
+name: "Smoke Tests on GitHub MacOS Runner"
 on:
   workflow_dispatch:
   pull_request:
@@ -64,18 +64,18 @@ jobs:
       - name: Install Lima
         env:
           GH_TOKEN: ${{ github.token }}
-          INPUT_LIMA: latest
         run: |
           LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
           curl -fsSL "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
+          echo "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz"
         shell: bash
 
       - name: Install Colima
         env:
           GH_TOKEN: ${{ github.token }}
-          INPUT_COLIMA: latest
         run: |
           COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
+          echo "$COLIMA_VERSION"
           curl -LO https://github.com/abiosoft/colima/releases/download/${COLIMA_VERSION}/colima-$(uname)-$(uname -m)
           install colima-$(uname)-$(uname -m) /usr/local/bin/colima
         shell: bash
