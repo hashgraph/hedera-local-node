@@ -67,9 +67,7 @@ jobs:
           INPUT_LIMA: latest
         run: |
           LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
-          echo "::group::Installing Lima version $LIMA_VERSION"
           curl -fsSL "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
-          echo "::endgroup::"
         shell: bash
 
       - name: Install Colima
@@ -78,12 +76,8 @@ jobs:
           INPUT_COLIMA: latest
         run: |
           COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
-          echo "::group::Installing Colima version $COLIMA_VERSION"
           curl -LO https://github.com/abiosoft/colima/releases/download/${COLIMA_VERSION}/colima-$(uname)-$(uname -m)
-
-          # install in $PATH
           install colima-$(uname)-$(uname -m) /usr/local/bin/colima
-          echo "::endgroup::"
         shell: bash
 
       - name: Workaround for Python conflicts in GHA Runners
@@ -103,12 +97,9 @@ jobs:
           HOMEBREW_NO_INSTALL_UPGRADE: "1"
           HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
         run: |
-          echo "::group::Installing QEMU, Docker client, and Docker Compose"
           brew install docker docker-compose
-          # Installing QEMU 9.0.2 as a temporary workaround. Version 9.1.0 seems to be broken with Lima/Colima at the moment.
           wget  https://raw.githubusercontent.com/Homebrew/homebrew-core/f1a9cf104a9a51779c7a532b658c490f69974839/Formula/q/qemu.rb
           brew install qemu.rb 2>&1 | tee install.log
-          echo "::endgroup::"
         shell: bash
 
       - name: Configure Docker Compose plugin
@@ -123,9 +114,7 @@ jobs:
           CPU_COUNT=$(sysctl -n hw.ncpu)
           MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
           COLIMA_ARGS="--cpu 3 --memory 8 --arch x86_64 --network-address"
-          echo "::group::Starting Colima with args: $COLIMA_ARGS"
           colima start $COLIMA_ARGS
-          echo "::endgroup::"
         shell: bash
 
       - name: Install deps
