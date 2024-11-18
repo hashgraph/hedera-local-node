@@ -1,5 +1,5 @@
 ##
-# Copyright (C) 2023-2024 Hedera Hashgraph, LLC
+# Copyright (C) 2024 Hedera Hashgraph, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,7 +64,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
+          curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz"
+          tar Cxzvm /usr/local
 
       - name: Install Colima
         env:
