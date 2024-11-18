@@ -59,14 +59,12 @@ jobs:
       - name: Update Homebrew
         run: |
           brew update --preinstall
-        shell: bash
 
       - name: Install Lima
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
-        shell: bash
 
       - name: Install Colima
         env:
@@ -74,7 +72,6 @@ jobs:
         run: |
           curl -LO https://github.com/abiosoft/colima/releases/download/v0.8.0/colima-$(uname)-$(uname -m)
           install colima-$(uname)-$(uname -m) /usr/local/bin/colima
-        shell: bash
 
       - name: Workaround for Python conflicts in GHA Runners
         env:
@@ -85,7 +82,6 @@ jobs:
           brew unlink python@3 || true
           brew uninstall --ignore-dependencies python@3 || true
           brew install --overwrite --force python@3
-        shell: bash
 
       - name: Install QEMU, Docker client, and Docker Compose
         env:
@@ -96,13 +92,12 @@ jobs:
           brew install docker docker-compose
           wget  https://raw.githubusercontent.com/Homebrew/homebrew-core/f1a9cf104a9a51779c7a532b658c490f69974839/Formula/q/qemu.rb
           brew install qemu.rb 2>&1 | tee install.log
-        shell: bash
 
       - name: Configure Docker Compose plugin
         run: |
           mkdir -p ~/.docker/cli-plugins
           ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ~/.docker/cli-plugins/docker-compose
-        shell: bash
+
       - name: Start Colima
         env:
           COLIMA_NETWORK_ADDRESS: true
@@ -111,7 +106,6 @@ jobs:
           MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
           COLIMA_ARGS="--cpu 3 --memory 8 --arch x86_64 --network-address"
           colima start $COLIMA_ARGS
-        shell: bash
 
       - name: Install deps
         run: |
