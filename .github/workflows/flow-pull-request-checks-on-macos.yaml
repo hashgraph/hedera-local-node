@@ -66,12 +66,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           INPUT_LIMA: latest
         run: |
-#          if [ $INPUT_LIMA == "latest" ]
-#          then
-#              LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
-#          else
-#              LIMA_VERSION=$INPUT_LIMA
-#          fi
           LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
           echo "::group::Installing Lima version $LIMA_VERSION"
           curl -fsSL "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
@@ -83,13 +77,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           INPUT_COLIMA: latest
         run: |
-#          if [ $INPUT_COLIMA == "latest" ]
-#          then
-#              COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
-#          else
-#              COLIMA_VERSION=$INPUT_COLIMA
-#          fi
-
           COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
           echo "::group::Installing Colima version $COLIMA_VERSION"
           curl -LO https://github.com/abiosoft/colima/releases/download/${COLIMA_VERSION}/colima-$(uname)-$(uname -m)
