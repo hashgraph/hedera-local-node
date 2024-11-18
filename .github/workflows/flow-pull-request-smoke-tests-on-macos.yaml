@@ -61,15 +61,10 @@ jobs:
           brew update --preinstall
 
       - name: Install Lima
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz"
-          tar Cxzvm /usr/local
+          curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
 
       - name: Install Colima
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           curl -LO https://github.com/abiosoft/colima/releases/download/v0.8.0/colima-$(uname)-$(uname -m)
           install colima-$(uname)-$(uname -m) /usr/local/bin/colima
