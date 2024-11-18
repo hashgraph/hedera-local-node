@@ -66,13 +66,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           INPUT_LIMA: latest
         run: |
-          if [ $INPUT_LIMA == "latest" ]
-          then
-              LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
-          else
-              LIMA_VERSION=$INPUT_LIMA
-          fi
-
+#          if [ $INPUT_LIMA == "latest" ]
+#          then
+#              LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
+#          else
+#              LIMA_VERSION=$INPUT_LIMA
+#          fi
+          LIMA_VERSION=$(gh release -R lima-vm/lima view --json tagName -q ".tagName")
           echo "::group::Installing Lima version $LIMA_VERSION"
           curl -fsSL "https://github.com/lima-vm/lima/releases/download/${LIMA_VERSION}/lima-${LIMA_VERSION:1}-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
           echo "::endgroup::"
@@ -83,13 +83,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           INPUT_COLIMA: latest
         run: |
-          if [ $INPUT_COLIMA == "latest" ]
-          then
-              COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
-          else
-              COLIMA_VERSION=$INPUT_COLIMA
-          fi
+#          if [ $INPUT_COLIMA == "latest" ]
+#          then
+#              COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
+#          else
+#              COLIMA_VERSION=$INPUT_COLIMA
+#          fi
 
+          COLIMA_VERSION=$(gh release -R abiosoft/colima view --json tagName -q ".tagName")
           echo "::group::Installing Colima version $COLIMA_VERSION"
           curl -LO https://github.com/abiosoft/colima/releases/download/${COLIMA_VERSION}/colima-$(uname)-$(uname -m)
 
@@ -168,7 +169,7 @@ jobs:
           FIRING_UP_RETRY_ATTEMPTS: 10000
         uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
         with:
-          max_attempts: 3
+          max_attempts: 5
           timeout_minutes: 60
           command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
 
@@ -178,8 +179,3 @@ jobs:
           max_attempts: 5
           timeout_minutes: 5
           command: npm run test:smoke
-
-#      - name: Setup tmate session
-#        env:
-#          FIRING_UP_RETRY_ATTEMPTS: 1000
-#        uses: mxschmitt/action-tmate@v3
