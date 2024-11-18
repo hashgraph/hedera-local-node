@@ -102,10 +102,7 @@ jobs:
         env:
           COLIMA_NETWORK_ADDRESS: true
         run: |
-          CPU_COUNT=$(sysctl -n hw.ncpu)
-          MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
-          COLIMA_ARGS="--cpu 3 --memory 8 --arch x86_64 --network-address"
-          colima start $COLIMA_ARGS
+          colima start --cpu 3 --memory 8 --arch x86_64 --network-address
 
       - name: Install deps
         run: |
