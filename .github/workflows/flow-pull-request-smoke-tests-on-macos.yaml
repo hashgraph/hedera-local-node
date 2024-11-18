@@ -56,6 +56,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Install deps
+        run: |
+          npm ci
+          cd test/smoke
+          npm ci
+          npx hardhat compile
+
       - name: Update Homebrew
         run: |
           brew update --preinstall
@@ -97,13 +104,6 @@ jobs:
       - name: Start Colima
         run: |
           colima start --cpu 3 --memory 8 --arch x86_64 --network-address
-
-      - name: Install deps
-        run: |
-          npm ci
-          cd test/smoke
-          npm ci
-          npx hardhat compile
 
       - name: Pull docker images
         run: |
