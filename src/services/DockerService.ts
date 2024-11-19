@@ -230,14 +230,14 @@ export class DockerService implements IService{
             const parsed = s.image.split(":");
             return `${parsed[0]}:${parsed[1] ?? "latest"}`;
         });
-        const dockerComposeImagesUnique = [...new Set(dockerComposeImages)].sort();
+        const dockerComposeImagesUnique = [...new Set(dockerComposeImages.sort())];
 
         const dockerImagesString = shell.exec("docker images", { silent: true }).stdout.split(/\r?\n/).slice(1, -1);
         const dockerImages = dockerImagesString.map(line => {
             const parsed = line.replace(/\s\s+/g, " ").split(" ");
             return `${parsed[0]}:${parsed[1]}`;
         });
-        const dockerImagesUnique = [...new Set(dockerImages)].sort();
+        const dockerImagesUnique = [...new Set(dockerImages.sort())];
 
         if (!dockerImages.length || dockerComposeImagesUnique.toString() != dockerImagesUnique.toString()) {
             this.logger.info(DOCKER_PULLING_IMAGES_MESSAGE, this.serviceName);
