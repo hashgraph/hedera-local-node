@@ -25,7 +25,10 @@
     {"key": "RELAY_WS_MULTIPLE_ADDRESSES_ENABLED", "value": false},
     {"key": "RELAY_WS_SUBSCRIPTION_LIMIT", "value": 100},
     {"key": "RELAY_MIRROR_NODE_GET_CONTRACT_RESULTS_RETRIES", "value": "20"},
-    {"key": "RELAY_DEBUG_API_ENABLED", "value":  true}
+    {"key": "RELAY_DEBUG_API_ENABLED", "value":  true},
+    {"key": "RELAY_HBAR_RATE_LIMIT_BASIC", "value":  "500000000000"},
+    {"key": "RELAY_HBAR_RATE_LIMIT_EXTENDED", "value":  "600000000000"},
+    {"key": "RELAY_HBAR_RATE_LIMIT_PRIVILEGED", "value":  "700000000000"}
 ],
   "nodeConfiguration": {
     "properties": [
