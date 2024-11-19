@@ -27,7 +27,7 @@ import {
     MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE, RECOMMENDED_CPUS,
     RECOMMENDED_MEMORY_SINGLE_MODE, CHECK_SUCCESS, CHECK_FAIL, LOADING,
     SHARED_PATHS_ERROR, DOCKER_PULLING_IMAGES_MESSAGE,
-} from "../constants";
+} from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
 import { ServiceLocator } from './ServiceLocator';
@@ -36,7 +36,7 @@ import * as dotenv from 'dotenv';
 import { CLIOptions } from '../types/CLIOptions';
 import path from 'path';
 import { SafeDockerNetworkRemover } from '../utils/SafeDockerNetworkRemover';
-import yaml from "js-yaml";
+import yaml from 'js-yaml';
 
 dotenv.config();
 
