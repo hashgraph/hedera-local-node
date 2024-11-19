@@ -99,6 +99,8 @@ export class StartState implements IState{
 
         shell.cd(__dirname);
         shell.cd('../../');
+
+        this.dockerService.checkDockerImages();
         const output = await this.dockerService.dockerComposeUp(this.cliOptions);
         
         if (output.code === 1) {
