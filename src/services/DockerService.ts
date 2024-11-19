@@ -26,7 +26,7 @@ import {
     IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, MIN_CPUS,
     MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE, RECOMMENDED_CPUS,
     RECOMMENDED_MEMORY_SINGLE_MODE, CHECK_SUCCESS, CHECK_FAIL, LOADING,
-    SHARED_PATHS_ERROR
+    SHARED_PATHS_ERROR, DOCKER_PULLING_IMAGES_MESSAGE,
 } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
@@ -36,6 +36,7 @@ import * as dotenv from 'dotenv';
 import { CLIOptions } from '../types/CLIOptions';
 import path from 'path';
 import { SafeDockerNetworkRemover } from '../utils/SafeDockerNetworkRemover';
+import yaml from 'js-yaml';
 
 dotenv.config();
 
@@ -221,6 +222,26 @@ export class DockerService implements IService{
 
       return this.checkMemoryResources(dockerMemory, isMultiNodeMode) &&
       this.checkCPUResources(dockerCPUs);
+    }
+
+    public checkDockerImages() {
+        const dockerComposeYml = yaml.load(shell.exec("docker compose config", { silent: true }).stdout) as any;
+        const dockerComposeImages = Object.values(dockerComposeYml.services).map((s: any) => {
+            const parsed = s.image.split(":");
+            return `${parsed[0]}:${parsed[1] ?? "latest"}`;
+        });
+        const dockerComposeImagesUnique = [...new Set(dockerComposeImages.sort())];
+
+        const dockerImagesString = shell.exec("docker images", { silent: true }).stdout.split(/\r?\n/).slice(1, -1);
+        const dockerImages = dockerImagesString.map(line => {
+            const parsed = line.replace(/\s\s+/g, " ").split(" ");
+            return `${parsed[0]}:${parsed[1]}`;
+        });
+        const dockerImagesUnique = [...new Set(dockerImages.sort())];
+
+        if (!dockerImages.length || dockerComposeImagesUnique.toString() != dockerImagesUnique.toString()) {
+            this.logger.info(DOCKER_PULLING_IMAGES_MESSAGE, this.serviceName);
+        }
     }
 
     private checkMemoryResources(dockerMemory: number, isMultiNodeMode: boolean) {
