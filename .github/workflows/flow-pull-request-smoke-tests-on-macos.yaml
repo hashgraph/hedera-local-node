@@ -1,0 +1,138 @@
+##
+# Copyright (C) 2024 Hedera Hashgraph, LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+##
+
+name: "Smoke Tests on GitHub MacOS Runner"
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-checks-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: macos-13
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install deps
+        run: |
+          npm ci
+          cd test/smoke
+          npm ci
+          npx hardhat compile
+
+      - name: Update Homebrew
+        run: |
+          brew update --preinstall
+
+      - name: Install Lima
+        run: |
+          curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
+
+      - name: Install Colima
+        run: |
+          curl -LO https://github.com/abiosoft/colima/releases/download/v0.8.0/colima-$(uname)-$(uname -m)
+          install colima-$(uname)-$(uname -m) /usr/local/bin/colima
+
+      - name: Workaround for Python conflicts in GHA Runners
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_UPGRADE: "1"
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        run: |
+          brew unlink python@3 || true
+          brew uninstall --ignore-dependencies python@3 || true
+          brew install --overwrite --force python@3
+
+      - name: Install QEMU, Docker client, and Docker Compose
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_UPGRADE: "1"
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        run: |
+          brew install docker docker-compose
+          wget  https://raw.githubusercontent.com/Homebrew/homebrew-core/f1a9cf104a9a51779c7a532b658c490f69974839/Formula/q/qemu.rb
+          brew install qemu.rb 2>&1 | tee install.log
+
+      - name: Configure Docker Compose plugin
+        run: |
+          mkdir -p ~/.docker/cli-plugins
+          ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ~/.docker/cli-plugins/docker-compose
+
+      - name: Start Colima
+        run: |
+          colima start --cpu 3 --memory 8 --arch x86_64 --network-address
+
+      - name: Pull docker images
+        run: |
+          docker compose pull
+
+      - name: Create temp folders
+        run: |
+          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/logs
+          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/stats
+          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/accountBalances/balance0.0.3
+          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/recordStreams/record0.0.3/sidecar
+          chmod -R 777 /Users/runner/work/hedera-local-node/hedera-local-node/
+
+      - name: Symlink docker host
+        run: |
+          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
+
+      - name: Run the local node
+        env:
+          FIRING_UP_RETRY_ATTEMPTS: 10000
+        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
+        with:
+          max_attempts: 5
+          timeout_minutes: 60
+          command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
+
+      - name: Run smoke test
+        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
+        with:
+          max_attempts: 5
+          timeout_minutes: 5
+          command: npm run test:smoke
