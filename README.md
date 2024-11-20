@@ -45,6 +45,8 @@ The Hedera Local Node project allows developers to set up their own local networ
 ![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/settings.png)
 
 - Ensure the hedera-local-node folder is added to Docker File Sharing **Settings -> Resources -> File Sharing**.
+  - If you're using hedera-local as npm package - running 'npm root -g' should output the path you have to add under File Sharing Docker's Setting.
+  - If you're using hedera-local as cloned repo - running 'pwd' in the project's root should output the path you have to add under File Sharing Docker's Setting.
 
 **Note**: The image may look different if you are on a different version
 ![docker-file-sharing-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/docker-file-sharing-settings.png)
