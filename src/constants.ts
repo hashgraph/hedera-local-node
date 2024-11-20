@@ -148,3 +148,4 @@ export const RESOURCE_CREATION_STARTING_ASYNCHRONOUS_MESSAGE = `${LOADING} Start
 
 // Docker messages
 export const SHARED_PATHS_ERROR = `You can configure shared paths from Docker -> Preferences... -> Resources -> File Sharing.`;
+export const MOUNT_ERROR = `: error mounting`;
