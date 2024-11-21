@@ -26,9 +26,9 @@ on:
     branches:
       - main
 
-#defaults:
-#  run:
-#    shell: bash
+defaults:
+  run:
+    shell: bash
 
 permissions:
   contents: read
@@ -58,84 +58,3 @@ jobs:
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-
-#      - name: Install deps
-#        run: |
-#          npm ci
-#          cd test/smoke
-#          npm ci
-#          npx hardhat compile
-#
-#      - name: Update Homebrew
-#        run: |
-#          brew update --preinstall
-#
-#      - name: Install Lima
-#        run: |
-#          curl -fsSL "https://github.com/lima-vm/lima/releases/download/v1.0.1/lima-1.0.1-$(uname -s)-$(uname -m).tar.gz" | tar Cxzvm /usr/local
-#
-#      - name: Install Colima
-#        run: |
-#          curl -LO https://github.com/abiosoft/colima/releases/download/v0.8.0/colima-$(uname)-$(uname -m)
-#          install colima-$(uname)-$(uname -m) /usr/local/bin/colima
-#
-#      - name: Workaround for Python conflicts in GHA Runners
-#        env:
-#          HOMEBREW_NO_AUTO_UPDATE: "1"
-#          HOMEBREW_NO_INSTALL_UPGRADE: "1"
-#          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
-#        run: |
-#          brew unlink python@3 || true
-#          brew uninstall --ignore-dependencies python@3 || true
-#          brew install --overwrite --force python@3
-#
-#      - name: Install QEMU, Docker client, and Docker Compose
-#        env:
-#          HOMEBREW_NO_AUTO_UPDATE: "1"
-#          HOMEBREW_NO_INSTALL_UPGRADE: "1"
-#          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
-#        run: |
-#          brew install docker docker-compose
-#          wget  https://raw.githubusercontent.com/Homebrew/homebrew-core/f1a9cf104a9a51779c7a532b658c490f69974839/Formula/q/qemu.rb
-#          brew install qemu.rb 2>&1 | tee install.log
-#
-#      - name: Configure Docker Compose plugin
-#        run: |
-#          mkdir -p ~/.docker/cli-plugins
-#          ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ~/.docker/cli-plugins/docker-compose
-#
-#      - name: Start Colima
-#        run: |
-#          colima start --cpu 3 --memory 8 --arch x86_64 --network-address
-#
-#      - name: Pull docker images
-#        run: |
-#          docker compose pull
-#
-#      - name: Create temp folders
-#        run: |
-#          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/logs
-#          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/stats
-#          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/accountBalances/balance0.0.3
-#          mkdir -p /Users/runner/work/hedera-local-node/hedera-local-node/network-logs/node/recordStreams/record0.0.3/sidecar
-#          chmod -R 777 /Users/runner/work/hedera-local-node/hedera-local-node/
-#
-#      - name: Symlink docker host
-#        run: |
-#          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
-#
-#      - name: Run the local node
-#        env:
-#          FIRING_UP_RETRY_ATTEMPTS: 10000
-#        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
-#        with:
-#          max_attempts: 5
-#          timeout_minutes: 60
-#          command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
-#
-#      - name: Run smoke test
-#        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
-#        with:
-#          max_attempts: 5
-#          timeout_minutes: 5
-#          command: npm run test:smoke
