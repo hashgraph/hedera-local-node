@@ -26,7 +26,7 @@ import {
     IS_WINDOWS, NECESSARY_PORTS, UNKNOWN_VERSION, OPTIONAL_PORTS, MIN_CPUS,
     MIN_MEMORY_MULTI_MODE, MIN_MEMORY_SINGLE_MODE, RECOMMENDED_CPUS,
     RECOMMENDED_MEMORY_SINGLE_MODE, CHECK_SUCCESS, CHECK_FAIL, LOADING,
-    SHARED_PATHS_ERROR
+    SHARED_PATHS_ERROR, DOCKER_PULLING_IMAGES_MESSAGE, MOUNT_ERROR,
 } from '../constants';
 import { IService } from './IService';
 import { LoggerService } from './LoggerService';
@@ -36,6 +36,7 @@ import * as dotenv from 'dotenv';
 import { CLIOptions } from '../types/CLIOptions';
 import path from 'path';
 import { SafeDockerNetworkRemover } from '../utils/SafeDockerNetworkRemover';
+import yaml from 'js-yaml';
 
 dotenv.config();
 
@@ -223,6 +224,26 @@ export class DockerService implements IService{
       this.checkCPUResources(dockerCPUs);
     }
 
+    public checkDockerImages() {
+        const dockerComposeYml = yaml.load(shell.exec("docker compose config", { silent: true }).stdout) as any;
+        const dockerComposeImages = Object.values(dockerComposeYml.services).map((s: any) => {
+            const parsed = s.image.split(":");
+            return `${parsed[0]}:${parsed[1] ?? "latest"}`;
+        });
+        const dockerComposeImagesUnique = [...new Set(dockerComposeImages.sort())];
+
+        const dockerImagesString = shell.exec("docker images", { silent: true }).stdout.split(/\r?\n/).slice(1, -1);
+        const dockerImages = dockerImagesString.map(line => {
+            const parsed = line.replace(/\s\s+/g, " ").split(" ");
+            return `${parsed[0]}:${parsed[1]}`;
+        });
+        const dockerImagesUnique = [...new Set(dockerImages.sort())];
+
+        if (!dockerImages.length || dockerComposeImagesUnique.toString() != dockerImagesUnique.toString()) {
+            this.logger.info(DOCKER_PULLING_IMAGES_MESSAGE, this.serviceName);
+        }
+    }
+
     private checkMemoryResources(dockerMemory: number, isMultiNodeMode: boolean) {
       if ((dockerMemory >= MIN_MEMORY_SINGLE_MODE && dockerMemory < RECOMMENDED_MEMORY_SINGLE_MODE && !isMultiNodeMode) ||
           (dockerMemory < MIN_MEMORY_SINGLE_MODE && !isMultiNodeMode) ||
@@ -260,10 +281,12 @@ export class DockerService implements IService{
     private logShellOutput(shellExec: any) {
         [shellExec.stdout, shellExec.stderr].forEach( (output: string) => {
             output.split("\n").map((line: string) => {
-                if (line.indexOf(SHARED_PATHS_ERROR) > -1) {
+                if (line.indexOf(SHARED_PATHS_ERROR) > -1 || line.indexOf(MOUNT_ERROR) > -1) {
                     this.logger.error(`Hedera local node start up TERMINATED due to docker's misconfiguration`);
                     this.logger.error(SHARED_PATHS_ERROR);
                     this.logger.error(`See https://docs.docker.com/desktop/settings/mac/#file-sharing for more info.`);
+                    this.logger.error(`-- If you're using hedera-local as npm package - running 'npm root -g' should output the path you have to add under File Sharing Docker's Setting.`);
+                    this.logger.error(`-- If you're using hedera-local as cloned repo - running 'pwd' in the project's root should output the path you have to add under File Sharing Docker's Setting.`);
                     process.exit();
                 }
                 if (line === "") return;

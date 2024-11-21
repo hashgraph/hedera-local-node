@@ -78,19 +78,19 @@ yargs(hideBin(process.argv))
     .epilogue(
     `
     Requirements:
-    - Node.js >= v14.x
+    - Node.js >= v20.11.0
         Node version check: node -v
-    - NPM >= v6.14.17
+    - NPM >= v10.2.4
         NPM version check: npm -v
-    - Docker >= v20.10.x
+    - Docker >= v27.3.1
         Docker version check: docker -v
-    - Docker Compose => v2.12.2
+    - Docker Compose => v2.29.7
         Docker Compose version check: docker compose version
 
     * Ensure the gRPC FUSE for file sharing setting is disabled in the docker settings and VirtioFS is enabled
     * Ensure the following configurations are set at minimum in Docker Settings -> Resources and are available for use
         CPUs: 6
-        Memory: 8GB
+        Memory: 8 GB
         Swap: 1 GB
         Disk Image Size: 64 GB`
   )

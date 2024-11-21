@@ -33,26 +33,28 @@ The Hedera Local Node project allows developers to set up their own local networ
 - Ensure the **VirtioFS** file sharing implementation is enabled in the docker settings
 
 **Note**: The image may look different if you are on a different version
-![docker-compose-settings.png](.github/docker-compose-settings.png)
+![docker-compose-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/docker-compose-settings.png)
 
 - Ensure the following configurations are set at minimum in Docker **Settings -> Resources** and are available for use.
   - **CPUs:** 6
-  - **Memory:** 8GB
+  - **Memory:** 8 GB
   - **Swap:** 1 GB
   - **Disk Image Size:** 64 GB
 
 **Note**: The image may look different if you are on a different version
-![settings.png](.github/settings.png)
+![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/settings.png)
 
 - Ensure the hedera-local-node folder is added to Docker File Sharing **Settings -> Resources -> File Sharing**.
+  - If you're using hedera-local as npm package - running 'npm root -g' should output the path you have to add under File Sharing Docker's Setting.
+  - If you're using hedera-local as cloned repo - running 'pwd' in the project's root should output the path you have to add under File Sharing Docker's Setting.
 
 **Note**: The image may look different if you are on a different version
-![docker-file-sharing-settings.png](.github/docker-file-sharing-settings.png)
+![docker-file-sharing-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/docker-file-sharing-settings.png)
 
 - Ensure the *Allow the default Docker sockets to be used (requires password)* is enabled in Docker **Settings -> Advanced**.
 
 **Note**: The image may look different if you are on a different version
-![docker-socket-setting](.github/docker-socket-settings.png)
+![docker-socket-setting.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/docker-socket-settings.png)
 
 # CLI Tool - @hashgraph/hedera-local
 

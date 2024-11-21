@@ -22,7 +22,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { StopState } from '../../../src/state/StopState';
 import {
-    DOCKER_CLEANING_VALUMES_MESSAGE,
+    DOCKER_CLEANING_VOLUMES_MESSAGE,
     DOCKER_STOPPING_CONTAINERS_MESSAGE,
     IS_WINDOWS,
     NETWORK_PREFIX,
@@ -92,7 +92,7 @@ describe('StopState tests', () => {
         testSandbox.assert.calledWith(loggerService.info, STOP_STATE_ON_START_MESSAGE, StopState.name);
         testSandbox.assert.calledWith(loggerService.info, STOP_STATE_STOPPING_MESSAGE, StopState.name);
         testSandbox.assert.calledWith(loggerService.trace, DOCKER_STOPPING_CONTAINERS_MESSAGE, StopState.name);
-        testSandbox.assert.calledWith(loggerService.trace, DOCKER_CLEANING_VALUMES_MESSAGE, StopState.name);
+        testSandbox.assert.calledWith(loggerService.trace, DOCKER_CLEANING_VOLUMES_MESSAGE, StopState.name);
         testSandbox.assert.calledWith(loggerService.trace, TEST_DIR_MESSAGE, StopState.name);
         testSandbox.assert.calledWith(loggerService.info, STOP_STATE_STOPPED_MESSAGE, StopState.name);
         

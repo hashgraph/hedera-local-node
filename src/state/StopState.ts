@@ -26,7 +26,7 @@ import { ServiceLocator } from '../services/ServiceLocator';
 import { IState } from './IState';
 import { EventType } from '../types/EventType';
 import {
-    DOCKER_CLEANING_VALUMES_MESSAGE,
+    DOCKER_CLEANING_VOLUMES_MESSAGE,
     DOCKER_STOPPING_CONTAINERS_MESSAGE,
     IS_WINDOWS,
     STOP_STATE_INIT_MESSAGE,
@@ -98,7 +98,7 @@ export class StopState implements IState {
         this.logger.trace(DOCKER_STOPPING_CONTAINERS_MESSAGE, this.stateName);
         shell.exec(`docker compose kill --remove-orphans 2>${nullOutput}`);
         shell.exec(`docker compose down -v --remove-orphans 2>${nullOutput}`);
-        this.logger.trace(DOCKER_CLEANING_VALUMES_MESSAGE, this.stateName);
+        this.logger.trace(DOCKER_CLEANING_VOLUMES_MESSAGE, this.stateName);
         shell.exec(`rm -rf network-logs/* >${nullOutput} 2>&1`);
         this.logger.trace(`Working dir is ${this.cliOptions.workDir}`, this.stateName);
         shell.exec(`rm -rf "${join(this.cliOptions.workDir, 'network-logs')}" >${nullOutput} 2>&1`);
