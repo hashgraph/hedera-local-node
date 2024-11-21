@@ -26,9 +26,9 @@ on:
     branches:
       - main
 
-defaults:
-  run:
-    shell: bash
+#defaults:
+#  run:
+#    shell: bash
 
 permissions:
   contents: read
