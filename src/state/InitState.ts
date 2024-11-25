@@ -149,8 +149,8 @@ export class InitState implements IState{
     }
 
     private checkNodeAndNpmVersions(): boolean {
-        const MIN_NODE_VERSION = "17.9.1";
-        const MIN_NPM_VERSION = "8.11.0";
+        const MIN_NODE_VERSION = '17.9.1';
+        const MIN_NPM_VERSION = '8.11.0';
         const V_OR_NEW_LINE_REGEX = /v|\n/g;
 
         const nodeVersion = shell.exec(`node -v `, { silent: true }).replace(V_OR_NEW_LINE_REGEX, '');
