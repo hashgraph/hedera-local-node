@@ -147,6 +147,7 @@ describe('InitState tests', () => {
         dockerService.isCorrectDockerComposeVersion.resolves(true)
         dockerService.checkDocker.resolves(true)
         dockerService.checkDockerResources.resolves(true)
+        testSandbox.stub(initState, 'checkNodeAndNpmVersions').returns(true);
 
         await initState.onStart();
 

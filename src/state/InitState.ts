@@ -18,6 +18,8 @@
  *
  */
 
+import semver from'semver';
+import shell from 'shelljs';
 import { configDotenv } from 'dotenv';
 import { readFileSync, writeFileSync } from 'fs';
 import path, { join } from 'path';
@@ -119,8 +121,9 @@ export class InitState implements IState{
         const isCorrectDockerComposeVersion = await this.dockerService.isCorrectDockerComposeVersion();
         const isDockerStarted = await this.dockerService.checkDocker();
         const dockerHasEnoughResources = await this.dockerService.checkDockerResources(this.cliOptions.multiNode);
+        const areNodeAndNpmVersionsValid = this.checkNodeAndNpmVersions();
 
-        if (!(isCorrectDockerComposeVersion && isDockerStarted && dockerHasEnoughResources)) {
+        if (!(isCorrectDockerComposeVersion && isDockerStarted && dockerHasEnoughResources) && areNodeAndNpmVersionsValid) {
             this.observer!.update(EventType.UnresolvableError);
             return;
         }
@@ -143,6 +146,27 @@ export class InitState implements IState{
         this.configureMirrorNodeProperties();
 
         this.observer!.update(EventType.Finish);
+    }
+
+    private checkNodeAndNpmVersions(): boolean {
+        const MIN_NODE_VERSION = '17.9.1';
+        const MIN_NPM_VERSION = '8.11.0';
+        const V_OR_NEW_LINE_REGEX = /v|\n/g;
+
+        const nodeVersion = shell.exec(`node -v `, { silent: true }).replace(V_OR_NEW_LINE_REGEX, '');
+        const npmVersion = shell.exec(`npm -v `, { silent: true }).replace(V_OR_NEW_LINE_REGEX, '');
+
+        const isNodeVersionValid = semver.gte(nodeVersion, MIN_NODE_VERSION);
+        const isNpmVersionValid = semver.gte(npmVersion, MIN_NPM_VERSION);
+
+        if (!isNodeVersionValid) {
+            this.logger.error(`Current node version is ${nodeVersion} but minimum required one is ${MIN_NODE_VERSION}`);
+        }
+        if (!isNpmVersionValid) {
+            this.logger.error(`Current npm version is ${npmVersion} but minimum required one is ${MIN_NPM_VERSION}`);
+        }
+
+        return isNodeVersionValid && isNpmVersionValid;
     }
 
     /**
