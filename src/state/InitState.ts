@@ -49,8 +49,7 @@ import {
     LOADING,
     NECESSARY_PORTS,
     NETWORK_NODE_CONFIG_DIR_PATH,
-    OPTIONAL_PORTS,
-    RECORD_PARSER_SOURCE_REL_PATH
+    OPTIONAL_PORTS
 } from '../constants';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });

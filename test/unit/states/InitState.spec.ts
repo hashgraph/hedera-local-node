@@ -38,8 +38,7 @@ import {
     INIT_STATE_STARTING_MESSAGE,
     NECESSARY_PORTS,
     NETWORK_NODE_CONFIG_DIR_PATH,
-    OPTIONAL_PORTS,
-    RECORD_PARSER_SOURCE_REL_PATH
+    OPTIONAL_PORTS
 } from '../../../src/constants';
 import { ConfigurationData } from '../../../src/data/ConfigurationData';
 import { CLIService } from '../../../src/services/CLIService';
