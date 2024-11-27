@@ -26,7 +26,6 @@ import { NetworkPrepState } from '../state/NetworkPrepState';
 import { StartState } from '../state/StartState';
 import { StopState } from '../state/StopState';
 import { StateConfiguration } from '../types/StateConfiguration';
-import { DebugState } from '../state/DebugState';
 import { ResourceCreationState } from '../state/ResourceCreationState';
 
 /**
@@ -51,8 +50,6 @@ export class StateData {
                 return this.getAccountCreationConfiguration();
             case 'resourceCreation':
                 return this.getResourceCreationConfiguration();
-            case 'debug':
-                return this.getDebugConfiguration();
             default:
                 return undefined;
         }
@@ -138,20 +135,6 @@ export class StateData {
             'stateMachineName' : 'accountCreation',
             'states' : [
                 new AccountCreationState()
-            ]
-        };
-    }
-
-    /**
-     * Get the configuration for the debug state.
-     * @returns {StateConfiguration} The configuration for the debug state.
-     * @private
-     */
-    private getDebugConfiguration(): StateConfiguration {
-        return {
-            'stateMachineName' : 'debug',
-            'states' : [
-                new DebugState()
             ]
         };
     }

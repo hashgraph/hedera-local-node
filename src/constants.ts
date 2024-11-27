@@ -127,10 +127,6 @@ export const INIT_STATE_MIRROR_PROP_SET = `${CHECK_SUCCESS} Needed mirror node p
 export const INIT_STATE_NO_NODE_CONF_NEEDED = `${CHECK_SUCCESS} No additional node configuration needed.`;
 export const INIT_STATE_NO_ENV_VAR_CONFIGURED = `${CHECK_SUCCESS} No new environment variables were configured.`;
 
-// Debug state
-export const DEBUG_STATE_INIT_MESSAGE = `${CHECK_SUCCESS} Debug State Initialized!`;
-export const DEBUG_STATE_STARTING_MESSAGE = `${LOADING} Debug State Starting...`;
-
 // StateController
 export const STATE_CONTROLLER_MISSING_STATE_CONFIG_ERROR = `${CHECK_FAIL} Something is wrong with state configuration!`;
 
