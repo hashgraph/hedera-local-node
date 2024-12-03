@@ -1,0 +1,7 @@
+services:
+  network-node:
+    environment:
+      JAVA_OPTS: "${PLATFORM_JAVA_OPTS} -agentlib:jdwp=transport=dt_socket,server=n,address=host.docker.internal:5005,suspend=y"
+    volumes:
+      - "${SERVICES_ROOT_PATH}/hedera-node/data/apps:/opt/hgcapp/services-hedera/HapiApp2.0/data/apps"
+      - "${SERVICES_ROOT_PATH}/hedera-node/data/lib:/opt/hgcapp/services-hedera/HapiApp2.0/data/lib"

@@ -15,3 +15,8 @@ scrape_configs:
       labels:
         cluster: 'local'
         namespace: 'local'        
+  - job_name: 'block-node'
+    static_configs:
+      - targets: 
+        - 'block-node:9999'
+        - 'cadvisor:8080' 

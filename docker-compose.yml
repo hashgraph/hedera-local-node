@@ -307,7 +307,7 @@ services:
     image: "${MIRROR_NODE_EXPLORER_IMAGE_PREFIX}hedera-mirror-node-explorer:${MIRROR_NODE_EXPLORER_IMAGE_TAG}"
     restart: "unless-stopped"
     ports:
-      - "8080:8080"
+      - "8090:8080"
     environment:
       DOCKER_LOCAL_MIRROR_NODE_MENU_NAME: ${DOCKER_LOCAL_MIRROR_NODE_MENU_NAME}
       DOCKER_LOCAL_MIRROR_NODE_URL: ${DOCKER_LOCAL_MIRROR_NODE_URL}
@@ -363,6 +363,31 @@ services:
     volumes:
       - "${MIRROR_NODE_CONFIG_PATH}/compose-network/mirror-node/application.yml:/usr/etc/hedera-mirror-monitor/application.yml"
 
+  block-node:
+    image: "${BLOCK_NODE_IMAGE_PREFIX}hedera-block-node:${BLOCK_NODE_IMAGE_TAG}"
+    container_name: block-node
+    networks:
+      - network-node-bridge
+      - mirror-node
+    environment:
+      VERSION: ${BLOCK_NODE_IMAGE_TAG}
+      REGISTRY_PREFIX: ${BLOCK_NODE_REGISTRY_PREFIX}
+      BLOCKNODE_STORAGE_ROOT_PATH: ${BLOCK_NODE_STORAGE_ROOT_PATH}
+      JAVA_OPTS: ${BLOCK_NODE_JAVA_OPTS}
+    ports:
+      - "8080:8080"
+      - "9998:9999"
+
+  cadvisor:
+    image: "gcr.io/cadvisor/cadvisor:v0.47.0"
+    container_name: cadvisor
+    ports:
+      - "8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    
   relay:
     image: "${RELAY_IMAGE_PREFIX}hedera-json-rpc-relay:${RELAY_IMAGE_TAG}"
     container_name: json-rpc-relay
@@ -498,6 +523,8 @@ services:
     networks:
       network-node-bridge:
         ipv4_address: 172.27.0.4
+      mirror-node:
+        
 
   grafana:
     image: "${GRAFANA_IMAGE_NAME}:${GRAFANA_IMAGE_TAG}"
@@ -505,6 +532,12 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    environment:
+      GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_AUTH_DISABLE_SIGNOUT_MENU: "true"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
     volumes:
       - ./compose-network/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./compose-network/grafana/dashboards:/etc/grafana/provisioning/dashboards
@@ -512,6 +545,7 @@ services:
     networks:
       network-node-bridge:
         ipv4_address: 172.27.0.5
+      mirror-node:
 
   cache:
     image: ghcr.io/mhga24/redis:6-alpine
