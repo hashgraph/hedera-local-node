@@ -590,6 +590,33 @@ Dashboards may be exported as JSON definitions and placed under the `compose-net
 Any dashboard definitions placed into the root of the `compose-network/grafana/dashboards` folder will appear under the `General` folder in the Grafana dashboard list
 Placing dashboards under a subfolder will result in a new folder in the Grafana dashboard list and the dashboards will be deployed under the folder.
 
+# FAQ
+
+- Can I run the local node on a Windows machine?
+- Yes but you will need WSL v2 to be installed.
+
+
+- Can I run the local node on MacOS with an Intel CPU?
+- Yes but make sure that the minimum system requirements are met.
+
+
+- Can I stop the local node, save its state then start it again after a while?
+- No, currently the local node doesn't support network freezing. Once you stop it, the next start will be with a genesis state and all of your accounts/contracts/tokens will be wiped.
+
+
+- What should I do if this error appears on Windows?
+```
+Postgres error:
+/usr/local/bin/docker-entrypoint.sh: /docker-entrypoint-initdb.d/init.sh: /bin/bash: bad interpreter: No such file or directory
+Solution:
+```
+- You have to set a global git config then clone the local node repository again.
+```
+git config --global core.autocrlf input
+Delete your local repository.
+Clone it again.
+```
+
 # Support
 
 If you have a question on how to use the product, please see our [support guide](https://github.com/hashgraph/.github/blob/main/SUPPORT.md).
