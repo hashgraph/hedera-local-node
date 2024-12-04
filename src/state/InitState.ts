@@ -51,8 +51,7 @@ import {
     LOADING,
     NECESSARY_PORTS,
     NETWORK_NODE_CONFIG_DIR_PATH,
-    OPTIONAL_PORTS,
-    RECORD_PARSER_SOURCE_REL_PATH
+    OPTIONAL_PORTS
 } from '../constants';
 
 configDotenv({ path: path.resolve(__dirname, '../../.env') });
@@ -137,7 +136,6 @@ export class InitState implements IState{
             { key: 'NETWORK_NODE_LOGS_ROOT_PATH', value: join(this.cliOptions.workDir, 'network-logs', 'node') },
             { key: 'APPLICATION_CONFIG_PATH', value: join(this.cliOptions.workDir, 'compose-network', 'network-node', 'data', 'config') },
             { key: 'MIRROR_NODE_CONFIG_PATH', value: this.cliOptions.workDir },
-            { key: 'RECORD_PARSER_ROOT_PATH', value: join(this.cliOptions.workDir, 'services','record-parser') },
         ];
         configurationData.envConfiguration = (configurationData.envConfiguration ?? []).concat(workDirConfiguration);
         
@@ -183,12 +181,10 @@ export class InitState implements IState{
         FileSystemUtils.createEphemeralDirectories(this.cliOptions.workDir);
         const configDirSource = join(__dirname, `../../${NETWORK_NODE_CONFIG_DIR_PATH}`);
         const configPathMirrorNodeSource = join(__dirname, `../../${APPLICATION_YML_RELATIVE_PATH}`);
-        const recordParserSource = join(__dirname, RECORD_PARSER_SOURCE_REL_PATH);
 
         const configFiles = {
             [configDirSource]: `${this.cliOptions.workDir}/${NETWORK_NODE_CONFIG_DIR_PATH}`,
             [configPathMirrorNodeSource]: `${this.cliOptions.workDir}/${APPLICATION_YML_RELATIVE_PATH}`,
-            [recordParserSource]: `${this.cliOptions.workDir}/services/record-parser`
         };
         FileSystemUtils.copyPaths(configFiles);
     }
@@ -286,10 +282,9 @@ export class InitState implements IState{
      * 
      * @private
      */
-    // TODO: finish off multi node
     private configureMirrorNodeProperties(): void {
         this.logger.trace('Configuring required mirror node properties, depending on selected configuration...', this.stateName);
-        const { enableDebug, fullMode, multiNode, persistTransactionBytes, workDir } = this.cliOptions;
+        const {fullMode, multiNode, persistTransactionBytes, workDir } = this.cliOptions;
 
         const propertiesFilePath = join(workDir, 'compose-network/mirror-node/application.yml');
         const application = yaml.load(readFileSync(propertiesFilePath).toString()) as any;
@@ -297,10 +292,6 @@ export class InitState implements IState{
         if (!fullMode) {
             application.hedera.mirror.importer.dataPath = originalNodeConfiguration.turboNodeProperties.dataPath;
             application.hedera.mirror.importer.downloader.sources = originalNodeConfiguration.turboNodeProperties.sources;
-        }
-
-        if (enableDebug) {
-            application.hedera.mirror.importer.downloader.local = originalNodeConfiguration.local;
         }
 
         if (multiNode) {

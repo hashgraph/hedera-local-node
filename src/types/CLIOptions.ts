@@ -36,8 +36,6 @@
  * @property {boolean} blocklisting - Whether to enable blocklisting.
  * @property {boolean} startup - Whether to start up.
  * @property {number} verbose - The level of verbosity.
- * @property {string} timestamp - The timestamp for debugging.
- * @property {boolean} enableDebug - Whether to enable debugging.
  * @property {string} networkTag - The tag for the network.
  * @property {string} mirrorTag - The tag for the mirror.
  * @property {string} relayTag - The tag for the relay.
@@ -59,8 +57,6 @@ export interface CLIOptions {
     blocklisting: boolean,
     startup: boolean,
     verbose: number,
-    timestamp: string,
-    enableDebug: boolean,
     networkTag: string,
     mirrorTag: string,
     relayTag: string,

@@ -83,20 +83,10 @@ export class CLIService implements IService{
         CLIService.userComposeOption(yargs);
         CLIService.userComposeDirOption(yargs);
         CLIService.blocklistingOption(yargs);
-        CLIService.enableDebugOption(yargs);
         CLIService.selectNetworkTag(yargs);
         CLIService.selectMirrorTag(yargs);
         CLIService.selectRelayTag(yargs);
         CLIService.createInitialResources(yargs);
-    }
-
-    /**
-     * Loads debug options for the CLI service.
-     * @param {yargs.Argv<{}>} yargs - The yargs instance.
-     */
-    public static loadDebugOptions(yargs: Argv<{}>): void {
-        CLIService.loadCommonOptions(yargs)
-        CLIService.timestampOption(yargs);
     }
 
     /**
@@ -149,8 +139,6 @@ export class CLIService implements IService{
         const blocklisting = argv.blocklist as boolean;
         const startup = argv.startup as boolean;
         const verbose = CLIService.resolveVerboseLevel(argv.verbose as string);
-        const timestamp = argv.timestamp as string;
-        const enableDebug = argv.enableDebug as boolean;
         const networkTag = argv.networkTag as string;
         const mirrorTag = argv.mirrorTag as string;
         const relayTag = argv.relayTag as string;
@@ -171,8 +159,6 @@ export class CLIService implements IService{
             blocklisting,
             startup,
             verbose,
-            timestamp,
-            enableDebug,
             networkTag,
             mirrorTag,
             relayTag,
@@ -212,8 +198,6 @@ export class CLIService implements IService{
             case 'stop':
                 return false;
             case 'generate-accounts':
-                return false;
-            case 'debug':
                 return false;
             default:
                 return true;
@@ -273,23 +257,6 @@ export class CLIService implements IService{
             describe: 'Enable or disable the rate limits in the JSON-RPC relay',
             demandOption: false,
             default: false
-        });
-    }
-
-    /**
-     * Adds the 'timestamp' option to the command line arguments.
-     * This option is a string that records the file timestamp.
-     * It is required.
-     * 
-     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
-     * @private
-     * @static
-     */
-    private static timestampOption(yargs: Argv<{}>): void {
-        yargs.option('timestamp', {
-            type: 'string',
-            describe: 'Record file timestamp',
-            demandOption: true
         });
     }
 
@@ -468,24 +435,6 @@ export class CLIService implements IService{
             choices: ['silent', 'error', 'warning', 'info', 'debug', 'trace'],
             default: 'info',
         })
-    }
-    
-    /**
-     * Adds the 'enable-debug' option to the command line arguments.
-     * This option is a boolean that enables or disables debugging of the local node.
-     * It is not required and defaults to false.
-     * 
-     * @param {yargs.Argv<{}>} yargs - The yargs instance to which the option is added.
-     * @private
-     * @static
-     */
-    private static enableDebugOption(yargs: Argv<{}>): void {
-        yargs.option('enable-debug', {
-            type: 'boolean',
-            describe: 'Enable or disable debugging of the local node',
-            demandOption: false,
-            default: false
-        });
     }
 
     /**

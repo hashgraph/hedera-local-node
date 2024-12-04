@@ -50,9 +50,6 @@ export const UNKNOWN_VERSION = "Unknown";
 export const NECESSARY_PORTS = [5551, 8545, 5600, 5433, 50211, 8082, 6379];
 export const OPTIONAL_PORTS = [7546, 8080, 3000];
 export const EVM_ADDRESSES_BLOCKLIST_FILE_RELATIVE_PATH = '../../compose-network/network-node'
-export const RELATIVE_TMP_DIR_PATH = 'services/record-parser/temp';
-export const RELATIVE_RECORDS_DIR_PATH = 'network-logs/node/recordStreams/record0.0.3';
-export const RECORD_PARSER_SOURCE_REL_PATH = '../../src/services/record-parser';
 export const NETWORK_NODE_CONFIG_DIR_PATH = 'compose-network/network-node/data/config';
 export const APPLICATION_YML_RELATIVE_PATH = 'compose-network/mirror-node/application.yml';
 export const MIN_MEMORY_SINGLE_MODE = 4;
@@ -126,10 +123,6 @@ export const INIT_STATE_BOOTSTRAPPED_PROP_SET = `${CHECK_SUCCESS} Needed bootsra
 export const INIT_STATE_MIRROR_PROP_SET = `${CHECK_SUCCESS} Needed mirror node properties were set for this configuration.`;
 export const INIT_STATE_NO_NODE_CONF_NEEDED = `${CHECK_SUCCESS} No additional node configuration needed.`;
 export const INIT_STATE_NO_ENV_VAR_CONFIGURED = `${CHECK_SUCCESS} No new environment variables were configured.`;
-
-// Debug state
-export const DEBUG_STATE_INIT_MESSAGE = `${CHECK_SUCCESS} Debug State Initialized!`;
-export const DEBUG_STATE_STARTING_MESSAGE = `${LOADING} Debug State Starting...`;
 
 // StateController
 export const STATE_CONTROLLER_MISSING_STATE_CONFIG_ERROR = `${CHECK_FAIL} Something is wrong with state configuration!`;

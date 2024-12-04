@@ -63,14 +63,6 @@ yargs(hideBin(process.argv))
         },
         async () => await new StateController("accountCreation").startStateMachine()
     )
-    .command(
-        "debug [timestamp]",
-        "Parses and prints the contents of the record file that has been created during the selected timestamp.",
-        (yargs: yargs.Argv<{}>) => {
-            CLIService.loadDebugOptions(yargs);
-        },
-        async () => await new StateController("debug").startStateMachine()
-    )
     .middleware(Bootstrapper.initialize)
     .demandCommand()
     .strictCommands()

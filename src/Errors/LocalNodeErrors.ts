@@ -72,22 +72,4 @@ export const Errors = {
      * @returns {LocalNodeErrors} The client error.
      */
     CLEINT_ERROR: (msg?: string) => new LocalNodeErrors("Client Error", `Something went wrong, while trying to create SDK Client${msg ? `: ${msg}` : ``}`),
-    
-    /**
-     * Create a no record file found error.
-     * @returns {LocalNodeErrors} The no record file found error.
-     */
-    NO_RECORD_FILE_FOUND_ERROR: () => new LocalNodeErrors('No record file found Error', "This record file doesn't not exist, check if timestamp is correct and local-node was started in debug mode using --enable-debug option"),
-    
-    /**
-     * Create an invalid timestamp error.
-     * @returns {LocalNodeErrors} The invalid timestamp error.
-     */
-    INVALID_TIMESTAMP_ERROR: () => new LocalNodeErrors('Invalid Timestamp Error', 'Invalid timestamp string. Accepted formats are: 0000000000.000000000 and 0000000000-000000000'),
-    
-    /**
-     * Create a debug mode check error.
-     * @returns {LocalNodeErrors} The debug mode check error.
-     */
-    DEBUG_MODE_CHECK_ERROR: () => new LocalNodeErrors('Debug Mode check Error', 'Debug mode is not enabled to use this command. Please use the --enable-debug flag to enable it.'),
 }
