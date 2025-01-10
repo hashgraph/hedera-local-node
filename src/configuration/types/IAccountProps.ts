@@ -4,4 +4,8 @@
 
 import { IPrivateKey } from './IPrivateKey';
 
-// ... existing code ...
+export interface IAccountProps {
+  balance: number;
+  privateKey?: IPrivateKey;
+  associatedTokens?: string[];
+}
