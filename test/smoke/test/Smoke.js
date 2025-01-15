@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 const { expect } = require("chai");
 const hre = require("hardhat");
 
