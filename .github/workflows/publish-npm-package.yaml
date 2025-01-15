@@ -14,7 +14,7 @@ defaults:
 
 jobs:
   publish-npm-package:
-    runs-on: local-node-linux-medium
+    runs-on: hiero-local-node-linux-medium
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@c95a14d0e5bab51a9f56296a4eb0e416910cd350 # v2.10.3

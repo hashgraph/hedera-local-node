@@ -26,7 +26,7 @@ concurrency:
 jobs:
   smoke-tests:
     name: Smoke Tests
-    runs-on: local-node-linux-medium
+    runs-on: hiero-local-node-linux-medium
 
     strategy:
       fail-fast: false
@@ -69,7 +69,7 @@ jobs:
 
   browser-tests:
     name: Browser Tests
-    runs-on: local-node-linux-large
+    runs-on: hiero-local-node-linux-large
 
     strategy:
       fail-fast: false
@@ -114,7 +114,7 @@ jobs:
 
   unit-tests:
     name: Unit Tests
-    runs-on: local-node-linux-medium
+    runs-on: hiero-local-node-linux-medium
 
     strategy:
       fail-fast: false
