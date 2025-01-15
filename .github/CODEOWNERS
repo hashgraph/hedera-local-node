@@ -2,7 +2,7 @@
 ##### Global Protection Rule ######
 ###################################
 # NOTE: This rule is overriden by the more specific rules below. This is the catch-all rule for all files not covered by the more specific rules below.
-*                                               @georgi-l95 @isavov @Ivo-Yankov @natanasow @konstantinabl @Ivo-Yankov @victor-yanev
+*                                                       @hiero-ledger/hiero-local-node-maintainers
 
 #########################
 #####  Core Files  ######
@@ -11,33 +11,33 @@
 # NOTE: Must be placed last to ensure enforcement over all other rules
 
 # Protection Rules for Github Configuration Files and Actions Workflows
-/.github/                                               @hashgraph/platform-ci @hashgraph/release-engineering-managers
-/.github/workflows/                                     @hashgraph/platform-ci @hashgraph/platform-ci-committers
+/.github/                                               @hiero-ledger/github-committers @hiero-ledger/github-maintainers
+/.github/workflows/                                     @hiero-ledger/github-committers @hiero-ledger/github-maintainers
 
 # Legacy Maven project files
-**/pom.xml                                              @hashgraph/platform-ci
+**/pom.xml                                              @hiero-ledger/github-committers @hiero-ledger/github-maintainers
 
 # Cmake project files and inline plugins
-**/.clang*                                              @hashgraph/platform-ci @hashgraph/platform-ci-committers @hashgraph/hedera-sdk
-**/.clang-format                                        @hashgraph/platform-ci @hashgraph/platform-ci-committers @hashgraph/hedera-sdk
-**/.clang-tidy                                          @hashgraph/platform-ci @hashgraph/platform-ci-committers @hashgraph/hedera-sdk
-**/CMakeLists.txt                                       @hashgraph/platform-ci @hashgraph/platform-ci-committers @hashgraph/hedera-sdk
-**/CMakePresets.json                                    @hashgraph/platform-ci @hashgraph/platform-ci-committers @hashgraph/hedera-sdk
+**/.clang*                                              @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/github-committers @hiero-ledger/github-maintainers
+**/.clang-format                                        @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/github-committers @hiero-ledger/github-maintainers
+**/.clang-tidy                                          @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/github-committers @hiero-ledger/github-maintainers
+**/CMakeLists.txt                                       @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/github-committers @hiero-ledger/github-maintainers
+**/CMakePresets.json                                    @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/github-committers @hiero-ledger/github-maintainers
 
 # Codacy Tool Configurations
-/config/                                                @hashgraph/platform-ci @hashgraph/release-engineering-managers
-.remarkrc                                               @hashgraph/platform-ci @hashgraph/release-engineering-managers
+/config/                                                @hiero-ledger/github-committers @hiero-ledger/github-maintainers
+.remarkrc                                               @hiero-ledger/github-committers @hiero-ledger/github-maintainers
 
 # Self-protection for root CODEOWNERS files (this file should not exist and should definitely require approval)
-/CODEOWNERS                                             @hashgraph/release-engineering-managers
+/CODEOWNERS                                             @hiero-ledger/github-maintainers
 
 # Protect the repository root files
-/README.md                                              @hashgraph/platform-ci @hashgraph/release-engineering-managers
-**/LICENSE                                              @hashgraph/release-engineering-managers
+/README.md                                              @hiero-ledger/github-committers @hiero-ledger/github-maintainers @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/hiero-local-node-committers @hiero-ledger/tsc
+**/LICENSE                                              @hiero-ledger/github-maintainers @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/tsc
 
 # CodeCov configuration
-**/codecov.yml                                          @hashgraph/platform-ci @hashgraph/release-engineering-managers
+**/codecov.yml                                          @hiero-ledger/github-committers @hiero-ledger/github-maintainers
 
 # Git Ignore definitions
-**/.gitignore                                           @hashgraph/platform-ci @hashgraph/release-engineering-managers
-**/.gitignore.*                                         @hashgraph/platform-ci @hashgraph/release-engineering-managers
+**/.gitignore                                           @hiero-ledger/github-committers @hiero-ledger/github-maintainers @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/tsc
+**/.gitignore.*                                         @hiero-ledger/github-committers @hiero-ledger/github-maintainers @hiero-ledger/hiero-local-node-maintainers @hiero-ledger/tsc
