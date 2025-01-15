@@ -57,6 +57,7 @@ jobs:
       - name: Start the local node
         run: npm run start -- -d --verbose=trace
 
+      # Note: After Step-Security is enabled return to step-security/retry
       - name: Run smoke test
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:

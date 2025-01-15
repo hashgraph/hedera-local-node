@@ -107,6 +107,7 @@ jobs:
         run: |
           sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
 
+      # Note: After Step-Security is enabled return to step-security/retry
       - name: Run the local node
         env:
           FIRING_UP_RETRY_ATTEMPTS: 10000
@@ -116,6 +117,7 @@ jobs:
           timeout_minutes: 60
           command: npm run restart -- --workdir /Users/runner/work/hedera-local-node/hedera-local-node
 
+      # Note: After Step-Security is enabled return to step-security/retry
       - name: Run smoke test
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
