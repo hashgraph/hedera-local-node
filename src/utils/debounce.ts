@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 /**
  * Limit the execution of a function to once every N ms

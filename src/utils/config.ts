@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { join } from 'path';
 import yaml from 'js-yaml';

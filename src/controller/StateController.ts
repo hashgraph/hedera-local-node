@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { CHECK_FAIL, CHECK_SUCCESS } from '../constants';
 import { StateData } from '../data/StateData';

@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { expect, assert } from 'chai';
 import { StateController } from '../../../src/controller/StateController';

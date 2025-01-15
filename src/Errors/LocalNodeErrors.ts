@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 /**
  * Class representing the local node errors.

@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import shell from 'shelljs';
 import { IS_WINDOWS, NETWORK_PREFIX } from '../constants';

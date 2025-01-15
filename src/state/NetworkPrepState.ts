@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { Client, FileContentsQuery } from '@hashgraph/sdk';
 import shell from 'shelljs';

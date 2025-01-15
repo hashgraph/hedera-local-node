@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { createStubInstance, SinonSpy, SinonStubbedInstance, spy, stub } from 'sinon';
 import { LoggerService } from '../../../src/services/LoggerService';

@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { PrivateKey } from '@hashgraph/sdk';
 import { IPrivateKey, KeyType } from '../src/configuration/types/IPrivateKey';

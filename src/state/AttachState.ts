@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { IOBserver } from '../controller/IObserver';
 import { DockerService } from '../services/DockerService';

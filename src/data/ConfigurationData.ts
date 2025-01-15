@@ -1,6 +1,4 @@
-/*-
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
 
 import { NetworkConfiguration } from '../types/NetworkConfiguration';
 import local from '../configuration/local.json';
