@@ -26,7 +26,7 @@ concurrency:
 jobs:
   smoke-tests:
     name: Smoke Tests
-    runs-on: local-node-linux-medium
+    runs-on: hiero-local-node-linux-medium
 
     strategy:
       fail-fast: false
@@ -57,8 +57,9 @@ jobs:
       - name: Start the local node
         run: npm run start -- -d --verbose=trace
 
+      # Note: After Step-Security is enabled return to step-security/retry
       - name: Run smoke test
-        uses: step-security/retry@2ab886c0de89f68f146c9b43f53e61abc59c46dc # v3.0.1
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
           max_attempts: 3
           timeout_minutes: 3
@@ -69,7 +70,7 @@ jobs:
 
   browser-tests:
     name: Browser Tests
-    runs-on: local-node-linux-large
+    runs-on: hiero-local-node-linux-large
 
     strategy:
       fail-fast: false
@@ -114,7 +115,7 @@ jobs:
 
   unit-tests:
     name: Unit Tests
-    runs-on: local-node-linux-medium
+    runs-on: hiero-local-node-linux-medium
 
     strategy:
       fail-fast: false
