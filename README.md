@@ -6,8 +6,12 @@
 [![License](https://img.shields.io/badge/license-apache2-blue.svg)](LICENSE)
 
 </div>
-The Hedera Local Node project allows developers to set up their own local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
+The Hiero Local Node project allows developers to set up their own Hiero based local network. The local network is composed of one mirror node and one consensus node. You can set this up by either using the CLI tool or by running Docker.
 </br></br>
+
+> [!NOTE]  
+> The project has been transfered from the https://github.com/hashgraph org and therefore the namespace is at several locations still based on `hashgraph` and `hedera`.
+> We are working activly on migration the namespace fully to hiero.
 
 > **_NOTE:_**  It's recommended to start using the CLI Tool.
 
@@ -44,9 +48,9 @@ The Hedera Local Node project allows developers to set up their own local networ
 **Note**: The image may look different if you are on a different version
 ![settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/settings.png)
 
-- Ensure the hedera-local-node folder is added to Docker File Sharing **Settings -> Resources -> File Sharing**.
-  - If you're using hedera-local as npm package - running 'npm root -g' should output the path you have to add under File Sharing Docker's Setting.
-  - If you're using hedera-local as cloned repo - running 'pwd' in the project's root should output the path you have to add under File Sharing Docker's Setting.
+- Ensure the hiero-local-node folder is added to Docker File Sharing **Settings -> Resources -> File Sharing**.
+  - If you're using hiero-local as npm package - running 'npm root -g' should output the path you have to add under File Sharing Docker's Setting.
+  - If you're using hiero-local as cloned repo - running 'pwd' in the project's root should output the path you have to add under File Sharing Docker's Setting.
 
 **Note**: The image may look different if you are on a different version
 ![docker-file-sharing-settings.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/docker-file-sharing-settings.png)
@@ -57,6 +61,10 @@ The Hedera Local Node project allows developers to set up their own local networ
 ![docker-socket-setting.png](https://raw.githubusercontent.com/hashgraph/hedera-local-node/refs/heads/main/.github/docker-socket-settings.png)
 
 # CLI Tool - @hashgraph/hedera-local
+
+> [!NOTE]  
+> As already mentioned the project has been transfered from the https://github.com/hashgraph org and therefore the namespace is still based on `hashgraph` and `hedera`.
+> We are working activly on migration the namespace fully to hiero and publish the CLI tool under the hiero namespace to NPMJS.
 
 ## What
 
@@ -617,18 +625,16 @@ Delete your local repository.
 Clone it again.
 ```
 
-# Support
+## Contributing
 
-If you have a question on how to use the product, please see our [support guide](https://github.com/hashgraph/.github/blob/main/SUPPORT.md).
+Whether you’re fixing bugs, enhancing features, or improving documentation, your contributions are important — let’s build something great together!
 
-# Contributing
+Please read our [contributing guide](https://github.com/hiero-ledger/.github/blob/main/CONTRIBUTING.md) to see how you can get involved.
 
-Contributions are welcome. Please see the [contributing guide](https://github.com/hashgraph/.github/blob/main/CONTRIBUTING.md) to see how you can get involved.
+## Code of Conduct
 
-# Code of Conduct
+Hiero uses the Linux Foundation Decentralised Trust [Code of Conduct](https://www.lfdecentralizedtrust.org/code-of-conduct).
 
-This project is governed by the [Contributor Covenant Code of Conduct](https://github.com/hashgraph/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code of conduct. Please report unacceptable behavior to oss@hedera.com.
+## License
 
-# License
-
-[Apache License 2.0](https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/LICENSE)
+[Apache License 2.0](LICENSE)
